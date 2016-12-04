@@ -1,0 +1,18 @@
+﻿{
+  "version": "1.0.0-*",
+
+  "frameworks": {
+    "netstandard1.3": {
+      "dependencies": {
+        "NETStandard.Library": "1.6.1-*",
+        "Microsoft.Build.Utilities.Core": "14.3.0"
+      }
+    },
+    "net451": {
+      "frameworkAssemblies": {
+        "Microsoft.Build.Framework": "",
+        "Microsoft.Build.Utilities.v4.0": ""
+      }
+    }
+  }
+}
