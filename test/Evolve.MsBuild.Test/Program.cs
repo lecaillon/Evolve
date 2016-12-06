@@ -1,12 +1,9 @@
-﻿namespace Evolve.MsBuild.Test
+﻿using System;
+
+class Program
 {
-    /// <summary>
-    /// msbuild /t:Build
-    /// </summary>
-    class Program
+    static void Main(string[] args)
     {
-        static void Main(string[] args)
-        {
-        }
+        Console.WriteLine("Hello World!");
     }
 }
