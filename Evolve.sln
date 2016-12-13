@@ -1,36 +1,56 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.25928.0
+VisualStudioVersion = 15.0.26009.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A457D6FD-2F30-423A-832F-5E2C4FA1517C}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{2A25B1AD-2629-4D99-BAB5-172EED85FFE8}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{5221C640-312B-4122-A3A5-CE7713B2DC10}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{7FA35BAF-800D-4435-9E01-58CBBDDF9C69}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve", "src\Evolve\Evolve.csproj", "{CDC97B7D-560D-4D04-B78E-183BA0D4D709}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve", "src\Evolve\Evolve.csproj", "{5DBECB3F-30C4-45D1-971E-92FDD2F24EC0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.MsBuild.Test", "test\Evolve.MsBuild.Test\Evolve.MsBuild.Test.csproj", "{6F270A7A-7BD3-490C-9430-6DD00F524BBB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.PostgreSQL.Test", "test\Evolve.PostgreSQL.Test\Evolve.PostgreSQL.Test.csproj", "{D330D696-6686-43AF-8B7B-F310848E9233}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{CDC97B7D-560D-4D04-B78E-183BA0D4D709}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CDC97B7D-560D-4D04-B78E-183BA0D4D709}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CDC97B7D-560D-4D04-B78E-183BA0D4D709}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CDC97B7D-560D-4D04-B78E-183BA0D4D709}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6F270A7A-7BD3-490C-9430-6DD00F524BBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6F270A7A-7BD3-490C-9430-6DD00F524BBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6F270A7A-7BD3-490C-9430-6DD00F524BBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6F270A7A-7BD3-490C-9430-6DD00F524BBB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5DBECB3F-30C4-45D1-971E-92FDD2F24EC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DBECB3F-30C4-45D1-971E-92FDD2F24EC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5DBECB3F-30C4-45D1-971E-92FDD2F24EC0}.Debug|x64.ActiveCfg = Debug|x64
+		{5DBECB3F-30C4-45D1-971E-92FDD2F24EC0}.Debug|x64.Build.0 = Debug|x64
+		{5DBECB3F-30C4-45D1-971E-92FDD2F24EC0}.Debug|x86.ActiveCfg = Debug|x86
+		{5DBECB3F-30C4-45D1-971E-92FDD2F24EC0}.Debug|x86.Build.0 = Debug|x86
+		{5DBECB3F-30C4-45D1-971E-92FDD2F24EC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DBECB3F-30C4-45D1-971E-92FDD2F24EC0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5DBECB3F-30C4-45D1-971E-92FDD2F24EC0}.Release|x64.ActiveCfg = Release|x64
+		{5DBECB3F-30C4-45D1-971E-92FDD2F24EC0}.Release|x64.Build.0 = Release|x64
+		{5DBECB3F-30C4-45D1-971E-92FDD2F24EC0}.Release|x86.ActiveCfg = Release|x86
+		{5DBECB3F-30C4-45D1-971E-92FDD2F24EC0}.Release|x86.Build.0 = Release|x86
+		{D330D696-6686-43AF-8B7B-F310848E9233}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D330D696-6686-43AF-8B7B-F310848E9233}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D330D696-6686-43AF-8B7B-F310848E9233}.Debug|x64.ActiveCfg = Debug|x64
+		{D330D696-6686-43AF-8B7B-F310848E9233}.Debug|x64.Build.0 = Debug|x64
+		{D330D696-6686-43AF-8B7B-F310848E9233}.Debug|x86.ActiveCfg = Debug|x86
+		{D330D696-6686-43AF-8B7B-F310848E9233}.Debug|x86.Build.0 = Debug|x86
+		{D330D696-6686-43AF-8B7B-F310848E9233}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D330D696-6686-43AF-8B7B-F310848E9233}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D330D696-6686-43AF-8B7B-F310848E9233}.Release|x64.ActiveCfg = Release|x64
+		{D330D696-6686-43AF-8B7B-F310848E9233}.Release|x64.Build.0 = Release|x64
+		{D330D696-6686-43AF-8B7B-F310848E9233}.Release|x86.ActiveCfg = Release|x86
+		{D330D696-6686-43AF-8B7B-F310848E9233}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{CDC97B7D-560D-4D04-B78E-183BA0D4D709} = {A457D6FD-2F30-423A-832F-5E2C4FA1517C}
-		{6F270A7A-7BD3-490C-9430-6DD00F524BBB} = {5221C640-312B-4122-A3A5-CE7713B2DC10}
+		{5DBECB3F-30C4-45D1-971E-92FDD2F24EC0} = {2A25B1AD-2629-4D99-BAB5-172EED85FFE8}
+		{D330D696-6686-43AF-8B7B-F310848E9233} = {7FA35BAF-800D-4435-9E01-58CBBDDF9C69}
 	EndGlobalSection
 EndGlobal
