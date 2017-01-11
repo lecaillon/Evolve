@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Text;
 
-namespace Evolve.Driver
+namespace Evolve.Core.Driver
 {
     public class SqlClientDriver : IDriver
     {

@@ -1,15 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26009.0
+VisualStudioVersion = 15.0.26020.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{2A25B1AD-2629-4D99-BAB5-172EED85FFE8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{7FA35BAF-800D-4435-9E01-58CBBDDF9C69}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve", "src\Evolve\Evolve.csproj", "{5DBECB3F-30C4-45D1-971E-92FDD2F24EC0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.Core", "src\Evolve.Core\Evolve.Core.csproj", "{5DBECB3F-30C4-45D1-971E-92FDD2F24EC0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.PostgreSQL.Test", "test\Evolve.PostgreSQL.Test\Evolve.PostgreSQL.Test.csproj", "{D330D696-6686-43AF-8B7B-F310848E9233}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.MsBuild", "src\Evolve.MsBuild\Evolve.MsBuild.csproj", "{C65590EE-5F38-4C20-B09B-7C312DC2EEE0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,24 +33,24 @@ Global
 		{5DBECB3F-30C4-45D1-971E-92FDD2F24EC0}.Release|x64.Build.0 = Release|x64
 		{5DBECB3F-30C4-45D1-971E-92FDD2F24EC0}.Release|x86.ActiveCfg = Release|x86
 		{5DBECB3F-30C4-45D1-971E-92FDD2F24EC0}.Release|x86.Build.0 = Release|x86
-		{D330D696-6686-43AF-8B7B-F310848E9233}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D330D696-6686-43AF-8B7B-F310848E9233}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D330D696-6686-43AF-8B7B-F310848E9233}.Debug|x64.ActiveCfg = Debug|x64
-		{D330D696-6686-43AF-8B7B-F310848E9233}.Debug|x64.Build.0 = Debug|x64
-		{D330D696-6686-43AF-8B7B-F310848E9233}.Debug|x86.ActiveCfg = Debug|x86
-		{D330D696-6686-43AF-8B7B-F310848E9233}.Debug|x86.Build.0 = Debug|x86
-		{D330D696-6686-43AF-8B7B-F310848E9233}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D330D696-6686-43AF-8B7B-F310848E9233}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D330D696-6686-43AF-8B7B-F310848E9233}.Release|x64.ActiveCfg = Release|x64
-		{D330D696-6686-43AF-8B7B-F310848E9233}.Release|x64.Build.0 = Release|x64
-		{D330D696-6686-43AF-8B7B-F310848E9233}.Release|x86.ActiveCfg = Release|x86
-		{D330D696-6686-43AF-8B7B-F310848E9233}.Release|x86.Build.0 = Release|x86
+		{C65590EE-5F38-4C20-B09B-7C312DC2EEE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C65590EE-5F38-4C20-B09B-7C312DC2EEE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C65590EE-5F38-4C20-B09B-7C312DC2EEE0}.Debug|x64.ActiveCfg = Debug|x64
+		{C65590EE-5F38-4C20-B09B-7C312DC2EEE0}.Debug|x64.Build.0 = Debug|x64
+		{C65590EE-5F38-4C20-B09B-7C312DC2EEE0}.Debug|x86.ActiveCfg = Debug|x86
+		{C65590EE-5F38-4C20-B09B-7C312DC2EEE0}.Debug|x86.Build.0 = Debug|x86
+		{C65590EE-5F38-4C20-B09B-7C312DC2EEE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C65590EE-5F38-4C20-B09B-7C312DC2EEE0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C65590EE-5F38-4C20-B09B-7C312DC2EEE0}.Release|x64.ActiveCfg = Release|x64
+		{C65590EE-5F38-4C20-B09B-7C312DC2EEE0}.Release|x64.Build.0 = Release|x64
+		{C65590EE-5F38-4C20-B09B-7C312DC2EEE0}.Release|x86.ActiveCfg = Release|x86
+		{C65590EE-5F38-4C20-B09B-7C312DC2EEE0}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{5DBECB3F-30C4-45D1-971E-92FDD2F24EC0} = {2A25B1AD-2629-4D99-BAB5-172EED85FFE8}
-		{D330D696-6686-43AF-8B7B-F310848E9233} = {7FA35BAF-800D-4435-9E01-58CBBDDF9C69}
+		{C65590EE-5F38-4C20-B09B-7C312DC2EEE0} = {2A25B1AD-2629-4D99-BAB5-172EED85FFE8}
 	EndGlobalSection
 EndGlobal

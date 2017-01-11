@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Evolve.Driver
+namespace Evolve.Core.Driver
 {
     public class NpgsqlDriver : ReflectionBasedDriver
     {
