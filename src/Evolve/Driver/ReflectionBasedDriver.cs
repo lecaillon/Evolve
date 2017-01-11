@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
 using System.Text;
-using Evolve.Core.Utilities;
+using Evolve.Utilities;
 
-namespace Evolve.Core.Driver
+namespace Evolve.Driver
 {
     public abstract class ReflectionBasedDriver : IDriver
     {

@@ -1,6 +1,6 @@
 ﻿using System.Data;
 
-namespace Evolve.Core.Driver
+namespace Evolve.Driver
 {
     public interface IDriver
     {

@@ -7,7 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{2A25B1AD-262
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{7FA35BAF-800D-4435-9E01-58CBBDDF9C69}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.Core", "src\Evolve.Core\Evolve.Core.csproj", "{5DBECB3F-30C4-45D1-971E-92FDD2F24EC0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve", "src\Evolve\Evolve.csproj", "{5DBECB3F-30C4-45D1-971E-92FDD2F24EC0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.MsBuild", "src\Evolve.MsBuild\Evolve.MsBuild.csproj", "{C65590EE-5F38-4C20-B09B-7C312DC2EEE0}"
 EndProject

@@ -12,6 +12,6 @@
     <PackageReference Include="NETStandard.Library" Version="1.6.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Evolve.Core\Evolve.Core.csproj" />
+    <ProjectReference Include="..\Evolve\Evolve.csproj" />
   </ItemGroup>
 </Project>

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 
-namespace Evolve.Core.Configuration
+namespace Evolve.Configuration
 {
     /// <summary>
     ///     <para>
