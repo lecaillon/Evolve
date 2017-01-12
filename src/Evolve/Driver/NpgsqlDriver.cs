@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Evolve.Driver
+﻿namespace Evolve.Driver
 {
     public class NpgsqlDriver : ReflectionBasedDriver
     {
