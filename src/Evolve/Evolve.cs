@@ -8,7 +8,7 @@ namespace Evolve
 {
     public class Evolve : IEvolveConfiguration, IMigrator
     {
-        public Evolve(string evolveConfigurationPath)
+        public Evolve()
         {
             Encoding = Encoding.UTF8;
             Locations = new List<string> { "Sql_Scripts" };
