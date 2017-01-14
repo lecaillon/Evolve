@@ -10,4 +10,7 @@
     <PackageReference Include="NETStandard.Library" Version="1.6.1" />
     <PackageReference Include="System.Data.Common" Version="4.3.0" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="DbSupport\PostgreSQL\" />
+  </ItemGroup>
 </Project>

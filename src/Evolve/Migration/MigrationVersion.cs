@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Evolve.Metadata
+namespace Evolve.Migration
 {
-    interface IMetadata
+    class MigrationVersion
     {
     }
 }
