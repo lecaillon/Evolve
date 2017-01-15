@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Evolve.Utilities
@@ -12,6 +13,7 @@ namespace Evolve.Utilities
         private const string ArgumentIsEmpty = "The string cannot be empty.";
         private const string CollectionArgumentIsEmpty = "The collection must contain at least one element.";
         private const string CollectionArgumentHasNullElement = "The collection must not contain any null element.";
+        private const string FileNotFound = "The file does not exist.";
 
         /// <summary>
         ///     Ensures that the string passed as a parameter is neither null or empty.
@@ -149,6 +151,29 @@ namespace Evolve.Utilities
             }
 
             return enumerable;
+        }
+
+        /// <summary>
+        ///     Ensures that the specified file exists.
+        /// </summary>
+        /// <param name="filePath"> The full path of the file to test. </param>
+        /// <param name="parameterName"> The name of the parameter to test. </param>
+        /// <returns> The full path of the file tested and found. </returns>
+        /// <exception cref="ArgumentNullException"> Throws ArgumentNullException if the path is null. </exception>
+        /// <exception cref="ArgumentException"> Throws ArgumentException if the path is empty. </exception>
+        /// <exception cref="FileNotFoundException"> Throws FileNotFoundException if the file is not found. </exception>
+        public static string FileExists(string filePath, string parameterName)
+        {
+            NotNullOrEmpty(filePath, parameterName);
+
+            if(!File.Exists(filePath))
+            {
+                NotNullOrEmpty(parameterName, nameof(parameterName));
+
+                throw new FileNotFoundException(FileNotFound, filePath);
+            }
+
+            return filePath;
         }
     }
 }
