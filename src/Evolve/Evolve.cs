@@ -1,5 +1,6 @@
 ﻿using Evolve.Configuration;
 using Evolve.Migration;
+using Evolve.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,6 +11,7 @@ namespace Evolve
     {
         public Evolve()
         {
+            // Set default configuration settings
             Encoding = Encoding.UTF8;
             Locations = new List<string> { "Sql_Scripts" };
             MetadaTableName = "changelog";
@@ -51,5 +53,13 @@ namespace Evolve
         }
 
         #endregion
+
+        private void Configure(string evolveConfigurationPath)
+        {
+            Check.FileExists(evolveConfigurationPath, nameof(evolveConfigurationPath));
+
+            IConfigurationProvider configurationProvider = ConfigurationFactoryProvider.GetProvider(evolveConfigurationPath);
+            configurationProvider.Configure(evolveConfigurationPath, this);
+        }
     }
 }

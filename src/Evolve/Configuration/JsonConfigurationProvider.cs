@@ -4,9 +4,9 @@ using System.Text;
 
 namespace Evolve.Configuration
 {
-    public class JsonConfigurationProvider : IConfigurationProvider
+    public class JsonConfigurationProvider : EvolveConfigurationProviderBase
     {
-        public void Configure(string evolveConfigurationPath, IEvolveConfiguration configuration)
+        protected override void Configure()
         {
             throw new NotImplementedException();
         }
