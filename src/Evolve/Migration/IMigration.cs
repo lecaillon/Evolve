@@ -6,5 +6,6 @@ namespace Evolve.Migration
 {
     interface IMigration
     {
+        // : IComparable 
     }
 }
