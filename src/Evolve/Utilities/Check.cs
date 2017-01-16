@@ -160,8 +160,7 @@ namespace Evolve.Utilities
         /// <param name="parameterName"> The name of the parameter to test. </param>
         /// <returns> The full path of the file tested and found. </returns>
         /// <exception cref="ArgumentNullException"> Throws ArgumentNullException if the path is null. </exception>
-        /// <exception cref="ArgumentException"> Throws ArgumentException if the path is empty. </exception>
-        /// <exception cref="FileNotFoundException"> Throws FileNotFoundException if the file is not found. </exception>
+        /// <exception cref="ArgumentException"> Throws ArgumentException (with an inner FileNotFoundException) if the file is not found. </exception>
         public static string FileExists(string filePath, string parameterName)
         {
             NotNullOrEmpty(filePath, parameterName);
@@ -170,7 +169,7 @@ namespace Evolve.Utilities
             {
                 NotNullOrEmpty(parameterName, nameof(parameterName));
 
-                throw new FileNotFoundException(FileNotFound, filePath);
+                throw new ArgumentException(FileNotFound, parameterName, new FileNotFoundException(FileNotFound, filePath));
             }
 
             return filePath;
