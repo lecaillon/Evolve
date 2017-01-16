@@ -8,7 +8,3 @@ namespace Evolve.DbSupport
     {
     }
 }
-
-// mouais sur dialect ... DbSupport c pas mal en fait ...
-// si SQLServerSchema existe il faut aussi un SQLServerMetadaTable
-// Quid de l'emplacement de IMetadata ?
