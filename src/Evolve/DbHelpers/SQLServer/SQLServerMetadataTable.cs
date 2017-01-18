@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Evolve.DbSupport
+namespace Evolve.DbHelpers.SQLServer
 {
-    class Dialect
+    class SQLServerMetadataTable
     {
     }
 }

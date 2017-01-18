@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Evolve.DbSupport
+namespace Evolve.DbHelpers
 {
-    class DialectFactory
+    public abstract class MetadataTable
     {
     }
 }
