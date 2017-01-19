@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Evolve.DbHelpers.SQLServer
+namespace Evolve.Dialect
 {
-    public class SQLServerHelper
+    public static class DatabaseHelperFactory
     {
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Evolve.Connection;
 using Evolve.Utilities;
 
-namespace Evolve.DbHelpers
+namespace Evolve.Dialect
 {
     public abstract class DatabaseHelper
     {
@@ -31,7 +31,7 @@ namespace Evolve.DbHelpers
             InternalRestoreCurrentSchema();
         }
 
-        public abstract SchemaHelper GetSchema(string schemaName);
+        public abstract Schema GetSchema(string schemaName);
 
         protected abstract string InternalGetCurrentSchemaName();
 

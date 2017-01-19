@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Evolve.DbHelpers
+namespace Evolve.Dialect
 {
     public abstract class MetadataTable
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Evolve.DbHelpers.SQLServer
+namespace Evolve.Dialect.SQLServer
 {
     class SQLServerSchema
     {

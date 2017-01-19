@@ -1,11 +1,10 @@
 ﻿using Evolve.Utilities;
-using System.Collections.Generic;
 
-namespace Evolve.DbHelpers
+namespace Evolve.Dialect
 {
-    public abstract class SchemaHelper
+    public abstract class Schema
     {
-        public SchemaHelper(string schemaName, DatabaseHelper databaseHelper)
+        public Schema(string schemaName, DatabaseHelper databaseHelper)
         {
             Check.NotNullOrEmpty(schemaName, nameof(schemaName));
             Check.NotNull(databaseHelper, nameof(databaseHelper));

@@ -11,6 +11,6 @@
     <PackageReference Include="System.Data.Common" Version="4.3.0" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="DbHelpers\PostgreSQL\" />
+    <Folder Include="Dialect\PostgreSQL\" />
   </ItemGroup>
 </Project>
