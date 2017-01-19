@@ -4,8 +4,7 @@ using System.Text;
 
 namespace Evolve.Migration
 {
-    interface IMigration
+    public class PendingMigration : Migration
     {
-        // : IComparable 
     }
 }
