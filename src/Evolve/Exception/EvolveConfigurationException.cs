@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Evolve.Configuration
+namespace Evolve
 {
     public class EvolveConfigurationException : Exception
     {
