@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Evolve.Migration
 {
-    public class Migration : IMigration
+    public class Migration
     {
         public Migration()
         {
