@@ -67,9 +67,6 @@ namespace Evolve.Migration
 
         public override int GetHashCode() => Version.GetHashCode();
 
-        public override string ToString()
-        {
-            return Version;
-        }
+        public override string ToString() => Version;
     }
 }
