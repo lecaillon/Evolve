@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Evolve.Migration
 {
-    public interface IMigration : IComparable
+    public interface IMigration
     {
         int? Id { get; set; }
 
