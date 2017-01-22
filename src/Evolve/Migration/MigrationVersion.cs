@@ -57,6 +57,18 @@ namespace Evolve.Migration
 
         public override bool Equals(object obj) => (CompareTo(obj as MigrationVersion) == 0);
 
+        public static bool operator ==(MigrationVersion operand1, MigrationVersion operand2)
+        {
+            if (ReferenceEquals(operand1, null))
+            {
+                return ReferenceEquals(operand2, null);
+            }
+
+            return operand1.Equals(operand2);
+        }
+
+        public static bool operator !=(MigrationVersion operand1, MigrationVersion operand2) => !(operand1 == operand2);
+
         public static bool operator >(MigrationVersion operand1, MigrationVersion operand2) => operand1.CompareTo(operand2) == 1;
 
         public static bool operator <(MigrationVersion operand1, MigrationVersion operand2) => operand1.CompareTo(operand2) == -1;

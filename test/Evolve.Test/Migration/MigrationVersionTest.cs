@@ -63,5 +63,23 @@ namespace Evolve.Test.Migration
             Assert.Equal("3.11.2", list[7].Version);
             Assert.Equal("3.12.1", list[8].Version);
         }
+
+        [Fact]
+        public void Version_comparaison_should_be_logical()
+        {
+            Assert.True(new MigrationVersion("1") == new MigrationVersion("1"));
+            Assert.True(new MigrationVersion("1.1.1.12") == new MigrationVersion("1.1.1.12"));
+
+            Assert.True(new MigrationVersion("1") != new MigrationVersion("1.0"));
+            Assert.True(new MigrationVersion("1.1") != new MigrationVersion("1.10"));
+
+            Assert.True(new MigrationVersion("1") < new MigrationVersion("2"));
+            Assert.True(new MigrationVersion("1") < new MigrationVersion("1.0"));
+            Assert.True(new MigrationVersion("1.1.1") < new MigrationVersion("1.1.2.0"));
+
+            Assert.True(new MigrationVersion("2") > new MigrationVersion("1"));
+            Assert.True(new MigrationVersion("1") > new MigrationVersion("0.5"));
+            Assert.True(new MigrationVersion("1.1.1") > new MigrationVersion("1.0.9"));
+        }
     }
 }

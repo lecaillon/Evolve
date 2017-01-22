@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Evolve.Utilities;
+using System;
 
 namespace Evolve.Migration
 {
@@ -8,14 +7,11 @@ namespace Evolve.Migration
     {
         private const string InvalidObjectType = "Object must be of type MigrationBase.";
 
-        public MigrationBase()
-        {
-
-        }
-
         public MigrationBase(string version, string description, string name)
         {
-
+            Description = Check.NotNullOrEmpty(version, nameof(description));
+            Name = Check.NotNullOrEmpty(version, nameof(name));
+            Version = new MigrationVersion(Check.NotNullOrEmpty(version, nameof(version)));
         }
 
         MigrationVersion Version { get; set; }
@@ -40,6 +36,18 @@ namespace Evolve.Migration
         }
 
         public override bool Equals(object obj) => (CompareTo(obj as MigrationBase) == 0);
+
+        public static bool operator ==(MigrationBase operand1, MigrationBase operand2)
+        {
+            if (ReferenceEquals(operand1, null))
+            {
+                return ReferenceEquals(operand2, null);
+            }
+
+            return operand1.Equals(operand2);
+        }
+
+        public static bool operator !=(MigrationBase operand1, MigrationBase operand2) => !(operand1 == operand2);
 
         public static bool operator >(MigrationBase operand1, MigrationBase operand2) => operand1.CompareTo(operand2) == 1;
 
