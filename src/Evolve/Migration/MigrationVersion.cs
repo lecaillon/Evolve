@@ -14,15 +14,15 @@ namespace Evolve.Migration
         {
             Check.NotNullOrEmpty(version, nameof(version));
             
-            Version = version.Replace('_', '.');
-            if (!MatchPattern.IsMatch(Version)) throw new EvolveConfigurationException();
+            Label = version.Replace('_', '.');
+            if (!MatchPattern.IsMatch(Label)) throw new EvolveConfigurationException();
 
-            VersionParts = Version.Split('.').Select(long.Parse).ToList();
+            VersionParts = Label.Split('.').Select(long.Parse).ToList();
         }
 
         public static Regex MatchPattern => new Regex("^[0-9]+(?:.[0-9]+)*$");
 
-        public string Version { get; private set; }
+        public string Label { get; private set; }
 
         public List<long> VersionParts { get; set; }
 
@@ -77,8 +77,8 @@ namespace Evolve.Migration
 
         public static bool operator <=(MigrationVersion operand1, MigrationVersion operand2) => operand1.CompareTo(operand2) <= 0;
 
-        public override int GetHashCode() => Version.GetHashCode();
+        public override int GetHashCode() => Label.GetHashCode();
 
-        public override string ToString() => Version;
+        public override string ToString() => Label;
     }
 }

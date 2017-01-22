@@ -53,15 +53,15 @@ namespace Evolve.Test.Migration
 
             list.Sort();
 
-            Assert.Equal("1", list[0].Version);
-            Assert.Equal("1.1", list[1].Version);
-            Assert.Equal("1.1.0", list[2].Version);
-            Assert.Equal("2", list[3].Version);
-            Assert.Equal("2.1.0", list[4].Version);
-            Assert.Equal("2.1.1", list[5].Version);
-            Assert.Equal("3.0", list[6].Version);
-            Assert.Equal("3.11.2", list[7].Version);
-            Assert.Equal("3.12.1", list[8].Version);
+            Assert.Equal("1", list[0].Label);
+            Assert.Equal("1.1", list[1].Label);
+            Assert.Equal("1.1.0", list[2].Label);
+            Assert.Equal("2", list[3].Label);
+            Assert.Equal("2.1.0", list[4].Label);
+            Assert.Equal("2.1.1", list[5].Label);
+            Assert.Equal("3.0", list[6].Label);
+            Assert.Equal("3.11.2", list[7].Label);
+            Assert.Equal("3.12.1", list[8].Label);
         }
 
         [Fact]
