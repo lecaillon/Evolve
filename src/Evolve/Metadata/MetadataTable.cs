@@ -5,21 +5,21 @@ namespace Evolve.Metadata
 {
     public abstract class MetadataTable : IEvolveMetadata
     {
-        public EndedMigration AddEndedMigration(MigrationScript migration)
+        public MigrationMetadata AddMigrationMetadata(MigrationScript migration)
         {
             CreateTableIfNotExists();
-            return InternalAddEndedMigration(migration);
+            return InternalAddMigrationMetadata(migration);
         }
 
-        public IEnumerable<EndedMigration> GetAllMigrations()
+        public IEnumerable<MigrationMetadata> GetAllMigrationMetadata()
         {
             CreateTableIfNotExists();
-            return InternalGetAllMigrations();
+            return InternalGetAllMigrationMetadata();
         }
 
-        protected abstract EndedMigration InternalAddEndedMigration(MigrationScript migration);
+        protected abstract MigrationMetadata InternalAddMigrationMetadata(MigrationScript migration);
 
-        protected abstract IEnumerable<EndedMigration> InternalGetAllMigrations();
+        protected abstract IEnumerable<MigrationMetadata> InternalGetAllMigrationMetadata();
 
         protected abstract void CreateTableIfNotExists();
     }

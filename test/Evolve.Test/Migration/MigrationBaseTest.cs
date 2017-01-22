@@ -11,11 +11,11 @@ namespace Evolve.Test.Migration
         {
             var list = new List<MigrationBase>
             {
-                new EndedMigration("2", "desc", "name"),      // 3
-                new EndedMigration("1.1", "desc", "name"),    // 1
-                new EndedMigration("3.12.1", "desc", "name"), // 8
-                new EndedMigration("1", "desc", "name"),      // 0
-                new EndedMigration("1.1.0", "desc", "name"),  // 2
+                new MigrationMetadata("2", "desc", "name"),      // 3
+                new MigrationMetadata("1.1", "desc", "name"),    // 1
+                new MigrationMetadata("3.12.1", "desc", "name"), // 8
+                new MigrationMetadata("1", "desc", "name"),      // 0
+                new MigrationMetadata("1.1.0", "desc", "name"),  // 2
                 new MigrationScript("2.1.0", "desc", "name"),  // 4
                 new MigrationScript("3.11.2", "desc", "name"), // 7
                 new MigrationScript("2.1.1", "desc", "name"),  // 5
@@ -38,18 +38,18 @@ namespace Evolve.Test.Migration
         [Fact]
         public void Migration_comparaison_should_be_logical()
         {
-            Assert.True(new EndedMigration("1", "desc", "name") == new MigrationScript("1", "desc", "name"));
-            Assert.True(new EndedMigration("1.1.1.12", "desc", "name") == new MigrationScript("1.1.1.12", "desc", "name"));
+            Assert.True(new MigrationMetadata("1", "desc", "name") == new MigrationScript("1", "desc", "name"));
+            Assert.True(new MigrationMetadata("1.1.1.12", "desc", "name") == new MigrationScript("1.1.1.12", "desc", "name"));
 
-            Assert.True(new EndedMigration("1", "desc", "name") != new EndedMigration("1.0", "desc", "name"));
+            Assert.True(new MigrationMetadata("1", "desc", "name") != new MigrationMetadata("1.0", "desc", "name"));
             Assert.True(new MigrationScript("1.1", "desc", "name") != new MigrationScript("1.10", "desc", "name"));
 
-            Assert.True(new EndedMigration("1", "desc", "name") < new EndedMigration("2", "desc", "name"));
-            Assert.True(new EndedMigration("1", "desc", "name") < new MigrationScript("1.0", "desc", "name"));
+            Assert.True(new MigrationMetadata("1", "desc", "name") < new MigrationMetadata("2", "desc", "name"));
+            Assert.True(new MigrationMetadata("1", "desc", "name") < new MigrationScript("1.0", "desc", "name"));
             Assert.True(new MigrationScript("1.1.1", "desc", "name") < new MigrationScript("1.1.2.0", "desc", "name"));
 
-            Assert.True(new EndedMigration("2", "desc", "name") > new EndedMigration("1", "desc", "name"));
-            Assert.True(new EndedMigration("1", "desc", "name") > new MigrationScript("0.5", "desc", "name"));
+            Assert.True(new MigrationMetadata("2", "desc", "name") > new MigrationMetadata("1", "desc", "name"));
+            Assert.True(new MigrationMetadata("1", "desc", "name") > new MigrationScript("0.5", "desc", "name"));
             Assert.True(new MigrationScript("1.1.1", "desc", "name") > new MigrationScript("1.0.9", "desc", "name"));
         }
     }

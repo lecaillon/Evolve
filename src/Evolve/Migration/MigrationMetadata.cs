@@ -4,9 +4,9 @@ using System.Text;
 
 namespace Evolve.Migration
 {
-    public class EndedMigration : MigrationBase
+    public class MigrationMetadata : MigrationBase
     {
-        public EndedMigration(string version, string description, string name) : base(version, description, name)
+        public MigrationMetadata(string version, string description, string name) : base(version, description, name)
         {
         }
 

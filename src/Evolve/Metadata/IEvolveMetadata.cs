@@ -5,8 +5,8 @@ namespace Evolve.Metadata
 {
     public interface IEvolveMetadata
     {
-        EndedMigration AddEndedMigration(MigrationScript migration);
+        MigrationMetadata AddMigrationMetadata(MigrationScript migration);
 
-        IEnumerable<EndedMigration> GetAllMigrations();
+        IEnumerable<MigrationMetadata> GetAllMigrationMetadata();
     }
 }
