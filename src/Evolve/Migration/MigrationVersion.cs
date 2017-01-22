@@ -9,13 +9,20 @@ namespace Evolve.Migration
     public sealed class MigrationVersion : IComparable<MigrationVersion>, IComparable
     {
         private const string InvalidObjectType = "Object must be of type MigrationVersion.";
+        private const string InvalidVersionPatternMatching = "Migration version {0} is invalid. Version must respect this regex: ^[0-9]+(?:.[0-9]+)*$";
 
+        /// <summary>
+        ///     Constructor.
+        /// </summary>
+        /// <param name="version"> Version of the script. Example: 1_1_0_11 </param>
+        /// <exception cref="EvolveConfigurationException"> Thrown when the format of the version is invalid. </exception>
         public MigrationVersion(string version)
         {
             Check.NotNullOrEmpty(version, nameof(version));
             
             Label = version.Replace('_', '.');
-            if (!MatchPattern.IsMatch(Label)) throw new EvolveConfigurationException();
+            if (!MatchPattern.IsMatch(Label))
+                throw new EvolveConfigurationException(string.Format(InvalidVersionPatternMatching, Label));
 
             VersionParts = Label.Split('.').Select(long.Parse).ToList();
         }
@@ -25,6 +32,8 @@ namespace Evolve.Migration
         public string Label { get; private set; }
 
         public List<long> VersionParts { get; set; }
+
+        #region IComparable
 
         public int CompareTo(MigrationVersion other)
         {
@@ -55,6 +64,10 @@ namespace Evolve.Migration
             return CompareTo(obj as MigrationVersion);
         }
 
+        #endregion
+
+        #region Operators
+
         public override bool Equals(object obj) => (CompareTo(obj as MigrationVersion) == 0);
 
         public static bool operator ==(MigrationVersion operand1, MigrationVersion operand2)
@@ -76,6 +89,8 @@ namespace Evolve.Migration
         public static bool operator >=(MigrationVersion operand1, MigrationVersion operand2) => operand1.CompareTo(operand2) >= 0;
 
         public static bool operator <=(MigrationVersion operand1, MigrationVersion operand2) => operand1.CompareTo(operand2) <= 0;
+
+        #endregion
 
         public override int GetHashCode() => Label.GetHashCode();
 

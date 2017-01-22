@@ -8,6 +8,7 @@ namespace Evolve.Migration
     {
         public PendingMigration(string version, string description, string name) : base(version, description, name)
         {
+            // penser à gérer les exceptions de configuration
         }
 
         public string Path { get; set; }
