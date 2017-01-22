@@ -34,5 +34,23 @@ namespace Evolve.Test.Migration
             Assert.Equal("3.11.2", list[7].Version.Label);
             Assert.Equal("3.12.1", list[8].Version.Label);
         }
+
+        [Fact]
+        public void Migration_comparaison_should_be_logical()
+        {
+            Assert.True(new EndedMigration("1", "desc", "name") == new PendingMigration("1", "desc", "name"));
+            Assert.True(new EndedMigration("1.1.1.12", "desc", "name") == new PendingMigration("1.1.1.12", "desc", "name"));
+
+            Assert.True(new EndedMigration("1", "desc", "name") != new EndedMigration("1.0", "desc", "name"));
+            Assert.True(new PendingMigration("1.1", "desc", "name") != new PendingMigration("1.10", "desc", "name"));
+
+            Assert.True(new EndedMigration("1", "desc", "name") < new EndedMigration("2", "desc", "name"));
+            Assert.True(new EndedMigration("1", "desc", "name") < new PendingMigration("1.0", "desc", "name"));
+            Assert.True(new PendingMigration("1.1.1", "desc", "name") < new PendingMigration("1.1.2.0", "desc", "name"));
+
+            Assert.True(new EndedMigration("2", "desc", "name") > new EndedMigration("1", "desc", "name"));
+            Assert.True(new EndedMigration("1", "desc", "name") > new PendingMigration("0.5", "desc", "name"));
+            Assert.True(new PendingMigration("1.1.1", "desc", "name") > new PendingMigration("1.0.9", "desc", "name"));
+        }
     }
 }
