@@ -1,8 +1,7 @@
-﻿using Evolve.Metadata;
-using Evolve.Migration;
+﻿using Evolve.Migration;
 using System.Collections.Generic;
 
-namespace Evolve.Dialect
+namespace Evolve.Metadata
 {
     public abstract class MetadataTable : IEvolveMetadata
     {
