@@ -4,7 +4,7 @@ namespace Evolve.Migration
 {
     public interface IMigrationMetadata
     {
-        EndedMigration AddEndedMigration(PendingMigration migration);
+        EndedMigration AddEndedMigration(MigrationScript migration);
 
         IEnumerable<EndedMigration> GetAllMigrations();
     }

@@ -4,9 +4,9 @@ using System.Text;
 
 namespace Evolve.Migration
 {
-    public class PendingMigration : MigrationBase
+    public class MigrationScript : MigrationBase
     {
-        public PendingMigration(string version, string description, string name) : base(version, description, name)
+        public MigrationScript(string version, string description, string name) : base(version, description, name)
         {
             // penser à gérer les exceptions de configuration
         }

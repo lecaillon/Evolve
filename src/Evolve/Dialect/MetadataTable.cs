@@ -7,7 +7,7 @@ namespace Evolve.Dialect
 {
     public abstract class MetadataTable : IMigrationMetadata
     {
-        public EndedMigration AddEndedMigration(PendingMigration migration)
+        public EndedMigration AddEndedMigration(MigrationScript migration)
         {
             CreateTableIfNotExists();
             return InternalAddEndedMigration(migration);
@@ -19,7 +19,7 @@ namespace Evolve.Dialect
             return InternalGetAllMigrations();
         }
 
-        protected abstract EndedMigration InternalAddEndedMigration(PendingMigration migration);
+        protected abstract EndedMigration InternalAddEndedMigration(MigrationScript migration);
 
         protected abstract IEnumerable<EndedMigration> InternalGetAllMigrations();
 
