@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using Evolve.Migration;
+using System.Collections.Generic;
 
-namespace Evolve.Migration
+namespace Evolve.Metadata
 {
-    public interface IMigrationMetadata
+    public interface IEvolveMetadata
     {
         EndedMigration AddEndedMigration(MigrationScript migration);
 

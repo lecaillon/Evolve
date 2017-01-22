@@ -1,11 +1,10 @@
-﻿using Evolve.Migration;
-using System;
+﻿using Evolve.Metadata;
+using Evolve.Migration;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Evolve.Dialect
 {
-    public abstract class MetadataTable : IMigrationMetadata
+    public abstract class MetadataTable : IEvolveMetadata
     {
         public EndedMigration AddEndedMigration(MigrationScript migration)
         {
