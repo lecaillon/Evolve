@@ -28,6 +28,9 @@ namespace Evolve.MsBuild
 //<UsingTask TaskName = "Evolve.MsBuild.EvolveBoot" AssemblyFile="..\..\src\Evolve\bin\Debug\netstandard1.3\Evolve.dll" />
 //<Target Name = "AfterBuild" >
 //  < EvolveBoot TargetPath="$(TargetPath)" />
-//</Target>*
+//</Target>
 
 // Sql_Scripts
+
+// Use Directory.SetCurrentDirectory($TargetDir); to mimic the comportment of the default 
+// FileMigrationLoader new DirectoryInfo(@"c:\test").FullName wheen launching from MsBuild
