@@ -9,8 +9,8 @@ namespace Evolve.Migration
 
         public MigrationBase(string version, string description, string name)
         {
-            Description = Check.NotNullOrEmpty(version, nameof(description));
-            Name = Check.NotNullOrEmpty(version, nameof(name));
+            Description = Check.NotNullOrEmpty(description, nameof(description));
+            Name = Check.NotNullOrEmpty(name, nameof(name));
             Version = new MigrationVersion(Check.NotNullOrEmpty(version, nameof(version)));
         }
 
