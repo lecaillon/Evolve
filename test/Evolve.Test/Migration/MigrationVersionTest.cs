@@ -5,6 +5,10 @@ using Xunit;
 
 namespace Evolve.Test.Migration
 {
+    /// <summary>
+    /// Use [Theory]
+    /// https://xunit.github.io/docs/getting-started-desktop.html#write-first-theory
+    /// </summary>
     public class MigrationVersionTest
     {
         [Fact]

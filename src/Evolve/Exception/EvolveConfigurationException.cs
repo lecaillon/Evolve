@@ -2,7 +2,7 @@
 
 namespace Evolve
 {
-    public class EvolveConfigurationException : Exception
+    public class EvolveConfigurationException : EvolveException
     {
         public EvolveConfigurationException() : base() { }
 
