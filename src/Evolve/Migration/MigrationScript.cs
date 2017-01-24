@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Evolve.Utilities;
 
 namespace Evolve.Migration
 {
     public class MigrationScript : MigrationBase
     {
-        public MigrationScript(string version, string description, string name) : base(version, description, name)
+        public MigrationScript(string path, string version, string description) 
+            : base(version, description, System.IO.Path.GetFileNameWithoutExtension(Check.FileExists(path, nameof(path))))
         {
-            // penser à gérer les exceptions de configuration
+            Path = path;
         }
 
         public string Path { get; set; }
