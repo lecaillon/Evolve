@@ -9,7 +9,7 @@ namespace Evolve.Configuration
     ///     </para>
     ///     <para>
     ///         Sql migrations have the following file name structure: prefixVERSIONseparatorDESCRIPTIONsuffix
-    ///         Example: V1_3_1__Migration-description.sql
+    ///         Example: V1_3_1__Migration_description.sql
     ///     </para>
     ///     <para>
     ///         Placeholders are strings to replace in sql migrations.

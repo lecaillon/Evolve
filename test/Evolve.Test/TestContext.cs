@@ -8,11 +8,17 @@ namespace Evolve.Test
         static TestContext()
         {
             ResourcesDirectory = Path.Combine(Path.GetDirectoryName(typeof(TestContext).GetTypeInfo().Assembly.Location), "Resources");
-            ValidMigrationScriptPath = Path.Combine(ResourcesDirectory, "V1_3_1__Migration-description.sql");
+            ValidMigrationScriptPath = Path.Combine(ResourcesDirectory, "V1_3_1__Migration_description.sql");
         }
 
         public static string ResourcesDirectory { get; private set; }
 
         public static string ValidMigrationScriptPath { get; private set; }
+
+        public static string SqlMigrationPrefix => "V";
+
+        public static string SqlMigrationSeparator => "__";
+
+        public static string SqlMigrationSuffix => ".sql";
     }
 }
