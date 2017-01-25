@@ -6,7 +6,7 @@ namespace Evolve.Test.Migration
 {
     public class MigrationBaseTest
     {
-        [Fact]
+        [Fact(DisplayName = "Migrations_should_be_well_ordered")]
         public void Migrations_should_be_well_ordered()
         {
             var list = new List<MigrationBase>
@@ -35,7 +35,7 @@ namespace Evolve.Test.Migration
             Assert.Equal("3.12.1", list[8].Version.Label);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Migration_comparaison_should_be_logical")]
         public void Migration_comparaison_should_be_logical()
         {
             Assert.True(new MigrationMetadata("1", "desc", "name") == new MigrationScript(TestContext.ValidMigrationScriptPath, "1", "desc"));
