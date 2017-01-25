@@ -5,41 +5,29 @@ using Xunit;
 
 namespace Evolve.Test.Migration
 {
-    /// <summary>
-    /// Use [Theory]
-    /// https://xunit.github.io/docs/getting-started-desktop.html#write-first-theory
-    /// </summary>
     public class MigrationVersionTest
     {
-        [Fact]
-        public void Can_get_new_migration_version()
+        [Theory(DisplayName = "Can_get_new_migration_version")]
+        [InlineData("1_2_3_4")]
+        [InlineData("1_2")]
+        [InlineData("1_20_31_4000")]
+        [InlineData("1")]
+        public void Can_get_new_migration_version(string version)
         {
-            string version1 = "1_2_3_4";
-            string version2 = "1_2";
-            string version3 = "1.20.31.4000";
-            string version4 = "1";
-
-            Assert.Equal(new MigrationVersion(version1).VersionParts, version1.Split('_').Select(long.Parse).ToList());
-            Assert.Equal(new MigrationVersion(version2).VersionParts, version2.Split('_').Select(long.Parse).ToList());
-            Assert.Equal(new MigrationVersion(version3).VersionParts, version3.Split('.').Select(long.Parse).ToList());
-            Assert.Equal(new MigrationVersion(version4).VersionParts, version4.Split('_').Select(long.Parse).ToList());
+            Assert.Equal(new MigrationVersion(version).VersionParts, version.Split('_').Select(long.Parse).ToList());
         }
 
-        [Fact]
-        public void When_version_format_is_incorrect_Throws_EvolveConfigurationException()
+        [Theory(DisplayName = "When_version_format_is_incorrect_Throws_EvolveConfigurationException")]
+        [InlineData("1_2_3__4")]
+        [InlineData("1_2_3_4_")]
+        [InlineData(".1.2.3.4")]
+        [InlineData("1.2.3.a")]
+        public void When_version_format_is_incorrect_Throws_EvolveConfigurationException(string version)
         {
-            string version1 = "1_2_3__4";
-            string version2 = "1_2_3_4_";
-            string version3 = ".1.2.3.4";
-            string version4 = "1.2.3.a";
-
-            Assert.Throws<EvolveConfigurationException>(() => new MigrationVersion(version1));
-            Assert.Throws<EvolveConfigurationException>(() => new MigrationVersion(version2));
-            Assert.Throws<EvolveConfigurationException>(() => new MigrationVersion(version3));
-            Assert.Throws<EvolveConfigurationException>(() => new MigrationVersion(version4));
+            Assert.Throws<EvolveConfigurationException>(() => new MigrationVersion(version));
         }
 
-        [Fact]
+        [Fact(DisplayName = "Versions_should_be_well_ordered")]
         public void Versions_should_be_well_ordered()
         {
             var list = new List<MigrationVersion>
@@ -68,7 +56,7 @@ namespace Evolve.Test.Migration
             Assert.Equal("3.12.1", list[8].Label);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Version_comparaison_should_be_logical")]
         public void Version_comparaison_should_be_logical()
         {
             Assert.True(new MigrationVersion("1") == new MigrationVersion("1"));
