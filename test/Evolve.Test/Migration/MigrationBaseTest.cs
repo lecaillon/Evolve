@@ -16,10 +16,10 @@ namespace Evolve.Test.Migration
                 new MigrationMetadata("3.12.1", "desc", "name"), // 8
                 new MigrationMetadata("1", "desc", "name"),      // 0
                 new MigrationMetadata("1.1.0", "desc", "name"),  // 2
-                new MigrationScript("2.1.0", "desc", "name"),  // 4
-                new MigrationScript("3.11.2", "desc", "name"), // 7
-                new MigrationScript("2.1.1", "desc", "name"),  // 5
-                new MigrationScript("3.0", "desc", "name"),    // 6
+                new MigrationScript(TestContext.ValidMigrationScriptPath, "2.1.0", "desc"),  // 4
+                new MigrationScript(TestContext.ValidMigrationScriptPath, "3.11.2", "desc"), // 7
+                new MigrationScript(TestContext.ValidMigrationScriptPath, "2.1.1", "desc"),  // 5
+                new MigrationScript(TestContext.ValidMigrationScriptPath, "3.0", "desc"),    // 6
             };
 
             list.Sort();
@@ -38,19 +38,19 @@ namespace Evolve.Test.Migration
         [Fact]
         public void Migration_comparaison_should_be_logical()
         {
-            Assert.True(new MigrationMetadata("1", "desc", "name") == new MigrationScript("1", "desc", "name"));
-            Assert.True(new MigrationMetadata("1.1.1.12", "desc", "name") == new MigrationScript("1.1.1.12", "desc", "name"));
+            Assert.True(new MigrationMetadata("1", "desc", "name") == new MigrationScript(TestContext.ValidMigrationScriptPath, "1", "desc"));
+            Assert.True(new MigrationMetadata("1.1.1.12", "desc", "name") == new MigrationScript(TestContext.ValidMigrationScriptPath, "1.1.1.12", "desc"));
 
             Assert.True(new MigrationMetadata("1", "desc", "name") != new MigrationMetadata("1.0", "desc", "name"));
-            Assert.True(new MigrationScript("1.1", "desc", "name") != new MigrationScript("1.10", "desc", "name"));
+            Assert.True(new MigrationScript(TestContext.ValidMigrationScriptPath, "1.1", "desc") != new MigrationScript(TestContext.ValidMigrationScriptPath, "1.10", "desc"));
 
             Assert.True(new MigrationMetadata("1", "desc", "name") < new MigrationMetadata("2", "desc", "name"));
-            Assert.True(new MigrationMetadata("1", "desc", "name") < new MigrationScript("1.0", "desc", "name"));
-            Assert.True(new MigrationScript("1.1.1", "desc", "name") < new MigrationScript("1.1.2.0", "desc", "name"));
+            Assert.True(new MigrationMetadata("1", "desc", "name") < new MigrationScript(TestContext.ValidMigrationScriptPath, "1.0", "desc"));
+            Assert.True(new MigrationScript(TestContext.ValidMigrationScriptPath, "1.1.1", "desc") < new MigrationScript(TestContext.ValidMigrationScriptPath, "1.1.2.0", "desc"));
 
             Assert.True(new MigrationMetadata("2", "desc", "name") > new MigrationMetadata("1", "desc", "name"));
-            Assert.True(new MigrationMetadata("1", "desc", "name") > new MigrationScript("0.5", "desc", "name"));
-            Assert.True(new MigrationScript("1.1.1", "desc", "name") > new MigrationScript("1.0.9", "desc", "name"));
+            Assert.True(new MigrationMetadata("1", "desc", "name") > new MigrationScript(TestContext.ValidMigrationScriptPath, "0.5", "desc"));
+            Assert.True(new MigrationScript(TestContext.ValidMigrationScriptPath, "1.1.1", "desc") > new MigrationScript(TestContext.ValidMigrationScriptPath, "1.0.9", "desc"));
         }
     }
 }
