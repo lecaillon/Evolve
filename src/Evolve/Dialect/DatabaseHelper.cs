@@ -6,6 +6,13 @@ using Evolve.Utilities;
 
 namespace Evolve.Dialect
 {
+    /// <summary>
+    /// 
+    /// 
+    ///     Ajouter un message aux exceptions de la classe
+    /// 
+    /// 
+    /// </summary>
     public abstract class DatabaseHelper
     {
         public DatabaseHelper(IConnectionProvider connectionProvider)
@@ -48,14 +55,14 @@ namespace Evolve.Dialect
 
         #region Query helper
 
-        public virtual long QueryForLong(string sql) => (long)ExecuteScalar(Connection, sql);
+        public virtual long QueryForLong(string sql, IDbConnection connection = null) => (long)ExecuteScalar(connection ?? this.Connection, sql);
 
-        public virtual string QueryForString(string sql) => (string)ExecuteScalar(Connection, sql);
+        public virtual string QueryForString(string sql, IDbConnection connection = null) => (string)ExecuteScalar(connection ?? this.Connection, sql);
 
-        public virtual IEnumerable<string> QueryForListOfString(string sql)
+        public virtual IEnumerable<string> QueryForListOfString(string sql, IDbConnection connection = null)
         {
             var list = new List<string>();
-            using (var reader = (IDataReader)ExecuteReader(Connection, sql))
+            using (var reader = (IDataReader)ExecuteReader(connection ?? this.Connection, sql))
             {
                 while (reader.Read())
                 {
