@@ -6,13 +6,6 @@ using Evolve.Utilities;
 
 namespace Evolve.Dialect
 {
-    /// <summary>
-    /// 
-    /// 
-    ///     Ajouter un message aux exceptions de la classe
-    /// 
-    /// 
-    /// </summary>
     public abstract class DatabaseHelper
     {
         public DatabaseHelper(IConnectionProvider connectionProvider)
@@ -50,102 +43,6 @@ namespace Evolve.Dialect
         protected abstract string InternalGetCurrentSchemaName();
 
         protected abstract string InternalRestoreCurrentSchema();
-
-        #endregion
-
-        #region Query helper
-
-        public virtual long QueryForLong(string sql, IDbConnection connection = null) => (long)ExecuteScalar(connection ?? this.Connection, sql);
-
-        public virtual string QueryForString(string sql, IDbConnection connection = null) => (string)ExecuteScalar(connection ?? this.Connection, sql);
-
-        public virtual IEnumerable<string> QueryForListOfString(string sql, IDbConnection connection = null)
-        {
-            var list = new List<string>();
-            using (var reader = (IDataReader)ExecuteReader(connection ?? this.Connection, sql))
-            {
-                while (reader.Read())
-                {
-                    list.Add(reader[0] is DBNull ? null : reader[0].ToString());
-                }
-            }
-
-            return list;
-        }
-
-        protected int ExecuteNonQuery(IDbConnection connection, string sql, IDbTransaction transaction = null)
-            => (int)Execute(connection, sql, transaction, nameof(ExecuteNonQuery));
-
-        protected object ExecuteScalar(IDbConnection connection, string sql, IDbTransaction transaction = null)
-            => Execute(connection, sql, transaction, nameof(ExecuteScalar));
-
-        protected object ExecuteReader(IDbConnection connection, string sql, IDbTransaction transaction = null)
-            => Execute(connection, sql, transaction, nameof(ExecuteReader));
-
-        protected object Execute(IDbConnection connection, string sql, IDbTransaction transaction, string executeMethod)
-        {
-            Check.NotNull(connection, nameof(connection));
-            Check.NotNullOrEmpty(sql, nameof(sql));
-            Check.NotNullOrEmpty(executeMethod, nameof(executeMethod));
-
-            bool wasClosed = connection.State == ConnectionState.Closed;
-            var dbCommand = connection.CreateCommand();
-            dbCommand.CommandText = sql;
-            dbCommand.Transaction = transaction;
-
-            object result;
-            try
-            {
-                if (wasClosed) connection.Open();
-
-                switch (executeMethod)
-                {
-                    case nameof(ExecuteNonQuery):
-                    {
-                        using (dbCommand)
-                        {
-                            result = dbCommand.ExecuteNonQuery();
-                        }
-
-                        break;
-                    }
-                    case nameof(ExecuteScalar):
-                    {
-                        using (dbCommand)
-                        {
-                            result = dbCommand.ExecuteScalar();
-                        }
-
-                        break;
-                    }
-                    case nameof(ExecuteReader):
-                    {
-                        using (dbCommand)
-                        {
-                            result = dbCommand.ExecuteReader();
-                        }
-
-                        break;
-                    }
-                    default:
-                    {
-                        throw new NotSupportedException();
-                    }
-                }
-
-                if (wasClosed)
-                {
-                    connection.Close();
-                }
-            }
-            catch (Exception ex)
-            {
-                connection.Close();
-                throw new EvolveException("", ex);
-            }
-
-            return result;
-        }
 
         #endregion
     }
