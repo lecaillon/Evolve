@@ -7,6 +7,8 @@ namespace Evolve.Extensions
 {
     public static class DbConnectionExtensions
     {
+        private const string CommandExecutionError = "DbCommand ({0}) error: {1}";
+
         public static long QueryForLong(this IDbConnection connection, string sql) => (long)ExecuteScalar(connection, sql);
 
         public static string QueryForString(this IDbConnection connection, string sql) => (string)ExecuteScalar(connection, sql);
@@ -93,7 +95,7 @@ namespace Evolve.Extensions
             catch (Exception ex)
             {
                 connection.Close();
-                throw new EvolveException("", ex);
+                throw new EvolveException(string.Format(CommandExecutionError, executeMethod, sql), ex);
             }
 
             return result;
