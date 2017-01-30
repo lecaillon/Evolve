@@ -1,8 +1,8 @@
 ﻿using System.Data;
-using Evolve.Extensions;
 using Microsoft.Data.Sqlite;
 using Xunit;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Evolve.Test.Extensions
 {
@@ -31,9 +31,25 @@ namespace Evolve.Test.Extensions
         [Fact(DisplayName = "QueryForListOfString_works")]
         public void QueryForListOfString_works()
         {
+            var expected = new List<string> { "azerty", "qwerty" };
+            string sql = "SELECT 'azerty' UNION SELECT 'qwerty';";
+
             using (var connection = new SqliteConnection("Data Source=:memory:"))
             {
-                Assert.Equal(new List<string> { "azerty", "qwerty" }, DbConnectionExtensions.QueryForListOfString(connection, "SELECT 'azerty' UNION SELECT 'qwerty';"));
+                Assert.Equal(expected, DbConnectionExtensions.QueryForListOfString(connection, sql));
+                Assert.True(connection.State == ConnectionState.Closed);
+            }
+        }
+
+        [Fact(DisplayName = "QueryForListOfT_works")]
+        public void QueryForListOfT_works()
+        {
+            var expected = new[] { new { Item1 = "azerty", Item2 = "qwerty" } }.ToList();
+            string sql = "SELECT 'azerty','qwerty';";
+
+            using (var connection = new SqliteConnection("Data Source=:memory:"))
+            {
+                Assert.Equal(expected, DbConnectionExtensions.QueryForListOfT(connection, sql, (r) => new { Item1 = r.GetString(0), Item2 = r.GetString(1) }));
                 Assert.True(connection.State == ConnectionState.Closed);
             }
         }

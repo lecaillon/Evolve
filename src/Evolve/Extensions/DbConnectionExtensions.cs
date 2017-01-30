@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using Evolve.Utilities;
 
-namespace Evolve.Extensions
+namespace Evolve
 {
     public static class DbConnectionExtensions
     {
@@ -27,7 +27,20 @@ namespace Evolve.Extensions
             return list;
         }
 
-        static int ExecuteNonQuery(IDbConnection connection, string sql, IDbTransaction transaction = null)
+        public static IEnumerable<T> QueryForListOfT<T>(this IDbConnection connection, string sql, Func<IDataReader, T> map)
+        {
+            Check.NotNull(map, nameof(map));
+
+            using (var reader = (IDataReader)ExecuteReader(connection, sql))
+            {
+                while (reader.Read())
+                {
+                    yield return map(reader);
+                }
+            }
+        }
+
+        public static int ExecuteNonQuery(this IDbConnection connection, string sql, IDbTransaction transaction = null)
             => (int)Execute(connection, sql, transaction, nameof(ExecuteNonQuery));
 
         static object ExecuteScalar(IDbConnection connection, string sql, IDbTransaction transaction = null)
