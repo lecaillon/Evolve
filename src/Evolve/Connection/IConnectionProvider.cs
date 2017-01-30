@@ -1,7 +1,6 @@
 ﻿using Evolve.Configuration;
 using Evolve.Driver;
 using System;
-using System.Data;
 
 namespace Evolve.Connection
 {
@@ -17,20 +16,14 @@ namespace Evolve.Connection
         void Configure(IEvolveConfiguration configuration);
 
         /// <summary>
-        ///     Dispose of a used <see cref="IDbConnection"/>
-        /// </summary>
-        /// <param name="cnx"> The connection to clean up. </param>
-        void CloseConnection(IDbConnection cnx);
-
-        /// <summary>
         ///     Gets the <see cref="IDriver"/> used to interact with the database.
         /// </summary>
         IDriver Driver { get; }
 
         /// <summary>
-        ///     Returns an open <see cref="IDbConnection"/>.
+        ///     Returns a <see cref="IWrappedConnection"/>.
         /// </summary>
-        /// <returns> An opened <see cref="IDbConnection"/>. </returns>
-        IDbConnection GetConnection();
+        /// <returns> A <see cref="IWrappedConnection"/>. </returns>
+        IWrappedConnection GetConnection();
     }
 }

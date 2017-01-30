@@ -18,7 +18,7 @@ namespace Evolve.Dialect
 
         public IConnectionProvider ConnectionProvider { get; private set; }
 
-        protected IDbConnection Connection => ConnectionProvider.GetConnection();
+        public IWrappedConnection WrappedConnection => ConnectionProvider.GetConnection();
 
         public abstract string DatabaseName { get; protected set; }
 
