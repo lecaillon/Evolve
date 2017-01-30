@@ -8,7 +8,7 @@ namespace Evolve.Test.Extensions
 {
     public class DbConnectionExtensionsTest
     {
-        [Fact(DisplayName = "QueryForLong works")]
+        [Fact(DisplayName = "QueryForLong_works")]
         public void QueryForLong_works()
         {
             using (var connection = new SqliteConnection("Data Source=:memory:"))
@@ -18,7 +18,7 @@ namespace Evolve.Test.Extensions
             }
         }
 
-        [Fact(DisplayName = "QueryForString works")]
+        [Fact(DisplayName = "QueryForString_works")]
         public void QueryForString_works()
         {
             using (var connection = new SqliteConnection("Data Source=:memory:"))
@@ -28,7 +28,7 @@ namespace Evolve.Test.Extensions
             }
         }
 
-        [Fact(DisplayName = "QueryForListOfString works")]
+        [Fact(DisplayName = "QueryForListOfString_works")]
         public void QueryForListOfString_works()
         {
             using (var connection = new SqliteConnection("Data Source=:memory:"))
