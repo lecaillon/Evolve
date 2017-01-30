@@ -1,60 +1,33 @@
-﻿using Evolve.Utilities;
+﻿using Evolve.Connection;
+using Evolve.Utilities;
 
 namespace Evolve.Dialect
 {
     public abstract class Schema
     {
-        public Schema(string schemaName, DatabaseHelper databaseHelper)
+        protected DatabaseHelper _dbHelper;
+        protected IWrappedConnection _wrappedConnection;
+
+        public Schema(string schemaName, DatabaseHelper dbHelper)
         {
             Check.NotNullOrEmpty(schemaName, nameof(schemaName));
-            Check.NotNull(databaseHelper, nameof(databaseHelper));
+            Check.NotNull(dbHelper, nameof(dbHelper));
 
             Name = schemaName;
-            DatabaseHelper = databaseHelper;
+            _dbHelper = dbHelper;
+            _wrappedConnection = dbHelper.WrappedConnection;
         }
 
         public string Name { get; private set; }
 
-        protected DatabaseHelper DatabaseHelper { get; private set; }
+        protected abstract bool IsExists();
 
-        public bool IsExists()
-        {
-            // + gestion exception
-            return InternalIsExists();
-        }
+        protected abstract bool IsEmpty();
 
-        public bool IsEmpty()
-        {
-            // + gestion exception
-            return InternalIsEmpty();
-        }
+        protected abstract bool Create();
 
-        public void Create()
-        {
-            // + gestion exception
-            InternalCreate();
-        }
+        protected abstract bool Clean();
 
-        public void Clean()
-        {
-            // + gestion exception
-            InternalClean();
-        }
-
-        public void Drop()
-        {
-            // + gestion exception
-            InternalDrop();
-        }
-
-        protected abstract bool InternalIsExists();
-
-        protected abstract bool InternalIsEmpty();
-
-        protected abstract bool InternalCreate();
-
-        protected abstract bool InternalClean();
-
-        protected abstract bool InternalDrop();
+        protected abstract bool Drop();
     }
 }
