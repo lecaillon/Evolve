@@ -59,7 +59,7 @@ namespace Evolve.Dialect.SQLServer
             CleanFunctions();
             CleanTypes();
             CleanSynonyms();
-            CleanSequences(); // SELECT CAST(LEFT(CAST(SERVERPROPERTY ('productversion') as VARCHAR), 2) as int)
+            CleanSequences(); // SQLServer >= 11
 
             return true;
         }
@@ -155,6 +155,15 @@ namespace Evolve.Dialect.SQLServer
 
         private void CleanSequences()
         {
+            string sqlversion = "SELECT CAST (CASE WHEN CAST(SERVERPROPERTY ('productversion') as VARCHAR) LIKE '8%' THEN 8 " +
+                                                  "WHEN CAST(SERVERPROPERTY ('productversion') as VARCHAR) LIKE '9%' THEN 9 " +
+                                                  "WHEN CAST(SERVERPROPERTY ('productversion') as VARCHAR) LIKE '10%' THEN 10 " +
+                                                  "ELSE CAST(LEFT(CAST(SERVERPROPERTY ('productversion') as VARCHAR), 2) as int) " +
+                                             "END AS int)";
+
+            if (_wrappedConnection.DbConnection.QueryForLong(sqlversion) < 11)
+                return;
+
             string sql = $"SELECT sequence_name FROM INFORMATION_SCHEMA.SEQUENCES WHERE sequence_schema = '{Name}'";
             _wrappedConnection.DbConnection.QueryForListOfString(sql).ToList().ForEach(s =>
             {
