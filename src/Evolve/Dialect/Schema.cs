@@ -10,11 +10,8 @@ namespace Evolve.Dialect
 
         public Schema(string schemaName, DatabaseHelper dbHelper)
         {
-            Check.NotNullOrEmpty(schemaName, nameof(schemaName));
-            Check.NotNull(dbHelper, nameof(dbHelper));
-
-            Name = schemaName;
-            _dbHelper = dbHelper;
+            Name = Check.NotNullOrEmpty(schemaName, nameof(schemaName));
+            _dbHelper = Check.NotNull(dbHelper, nameof(dbHelper));
             _wrappedConnection = dbHelper.WrappedConnection;
         }
 

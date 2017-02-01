@@ -10,9 +10,7 @@ namespace Evolve.Dialect
     {
         public DatabaseHelper(IConnectionProvider connectionProvider)
         {
-            Check.NotNull(connectionProvider, nameof(connectionProvider));
-
-            ConnectionProvider = connectionProvider;
+            ConnectionProvider = Check.NotNull(connectionProvider, nameof(connectionProvider));
             OriginalSchemaName = InternalGetCurrentSchemaName();
         }
 
