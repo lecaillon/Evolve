@@ -12,7 +12,7 @@ namespace Evolve.Test.Dialect.SQLite
         [Fact(DisplayName = "blah")]
         public void blah()
         {
-            string script = File.ReadAllText(@"C:\Users\Phil-Dev\Downloads\ChinookDatabase1.4_Sqlite\Chinook_Sqlite_AutoIncrementPKs.sql");
+            string script = File.ReadAllText(TestContext.ChinookScriptPath);
 
             using (var connection = new SqliteConnection("Data Source=:memory:"))
             {
@@ -21,6 +21,17 @@ namespace Evolve.Test.Dialect.SQLite
                 {
                     command.CommandText = script;
                     command.ExecuteNonQuery();
+
+                    command.CommandText = "SELECT tbl_name FROM \"main\".sqlite_master WHERE type = 'table'";
+                    List<string> tables = new List<string>();
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            tables.Add(reader.GetString(0));
+                        }
+                    }
+
                 }
             }
         }

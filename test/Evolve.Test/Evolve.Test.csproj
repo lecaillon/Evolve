@@ -13,6 +13,9 @@
     <ProjectReference Include="..\..\src\Evolve\Evolve.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Chinook_Sqlite.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Resources\V1_3_1__Migration_description.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
