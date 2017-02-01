@@ -1,22 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using Evolve.Connection;
+﻿using Evolve.Connection;
 using Evolve.Utilities;
 
 namespace Evolve.Dialect
 {
     public abstract class DatabaseHelper
     {
-        public DatabaseHelper(IConnectionProvider connectionProvider)
+        public DatabaseHelper(IWrappedConnection wrappedConnection)
         {
-            ConnectionProvider = Check.NotNull(connectionProvider, nameof(connectionProvider));
+            WrappedConnection = Check.NotNull(wrappedConnection, nameof(wrappedConnection));
             OriginalSchemaName = InternalGetCurrentSchemaName();
         }
 
-        public IConnectionProvider ConnectionProvider { get; private set; }
-
-        public IWrappedConnection WrappedConnection => ConnectionProvider.GetConnection();
+        public IWrappedConnection WrappedConnection { get; private set; }
 
         public abstract string DatabaseName { get; protected set; }
 
