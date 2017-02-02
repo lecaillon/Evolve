@@ -16,11 +16,6 @@ namespace Evolve.Connection
         IDbTransaction CurrentTx { get; }
 
         /// <summary>
-        ///     Gets or sets the timeout for executing a command against the database.
-        /// </summary>
-        int? CommandTimeout { get; set; }
-
-        /// <summary>
         ///     Opens the connection to the database.
         /// </summary>
         void Open();

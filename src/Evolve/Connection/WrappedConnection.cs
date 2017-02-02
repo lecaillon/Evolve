@@ -7,10 +7,8 @@ namespace Evolve.Connection
     public class WrappedConnection : IWrappedConnection
     {
         private readonly bool _connectionOwned;
-        private int? _commandTimeout;
         private int _openedCount;
         private bool _openedInternally;
-        private const string InvalidCommandTimeout = "The specified CommandTimeout value is not valid. It must be a positive number.";
         private const string TransactionAlreadyStarted = "The connection is already in a transaction and cannot participate in another transaction.";
         private const string NoActiveTransaction = "The connection does not have any active transactions.";
 
@@ -23,20 +21,6 @@ namespace Evolve.Connection
         public IDbConnection DbConnection { get; private set; }
 
         public IDbTransaction CurrentTx { get; private set; }
-
-        public virtual int? CommandTimeout
-        {
-            get { return _commandTimeout; }
-            set
-            {
-                if (value.HasValue && value < 0)
-                {
-                    throw new ArgumentException(InvalidCommandTimeout);
-                }
-
-                _commandTimeout = value;
-            }
-        }
 
         public IDbTransaction BeginTransaction(IsolationLevel isolationLevel = IsolationLevel.Unspecified)
         {
@@ -59,6 +43,7 @@ namespace Evolve.Connection
             }
 
             CurrentTx.Commit();
+            ClearTransaction();
         }
 
         public void Rollback()
@@ -69,6 +54,7 @@ namespace Evolve.Connection
             }
 
             CurrentTx.Rollback();
+            ClearTransaction();
         }
 
         public void Open()
@@ -115,6 +101,12 @@ namespace Evolve.Connection
                 DbConnection.Dispose();
                 _openedCount = 0;
             }
+        }
+
+        private void ClearTransaction()
+        {
+            CurrentTx = null;
+            Close();
         }
     }
 }
