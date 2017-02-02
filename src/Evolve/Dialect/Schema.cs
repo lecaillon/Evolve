@@ -5,26 +5,24 @@ namespace Evolve.Dialect
 {
     public abstract class Schema
     {
-        protected DatabaseHelper _dbHelper;
         protected IWrappedConnection _wrappedConnection;
 
-        public Schema(string schemaName, DatabaseHelper dbHelper)
+        public Schema(string schemaName, IWrappedConnection wrappedConnection)
         {
             Name = Check.NotNullOrEmpty(schemaName, nameof(schemaName));
-            _dbHelper = Check.NotNull(dbHelper, nameof(dbHelper));
-            _wrappedConnection = dbHelper.WrappedConnection;
+            _wrappedConnection = Check.NotNull(wrappedConnection, nameof(wrappedConnection));
         }
 
         public string Name { get; private set; }
 
-        protected abstract bool IsExists();
+        public abstract bool IsExists();
 
-        protected abstract bool IsEmpty();
+        public abstract bool IsEmpty();
 
-        protected abstract bool Create();
+        public abstract bool Create();
 
-        protected abstract bool Clean();
+        public abstract bool Clean();
 
-        protected abstract bool Drop();
+        public abstract bool Drop();
     }
 }

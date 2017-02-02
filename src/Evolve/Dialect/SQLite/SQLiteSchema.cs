@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Evolve.Connection;
 
 namespace Evolve.Dialect.SQLite
 {
@@ -8,11 +9,11 @@ namespace Evolve.Dialect.SQLite
         private static List<string> IgnoredSystemTableNames = new List<string> { "android_metadata", "sqlite_sequence" };
         private static List<string> UndroppableTableNames = new List<string> { "sqlite_sequence" };
 
-        public SQLiteSchema(string schemaName, DatabaseHelper dbHelper) : base(schemaName, dbHelper)
+        public SQLiteSchema(string schemaName, IWrappedConnection wrappedConnection) : base(schemaName, wrappedConnection)
         {
         }
 
-        protected override bool IsExists()
+        public override bool IsExists()
         {
             try
             {
@@ -25,7 +26,7 @@ namespace Evolve.Dialect.SQLite
             }
         }
 
-        protected override bool IsEmpty()
+        public override bool IsEmpty()
         {
             return GetAllTables().Except(IgnoredSystemTableNames).Count() == 0;
         }
@@ -34,7 +35,7 @@ namespace Evolve.Dialect.SQLite
         ///     SQLite does not support creating schemas.
         /// </summary>
         /// <returns> false. </returns>
-        protected override bool Create()
+        public override bool Create()
         {
             return false;
         }
@@ -43,12 +44,12 @@ namespace Evolve.Dialect.SQLite
         ///     SQLite does not support dropping schemas.
         /// </summary>
         /// <returns> false. </returns>
-        protected override bool Drop()
+        public override bool Drop()
         {
             return false;
         }
 
-        protected override bool Clean()
+        public override bool Clean()
         {
             CleanViews();
             CleanTables();
@@ -57,13 +58,13 @@ namespace Evolve.Dialect.SQLite
             return true;
         }
 
-        private List<string> GetAllTables()
+        protected List<string> GetAllTables()
         {
             string sql = $"SELECT tbl_name FROM \"{Name}\".sqlite_master WHERE type = 'table'";
             return _wrappedConnection.DbConnection.QueryForListOfString(sql).ToList();
         }
 
-        private void CleanTables()
+        protected void CleanTables()
         {
             GetAllTables().Except(UndroppableTableNames).ToList().ForEach(t =>
             {
@@ -72,7 +73,7 @@ namespace Evolve.Dialect.SQLite
             });
         }
 
-        private void CleanViews()
+        protected void CleanViews()
         {
             string sql = $"SELECT tbl_name FROM \"{Name}\".sqlite_master WHERE type = 'view'";
             _wrappedConnection.DbConnection.QueryForListOfString(sql).ToList().ForEach(vw =>
@@ -82,7 +83,7 @@ namespace Evolve.Dialect.SQLite
             });
         }
 
-        private void CleanSequences()
+        protected void CleanSequences()
         {
             string sql = $"SELECT COUNT(tbl_name) FROM \"{Name}\".sqlite_master WHERE type = 'table' AND tbl_name = 'sqlite_sequence'";
             if(_wrappedConnection.DbConnection.QueryForLong(sql) == 1)

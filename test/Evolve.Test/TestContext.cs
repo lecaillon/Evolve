@@ -23,5 +23,9 @@ namespace Evolve.Test
         public static string SqlMigrationSeparator => "__";
 
         public static string SqlMigrationSuffix => ".sql";
+
+        public static string SQLiteInMemoryConnectionString => "Data Source=:memory:";
+
+        public static string SQLiteDefaultSchemaName => "main";
     }
 }
