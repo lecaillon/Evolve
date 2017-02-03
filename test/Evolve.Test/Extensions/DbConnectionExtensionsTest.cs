@@ -6,25 +6,25 @@ using System.Linq;
 
 namespace Evolve.Test.Extensions
 {
-    public class DbConnectionExtensionsTest
+    public class WrappedConnectionExtensionsTest
     {
         [Fact(DisplayName = "QueryForLong_works")]
         public void QueryForLong_works()
         {
-            using (var connection = new SqliteConnection("Data Source=:memory:"))
+            using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
             {
-                Assert.Equal(1L, DbConnectionExtensions.QueryForLong(connection, "SELECT 1;"));
-                Assert.True(connection.State == ConnectionState.Closed);
+                Assert.Equal(1L, WrappedConnectionExtensions.QueryForLong(connection, "SELECT 1;"));
+                Assert.True(connection.DbConnection.State == ConnectionState.Closed);
             }
         }
 
         [Fact(DisplayName = "QueryForString_works")]
         public void QueryForString_works()
         {
-            using (var connection = new SqliteConnection("Data Source=:memory:"))
+            using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
             {
-                Assert.Equal("azerty", DbConnectionExtensions.QueryForString(connection, "SELECT 'azerty';"));
-                Assert.True(connection.State == ConnectionState.Closed);
+                Assert.Equal("azerty", WrappedConnectionExtensions.QueryForString(connection, "SELECT 'azerty';"));
+                Assert.True(connection.DbConnection.State == ConnectionState.Closed);
             }
         }
 
@@ -34,10 +34,10 @@ namespace Evolve.Test.Extensions
             var expected = new List<string> { "azerty", "qwerty" };
             string sql = "SELECT 'azerty' UNION SELECT 'qwerty';";
 
-            using (var connection = new SqliteConnection("Data Source=:memory:"))
+            using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
             {
-                Assert.Equal(expected, DbConnectionExtensions.QueryForListOfString(connection, sql));
-                Assert.True(connection.State == ConnectionState.Closed);
+                Assert.Equal(expected, WrappedConnectionExtensions.QueryForListOfString(connection, sql));
+                Assert.True(connection.DbConnection.State == ConnectionState.Closed);
             }
         }
 
@@ -47,10 +47,10 @@ namespace Evolve.Test.Extensions
             var expected = new[] { new { Item1 = "azerty", Item2 = "qwerty" } }.ToList();
             string sql = "SELECT 'azerty','qwerty';";
 
-            using (var connection = new SqliteConnection("Data Source=:memory:"))
+            using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
             {
-                Assert.Equal(expected, DbConnectionExtensions.QueryForListOfT(connection, sql, (r) => new { Item1 = r.GetString(0), Item2 = r.GetString(1) }));
-                Assert.True(connection.State == ConnectionState.Closed);
+                Assert.Equal(expected, WrappedConnectionExtensions.QueryForListOfT(connection, sql, (r) => new { Item1 = r.GetString(0), Item2 = r.GetString(1) }));
+                Assert.True(connection.DbConnection.State == ConnectionState.Closed);
             }
         }
     }

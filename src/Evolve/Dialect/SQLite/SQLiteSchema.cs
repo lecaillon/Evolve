@@ -60,35 +60,32 @@ namespace Evolve.Dialect.SQLite
 
         protected List<string> GetAllTables()
         {
-            string sql = $"SELECT tbl_name FROM \"{Name}\".sqlite_master WHERE type = 'table'";
-            return _wrappedConnection.DbConnection.QueryForListOfString(sql).ToList();
+            return _wrappedConnection.QueryForListOfString($"SELECT tbl_name FROM \"{Name}\".sqlite_master WHERE type = 'table'").ToList();
         }
 
         protected void CleanTables()
         {
             GetAllTables().Except(UndroppableTableNames).ToList().ForEach(t =>
             {
-                string drop = $"DROP TABLE \"{Name}\".\"{t}\"";
-                _wrappedConnection.DbConnection.ExecuteNonQuery(drop, _wrappedConnection.CurrentTx);
+                _wrappedConnection.ExecuteNonQuery($"DROP TABLE \"{Name}\".\"{t}\"");
             });
         }
 
         protected void CleanViews()
         {
             string sql = $"SELECT tbl_name FROM \"{Name}\".sqlite_master WHERE type = 'view'";
-            _wrappedConnection.DbConnection.QueryForListOfString(sql).ToList().ForEach(vw =>
+            _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(vw =>
             {
-                string drop = $"DROP VIEW \"{Name}\".\"{vw}\"";
-                _wrappedConnection.DbConnection.ExecuteNonQuery(drop, _wrappedConnection.CurrentTx);
+                _wrappedConnection.ExecuteNonQuery($"DROP VIEW \"{Name}\".\"{vw}\"");
             });
         }
 
         protected void CleanSequences()
         {
             string sql = $"SELECT COUNT(tbl_name) FROM \"{Name}\".sqlite_master WHERE type = 'table' AND tbl_name = 'sqlite_sequence'";
-            if(_wrappedConnection.DbConnection.QueryForLong(sql) == 1)
+            if(_wrappedConnection.QueryForLong(sql) == 1)
             {
-                _wrappedConnection.DbConnection.ExecuteNonQuery($"DELETE FROM \"{Name}\".sqlite_sequence", _wrappedConnection.CurrentTx);
+                _wrappedConnection.ExecuteNonQuery($"DELETE FROM \"{Name}\".sqlite_sequence");
             }
         }
     }

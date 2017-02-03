@@ -1,7 +1,4 @@
-﻿using Evolve.Connection;
-using Evolve.Dialect.SQLite;
-using Microsoft.Data.Sqlite;
-using Xunit;
+﻿using Xunit;
 
 namespace Evolve.Test.Dialect.SQLite
 {
@@ -74,21 +71,21 @@ namespace Evolve.Test.Dialect.SQLite
             }
         }
 
-        //[Fact(DisplayName = "After_schema_cleannig_and_rollback_schema_is_not_empty")]
-        //public void After_schema_cleannig_and_rollback_schema_is_not_empty()
-        //{
-        //    using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
-        //    {
-        //        var schema = TestUtil.LoadChinookDatabase(connection);
+        [Fact(DisplayName = "After_schema_cleannig_and_rollback_schema_is_not_empty")]
+        public void After_schema_cleannig_and_rollback_schema_is_not_empty()
+        {
+            using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
+            {
+                var schema = TestUtil.LoadChinookDatabase(connection);
 
-        //        connection.BeginTransaction();
+                connection.BeginTransaction();
 
-        //        Assert.True(schema.Clean());
-        //        Assert.True(schema.IsEmpty());
+                Assert.True(schema.Clean());
+                Assert.True(schema.IsEmpty());
 
-        //        connection.Rollback();
-        //        Assert.False(schema.IsEmpty());
-        //    }
-        //}
+                connection.Rollback();
+                Assert.False(schema.IsEmpty());
+            }
+        }
     }
 }

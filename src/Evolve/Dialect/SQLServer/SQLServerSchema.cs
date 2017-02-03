@@ -12,7 +12,7 @@ namespace Evolve.Dialect.SQLServer
         public override bool IsExists()
         {
             string sql = $"SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '{Name}'";
-            return _wrappedConnection.DbConnection.QueryForLong(sql) > 0;
+            return _wrappedConnection.QueryForLong(sql) > 0;
         }
 
         public override bool IsEmpty()
@@ -29,13 +29,12 @@ namespace Evolve.Dialect.SQLServer
                          ") x " +
                         $"WHERE OBJECT_SCHEMA = '{Name}'";
 
-            return _wrappedConnection.DbConnection.QueryForLong(sql) == 0;
+            return _wrappedConnection.QueryForLong(sql) == 0;
         }
 
         public override bool Create()
         {
-            string sql = $"CREATE SCHEMA [{Name}]";
-            _wrappedConnection.DbConnection.ExecuteNonQuery(sql, _wrappedConnection.CurrentTx);
+            _wrappedConnection.ExecuteNonQuery($"CREATE SCHEMA [{Name}]");
 
             return true;
         }
@@ -44,8 +43,7 @@ namespace Evolve.Dialect.SQLServer
         {
             Clean();
 
-            string sql = $"DROP SCHEMA [{Name}]";
-            _wrappedConnection.DbConnection.ExecuteNonQuery(sql, _wrappedConnection.CurrentTx);
+            _wrappedConnection.ExecuteNonQuery($"DROP SCHEMA [{Name}]");
 
             return true;
         }
@@ -72,10 +70,9 @@ namespace Evolve.Dialect.SQLServer
                          "WHERE CONSTRAINT_TYPE IN ('FOREIGN KEY','CHECK') " +
                         $"AND TABLE_SCHEMA = '{Name}'";
 
-            _wrappedConnection.DbConnection.QueryForListOfT(sql, (r) => new { Table = r.GetString(0), Constraint = r.GetString(1) }).ToList().ForEach(x =>
+            _wrappedConnection.QueryForListOfT(sql, (r) => new { Table = r.GetString(0), Constraint = r.GetString(1) }).ToList().ForEach(x =>
             {
-                string drop = $"ALTER TABLE [{Name}].[{x.Table}] DROP CONSTRAINT [{x.Constraint}]";
-                _wrappedConnection.DbConnection.ExecuteNonQuery(drop, _wrappedConnection.CurrentTx);
+                _wrappedConnection.ExecuteNonQuery($"ALTER TABLE [{Name}].[{x.Table}] DROP CONSTRAINT [{x.Constraint}]");
             });
         }
 
@@ -87,70 +84,63 @@ namespace Evolve.Dialect.SQLServer
                          "INNER JOIN sys.schemas s ON s.schema_id = t.schema_id " +
                         $"WHERE s.name = '{Name}'";
 
-            _wrappedConnection.DbConnection.QueryForListOfT(sql, (r) => new { Table = r.GetString(0), Constraint = r.GetString(1) }).ToList().ForEach(x =>
+            _wrappedConnection.QueryForListOfT(sql, (r) => new { Table = r.GetString(0), Constraint = r.GetString(1) }).ToList().ForEach(x =>
             {
-                string drop = $"ALTER TABLE [{Name}].[{x.Table}] DROP CONSTRAINT [{x.Constraint}]";
-                _wrappedConnection.DbConnection.ExecuteNonQuery(drop, _wrappedConnection.CurrentTx);
+                _wrappedConnection.ExecuteNonQuery($"ALTER TABLE [{Name}].[{x.Table}] DROP CONSTRAINT [{x.Constraint}]");
             });
         }
 
         protected void CleanProcedures()
         {
             string sql = $"SELECT routine_name FROM INFORMATION_SCHEMA.ROUTINES WHERE routine_schema = '{Name}' AND routine_type = 'PROCEDURE' ORDER BY created DESC";
-            _wrappedConnection.DbConnection.QueryForListOfString(sql).ToList().ForEach(proc =>
+            _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(proc =>
             {
-                string drop = $"DROP PROCEDURE [{Name}].[{proc}]";
-                _wrappedConnection.DbConnection.ExecuteNonQuery(drop, _wrappedConnection.CurrentTx);
+                _wrappedConnection.ExecuteNonQuery($"DROP PROCEDURE [{Name}].[{proc}]");
             });
         }
 
         protected void CleanViews()
         {
             string sql = $"SELECT table_name FROM INFORMATION_SCHEMA.VIEWS WHERE table_schema = '{Name}'";
-            _wrappedConnection.DbConnection.QueryForListOfString(sql).ToList().ForEach(vw =>
+            _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(vw =>
             {
-                string drop = $"DROP VIEW [{Name}].[{vw}]";
-                _wrappedConnection.DbConnection.ExecuteNonQuery(drop, _wrappedConnection.CurrentTx);
+                _wrappedConnection.ExecuteNonQuery($"DROP VIEW [{Name}].[{vw}]");
             });
         }
 
         protected void CleanTables()
         {
             string sql = $"SELECT table_name FROM INFORMATION_SCHEMA.TABLES WHERE table_type='BASE TABLE' AND table_schema = '{Name}'";
-            _wrappedConnection.DbConnection.QueryForListOfString(sql).ToList().ForEach(t =>
+            _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(t =>
             {
-                string drop = $"DROP TABLE [{Name}].[{t}]";
-                _wrappedConnection.DbConnection.ExecuteNonQuery(drop, _wrappedConnection.CurrentTx);
+                _wrappedConnection.ExecuteNonQuery($"DROP TABLE [{Name}].[{t}]");
             });
         }
 
         protected void CleanFunctions()
         {
             string sql = $"SELECT routine_name FROM INFORMATION_SCHEMA.ROUTINES WHERE routine_schema = '{Name}' AND routine_type = 'FUNCTION' ORDER BY created DESC";
-            _wrappedConnection.DbConnection.QueryForListOfString(sql).ToList().ForEach(fn =>
+            _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(fn =>
             {
-                string drop = $"DROP FUNCTION [{Name}].[{fn}]";
-                _wrappedConnection.DbConnection.ExecuteNonQuery(drop, _wrappedConnection.CurrentTx);
+                _wrappedConnection.ExecuteNonQuery($"DROP FUNCTION [{Name}].[{fn}]");
             });
         }
 
         protected void CleanTypes()
         {
             string sql = $"SELECT t.name FROM sys.types t INNER JOIN sys.schemas s ON t.schema_id = s.schema_id WHERE t.is_user_defined = 1 AND s.name = '{Name}'";
-            _wrappedConnection.DbConnection.QueryForListOfString(sql).ToList().ForEach(t =>
+            _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(t =>
             {
-                string drop = $"DROP TYPE [{Name}].[{t}]";
-                _wrappedConnection.DbConnection.ExecuteNonQuery(drop, _wrappedConnection.CurrentTx);
+                _wrappedConnection.ExecuteNonQuery($"DROP TYPE [{Name}].[{t}]");
             });
         }
 
         protected void CleanSynonyms()
         {
             string sql = $"SELECT sn.name FROM sys.synonyms sn INNER JOIN sys.schemas s ON sn.schema_id = s.schema_id WHERE s.name = '{Name}'";
-            _wrappedConnection.DbConnection.QueryForListOfString(sql).ToList().ForEach(s =>
+            _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(s =>
             {
-                string drop = $"DROP SYNONYM [{Name}].[{s}]";
-                _wrappedConnection.DbConnection.ExecuteNonQuery(drop, _wrappedConnection.CurrentTx);
+                _wrappedConnection.ExecuteNonQuery($"DROP SYNONYM [{Name}].[{s}]");
             });
         }
 
@@ -162,14 +152,13 @@ namespace Evolve.Dialect.SQLServer
                                                   "ELSE CAST(LEFT(CAST(SERVERPROPERTY ('productversion') as VARCHAR), 2) as int) " +
                                              "END AS int)";
 
-            if (_wrappedConnection.DbConnection.QueryForLong(sqlversion) < 11)
+            if (_wrappedConnection.QueryForLong(sqlversion) < 11)
                 return;
 
             string sql = $"SELECT sequence_name FROM INFORMATION_SCHEMA.SEQUENCES WHERE sequence_schema = '{Name}'";
-            _wrappedConnection.DbConnection.QueryForListOfString(sql).ToList().ForEach(s =>
+            _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(s =>
             {
-                string drop = $"DROP SEQUENCE [{Name}].[{s}]";
-                _wrappedConnection.DbConnection.ExecuteNonQuery(drop, _wrappedConnection.CurrentTx);
+                _wrappedConnection.ExecuteNonQuery($"DROP SEQUENCE [{Name}].[{s}]");
             });
         }
     }
