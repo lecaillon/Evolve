@@ -73,7 +73,7 @@ namespace Evolve.Dialect.SQLite
         protected override IEnumerable<MigrationMetadata> InternalGetAllMigrationMetadata()
         {
             string sql = $"SELECT [id], [version], [description], [name], [checksum], [installed_by], [installed_on], [success] FROM [{Schema}].[{TableName}]";
-            return _wrappedConnection.QueryForListOfT(sql, r =>
+            return _wrappedConnection.QueryForList(sql, r =>
                    {
                        return new MigrationMetadata(r.GetString(1), r.GetString(2), r.GetString(3))
                        {

@@ -28,7 +28,7 @@ namespace Evolve
             return list;
         }
 
-        public static IEnumerable<T> QueryForListOfT<T>(this IWrappedConnection wrappedConnection, string sql, Func<IDataReader, T> map)
+        public static IEnumerable<T> QueryForList<T>(this IWrappedConnection wrappedConnection, string sql, Func<IDataReader, T> map)
         {
             Check.NotNull(map, nameof(map));
 

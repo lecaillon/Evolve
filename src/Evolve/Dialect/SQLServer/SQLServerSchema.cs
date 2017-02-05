@@ -70,7 +70,7 @@ namespace Evolve.Dialect.SQLServer
                          "WHERE CONSTRAINT_TYPE IN ('FOREIGN KEY','CHECK') " +
                         $"AND TABLE_SCHEMA = '{Name}'";
 
-            _wrappedConnection.QueryForListOfT(sql, (r) => new { Table = r.GetString(0), Constraint = r.GetString(1) }).ToList().ForEach(x =>
+            _wrappedConnection.QueryForList(sql, (r) => new { Table = r.GetString(0), Constraint = r.GetString(1) }).ToList().ForEach(x =>
             {
                 _wrappedConnection.ExecuteNonQuery($"ALTER TABLE [{Name}].[{x.Table}] DROP CONSTRAINT [{x.Constraint}]");
             });
@@ -84,7 +84,7 @@ namespace Evolve.Dialect.SQLServer
                          "INNER JOIN sys.schemas s ON s.schema_id = t.schema_id " +
                         $"WHERE s.name = '{Name}'";
 
-            _wrappedConnection.QueryForListOfT(sql, (r) => new { Table = r.GetString(0), Constraint = r.GetString(1) }).ToList().ForEach(x =>
+            _wrappedConnection.QueryForList(sql, (r) => new { Table = r.GetString(0), Constraint = r.GetString(1) }).ToList().ForEach(x =>
             {
                 _wrappedConnection.ExecuteNonQuery($"ALTER TABLE [{Name}].[{x.Table}] DROP CONSTRAINT [{x.Constraint}]");
             });

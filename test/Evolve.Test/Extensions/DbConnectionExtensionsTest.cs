@@ -49,7 +49,7 @@ namespace Evolve.Test.Extensions
 
             using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
             {
-                Assert.Equal(expected, WrappedConnectionExtensions.QueryForListOfT(connection, sql, (r) => new { Item1 = r.GetString(0), Item2 = r.GetString(1) }));
+                Assert.Equal(expected, WrappedConnectionExtensions.QueryForList(connection, sql, (r) => new { Item1 = r.GetString(0), Item2 = r.GetString(1) }));
                 Assert.True(connection.DbConnection.State == ConnectionState.Closed);
             }
         }
