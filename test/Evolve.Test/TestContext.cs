@@ -27,5 +27,7 @@ namespace Evolve.Test
         public static string SQLiteInMemoryConnectionString => "Data Source=:memory:";
 
         public static string SQLiteDefaultSchemaName => "main";
+
+        public static string DefaultMetadataTableName => "changelog";
     }
 }
