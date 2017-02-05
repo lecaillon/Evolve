@@ -60,32 +60,32 @@ namespace Evolve.Dialect.SQLite
 
         protected List<string> GetAllTables()
         {
-            return _wrappedConnection.QueryForListOfString($"SELECT tbl_name FROM \"{Name}\".sqlite_master WHERE type = 'table'").ToList();
+            return _wrappedConnection.QueryForListOfString($"SELECT tbl_name FROM sqlite_master WHERE type = 'table'").ToList();
         }
 
         protected void CleanTables()
         {
             GetAllTables().Except(UndroppableTableNames).ToList().ForEach(t =>
             {
-                _wrappedConnection.ExecuteNonQuery($"DROP TABLE \"{Name}\".\"{t}\"");
+                _wrappedConnection.ExecuteNonQuery($"DROP TABLE {t}");
             });
         }
 
         protected void CleanViews()
         {
-            string sql = $"SELECT tbl_name FROM \"{Name}\".sqlite_master WHERE type = 'view'";
+            string sql = $"SELECT tbl_name FROM sqlite_master WHERE type = 'view'";
             _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(vw =>
             {
-                _wrappedConnection.ExecuteNonQuery($"DROP VIEW \"{Name}\".\"{vw}\"");
+                _wrappedConnection.ExecuteNonQuery($"DROP VIEW {vw}");
             });
         }
 
         protected void CleanSequences()
         {
-            string sql = $"SELECT COUNT(tbl_name) FROM \"{Name}\".sqlite_master WHERE type = 'table' AND tbl_name = 'sqlite_sequence'";
+            string sql = $"SELECT COUNT(tbl_name) FROM sqlite_master WHERE type = 'table' AND tbl_name = 'sqlite_sequence'";
             if(_wrappedConnection.QueryForLong(sql) == 1)
             {
-                _wrappedConnection.ExecuteNonQuery($"DELETE FROM \"{Name}\".sqlite_sequence");
+                _wrappedConnection.ExecuteNonQuery($"DELETE FROM sqlite_sequence");
             }
         }
     }

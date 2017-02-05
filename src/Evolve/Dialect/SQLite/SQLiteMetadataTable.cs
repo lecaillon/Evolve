@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Evolve.Connection;
 using Evolve.Metadata;
@@ -9,7 +8,7 @@ namespace Evolve.Dialect.SQLite
 {
     public class SQLiteMetadataTable : MetadataTable
     {
-        public SQLiteMetadataTable(string schema, string tableName, IWrappedConnection wrappedConnection) : base(schema, tableName, wrappedConnection)
+        public SQLiteMetadataTable(string tableName, IWrappedConnection wrappedConnection) : base("main", tableName, wrappedConnection)
         {
         }
 
@@ -35,14 +34,15 @@ namespace Evolve.Dialect.SQLite
 
         protected override bool IsExists()
         {
-            return _wrappedConnection.QueryForLong($"SELECT COUNT(tbl_name) FROM \"{Schema}\".sqlite_master WHERE type = 'table' AND tbl_name = '{TableName}'") == 1;
+            long res = _wrappedConnection.QueryForLong($"SELECT COUNT(tbl_name) FROM sqlite_master WHERE type = 'table' AND tbl_name = '{TableName}'");
+            return _wrappedConnection.QueryForLong($"SELECT COUNT(tbl_name) FROM sqlite_master WHERE type = 'table' AND tbl_name = '{TableName}'") == 1;
         }
 
         protected override void Create()
         {
-            string sql = $"CREATE TABLE [{Schema}].[{TableName}] " +
+            string sql = $"CREATE TABLE [{TableName}] " +
              "( " +
-                 "[id] INT PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                 "[id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
                  "[version] VARCHAR(50), " +
                  "[description] VARCHAR(200) NOT NULL, " +
                  "[name] VARCHAR(1000) NOT NULL, " +
@@ -57,7 +57,7 @@ namespace Evolve.Dialect.SQLite
 
         protected override void InternalAddMigrationMetadata(MigrationScript migration, bool success)
         {
-            string sql = $"INSERT INTO [{Schema}].[{TableName}] ([version], [description], [name], [checksum], [installed_by], [success]) VALUES" +
+            string sql = $"INSERT INTO [{TableName}] ([version], [description], [name], [checksum], [installed_by], [success]) VALUES" +
              "( " +
                 $"'{migration.Version}', " +
                 $"'{migration.Description.TruncateWithEllipsis(200)}', " +
@@ -72,7 +72,7 @@ namespace Evolve.Dialect.SQLite
 
         protected override IEnumerable<MigrationMetadata> InternalGetAllMigrationMetadata()
         {
-            string sql = $"SELECT [id], [version], [description], [name], [checksum], [installed_by], [installed_on], [success] FROM [{Schema}].[{TableName}]";
+            string sql = $"SELECT [id], [version], [description], [name], [checksum], [installed_by], [installed_on], [success] FROM [{TableName}]";
             return _wrappedConnection.QueryForList(sql, r =>
                    {
                        return new MigrationMetadata(r.GetString(1), r.GetString(2), r.GetString(3))
