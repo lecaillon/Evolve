@@ -5,7 +5,7 @@ namespace Evolve.Test.Dialect.SQLite
     public class SQLiteSchemaTest
     {
         [Fact(DisplayName = "Can_get_schema")]
-        public void Can_get_SQLite_schema()
+        public void Can_get_schema()
         {
             using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
             {
