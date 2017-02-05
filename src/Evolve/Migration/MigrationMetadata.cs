@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Evolve.Migration
 {
@@ -10,14 +8,14 @@ namespace Evolve.Migration
         {
         }
 
-        int Id { get; set; }
+        public int Id { get; set; }
 
-        string Checksum { get; set; }
+        public string Checksum { get; set; }
 
-        string UserInstall { get; set; }
+        public string InstalledBy { get; set; }
 
-        DateTime DateInstall { get; set; }
+        public DateTime InstalledOn { get; set; }
 
-        bool Success { get; set; }
+        public bool Success { get; set; }
     }
 }

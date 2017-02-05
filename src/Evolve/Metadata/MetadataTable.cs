@@ -9,25 +9,25 @@ namespace Evolve.Metadata
     {
         protected IWrappedConnection _wrappedConnection;
 
-        public MetadataTable(string schema, string name, IWrappedConnection wrappedConnection)
+        public MetadataTable(string schema, string tableName, IWrappedConnection wrappedConnection)
         {
             Schema = Check.NotNullOrEmpty(schema, nameof(schema));
-            Name = Check.NotNullOrEmpty(schema, nameof(name));
+            TableName = Check.NotNullOrEmpty(schema, nameof(tableName));
             _wrappedConnection = Check.NotNull(wrappedConnection, nameof(wrappedConnection));
         }
 
         public string Schema { get; private set; }
 
-        public string Name { get; private set; }
+        public string TableName { get; private set; }
 
         public abstract void Lock();
 
         public abstract bool CreateIfNotExists();
 
-        public MigrationMetadata AddMigrationMetadata(MigrationScript migration, bool success)
+        public void AddMigrationMetadata(MigrationScript migration, bool success)
         {
             CreateIfNotExists();
-            return InternalAddMigrationMetadata(migration, success);
+            InternalAddMigrationMetadata(migration, success);
         }
 
         public IEnumerable<MigrationMetadata> GetAllMigrationMetadata()
@@ -40,7 +40,7 @@ namespace Evolve.Metadata
 
         protected abstract void Create();
 
-        protected abstract MigrationMetadata InternalAddMigrationMetadata(MigrationScript migration, bool success);
+        protected abstract void InternalAddMigrationMetadata(MigrationScript migration, bool success);
 
         protected abstract IEnumerable<MigrationMetadata> InternalGetAllMigrationMetadata();
     }
