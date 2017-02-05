@@ -64,7 +64,7 @@ namespace Evolve.Dialect.SQLite
                 $"'{migration.Path.TruncateWithEllipsis(1000)}', " +
                 $"'{migration.CalculateChecksum()}', " +
                 $"'', " +
-                $"{(success ? 1 : 0)}, " +
+                $"{(success ? 1 : 0)}" +
              ")";
 
             _wrappedConnection.ExecuteNonQuery(sql);

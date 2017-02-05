@@ -1,10 +1,13 @@
 ﻿using System;
+using System.IO;
+using Evolve.Utilities;
 
 namespace Evolve.Migration
 {
     public class MigrationMetadata : MigrationBase
     {
-        public MigrationMetadata(string version, string description, string name) : base(version, description, name)
+        public MigrationMetadata(string version, string description, string name) 
+            : base(version, description, Path.GetFileNameWithoutExtension(Check.NotNullOrEmpty(name, nameof(name))))
         {
         }
 
