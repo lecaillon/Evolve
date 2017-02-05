@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Evolve.Connection;
 using Evolve.Metadata;
 using Evolve.Migration;
@@ -8,13 +9,15 @@ namespace Evolve.Dialect.SQLite
 {
     public class SQLiteMetadataTable : MetadataTable
     {
-        public SQLiteMetadataTable(string schema, string name, IWrappedConnection wrappedConnection) : base(schema, name, wrappedConnection)
+        public SQLiteMetadataTable(string schema, string tableName, IWrappedConnection wrappedConnection) : base(schema, tableName, wrappedConnection)
         {
         }
 
+        /// <summary>
+        ///     SQLite does not support locking. No concurrent migration supported.
+        /// </summary>
         public override void Lock()
         {
-            throw new NotImplementedException();
         }
 
         public override bool CreateIfNotExists()
@@ -32,17 +35,17 @@ namespace Evolve.Dialect.SQLite
 
         protected override bool IsExists()
         {
-            return _wrappedConnection.QueryForLong($"SELECT COUNT(tbl_name) FROM \"{Schema}\".sqlite_master WHERE type = 'table' AND tbl_name = '{Name}'") == 1;
+            return _wrappedConnection.QueryForLong($"SELECT COUNT(tbl_name) FROM \"{Schema}\".sqlite_master WHERE type = 'table' AND tbl_name = '{TableName}'") == 1;
         }
 
         protected override void Create()
         {
-            string sql = "CREATE TABLE [{schema}].[{table}] " +
+            string sql = $"CREATE TABLE [{Schema}].[{TableName}] " +
              "( " +
                  "[id] INT PRIMARY KEY AUTOINCREMENT NOT NULL, " +
                  "[version] VARCHAR(50), " +
                  "[description] VARCHAR(200) NOT NULL, " +
-                 "[script] VARCHAR(1000) NOT NULL, " +
+                 "[name] VARCHAR(1000) NOT NULL, " +
                  "[checksum] VARCHAR(32), " +
                  "[installed_by] VARCHAR(100) NOT NULL, " +
                  "[installed_on] TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%f','now')), " +
@@ -52,9 +55,9 @@ namespace Evolve.Dialect.SQLite
             _wrappedConnection.ExecuteNonQuery(sql);
         }
 
-        protected override MigrationMetadata InternalAddMigrationMetadata(MigrationScript migration, bool success)
+        protected override void InternalAddMigrationMetadata(MigrationScript migration, bool success)
         {
-            string sql = "INSERT INTO [{schema}].[{table}] ([version], [description], [script], [checksum], [installed_by], [success]) VALUES" +
+            string sql = $"INSERT INTO [{Schema}].[{TableName}] ([version], [description], [name], [checksum], [installed_by], [success]) VALUES" +
              "( " +
                 $"'{migration.Version}', " +
                 $"'{migration.Description.TruncateWithEllipsis(200)}', " +
@@ -63,11 +66,25 @@ namespace Evolve.Dialect.SQLite
                 $"'', " +
                 $"{(success ? 1 : 0)}, " +
              ")";
+
+            _wrappedConnection.ExecuteNonQuery(sql);
         }
 
         protected override IEnumerable<MigrationMetadata> InternalGetAllMigrationMetadata()
         {
-            throw new NotImplementedException();
+            string sql = $"SELECT [id], [version], [description], [name], [checksum], [installed_by], [installed_on], [success] FROM [{Schema}].[{TableName}]";
+            return _wrappedConnection.QueryForListOfT(sql, r =>
+                   {
+                       return new MigrationMetadata(r.GetString(1), r.GetString(2), r.GetString(3))
+                       {
+                           Id = r.GetInt32(0),
+                           Checksum = r.GetString(4),
+                           InstalledBy = r.GetString(5),
+                           InstalledOn = r.GetDateTime(6),
+                           Success = r.GetBoolean(7)
+                       };
+                   })
+                   .DefaultIfEmpty();
         }
     }
 }
