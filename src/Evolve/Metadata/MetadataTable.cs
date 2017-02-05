@@ -12,7 +12,7 @@ namespace Evolve.Metadata
         public MetadataTable(string schema, string tableName, IWrappedConnection wrappedConnection)
         {
             Schema = Check.NotNullOrEmpty(schema, nameof(schema));
-            TableName = Check.NotNullOrEmpty(schema, nameof(tableName));
+            TableName = Check.NotNullOrEmpty(tableName, nameof(tableName));
             _wrappedConnection = Check.NotNull(wrappedConnection, nameof(wrappedConnection));
         }
 
