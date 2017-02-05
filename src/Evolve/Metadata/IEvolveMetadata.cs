@@ -9,7 +9,7 @@ namespace Evolve.Metadata
 
         bool CreateIfNotExists();
 
-        MigrationMetadata AddMigrationMetadata(MigrationScript migration);
+        MigrationMetadata AddMigrationMetadata(MigrationScript migration, bool success);
 
         IEnumerable<MigrationMetadata> GetAllMigrationMetadata();
     }
