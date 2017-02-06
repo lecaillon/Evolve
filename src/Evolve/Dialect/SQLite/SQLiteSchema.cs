@@ -35,19 +35,13 @@ namespace Evolve.Dialect.SQLite
         ///     SQLite does not support creating schemas.
         /// </summary>
         /// <returns> false. </returns>
-        public override bool Create()
-        {
-            return false;
-        }
+        public override bool Create() => false;
 
         /// <summary>
         ///     SQLite does not support dropping schemas.
         /// </summary>
         /// <returns> false. </returns>
-        public override bool Drop()
-        {
-            return false;
-        }
+        public override bool Drop() => false;
 
         public override bool Clean()
         {
