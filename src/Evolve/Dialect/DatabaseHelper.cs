@@ -1,14 +1,17 @@
 ﻿using Evolve.Connection;
+using Evolve.Metadata;
 using Evolve.Utilities;
 
 namespace Evolve.Dialect
 {
     public abstract class DatabaseHelper
     {
+        protected string _originalSchemaName;
+
         public DatabaseHelper(IWrappedConnection wrappedConnection)
         {
             WrappedConnection = Check.NotNull(wrappedConnection, nameof(wrappedConnection));
-            OriginalSchemaName = InternalGetCurrentSchemaName();
+            _originalSchemaName = GetCurrentSchemaName();
         }
 
         public IWrappedConnection WrappedConnection { get; private set; }
@@ -17,25 +20,29 @@ namespace Evolve.Dialect
 
         #region Schema helper
 
-        public string OriginalSchemaName { get; private set; }
-
-        public string GetSchemaName()
+        public virtual Schema ChangeSchema(string toSchemaName)
         {
-            // + gestion exception
-            return InternalGetCurrentSchemaName();
+            var schema = GetSchema(toSchemaName);
+            if (!schema.IsExists())
+                return null;
+
+            InternalChangeSchema(toSchemaName);
+            return schema;
         }
 
-        public void RestoreSchema()
-        {
-            // + gestion exception
-            InternalRestoreCurrentSchema();
-        }
+        public virtual void RestoreOriginalSchema() => ChangeSchema(_originalSchemaName);
 
-        public abstract Schema GetSchema(string schemaName);
+        public abstract string GetCurrentSchemaName();
 
-        protected abstract string InternalGetCurrentSchemaName();
+        public abstract void InternalChangeSchema(string toSchemaName);
 
-        protected abstract string InternalRestoreCurrentSchema();
+        protected abstract Schema GetSchema(string schemaName);
+
+        #endregion
+
+        #region MetadataTable helper
+
+        public abstract IEvolveMetadata GetMetadataTable(string schema, string tableName);
 
         #endregion
     }
