@@ -34,7 +34,7 @@ namespace Evolve.Dialect
 
         public abstract string GetCurrentSchemaName();
 
-        public abstract void InternalChangeSchema(string toSchemaName);
+        protected abstract void InternalChangeSchema(string toSchemaName);
 
         protected abstract Schema GetSchema(string schemaName);
 
