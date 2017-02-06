@@ -16,7 +16,7 @@ namespace Evolve.Dialect
 
         public IWrappedConnection WrappedConnection { get; private set; }
 
-        public abstract string DatabaseName { get; protected set; }
+        public abstract string DatabaseName { get; }
 
         #region Schema helper
 
