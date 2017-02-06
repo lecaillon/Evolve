@@ -9,7 +9,7 @@ namespace Evolve.Test
     {
         public static WrappedConnection GetInMemorySQLiteWrappedConnection() => new WrappedConnection(new SqliteConnection(TestContext.SQLiteInMemoryConnectionString));
 
-        public static SQLiteSchema GetDefaultSQLiteSchema(WrappedConnection connection) => new SQLiteSchema(TestContext.SQLiteDefaultSchemaName, connection);
+        public static SQLiteSchema GetDefaultSQLiteSchema(WrappedConnection connection) => new SQLiteSchema(connection);
 
         public static SQLiteSchema LoadChinookDatabase(WrappedConnection connection)
         {
@@ -20,7 +20,7 @@ namespace Evolve.Test
                 command.ExecuteNonQuery();
             }
 
-            return new SQLiteSchema(TestContext.SQLiteDefaultSchemaName, connection);
+            return new SQLiteSchema(connection);
         }
     }
 }
