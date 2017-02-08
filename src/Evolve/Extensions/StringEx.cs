@@ -2,7 +2,7 @@
 
 namespace Evolve
 {
-    public static class StringExtensions
+    public static class StringEx
     {
         /// <summary>
         ///     Truncates a string to be no longer than a certain length.

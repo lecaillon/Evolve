@@ -6,7 +6,7 @@ using Evolve.Utilities;
 
 namespace Evolve
 {
-    public static class WrappedConnectionExtensions
+    public static class WrappedConnectionEx
     {
         private const string CommandExecutionError = "DbCommand ({0}) error: {1}";
 

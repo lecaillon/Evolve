@@ -13,7 +13,7 @@ namespace Evolve.Test.Extensions
         {
             using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
             {
-                Assert.Equal(1L, WrappedConnectionExtensions.QueryForLong(connection, "SELECT 1;"));
+                Assert.Equal(1L, WrappedConnectionEx.QueryForLong(connection, "SELECT 1;"));
                 Assert.True(connection.DbConnection.State == ConnectionState.Closed);
             }
         }
@@ -23,7 +23,7 @@ namespace Evolve.Test.Extensions
         {
             using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
             {
-                Assert.Equal("azerty", WrappedConnectionExtensions.QueryForString(connection, "SELECT 'azerty';"));
+                Assert.Equal("azerty", WrappedConnectionEx.QueryForString(connection, "SELECT 'azerty';"));
                 Assert.True(connection.DbConnection.State == ConnectionState.Closed);
             }
         }
@@ -36,7 +36,7 @@ namespace Evolve.Test.Extensions
 
             using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
             {
-                Assert.Equal(expected, WrappedConnectionExtensions.QueryForListOfString(connection, sql));
+                Assert.Equal(expected, WrappedConnectionEx.QueryForListOfString(connection, sql));
                 Assert.True(connection.DbConnection.State == ConnectionState.Closed);
             }
         }
@@ -49,7 +49,7 @@ namespace Evolve.Test.Extensions
 
             using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
             {
-                Assert.Equal(expected, WrappedConnectionExtensions.QueryForList(connection, sql, (r) => new { Item1 = r.GetString(0), Item2 = r.GetString(1) }));
+                Assert.Equal(expected, WrappedConnectionEx.QueryForList(connection, sql, (r) => new { Item1 = r.GetString(0), Item2 = r.GetString(1) }));
                 Assert.True(connection.DbConnection.State == ConnectionState.Closed);
             }
         }
