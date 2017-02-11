@@ -1,11 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
-    <TargetFramework>netstandard1.3</TargetFramework>
+    <TargetFrameworks>netstandard1.3;net452</TargetFrameworks>
   </PropertyGroup>
-  <ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.3'">
     <PackageReference Include="System.Data.Common" Version="4.3.0" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Dialect\PostgreSQL\" />
   </ItemGroup>
 </Project>
