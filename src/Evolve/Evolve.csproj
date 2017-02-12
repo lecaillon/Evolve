@@ -2,6 +2,12 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard1.3;net452</TargetFrameworks>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard1.3|AnyCPU'">
+    <DefineConstants>DEBUG;TRACE;NETSTANDARD</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard1.3|AnyCPU'">
+    <DefineConstants>TRACE;NETSTANDARD</DefineConstants>
+  </PropertyGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.3'">
     <PackageReference Include="System.Data.Common" Version="4.3.0" />
   </ItemGroup>
