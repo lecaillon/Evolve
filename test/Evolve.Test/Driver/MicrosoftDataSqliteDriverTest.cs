@@ -9,7 +9,7 @@ namespace Evolve.Test.Driver
         public void Load_ConnectionType_from_an_already_loaded_assembly()
         {
             var driver = new MicrosoftDataSqliteDriver();
-            Assert.NotNull(driver.ConnectionType);
+            Assert.NotNull(driver.DbConnectionType);
         }
     }
 }
