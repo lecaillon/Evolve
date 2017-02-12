@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Text;
 
 namespace Evolve.Driver
 {
+#if NETSTANDARD
     public class SqlClientDriver : IDriver
     {
         public IDbConnection CreateConnection()
@@ -12,4 +11,13 @@ namespace Evolve.Driver
             throw new NotImplementedException();
         }
     }
+#else
+    public class SqlClientDriver : IDriver
+    {
+        public IDbConnection CreateConnection()
+        {
+            return new System.Data.SqlClient.SqlConnection();
+        }
+    }
+#endif
 }
