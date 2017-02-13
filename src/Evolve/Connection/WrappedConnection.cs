@@ -18,7 +18,7 @@ namespace Evolve.Connection
             _connectionOwned = connectionOwned;
         }
 
-        public IDbConnection DbConnection { get; private set; }
+        public IDbConnection DbConnection { get; }
 
         public IDbTransaction CurrentTx { get; private set; }
 

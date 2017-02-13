@@ -16,9 +16,9 @@ namespace Evolve.Metadata
             _wrappedConnection = Check.NotNull(wrappedConnection, nameof(wrappedConnection));
         }
 
-        public string Schema { get; private set; }
+        public string Schema { get; }
 
-        public string TableName { get; private set; }
+        public string TableName { get; }
 
         public abstract void Lock();
 

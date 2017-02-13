@@ -12,11 +12,11 @@ namespace Evolve.Test
             ChinookScriptPath = Path.Combine(ResourcesDirectory, "Chinook_Sqlite.sql");
         }
 
-        public static string ResourcesDirectory { get; private set; }
+        public static string ResourcesDirectory { get; }
 
-        public static string ValidMigrationScriptPath { get; private set; }
+        public static string ValidMigrationScriptPath { get; }
 
-        public static string ChinookScriptPath { get; private set; }
+        public static string ChinookScriptPath { get; }
 
         public static string SqlMigrationPrefix => "V";
 

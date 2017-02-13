@@ -14,7 +14,7 @@ namespace Evolve.Dialect
             _originalSchemaName = GetCurrentSchemaName();
         }
 
-        public IWrappedConnection WrappedConnection { get; private set; }
+        public IWrappedConnection WrappedConnection { get; }
 
         public abstract string DatabaseName { get; }
 

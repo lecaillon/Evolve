@@ -13,7 +13,7 @@ namespace Evolve.Dialect
             _wrappedConnection = Check.NotNull(wrappedConnection, nameof(wrappedConnection));
         }
 
-        public string Name { get; private set; }
+        public string Name { get; }
 
         public abstract bool IsExists();
 

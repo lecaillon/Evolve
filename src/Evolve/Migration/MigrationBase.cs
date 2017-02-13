@@ -14,11 +14,11 @@ namespace Evolve.Migration
             Version = new MigrationVersion(Check.NotNullOrEmpty(version, nameof(version)));
         }
 
-        public MigrationVersion Version { get; private set; }
+        public MigrationVersion Version { get; }
 
-        public string Description { get; private set; }
+        public string Description { get; }
 
-        public string Name { get; private set; }
+        public string Name { get; }
 
         public int CompareTo(MigrationBase other)
         {

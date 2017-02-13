@@ -29,7 +29,7 @@ namespace Evolve.Migration
 
         public static Regex MatchPattern => new Regex("^[0-9]+(?:.[0-9]+)*$");
 
-        public string Label { get; private set; }
+        public string Label { get; }
 
         public List<long> VersionParts { get; set; }
 
