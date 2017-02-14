@@ -6,7 +6,7 @@ namespace Evolve.Configuration
 {
     public static class ConfigurationFactoryProvider
     {
-        static Dictionary<string, IConfigurationProvider> providers = new Dictionary<string, IConfigurationProvider>
+        static readonly Dictionary<string, IConfigurationProvider> providers = new Dictionary<string, IConfigurationProvider>
         {
             [".config"] = new AppConfigConfigurationProvider(),
             [".json"] = new JsonConfigurationProvider(),

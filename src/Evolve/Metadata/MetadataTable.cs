@@ -7,7 +7,7 @@ namespace Evolve.Metadata
 {
     public abstract class MetadataTable : IEvolveMetadata
     {
-        protected IWrappedConnection _wrappedConnection;
+        protected readonly IWrappedConnection _wrappedConnection;
 
         public MetadataTable(string schema, string tableName, IWrappedConnection wrappedConnection)
         {

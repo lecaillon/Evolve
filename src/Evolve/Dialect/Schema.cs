@@ -5,7 +5,7 @@ namespace Evolve.Dialect
 {
     public abstract class Schema
     {
-        protected IWrappedConnection _wrappedConnection;
+        protected readonly IWrappedConnection _wrappedConnection;
 
         public Schema(string schemaName, IWrappedConnection wrappedConnection)
         {

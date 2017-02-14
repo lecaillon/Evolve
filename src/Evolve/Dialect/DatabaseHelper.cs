@@ -6,7 +6,7 @@ namespace Evolve.Dialect
 {
     public abstract class DatabaseHelper
     {
-        protected string _originalSchemaName;
+        protected readonly string _originalSchemaName;
 
         public DatabaseHelper(IWrappedConnection wrappedConnection)
         {
