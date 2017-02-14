@@ -5,7 +5,7 @@ namespace Evolve.Dialect.SQLServer
 {
     public class SQLServerSchema : Schema
     {
-        public SQLServerSchema(string schemaName, IWrappedConnection wrappedConnection) : base(schemaName, wrappedConnection)
+        public SQLServerSchema(string schemaName, WrappedConnection wrappedConnection) : base(schemaName, wrappedConnection)
         {
         }
 

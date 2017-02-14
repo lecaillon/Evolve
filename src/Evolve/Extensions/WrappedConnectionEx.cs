@@ -10,11 +10,11 @@ namespace Evolve
     {
         private const string CommandExecutionError = "DbCommand ({0}) error: {1}";
 
-        public static long QueryForLong(this IWrappedConnection wrappedConnection, string sql) => (long)ExecuteScalar(wrappedConnection, sql);
+        public static long QueryForLong(this WrappedConnection wrappedConnection, string sql) => (long)ExecuteScalar(wrappedConnection, sql);
 
-        public static string QueryForString(this IWrappedConnection wrappedConnection, string sql) => (string)ExecuteScalar(wrappedConnection, sql);
+        public static string QueryForString(this WrappedConnection wrappedConnection, string sql) => (string)ExecuteScalar(wrappedConnection, sql);
 
-        public static IEnumerable<string> QueryForListOfString(this IWrappedConnection wrappedConnection, string sql)
+        public static IEnumerable<string> QueryForListOfString(this WrappedConnection wrappedConnection, string sql)
         {
             var list = new List<string>();
             using (var reader = (IDataReader)ExecuteReader(wrappedConnection, sql))
@@ -28,7 +28,7 @@ namespace Evolve
             return list;
         }
 
-        public static IEnumerable<T> QueryForList<T>(this IWrappedConnection wrappedConnection, string sql, Func<IDataReader, T> map)
+        public static IEnumerable<T> QueryForList<T>(this WrappedConnection wrappedConnection, string sql, Func<IDataReader, T> map)
         {
             Check.NotNull(map, nameof(map));
 
@@ -41,16 +41,16 @@ namespace Evolve
             }
         }
 
-        public static int ExecuteNonQuery(this IWrappedConnection wrappedConnection, string sql)
+        public static int ExecuteNonQuery(this WrappedConnection wrappedConnection, string sql)
             => (int)Execute(wrappedConnection, sql, nameof(ExecuteNonQuery));
 
-        static object ExecuteScalar(IWrappedConnection wrappedConnection, string sql)
+        static object ExecuteScalar(WrappedConnection wrappedConnection, string sql)
             => Execute(wrappedConnection, sql, nameof(ExecuteScalar));
 
-        static object ExecuteReader(IWrappedConnection wrappedConnection, string sql)
+        static object ExecuteReader(WrappedConnection wrappedConnection, string sql)
             => Execute(wrappedConnection, sql, nameof(ExecuteReader));
 
-        static object Execute(IWrappedConnection wrappedConnection, string sql, string executeMethod)
+        static object Execute(WrappedConnection wrappedConnection, string sql, string executeMethod)
         {
             Check.NotNull(wrappedConnection, nameof(wrappedConnection));
             Check.NotNullOrEmpty(sql, nameof(sql));

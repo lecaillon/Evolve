@@ -5,9 +5,9 @@ namespace Evolve.Dialect
 {
     public abstract class Schema
     {
-        protected readonly IWrappedConnection _wrappedConnection;
+        protected readonly WrappedConnection _wrappedConnection;
 
-        public Schema(string schemaName, IWrappedConnection wrappedConnection)
+        public Schema(string schemaName, WrappedConnection wrappedConnection)
         {
             Name = Check.NotNullOrEmpty(schemaName, nameof(schemaName));
             _wrappedConnection = Check.NotNull(wrappedConnection, nameof(wrappedConnection));

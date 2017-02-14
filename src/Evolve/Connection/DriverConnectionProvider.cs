@@ -36,7 +36,7 @@ namespace Evolve.Connection
 
         private readonly string _driverName;
         private readonly string _connectionString;
-        private IWrappedConnection _wrappedConnection;
+        private WrappedConnection _wrappedConnection;
 
         public DriverConnectionProvider(string driverName, string connectionString)
         {
@@ -48,7 +48,7 @@ namespace Evolve.Connection
 
         public IDriver Driver { get; }
 
-        public IWrappedConnection GetConnection()
+        public WrappedConnection GetConnection()
         {
             if (_wrappedConnection == null)
             {

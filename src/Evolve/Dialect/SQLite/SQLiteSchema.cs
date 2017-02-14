@@ -9,7 +9,7 @@ namespace Evolve.Dialect.SQLite
         private static List<string> IgnoredSystemTableNames = new List<string> { "android_metadata", "sqlite_sequence" };
         private static List<string> UndroppableTableNames = new List<string> { "sqlite_sequence" };
 
-        public SQLiteSchema(IWrappedConnection wrappedConnection) : base("main", wrappedConnection)
+        public SQLiteSchema(WrappedConnection wrappedConnection) : base("main", wrappedConnection)
         {
         }
 

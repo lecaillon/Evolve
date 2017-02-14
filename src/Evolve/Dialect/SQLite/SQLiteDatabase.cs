@@ -5,7 +5,7 @@ namespace Evolve.Dialect.SQLite
 {
     public class SQLiteDatabase : DatabaseHelper
     {
-        public SQLiteDatabase(IWrappedConnection wrappedConnection) : base(wrappedConnection)
+        public SQLiteDatabase(WrappedConnection wrappedConnection) : base(wrappedConnection)
         {
         }
 

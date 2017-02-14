@@ -8,13 +8,13 @@ namespace Evolve.Dialect
     {
         protected readonly string _originalSchemaName;
 
-        public DatabaseHelper(IWrappedConnection wrappedConnection)
+        public DatabaseHelper(WrappedConnection wrappedConnection)
         {
             WrappedConnection = Check.NotNull(wrappedConnection, nameof(wrappedConnection));
             _originalSchemaName = GetCurrentSchemaName();
         }
 
-        public IWrappedConnection WrappedConnection { get; }
+        public WrappedConnection WrappedConnection { get; }
 
         public abstract string DatabaseName { get; }
 

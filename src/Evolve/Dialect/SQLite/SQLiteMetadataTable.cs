@@ -8,7 +8,7 @@ namespace Evolve.Dialect.SQLite
 {
     public class SQLiteMetadataTable : MetadataTable
     {
-        public SQLiteMetadataTable(string tableName, IWrappedConnection wrappedConnection) : base("main", tableName, wrappedConnection)
+        public SQLiteMetadataTable(string tableName, WrappedConnection wrappedConnection) : base("main", tableName, wrappedConnection)
         {
         }
 

@@ -7,9 +7,9 @@ namespace Evolve.Metadata
 {
     public abstract class MetadataTable : IEvolveMetadata
     {
-        protected readonly IWrappedConnection _wrappedConnection;
+        protected readonly WrappedConnection _wrappedConnection;
 
-        public MetadataTable(string schema, string tableName, IWrappedConnection wrappedConnection)
+        public MetadataTable(string schema, string tableName, WrappedConnection wrappedConnection)
         {
             Schema = Check.NotNullOrEmpty(schema, nameof(schema));
             TableName = Check.NotNullOrEmpty(tableName, nameof(tableName));

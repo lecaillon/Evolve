@@ -4,7 +4,7 @@ using System.Data;
 
 namespace Evolve.Connection
 {
-    public class WrappedConnection : IWrappedConnection
+    public class WrappedConnection : IDisposable
     {
         private readonly bool _connectionOwned;
         private int _openedCount;
