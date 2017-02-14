@@ -18,10 +18,19 @@ namespace Evolve.Connection
             _connectionOwned = connectionOwned;
         }
 
+        /// <summary>
+        ///     Gets the underlying <see cref="IDbConnection" /> used to connect to the database.
+        /// </summary>
         public IDbConnection DbConnection { get; }
 
+        /// <summary>
+        ///     Gets the current transaction.
+        /// </summary>
         public IDbTransaction CurrentTx { get; private set; }
 
+        /// <summary>
+        ///     Begins a new transaction.
+        /// </summary>
         public IDbTransaction BeginTransaction(IsolationLevel isolationLevel = IsolationLevel.Unspecified)
         {
             if (CurrentTx != null)
@@ -35,6 +44,9 @@ namespace Evolve.Connection
             return CurrentTx;
         }
 
+        /// <summary>
+        ///     Commits all changes made to the database in the current transaction.
+        /// </summary>
         public void Commit()
         {
             if (CurrentTx == null)
@@ -46,6 +58,9 @@ namespace Evolve.Connection
             ClearTransaction();
         }
 
+        /// <summary>
+        ///     Discards all changes made to the database in the current transaction.
+        /// </summary>
         public void Rollback()
         {
             if (CurrentTx == null)
@@ -57,6 +72,9 @@ namespace Evolve.Connection
             ClearTransaction();
         }
 
+        /// <summary>
+        ///     Opens the connection to the database.
+        /// </summary>
         public void Open()
         {
             if (DbConnection.State == ConnectionState.Broken)
@@ -80,6 +98,9 @@ namespace Evolve.Connection
             }
         }
 
+        /// <summary>
+        ///     Closes the connection to the database.
+        /// </summary>
         public void Close()
         {
             if (_openedCount > 0 && --_openedCount == 0 && _openedInternally)
