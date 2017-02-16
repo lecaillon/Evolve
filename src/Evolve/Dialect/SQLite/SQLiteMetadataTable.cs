@@ -34,7 +34,6 @@ namespace Evolve.Dialect.SQLite
 
         protected override bool IsExists()
         {
-            long res = _wrappedConnection.QueryForLong($"SELECT COUNT(tbl_name) FROM sqlite_master WHERE type = 'table' AND tbl_name = '{TableName}'");
             return _wrappedConnection.QueryForLong($"SELECT COUNT(tbl_name) FROM sqlite_master WHERE type = 'table' AND tbl_name = '{TableName}'") == 1;
         }
 
