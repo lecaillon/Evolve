@@ -25,139 +25,153 @@ namespace Evolve.Dialect.PostgreSQL
 
         public override bool Create()
         {
-            _wrappedConnection.ExecuteNonQuery($"CREATE SCHEMA [{Name}]");
+            _wrappedConnection.ExecuteNonQuery($"CREATE SCHEMA \"{Name}\"");
 
             return true;
         }
 
         public override bool Drop()
         {
-            _wrappedConnection.ExecuteNonQuery($"DROP SCHEMA [{Name}] CASCADE");
+            _wrappedConnection.ExecuteNonQuery($"DROP SCHEMA \"{Name}\" CASCADE");
 
             return true;
         }
 
         public override bool Clean()
         {
-            throw new NotImplementedException();
-        }
-
-        /*
-
-        public override bool Clean()
-        {
-            CleanForeignKeys();
-            CleanDefaultConstraints();
-            CleanProcedures();
+            CleanMaterializedViews(); // PostgreSQL >= 9.3
             CleanViews();
             CleanTables();
-            CleanFunctions();
-            CleanTypes();
-            CleanSynonyms();
-            CleanSequences(); // SQLServer >= 11
+            CleanSequences();
+            CleanBaseTypes(true);
+            CleanBaseAggregates();
+            CleanRoutines();
+            CleanEnums();
+            CleanDomains();
+            CleanBaseTypes(false);
 
             return true;
         }
 
-        protected void CleanForeignKeys()
+        protected void CleanMaterializedViews()
         {
-            string sql = "SELECT TABLE_NAME, CONSTRAINT_NAME " +
-                         "FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS " +
-                         "WHERE CONSTRAINT_TYPE IN ('FOREIGN KEY','CHECK') " +
-                        $"AND TABLE_SCHEMA = '{Name}'";
-
-            _wrappedConnection.QueryForList(sql, (r) => new { Table = r.GetString(0), Constraint = r.GetString(1) }).ToList().ForEach(x =>
+            var version = _wrappedConnection.QueryForString("SHOW server_version;").Split('.');
+            if(int.Parse(version[0]) < 9 && int.Parse(version[1]) < 3)
             {
-                _wrappedConnection.ExecuteNonQuery($"ALTER TABLE [{Name}].[{x.Table}] DROP CONSTRAINT [{x.Constraint}]");
-            });
-        }
+                return;
+            }
 
-        protected void CleanDefaultConstraints()
-        {
-            string sql = "SELECT t.name as TABLE_NAME, d.name as CONSTRAINT_NAME " +
-                         "FROM sys.tables t " +
-                         "INNER JOIN sys.default_constraints d ON d.parent_object_id = t.object_id " +
-                         "INNER JOIN sys.schemas s ON s.schema_id = t.schema_id " +
-                        $"WHERE s.name = '{Name}'";
-
-            _wrappedConnection.QueryForList(sql, (r) => new { Table = r.GetString(0), Constraint = r.GetString(1) }).ToList().ForEach(x =>
+            string sql = $"SELECT relname FROM pg_catalog.pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace WHERE c.relkind = 'm' AND n.nspname = '{Name}'";
+            _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(view =>
             {
-                _wrappedConnection.ExecuteNonQuery($"ALTER TABLE [{Name}].[{x.Table}] DROP CONSTRAINT [{x.Constraint}]");
-            });
-        }
-
-        protected void CleanProcedures()
-        {
-            string sql = $"SELECT routine_name FROM INFORMATION_SCHEMA.ROUTINES WHERE routine_schema = '{Name}' AND routine_type = 'PROCEDURE' ORDER BY created DESC";
-            _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(proc =>
-            {
-                _wrappedConnection.ExecuteNonQuery($"DROP PROCEDURE [{Name}].[{proc}]");
-            });
-        }
-
-        protected void CleanViews()
-        {
-            string sql = $"SELECT table_name FROM INFORMATION_SCHEMA.VIEWS WHERE table_schema = '{Name}'";
-            _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(vw =>
-            {
-                _wrappedConnection.ExecuteNonQuery($"DROP VIEW [{Name}].[{vw}]");
-            });
-        }
-
-        protected void CleanTables()
-        {
-            string sql = $"SELECT table_name FROM INFORMATION_SCHEMA.TABLES WHERE table_type='BASE TABLE' AND table_schema = '{Name}'";
-            _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(t =>
-            {
-                _wrappedConnection.ExecuteNonQuery($"DROP TABLE [{Name}].[{t}]");
-            });
-        }
-
-        protected void CleanFunctions()
-        {
-            string sql = $"SELECT routine_name FROM INFORMATION_SCHEMA.ROUTINES WHERE routine_schema = '{Name}' AND routine_type = 'FUNCTION' ORDER BY created DESC";
-            _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(fn =>
-            {
-                _wrappedConnection.ExecuteNonQuery($"DROP FUNCTION [{Name}].[{fn}]");
-            });
-        }
-
-        protected void CleanTypes()
-        {
-            string sql = $"SELECT t.name FROM sys.types t INNER JOIN sys.schemas s ON t.schema_id = s.schema_id WHERE t.is_user_defined = 1 AND s.name = '{Name}'";
-            _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(t =>
-            {
-                _wrappedConnection.ExecuteNonQuery($"DROP TYPE [{Name}].[{t}]");
-            });
-        }
-
-        protected void CleanSynonyms()
-        {
-            string sql = $"SELECT sn.name FROM sys.synonyms sn INNER JOIN sys.schemas s ON sn.schema_id = s.schema_id WHERE s.name = '{Name}'";
-            _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(s =>
-            {
-                _wrappedConnection.ExecuteNonQuery($"DROP SYNONYM [{Name}].[{s}]");
+                _wrappedConnection.ExecuteNonQuery($"DROP MATERIALIZED VIEW IF EXISTS \"{Name}\".\"{view}\" CASCADE");
             });
         }
 
         protected void CleanSequences()
         {
-            string sqlversion = "SELECT CAST (CASE WHEN CAST(SERVERPROPERTY ('productversion') as VARCHAR) LIKE '8%' THEN 8 " +
-                                                  "WHEN CAST(SERVERPROPERTY ('productversion') as VARCHAR) LIKE '9%' THEN 9 " +
-                                                  "WHEN CAST(SERVERPROPERTY ('productversion') as VARCHAR) LIKE '10%' THEN 10 " +
-                                                  "ELSE CAST(LEFT(CAST(SERVERPROPERTY ('productversion') as VARCHAR), 2) as int) " +
-                                             "END AS int)";
-
-            if (_wrappedConnection.QueryForLong(sqlversion) < 11)
-                return;
-
-            string sql = $"SELECT sequence_name FROM INFORMATION_SCHEMA.SEQUENCES WHERE sequence_schema = '{Name}'";
-            _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(s =>
+            string sql = $"SELECT sequence_name FROM information_schema.sequences WHERE sequence_schema = '{Name}'";
+            _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(seq =>
             {
-                _wrappedConnection.ExecuteNonQuery($"DROP SEQUENCE [{Name}].[{s}]");
+                _wrappedConnection.ExecuteNonQuery($"DROP SEQUENCE IF EXISTS \"{Name}\".\"{seq}\"");
             });
         }
 
-    */
+        protected void CleanBaseTypes(bool recreate)
+        {
+            string sql = "SELECT typname, typcategory " +
+                         "FROM pg_catalog.pg_type t " +
+                         "WHERE (t.typrelid = 0 OR (SELECT c.relkind = 'c' FROM pg_catalog.pg_class c WHERE c.oid = t.typrelid)) " +
+                         "AND NOT EXISTS(SELECT 1 FROM pg_catalog.pg_type el WHERE el.oid = t.typelem AND el.typarray = t.oid) " +
+                        $"AND t.typnamespace in (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = '{Name}')";
+
+            _wrappedConnection.QueryForList(sql, r => new { TypeName = r.GetString(0), TypeCategory = r.GetString(1) }).ToList().ForEach(x =>
+            {
+                _wrappedConnection.ExecuteNonQuery($"DROP TYPE IF EXISTS \"{Name}\".\"{x.TypeName}\" CASCADE");
+            });
+
+            if(recreate)
+            {
+                _wrappedConnection.QueryForList(sql, r => new { TypeName = r.GetString(0), TypeCategory = r.GetString(1) }).ToList().ForEach(x =>
+                {
+                    // Only recreate Pseudo-types (P) and User-defined types (U)
+                    if(x.TypeCategory == "P" || x.TypeCategory == "U")
+                    {
+                        _wrappedConnection.ExecuteNonQuery($"CREATE TYPE \"{Name}\".\"{x.TypeName}\"");
+                    }
+                });
+            }
+        }
+
+        protected void CleanBaseAggregates()
+        {
+            string sql = "SELECT proname, oidvectortypes(proargtypes) AS args " +
+                         "FROM pg_proc INNER JOIN pg_namespace ns ON (pg_proc.pronamespace = ns.oid) " +
+                        $"WHERE pg_proc.proisagg = true AND ns.nspname = '{Name}'";
+
+            _wrappedConnection.QueryForList(sql, r => new { ProName = r.GetString(0), Args = r.GetString(1) }).ToList().ForEach(x =>
+            {
+                _wrappedConnection.ExecuteNonQuery($"DROP AGGREGATE IF EXISTS \"{Name}\".\"{x.ProName}\" (\"{x.Args})\" CASCADE");
+            });
+        }
+
+        protected void CleanRoutines()
+        {
+            string sql = "SELECT proname, oidvectortypes(proargtypes) AS args " +
+                         "FROM pg_proc INNER JOIN pg_namespace ns ON (pg_proc.pronamespace = ns.oid) " +
+                         "LEFT JOIN pg_depend dep ON dep.objid = pg_proc.oid AND dep.deptype = 'e' " +
+                        $"WHERE pg_proc.proisagg = false AND ns.nspname = '{Name}' AND dep.objid IS NULL";
+
+            _wrappedConnection.QueryForList(sql, r => new { ProName = r.GetString(0), Args = r.GetString(1) }).ToList().ForEach(x =>
+            {
+                _wrappedConnection.ExecuteNonQuery($"DROP FUNCTION  IF EXISTS \"{Name}\".\"{x.ProName}\" (\"{x.Args})\" CASCADE");
+            });
+        }
+
+        protected void CleanEnums()
+        {
+            string sql = $"SELECT t.typname FROM pg_catalog.pg_type t INNER JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace WHERE n.nspname = '{Name}' and t.typtype = 'e'";
+            _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(enumName =>
+            {
+                _wrappedConnection.ExecuteNonQuery($"DROP TYPE \"{Name}\".\"{enumName}\"");
+            });
+        }
+
+        protected void CleanDomains()
+        {
+            string sql = $"SELECT domain_name FROM information_schema.domains WHERE domain_schema = '{Name}'";
+            _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(domain =>
+            {
+                _wrappedConnection.ExecuteNonQuery($"DROP DOMAIN \"{Name}\".\"{domain}\"");
+            });
+        }
+
+        protected void CleanViews()
+        {
+            string sql = "SELECT relname " +
+                         "FROM pg_catalog.pg_class c " +
+                         "JOIN pg_namespace n ON n.oid = c.relnamespace " +
+                         "LEFT JOIN pg_depend dep ON dep.objid = c.oid AND dep.deptype = 'e' " +
+                        $"WHERE c.relkind = 'v' AND  n.nspname = '{Name}' AND dep.objid IS NULL";
+
+            _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(view =>
+            {
+                _wrappedConnection.ExecuteNonQuery($"DROP VIEW IF EXISTS \"{Name}\".\"{view}\" CASCADE");
+            });
+        }
+
+        protected void CleanTables()
+        {
+            string sql = "SELECT t.table_name " +
+                         "FROM information_schema.tables t " +
+                        $"WHERE table_schema = '{Name}' " +
+                         "AND table_type='BASE TABLE' " +
+                         "AND NOT (SELECT EXISTS (SELECT inhrelid FROM pg_catalog.pg_inherits WHERE inhrelid = (quote_ident(t.table_schema)||'.'||quote_ident(t.table_name))::regclass::oid))";
+
+            _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(table =>
+            {
+                _wrappedConnection.ExecuteNonQuery($"DROP TABLE IF EXISTS \"{Name}\".\"{table}\" CASCADE");
+            });
+        }
     }
 }
