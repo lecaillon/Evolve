@@ -19,19 +19,6 @@ namespace Evolve.Dialect.SQLite
         {
         }
 
-        public override bool CreateIfNotExists()
-        {
-            if (IsExists())
-            {
-                return false;
-            }
-            else
-            {
-                Create();
-                return true;
-            }
-        }
-
         protected override bool IsExists()
         {
             return _wrappedConnection.QueryForLong($"SELECT COUNT(tbl_name) FROM sqlite_master WHERE type = 'table' AND tbl_name = '{TableName}'") == 1;
@@ -41,14 +28,14 @@ namespace Evolve.Dialect.SQLite
         {
             string sql = $"CREATE TABLE [{TableName}] " +
              "( " +
-                 "[id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                 "[version] VARCHAR(50), " +
-                 "[description] VARCHAR(200) NOT NULL, " +
-                 "[name] VARCHAR(1000) NOT NULL, " +
-                 "[checksum] VARCHAR(32), " +
-                 "[installed_by] VARCHAR(100) NOT NULL, " +
-                 "[installed_on] TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%f','now')), " +
-                 "[success] BOOLEAN NOT NULL " +
+                 "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                 "version VARCHAR(50), " +
+                 "description VARCHAR(200) NOT NULL, " +
+                 "name VARCHAR(1000) NOT NULL, " +
+                 "checksum VARCHAR(32), " +
+                 "installed_by VARCHAR(100) NOT NULL, " +
+                 "installed_on TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%f','now')), " +
+                 "success BOOLEAN NOT NULL " +
              ")";
 
             _wrappedConnection.ExecuteNonQuery(sql);
@@ -56,7 +43,7 @@ namespace Evolve.Dialect.SQLite
 
         protected override void InternalAddMigrationMetadata(MigrationScript migration, bool success)
         {
-            string sql = $"INSERT INTO [{TableName}] ([version], [description], [name], [checksum], [installed_by], [success]) VALUES" +
+            string sql = $"INSERT INTO [{TableName}] (version, description, name, checksum, installed_by, success) VALUES" +
              "( " +
                 $"'{migration.Version}', " +
                 $"'{migration.Description.TruncateWithEllipsis(200)}', " +
@@ -71,7 +58,7 @@ namespace Evolve.Dialect.SQLite
 
         protected override IEnumerable<MigrationMetadata> InternalGetAllMigrationMetadata()
         {
-            string sql = $"SELECT [id], [version], [description], [name], [checksum], [installed_by], [installed_on], [success] FROM [{TableName}]";
+            string sql = $"SELECT id, version, description, name, checksum, installed_by, installed_on, success FROM [{TableName}]";
             return _wrappedConnection.QueryForList(sql, r =>
                    {
                        return new MigrationMetadata(r.GetString(1), r.GetString(2), r.GetString(3))

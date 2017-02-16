@@ -22,7 +22,18 @@ namespace Evolve.Metadata
 
         public abstract void Lock();
 
-        public abstract bool CreateIfNotExists();
+        public virtual bool CreateIfNotExists()
+        {
+            if (IsExists())
+            {
+                return false;
+            }
+            else
+            {
+                Create();
+                return true;
+            }
+        }
 
         public void AddMigrationMetadata(MigrationScript migration, bool success)
         {
