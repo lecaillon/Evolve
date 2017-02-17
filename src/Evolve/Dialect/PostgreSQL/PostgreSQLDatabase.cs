@@ -36,21 +36,21 @@ namespace Evolve.Dialect.PostgreSQL
                 return string.Empty;
             }
 
-            string cleanSchemaName = schemaName.Replace("\"", "")
-                                               .Replace("$user", "")
-                                               .Trim();
+            string newSchemaName = schemaName.Replace("\"", "")
+                                             .Replace("$user", "")
+                                             .Trim();
 
-            if(cleanSchemaName.StartsWith(","))
+            if(newSchemaName.StartsWith(","))
             {
-                cleanSchemaName = cleanSchemaName.Substring(1);
+                newSchemaName = newSchemaName.Substring(1);
             }
 
-            if (cleanSchemaName.Contains(","))
+            if (newSchemaName.Contains(","))
             {
-                cleanSchemaName = cleanSchemaName.Substring(0, cleanSchemaName.IndexOf(","));
+                newSchemaName = newSchemaName.Substring(0, newSchemaName.IndexOf(","));
             }
 
-            return cleanSchemaName.Trim();
+            return newSchemaName.Trim();
         }
     }
 }
