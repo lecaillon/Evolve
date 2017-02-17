@@ -11,7 +11,7 @@ namespace Evolve.Test.Dialect.SQLite
             using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
             {
                 var db = new SQLiteDatabase(connection);
-                Assert.Equal("sqlite", db.DatabaseName);
+                Assert.Equal("SQLite", db.DatabaseName);
             }
         }
 

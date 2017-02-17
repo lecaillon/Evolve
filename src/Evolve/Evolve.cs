@@ -30,7 +30,14 @@ namespace Evolve
         public Encoding Encoding { get; set; }
         public IEnumerable<string> Locations { get; set; }
         public string MetadaTableName { get; set; }
-        public string MetadaTableSchema { get; set; }
+
+        private string _metadaTableSchema;
+        public string MetadaTableSchema
+        {
+            get { return string.IsNullOrWhiteSpace(_metadaTableSchema) ? DefaultSchema : _metadaTableSchema; }
+            set { _metadaTableSchema = value; }
+        }
+
         public string PlaceholderPrefix { get; set; }
         public string PlaceholderSuffix { get; set; }
         public string SqlMigrationPrefix { get; set; }

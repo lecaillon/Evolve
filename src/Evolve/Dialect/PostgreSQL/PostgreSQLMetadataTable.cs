@@ -24,7 +24,7 @@ namespace Evolve.Dialect.PostgreSQL
 
         protected override void Create()
         {
-            string sql = $"CREATE TABLE \"{TableName}\" " +
+            string sql = $"CREATE TABLE \"{Schema}\".\"{TableName}\" " +
              "( " +
                  "id SERIAL PRIMARY KEY NOT NULL, " +
                  "version VARCHAR(50), " +
@@ -41,7 +41,7 @@ namespace Evolve.Dialect.PostgreSQL
 
         protected override void InternalAddMigrationMetadata(MigrationScript migration, bool success)
         {
-            string sql = $"INSERT INTO \"{TableName}\" (version, description, name, checksum, installed_by, success) VALUES" +
+            string sql = $"INSERT INTO \"{Schema}\".\"{TableName}\" (version, description, name, checksum, installed_by, success) VALUES" +
              "( " +
                 $"'{migration.Version}', " +
                 $"'{migration.Description.TruncateWithEllipsis(200)}', " +
@@ -56,7 +56,7 @@ namespace Evolve.Dialect.PostgreSQL
 
         protected override IEnumerable<MigrationMetadata> InternalGetAllMigrationMetadata()
         {
-            string sql = $"SELECT id, version, description, name, checksum, installed_by, installed_on, success FROM \"{TableName}\"";
+            string sql = $"SELECT id, version, description, name, checksum, installed_by, installed_on, success FROM \"{Schema}\".\"{TableName}\"";
             return _wrappedConnection.QueryForList(sql, r =>
             {
                 return new MigrationMetadata(r.GetString(1), r.GetString(2), r.GetString(3))

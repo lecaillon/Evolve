@@ -9,7 +9,7 @@ namespace Evolve.Dialect.SQLite
         {
         }
 
-        public override string DatabaseName => "sqlite";
+        public override string DatabaseName => "SQLite";
 
         public override string GetCurrentSchemaName() => "main";
 
