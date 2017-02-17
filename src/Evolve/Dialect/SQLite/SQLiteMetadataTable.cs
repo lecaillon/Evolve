@@ -8,6 +8,11 @@ namespace Evolve.Dialect.SQLite
 {
     public class SQLiteMetadataTable : MetadataTable
     {
+        /// <summary>
+        ///     Constructor.
+        /// </summary>
+        /// <param name="tableName"> Metadata table name. </param>
+        /// <param name="wrappedConnection"> A connection to the database. </param>
         public SQLiteMetadataTable(string tableName, WrappedConnection wrappedConnection) : base("main", tableName, wrappedConnection)
         {
         }

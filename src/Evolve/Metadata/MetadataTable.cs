@@ -9,6 +9,12 @@ namespace Evolve.Metadata
     {
         protected readonly WrappedConnection _wrappedConnection;
 
+        /// <summary>
+        ///     Constructor.
+        /// </summary>
+        /// <param name="schema"> Existing database schema name. </param>
+        /// <param name="tableName"> Metadata table name. </param>
+        /// <param name="wrappedConnection"> A connection to the database. </param>
         public MetadataTable(string schema, string tableName, WrappedConnection wrappedConnection)
         {
             Schema = Check.NotNullOrEmpty(schema, nameof(schema));

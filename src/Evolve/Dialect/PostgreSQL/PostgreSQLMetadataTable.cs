@@ -8,7 +8,14 @@ namespace Evolve.Dialect.PostgreSQL
 {
     public class PostgreSQLMetadataTable : MetadataTable
     {
-        public PostgreSQLMetadataTable(string schema, string tableName, WrappedConnection wrappedConnection) : base(schema, tableName, wrappedConnection)
+        /// <summary>
+        ///     Constructor.
+        /// </summary>
+        /// <param name="schema"> Existing database schema name. </param>
+        /// <param name="tableName"> Metadata table name. </param>
+        /// <param name="wrappedConnection"> A connection to the database. </param>
+        public PostgreSQLMetadataTable(string schema, string tableName, WrappedConnection wrappedConnection) 
+            : base(schema, tableName, wrappedConnection)
         {
         }
 

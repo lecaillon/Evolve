@@ -13,7 +13,7 @@ namespace Evolve.Dialect.PostgreSQL
 
         public override IEvolveMetadata GetMetadataTable(string schema, string tableName) => new PostgreSQLMetadataTable(schema, tableName, WrappedConnection);
 
-        public override string GetCurrentSchemaName() => WrappedConnection.QueryForString("SHOW search_path");
+        public override string GetCurrentSchemaName() => CleanSchemaName(WrappedConnection.QueryForString("SHOW search_path"));
 
         protected override Schema GetSchema(string schemaName) => new PostgreSQLSchema(schemaName, WrappedConnection);
 
@@ -27,6 +27,30 @@ namespace Evolve.Dialect.PostgreSQL
             {
                 WrappedConnection.ExecuteNonQuery($"SET search_path = \"{toSchemaName}\"");
             }
+        }
+
+        private string CleanSchemaName(string schemaName)
+        {
+            if(string.IsNullOrWhiteSpace(schemaName))
+            {
+                return string.Empty;
+            }
+
+            string cleanSchemaName = schemaName.Replace("\"", "")
+                                               .Replace("$user", "")
+                                               .Trim();
+
+            if(cleanSchemaName.StartsWith(","))
+            {
+                cleanSchemaName = cleanSchemaName.Substring(1);
+            }
+
+            if (cleanSchemaName.Contains(","))
+            {
+                cleanSchemaName = cleanSchemaName.Substring(0, cleanSchemaName.IndexOf(","));
+            }
+
+            return cleanSchemaName.Trim();
         }
     }
 }
