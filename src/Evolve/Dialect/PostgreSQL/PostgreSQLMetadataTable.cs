@@ -21,7 +21,7 @@ namespace Evolve.Dialect.PostgreSQL
 
         public override void Lock()
         {
-            _wrappedConnection.ExecuteNonQuery($"SELECT * FROM '{TableName}' FOR UPDATE");
+            _wrappedConnection.ExecuteNonQuery($"SELECT * FROM \"{Schema}\".\"{TableName}\" FOR UPDATE");
         }
 
         protected override bool IsExists()
@@ -74,8 +74,7 @@ namespace Evolve.Dialect.PostgreSQL
                     InstalledOn = r.GetDateTime(6),
                     Success = r.GetBoolean(7)
                 };
-            })
-            .DefaultIfEmpty();
+            });
         }
     }
 }
