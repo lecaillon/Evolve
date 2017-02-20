@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Evolve.Dialect.SQLite;
 using Evolve.Metadata;
 using Evolve.Migration;
@@ -52,6 +53,8 @@ namespace Evolve.Test.Dialect.SQLite
                 Assert.Equal(migrationScript.Version, migrationMetadata.Version);
                 Assert.Equal(true, migrationMetadata.Success);
                 Assert.Equal(string.Empty, migrationMetadata.InstalledBy);
+                Assert.True(migrationMetadata.Id > 0);
+                Assert.True(migrationMetadata.InstalledOn.Date == DateTime.Now.Date);
             }
         }
 

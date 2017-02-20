@@ -8,6 +8,7 @@ using System.Threading;
 using Evolve.Connection;
 using Evolve.Dialect;
 using Evolve.Dialect.PostgreSQL;
+using Evolve.Metadata;
 using Evolve.Migration;
 using Npgsql;
 using Xunit;
@@ -67,13 +68,23 @@ namespace Evolve.IntegrationTest.PostgreSQL
             // Lock MetadataTable
             metadata.Lock();
 
-            // Add metadata migration
-            var migrationScript = new MigrationScript(MigrationScriptPath, "1.3.2", "Migration_description");
-            metadata.SaveMigration(migrationScript, true);
-            Assert.True(metadata.GetAllMigrationMetadata().Count() == 1, "One migration metadata should be found.");
+            // Save NewSchema metadata
+            metadata.Save(MetadataType.NewSchema, "0", "New schema created.", metadataSchemaName);
+            Assert.True(metadata.CanDropSchema(metadataSchemaName), $"[{metadataSchemaName}] should be droppable.");
+            Assert.False(metadata.CanCleanSchema(metadataSchemaName), $"[{metadataSchemaName}] should not be cleanable.");
 
-            // compléter le test : comparer en détail migrationScript et metadata.GetAllMigrationMetadata()
-            // ajouter la méthode MetadataTable.AddSchemaMarker()
+            // Add metadata migration
+            var migrationScript = new MigrationScript(MigrationScriptPath, "1_3_2", "Migration_description");
+            metadata.SaveMigration(migrationScript, true);
+            var migrationMetadata = metadata.GetAllMigrationMetadata().FirstOrDefault();
+            Assert.True(migrationMetadata != null, "One migration metadata should be found.");
+            Assert.True(migrationMetadata.Version == migrationScript.Version, "Metadata version is not the same.");
+            Assert.True(migrationMetadata.Checksum == migrationScript.CalculateChecksum(), "Metadata checksum is not the same.");
+            Assert.True(migrationMetadata.Description == migrationScript.Description, "Metadata descritpion is not the same.");
+            Assert.True(migrationMetadata.Name == migrationScript.Name, "Metadata name is not the same.");
+            Assert.True(migrationMetadata.Success == true, "Metadata success is not true.");
+            Assert.True(migrationMetadata.Id > 0, "Metadata id is not set.");
+            Assert.True(migrationMetadata.InstalledOn.Date == DateTime.Now.Date, "Installed date is not set.");
 
             // Assert metadata schema is not empty
             Assert.False(metadataSchema.IsEmpty(), $"[{metadataSchemaName}] should not be empty.");
