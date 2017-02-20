@@ -47,7 +47,7 @@ namespace Evolve.Metadata
             Check.NotNull(migration, nameof(migration));
 
             CreateIfNotExists();
-            InternalSave(new MigrationMetadata(migration.Version.Label, migration.Description, migration.Path, MetadataType.Migration)
+            InternalSave(new MigrationMetadata(migration.Version.Label, migration.Description, migration.Name, MetadataType.Migration)
             {
                 Checksum = migration.CalculateChecksum(),
                 Success = success

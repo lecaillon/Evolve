@@ -11,7 +11,7 @@ namespace Evolve.Migration
         public MigrationBase(string version, string description, string name, MetadataType type)
         {
             Description = Check.NotNullOrEmpty(description, nameof(description));
-            Name = Check.NotNullOrEmpty(name, nameof(name));
+            Name = Check.NotNull(name, nameof(name));
             Version = new MigrationVersion(Check.NotNullOrEmpty(version, nameof(version)));
             Type = type;
         }

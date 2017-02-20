@@ -8,7 +8,7 @@ namespace Evolve.Migration
     public class MigrationMetadata : MigrationBase
     {
         public MigrationMetadata(string version, string description, string name, MetadataType type) 
-            : base(version, description, Path.GetFileNameWithoutExtension(Check.NotNullOrEmpty(name, nameof(name))), type)
+            : base(version, description, name, type)
         {
         }
 
