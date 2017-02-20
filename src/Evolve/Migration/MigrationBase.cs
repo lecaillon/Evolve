@@ -1,4 +1,5 @@
-﻿using Evolve.Utilities;
+﻿using Evolve.Metadata;
+using Evolve.Utilities;
 using System;
 
 namespace Evolve.Migration
@@ -7,11 +8,12 @@ namespace Evolve.Migration
     {
         private const string InvalidObjectType = "Object must be of type MigrationBase.";
 
-        public MigrationBase(string version, string description, string name)
+        public MigrationBase(string version, string description, string name, MetadataType type)
         {
             Description = Check.NotNullOrEmpty(description, nameof(description));
             Name = Check.NotNullOrEmpty(name, nameof(name));
             Version = new MigrationVersion(Check.NotNullOrEmpty(version, nameof(version)));
+            Type = type;
         }
 
         public MigrationVersion Version { get; }
@@ -19,6 +21,8 @@ namespace Evolve.Migration
         public string Description { get; }
 
         public string Name { get; }
+
+        public MetadataType Type { get; }
 
         public int CompareTo(MigrationBase other)
         {

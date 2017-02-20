@@ -2,13 +2,14 @@
 using System.IO;
 using System.Security.Cryptography;
 using Evolve.Utilities;
+using Evolve.Metadata;
 
 namespace Evolve.Migration
 {
     public class MigrationScript : MigrationBase
     {
         public MigrationScript(string path, string version, string description) 
-            : base(version, description, System.IO.Path.GetFileNameWithoutExtension(Check.FileExists(path, nameof(path))))
+            : base(version, description, System.IO.Path.GetFileNameWithoutExtension(Check.FileExists(path, nameof(path))), MetadataType.Migration)
         {
             Path = path;
         }

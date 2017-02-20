@@ -3,7 +3,8 @@
     public enum MetadataType
     {
         Migration,
-        SchemaCreated,
-        Version
+        NewSchema,
+        EmptySchema,
+        StartVersion
     }
 }

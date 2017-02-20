@@ -34,6 +34,7 @@ namespace Evolve.Dialect.SQLite
             string sql = $"CREATE TABLE [{TableName}] " +
              "( " +
                  "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                 "type INTEGER, " +
                  "version VARCHAR(50), " +
                  "description VARCHAR(200) NOT NULL, " +
                  "name VARCHAR(1000) NOT NULL, " +

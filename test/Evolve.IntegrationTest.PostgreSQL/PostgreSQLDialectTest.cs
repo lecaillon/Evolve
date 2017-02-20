@@ -69,7 +69,7 @@ namespace Evolve.IntegrationTest.PostgreSQL
 
             // Add metadata migration
             var migrationScript = new MigrationScript(MigrationScriptPath, "1.3.2", "Migration_description");
-            metadata.SaveMigrationMetadata(migrationScript, true);
+            metadata.SaveMigration(migrationScript, true);
             Assert.True(metadata.GetAllMigrationMetadata().Count() == 1, "One migration metadata should be found.");
 
             // compléter le test : comparer en détail migrationScript et metadata.GetAllMigrationMetadata()

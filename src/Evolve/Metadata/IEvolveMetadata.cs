@@ -1,5 +1,6 @@
 ﻿using Evolve.Migration;
 using System.Collections.Generic;
+using System;
 
 namespace Evolve.Metadata
 {
@@ -14,7 +15,7 @@ namespace Evolve.Metadata
         /// <summary>
         ///     Create the metadata store if not exists.
         /// </summary>
-        /// <returns> Returns true if created, false if it already exists. </returns>
+        /// <returns> True if created, false if it already exists. </returns>
         bool CreateIfNotExists();
 
         /// <summary>
@@ -22,20 +23,30 @@ namespace Evolve.Metadata
         /// </summary>
         /// <param name="migration"> The migration script metadata. </param>
         /// <param name="success"> True if the migration succeeded, false otherwise. </param>
-        void SaveMigrationMetadata(MigrationScript migration, bool success);
+        void SaveMigration(MigrationScript migration, bool success);
 
         /// <summary>
-        ///     Register the name of the schema created by Evolve.
+        ///     <para>
+        ///         Save generic Evolve metadata.
+        ///     </para>
+        ///     <para>
+        ///         Use <see cref="MetadataType.NewSchema"/> when Evolve has created the schema.
+        ///     </para>
+        ///     <para>
+        ///         Use <see cref="MetadataType.EmptySchema"/> when the schema already exists but is empty when Evolve first run.
+        ///     </para>
+        ///     <para>
+        ///         Use <see cref="MetadataType.StartVersion"/> to define a version used as a starting point for the future migration.
+        ///     </para>
         /// </summary>
-        /// <param name="schemaName"> Name of the schema created by Evolve. </param>
-        void SaveCreatedSchemaName(string schemaName);
-
-        /// <summary>
-        ///     Define a version used as a starting point for the future migration.
-        ///     All the migration scripts prior to this mark are ignored.
-        /// </summary>
-        /// <param name="version"> The migration version to start with. </param>
-        void TagMigrationVersion(string version);
+        /// <param name="type"> Metadata type to save. Cannot be null. </param>
+        /// <param name="version"> Version of the record . Cannot be null. </param>
+        /// <param name="description"> Metadata description. Cannot be null. </param>
+        /// <param name="name"> Metadata name. Cannot be null. </param>
+        /// <exception cref="ArgumentException">
+        ///     Throws ArgumentException when the type of the metadata to save is <see cref="MetadataType.Migration"/>. 
+        /// </exception>
+        void Save(MetadataType type, string version, string description, string name);
 
         /// <summary>
         ///     Returns all the migration metadata.
@@ -44,15 +55,36 @@ namespace Evolve.Metadata
         IEnumerable<MigrationMetadata> GetAllMigrationMetadata();
 
         /// <summary>
-        ///     True if Evolve has created the schema, false otherwise.
+        ///     <para>
+        ///         Returns True if Evolve can drop the schema, false otherwise.
+        ///     </para>
+        ///     <para>
+        ///         Evolve can drop the schema if it created it in the first place.
+        ///     </para>
         /// </summary>
-        /// <returns></returns>
+        /// <returns> True if Evolve can drop the schema, false otherwise. </returns>
         bool CanDropSchema(string schemaName);
 
         /// <summary>
-        /// 
+        ///     <para>
+        ///         Returns True if Evolve can clean the schema, false otherwise.
+        ///     </para>
+        ///     <para>
+        ///         Evolve can clean the schema if it was empty when it first run.
+        ///     </para>
         /// </summary>
-        /// <returns></returns>
-        string FindLatestVersionTagged();
+        /// <returns> True if Evolve can clean the schema, false otherwise. </returns>
+        bool CanCleanSchema(string schemaName);
+
+        /// <summary>
+        ///     <para>
+        ///         Returns the version where the migration shall begin. (default: 0)
+        ///     </para>
+        ///     <para>
+        ///         All the migration scripts prior to this mark are ignored.
+        ///     </para>
+        /// </summary>
+        /// <returns> The migration starting point. </returns>
+        MigrationVersion FindStartVersion();
     }
 }

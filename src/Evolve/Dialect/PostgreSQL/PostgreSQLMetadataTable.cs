@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Evolve.Connection;
+﻿using Evolve.Connection;
 using Evolve.Metadata;
 using Evolve.Migration;
+using System.Collections.Generic;
 
 namespace Evolve.Dialect.PostgreSQL
 {
@@ -34,6 +33,7 @@ namespace Evolve.Dialect.PostgreSQL
             string sql = $"CREATE TABLE \"{Schema}\".\"{TableName}\" " +
              "( " +
                  "id SERIAL PRIMARY KEY NOT NULL, " +
+                 "type SMALLINT, " +
                  "version VARCHAR(50), " +
                  "description VARCHAR(200) NOT NULL, " +
                  "name VARCHAR(1000) NOT NULL, " +
@@ -46,33 +46,34 @@ namespace Evolve.Dialect.PostgreSQL
             _wrappedConnection.ExecuteNonQuery(sql);
         }
 
-        protected override void InternalAddMigrationMetadata(MigrationScript migration, bool success)
+        protected override void InternalSave(MigrationMetadata metadata)
         {
-            string sql = $"INSERT INTO \"{Schema}\".\"{TableName}\" (version, description, name, checksum, installed_by, success) VALUES" +
+            string sql = $"INSERT INTO \"{Schema}\".\"{TableName}\" (type, version, description, name, checksum, installed_by, success) VALUES" +
              "( " +
-                $"'{migration.Version}', " +
-                $"'{migration.Description.TruncateWithEllipsis(200)}', " +
-                $"'{migration.Path.TruncateWithEllipsis(1000)}', " +
-                $"'{migration.CalculateChecksum()}', " +
+                $"'{(int)metadata.Type}', " +
+                $"'{metadata.Version.Label}', " +
+                $"'{metadata.Description.TruncateWithEllipsis(200)}', " +
+                $"'{metadata.Name.TruncateWithEllipsis(1000)}', " +
+                $"'{metadata.Checksum}', " +
                 $"'', " +
-                $"{(success ? "true" : "false")}" +
+                $"{(metadata.Success ? "true" : "false")}" +
              ")";
 
             _wrappedConnection.ExecuteNonQuery(sql);
         }
 
-        protected override IEnumerable<MigrationMetadata> InternalGetAllMigrationMetadata()
+        protected override IEnumerable<MigrationMetadata> InternalGetAllMetadata()
         {
-            string sql = $"SELECT id, version, description, name, checksum, installed_by, installed_on, success FROM \"{Schema}\".\"{TableName}\"";
+            string sql = $"SELECT id, type, version, description, name, checksum, installed_by, installed_on, success FROM \"{Schema}\".\"{TableName}\"";
             return _wrappedConnection.QueryForList(sql, r =>
             {
-                return new MigrationMetadata(r.GetString(1), r.GetString(2), r.GetString(3))
+                return new MigrationMetadata(r.GetString(2), r.GetString(3), r.GetString(4), (MetadataType)r.GetInt16(1))
                 {
                     Id = r.GetInt32(0),
-                    Checksum = r.GetString(4),
-                    InstalledBy = r.GetString(5),
-                    InstalledOn = r.GetDateTime(6),
-                    Success = r.GetBoolean(7)
+                    Checksum = r.GetString(5),
+                    InstalledBy = r.GetString(6),
+                    InstalledOn = r.GetDateTime(7),
+                    Success = r.GetBoolean(8)
                 };
             });
         }

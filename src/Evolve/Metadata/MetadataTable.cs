@@ -1,12 +1,15 @@
-﻿using Evolve.Migration;
-using System.Collections.Generic;
+﻿using Evolve.Connection;
+using Evolve.Migration;
 using Evolve.Utilities;
-using Evolve.Connection;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Evolve.Metadata
 {
     public abstract class MetadataTable : IEvolveMetadata
     {
+        protected const string MigrationMetadataTypeNotSupported = "This method does not support the save of migration metadata. Use SaveMigration() instead.";
         protected readonly WrappedConnection _wrappedConnection;
 
         /// <summary>
@@ -26,9 +29,7 @@ namespace Evolve.Metadata
 
         public string TableName { get; }
 
-        public abstract void Lock();
-
-        public virtual bool CreateIfNotExists()
+        public bool CreateIfNotExists()
         {
             if (IsExists())
             {
@@ -41,25 +42,65 @@ namespace Evolve.Metadata
             }
         }
 
-        protected void Save(MigrationMetadata metadata)
+        public void SaveMigration(MigrationScript migration, bool success)
         {
-            Check.NotNull(metadata, nameof(metadata));
+            Check.NotNull(migration, nameof(migration));
 
             CreateIfNotExists();
-            InternalSave(metadata);
+            InternalSave(new MigrationMetadata(migration.Version.Label, migration.Description, migration.Path, MetadataType.Migration)
+            {
+                Checksum = migration.CalculateChecksum(),
+                Success = success
+            });
         }
 
-        public void SaveMigrationMetadata(MigrationScript migration, bool success)
+        public void Save(MetadataType type, string version, string description, string name = "")
         {
+            if(type == MetadataType.Migration) throw new ArgumentException(MigrationMetadataTypeNotSupported, nameof(type));
+
+            Check.NotNullOrEmpty(version, nameof(version));
+            Check.NotNullOrEmpty(description, nameof(description));
+            Check.NotNull(name, nameof(name));
+
             CreateIfNotExists();
-            InternalAddMigrationMetadata(migration, success);
+            InternalSave(new MigrationMetadata(version, description, name, type)
+            {
+                Checksum = string.Empty,
+                Success = true
+            });
         }
 
         public IEnumerable<MigrationMetadata> GetAllMigrationMetadata()
         {
             CreateIfNotExists();
-            return InternalGetAllMigrationMetadata();
+            return InternalGetAllMetadata().Where(x => x.Type == MetadataType.Migration);
         }
+
+        public bool CanDropSchema(string schemaName)
+        {
+            CreateIfNotExists();
+            return InternalGetAllMetadata().Where(x => x.Type == MetadataType.NewSchema && x.Name.Equals(schemaName, StringComparison.OrdinalIgnoreCase))
+                                           .Any();
+        }
+
+        public bool CanCleanSchema(string schemaName)
+        {
+            CreateIfNotExists();
+            return InternalGetAllMetadata().Where(x => x.Type == MetadataType.EmptySchema && x.Name.Equals(schemaName, StringComparison.OrdinalIgnoreCase))
+                                           .Any();
+        }
+
+        public MigrationVersion FindStartVersion()
+        {
+            CreateIfNotExists();
+            var metadata = InternalGetAllMetadata().Where(x => x.Type == MetadataType.StartVersion)
+                                                   .OrderByDescending(x => x.Version)
+                                                   .FirstOrDefault();
+
+            return metadata?.Version ?? new MigrationVersion("0");
+        }
+
+        public abstract void Lock();
 
         protected abstract bool IsExists();
 
@@ -67,8 +108,6 @@ namespace Evolve.Metadata
 
         protected abstract void InternalSave(MigrationMetadata metadata);
 
-        protected abstract void InternalSaveMetadata(MigrationScript migration, bool success);
-
-        protected abstract IEnumerable<MigrationMetadata> InternalGetAllMigrationMetadata();
+        protected abstract IEnumerable<MigrationMetadata> InternalGetAllMetadata();
     }
 }
