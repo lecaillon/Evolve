@@ -13,7 +13,3 @@ namespace Evolve.Test.Driver
         }
     }
 }
-
-// http://stackoverflow.com/questions/37895278/how-to-load-assemblies-located-in-a-folder-in-net-core-console-app
-// http://www.michael-whelan.net/replacing-appdomain-in-dotnet-core/
-// https://github.com/aspnet/Announcements/issues/149
