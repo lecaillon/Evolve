@@ -29,7 +29,7 @@ namespace Evolve.Test.Dialect.SQLite
             {
                 connection.Open();
                 var metadataTable = new SQLiteMetadataTable(TestContext.DefaultMetadataTableName, connection);
-                metadataTable.AddMigrationMetadata(migration, true);
+                metadataTable.SaveMigrationMetadata(migration, true);
             }
         }
 
@@ -42,7 +42,7 @@ namespace Evolve.Test.Dialect.SQLite
             {
                 connection.Open();
                 var metadataTable = new SQLiteMetadataTable(TestContext.DefaultMetadataTableName, connection);
-                metadataTable.AddMigrationMetadata(migrationScript, true);
+                metadataTable.SaveMigrationMetadata(migrationScript, true);
                 var migrationMetadata = metadataTable.GetAllMigrationMetadata().First();
 
                 Assert.Equal(migrationScript.Description, migrationMetadata.Description);

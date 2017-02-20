@@ -41,7 +41,15 @@ namespace Evolve.Metadata
             }
         }
 
-        public void AddMigrationMetadata(MigrationScript migration, bool success)
+        protected void Save(MigrationMetadata metadata)
+        {
+            Check.NotNull(metadata, nameof(metadata));
+
+            CreateIfNotExists();
+            InternalSave(metadata);
+        }
+
+        public void SaveMigrationMetadata(MigrationScript migration, bool success)
         {
             CreateIfNotExists();
             InternalAddMigrationMetadata(migration, success);
@@ -57,7 +65,9 @@ namespace Evolve.Metadata
 
         protected abstract void Create();
 
-        protected abstract void InternalAddMigrationMetadata(MigrationScript migration, bool success);
+        protected abstract void InternalSave(MigrationMetadata metadata);
+
+        protected abstract void InternalSaveMetadata(MigrationScript migration, bool success);
 
         protected abstract IEnumerable<MigrationMetadata> InternalGetAllMigrationMetadata();
     }
