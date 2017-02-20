@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Evolve.Dialect.SQLite;
+using Evolve.Metadata;
 using Evolve.Migration;
 using Xunit;
 
@@ -20,8 +21,8 @@ namespace Evolve.Test.Dialect.SQLite
             }
         }
 
-        [Fact(DisplayName = "AddMigrationMetadata_works")]
-        public void AddMigrationMetadata_works()
+        [Fact(DisplayName = "SaveMigration_works")]
+        public void SaveMigration_works()
         {
             var migration = new MigrationScript(TestContext.ValidMigrationScriptPath, "1.0.0", "desc");
 
@@ -47,9 +48,53 @@ namespace Evolve.Test.Dialect.SQLite
 
                 Assert.Equal(migrationScript.Description, migrationMetadata.Description);
                 Assert.Equal(migrationScript.Name, migrationMetadata.Name);
+                Assert.Equal(migrationScript.CalculateChecksum(), migrationMetadata.Checksum);
                 Assert.Equal(migrationScript.Version, migrationMetadata.Version);
                 Assert.Equal(true, migrationMetadata.Success);
                 Assert.Equal(string.Empty, migrationMetadata.InstalledBy);
+            }
+        }
+
+        [Fact(DisplayName = "CanDropSchema_works")]
+        public void CanDropSchema_works()
+        {
+            using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
+            {
+                connection.Open();
+                var metadataTable = new SQLiteMetadataTable(TestContext.DefaultMetadataTableName, connection);
+                Assert.False(metadataTable.CanDropSchema("main"));
+
+                metadataTable.Save(MetadataType.NewSchema, "0", "New schema created.", "main");
+                Assert.True(metadataTable.CanDropSchema("main"));
+            }
+        }
+
+        [Fact(DisplayName = "CanCleanSchema_works")]
+        public void CanCleanSchema_works()
+        {
+            using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
+            {
+                connection.Open();
+                var metadataTable = new SQLiteMetadataTable(TestContext.DefaultMetadataTableName, connection);
+                Assert.False(metadataTable.CanCleanSchema("main"));
+
+                metadataTable.Save(MetadataType.EmptySchema, "0", "Schema is empty.", "main");
+                Assert.True(metadataTable.CanCleanSchema("main"));
+            }
+        }
+
+        [Fact(DisplayName = "FindStartVersion_works")]
+        public void FindStartVersion_works()
+        {
+            using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
+            {
+                connection.Open();
+                var metadataTable = new SQLiteMetadataTable(TestContext.DefaultMetadataTableName, connection);
+                Assert.True(metadataTable.FindStartVersion() == new MigrationVersion("0"));
+
+                metadataTable.Save(MetadataType.StartVersion, "1.0", "New starting version = 1.0");
+                metadataTable.Save(MetadataType.StartVersion, "2.0", "New starting version = 2.0");
+                Assert.True(metadataTable.FindStartVersion() == new MigrationVersion("2.0"));
             }
         }
     }
