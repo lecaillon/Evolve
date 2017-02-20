@@ -36,7 +36,7 @@ namespace Evolve.Dialect.PostgreSQL
                  "type SMALLINT, " +
                  "version VARCHAR(50), " +
                  "description VARCHAR(200) NOT NULL, " +
-                 "name VARCHAR(1000) NOT NULL, " +
+                 "name VARCHAR(300) NOT NULL, " +
                  "checksum VARCHAR(32), " +
                  "installed_by VARCHAR(100) NOT NULL, " +
                  "installed_on TIMESTAMP NOT NULL DEFAULT now(), " +
