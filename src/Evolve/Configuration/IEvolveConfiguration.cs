@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using Evolve.Migration;
 
 namespace Evolve.Configuration
 {
@@ -86,6 +87,6 @@ namespace Evolve.Configuration
         /// <summary>
         ///     Returns the target version to reach. If null or empty it evolves all the way up.
         /// </summary>
-        string TargetVersion { get; set; }
+        MigrationVersion TargetVersion { get; set; }
     }
 }
