@@ -1,7 +1,7 @@
 ﻿using Evolve.Driver;
 using Xunit;
 
-namespace Evolve.Test.Driver
+namespace Evolve.Test.Core.Driver
 {
     public class MicrosoftDataSqliteDriverTest
     {

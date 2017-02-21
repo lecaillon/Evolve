@@ -11,7 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve", "src\Evolve\Evolve
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.MsBuild", "src\Evolve.MsBuild\Evolve.MsBuild.csproj", "{C65590EE-5F38-4C20-B09B-7C312DC2EEE0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.Test", "test\Evolve.Test\Evolve.Test.csproj", "{F72EBF58-AB5B-411B-A615-A4B1CB92594A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.Core.Test", "test\Evolve.Core.Test\Evolve.Core.Test.csproj", "{F72EBF58-AB5B-411B-A615-A4B1CB92594A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.IntegrationTest.PostgreSQL", "test\Evolve.IntegrationTest.PostgreSQL\Evolve.IntegrationTest.PostgreSQL.csproj", "{5D083251-040D-40E6-AA6F-7AB5959E2B76}"
 EndProject

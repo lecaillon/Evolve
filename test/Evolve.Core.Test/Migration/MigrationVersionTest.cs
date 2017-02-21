@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
-namespace Evolve.Test.Migration
+namespace Evolve.Test.Core.Migration
 {
     public class MigrationVersionTest
     {

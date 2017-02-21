@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Xunit;
 using Evolve.Metadata;
 
-namespace Evolve.Test.Migration
+namespace Evolve.Test.Core.Migration
 {
     public class MigrationBaseTest
     {

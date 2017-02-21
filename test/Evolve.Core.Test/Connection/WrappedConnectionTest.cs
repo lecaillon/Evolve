@@ -4,7 +4,7 @@ using Evolve.Connection;
 using Microsoft.Data.Sqlite;
 using Xunit;
 
-namespace Evolve.Test.Connection
+namespace Evolve.Test.Core.Connection
 {
     public class WrappedConnectionTest
     {

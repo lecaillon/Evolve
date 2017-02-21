@@ -5,7 +5,7 @@ using Evolve.Metadata;
 using Evolve.Migration;
 using Xunit;
 
-namespace Evolve.Test.Dialect.SQLite
+namespace Evolve.Test.Core.Dialect.SQLite
 {
     public class SQLiteMetadataTableTest
     {

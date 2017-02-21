@@ -4,7 +4,7 @@ using Xunit;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Evolve.Test.Extensions
+namespace Evolve.Test.Core.Extensions
 {
     public class WrappedConnectionExtensionsTest
     {
