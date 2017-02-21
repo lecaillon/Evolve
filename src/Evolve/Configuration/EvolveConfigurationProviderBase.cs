@@ -4,8 +4,10 @@ namespace Evolve.Configuration
 {
     public abstract class EvolveConfigurationProviderBase : IConfigurationProvider
     {
-        private string _configurationPath;
-        private IEvolveConfiguration _configuration;
+        protected string _configurationPath;
+        protected IEvolveConfiguration _configuration;
+
+        protected const string Key_SqlMigrationPrefix = "Evolve.SqlMigrationPrefix";
 
         public void Configure(string evolveConfigurationPath, IEvolveConfiguration configuration)
         {
@@ -16,11 +18,11 @@ namespace Evolve.Configuration
             Validate();
         }
 
+        protected abstract void Configure();
+
         protected virtual void Validate()
         {
 
         }
-
-        protected abstract void Configure();
     }
 }

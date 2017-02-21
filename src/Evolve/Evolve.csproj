@@ -11,4 +11,7 @@
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.3'">
     <PackageReference Include="System.Data.Common" Version="4.3.0" />
   </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net452'">
+    <Reference Include="System.Configuration" />
+  </ItemGroup>
 </Project>
