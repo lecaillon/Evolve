@@ -48,7 +48,7 @@ namespace Evolve.Configuration
 
             if (!string.IsNullOrWhiteSpace(appSettings[Locations]?.Value))
             {
-                _configuration.Locations = appSettings[Locations].Value.Split(';');
+                _configuration.Locations = appSettings[Locations].Value.Trim(';').Split(';');
             }
 
             if (!string.IsNullOrWhiteSpace(appSettings[Encoding]?.Value))
