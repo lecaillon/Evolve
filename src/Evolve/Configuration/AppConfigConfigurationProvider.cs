@@ -2,13 +2,15 @@
 
 using System;
 using System.Configuration;
+using Evolve.Migration;
 
 namespace Evolve.Configuration
 {
     public class AppConfigConfigurationProvider : EvolveConfigurationProviderBase
     {
         private const string NotSupportedAppConfigFileName = "AppConfigConfigurationProvider is designed to manage App.Config or Web.config files only.";
-        private const string IncorrectEncodingValue = "Encoding does not support {0}. See https://msdn.microsoft.com/en-us/library/system.text.encoding.getencodings(v=vs.110).aspx for all possible values.";
+        private const string IncorrectEncodingValue = "Encoding does not support this value: {0}. See https://msdn.microsoft.com/en-us/library/system.text.encoding.getencodings(v=vs.110).aspx for all possible names.";
+        private const string InvalidVersionPatternMatching = "Migration version {0} is invalid. Version must respect this regex: ^[0-9]+(?:.[0-9]+)*$";
 
         protected override void Configure()
         {
@@ -103,7 +105,14 @@ namespace Evolve.Configuration
 
             if (!string.IsNullOrWhiteSpace(appSettings[TargetVersion]?.Value))
             {
-                _configuration.TargetVersion = appSettings[TargetVersion].Value;
+                try
+                {
+                    _configuration.TargetVersion = new MigrationVersion(appSettings[TargetVersion].Value);
+                }
+                catch
+                {
+                    throw new EvolveConfigurationException(string.Format(InvalidVersionPatternMatching, appSettings[TargetVersion].Value));
+                }
             }
         }
     }
