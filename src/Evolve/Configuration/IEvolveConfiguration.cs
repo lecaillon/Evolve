@@ -35,7 +35,7 @@ namespace Evolve.Configuration
         string Driver { get; set; }
 
         /// <summary>
-        ///     Returns the paths to scan recursively for migrations. (default: Sql_Scripts)
+        ///     Returns the paths (separated by semicolon) to scan recursively for migrations. (default: Sql_Scripts)
         /// </summary>
         IEnumerable<string> Locations { get; set; }
 
