@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Evolve.Configuration
 {
@@ -8,7 +7,9 @@ namespace Evolve.Configuration
     {
         static readonly Dictionary<string, IConfigurationProvider> providers = new Dictionary<string, IConfigurationProvider>
         {
+#if NET452
             [".config"] = new AppConfigConfigurationProvider(),
+#endif
             [".json"] = new JsonConfigurationProvider(),
         };
 
