@@ -43,7 +43,7 @@ namespace Evolve
         public string SqlMigrationPrefix { get; set; }
         public string SqlMigrationSeparator { get; set; }
         public string SqlMigrationSuffix { get; set; }
-        public string TargetVersion { get; set; }
+        public MigrationVersion TargetVersion { get; set; }
 
         #endregion
 
