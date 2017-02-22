@@ -6,10 +6,11 @@ namespace Evolve.Test.Configuration
     public class AppConfigConfigurationProviderTest
     {
         [Fact()]
-        public void Test()
+        public void LoadPSG()
         {
+            var evolve = new Evolve();
             var configurationProvider = new AppConfigConfigurationProvider();
-            configurationProvider.Configure("", new Evolve());
+            configurationProvider.Configure(TestContext.AppConfigPath, evolve);
 
         }
     }

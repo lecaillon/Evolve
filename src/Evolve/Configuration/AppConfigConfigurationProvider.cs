@@ -1,8 +1,9 @@
 ﻿#if NET452
 
+using Evolve.Migration;
 using System;
 using System.Configuration;
-using Evolve.Migration;
+using System.IO;
 
 namespace Evolve.Configuration
 {
@@ -15,8 +16,8 @@ namespace Evolve.Configuration
 
         protected override void Configure()
         {
-            if(!(_filePath.Equals("web.config", StringComparison.InvariantCultureIgnoreCase)
-              || _filePath.Equals("app.config", StringComparison.InvariantCultureIgnoreCase)))
+            if(!(Path.GetFileName(_filePath).Equals("web.config", StringComparison.InvariantCultureIgnoreCase)
+              || Path.GetFileName(_filePath).Equals("app.config", StringComparison.InvariantCultureIgnoreCase)))
             {
                 throw new EvolveConfigurationException(NotSupportedAppConfigFileName);
             }
