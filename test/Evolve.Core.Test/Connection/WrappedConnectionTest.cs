@@ -112,5 +112,23 @@ namespace Evolve.Test.Core.Connection
                 Assert.True(wrappedConnection.DbConnection.State == ConnectionState.Closed);
             }
         }
+
+        [Fact(DisplayName = "When_dbconnection_is_ok_validation_works")]
+        public void When_dbconnection_is_ok_validation_works()
+        {
+            using (var wrappedConnection = new WrappedConnection(new SqliteConnection("Data Source=:memory:")))
+            {
+                wrappedConnection.Validate();
+            }
+        }
+
+        [Fact(DisplayName = "When_dbconnection_is_not_ok_validation_fails")]
+        public void When_dbconnection_is_not_ok_validation_fails()
+        {
+            using (var wrappedConnection = new WrappedConnection(new SqliteConnection("Data Source=:memory:fails")))
+            {
+                Assert.ThrowsAny<Exception>(() => wrappedConnection.Validate());
+            }
+        }
     }
 }

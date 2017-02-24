@@ -1,13 +1,22 @@
 ﻿using System.Data;
-using Microsoft.Data.Sqlite;
 using Xunit;
 using System.Collections.Generic;
 using System.Linq;
+using Evolve.Dialect;
 
 namespace Evolve.Test.Core.Extensions
 {
     public class WrappedConnectionExtensionsTest
     {
+        [Fact(DisplayName = "GetDatabaseServerType_is_sqlite")]
+        public void GetDatabaseServerType_is_sqlite()
+        {
+            using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
+            {
+                Assert.Equal(DBMS.SQLite, WrappedConnectionEx.GetDatabaseServerType(connection));
+            }
+        }
+
         [Fact(DisplayName = "QueryForLong_works")]
         public void QueryForLong_works()
         {

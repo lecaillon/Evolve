@@ -39,9 +39,14 @@ namespace Evolve.IntegrationTest.PostgreSQL
             cnn.Open();
             Assert.True(cnn.State == ConnectionState.Open, "Cannot open a connection to the database.");
 
-            // Init the DatabaseHelper
+            // Initiate a connection to the database
             var wcnn = new WrappedConnection(cnn);
-            DatabaseHelper db = new PostgreSQLDatabase(wcnn);
+
+            // Validate DBMS.PostgreSQL
+            Assert.Equal(DBMS.PostgreSQL, wcnn.GetDatabaseServerType());
+
+            // Init the DatabaseHelper
+            DatabaseHelper db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.PostgreSQL, wcnn);
             Assert.True(db.GetCurrentSchemaName() == "public", "The default PostgreSQL schema should be 'public'.");
 
             // Create schema
