@@ -113,6 +113,28 @@ namespace Evolve.Connection
             }
         }
 
+        /// <summary>
+        ///     Validate the database connection by opening and closing it.
+        /// </summary>
+        /// <exception cref="EvolveException"> Throws EvolveException if validation fails. </exception>
+        public void Validate()
+        {
+            try
+            {
+                if (DbConnection.State == ConnectionState.Open)
+                {
+                    return;
+                }
+
+                Open();
+                Close();
+            }
+            catch (Exception ex)
+            {
+                throw new EvolveException("", ex);
+            }
+        }
+
         public void Dispose()
         {
             CurrentTx?.Dispose();
