@@ -36,8 +36,6 @@ namespace Evolve.Configuration
 
         protected virtual void Validate()
         {
-            IfNullOrWhiteSpaceThrowsException(_configuration.ConnectionString, ConnectionString);
-            IfNullOrWhiteSpaceThrowsException(_configuration.Driver, Driver);
             IfNullOrWhiteSpaceThrowsException(_configuration.SqlMigrationPrefix, SqlMigrationPrefix);
             IfNullOrWhiteSpaceThrowsException(_configuration.SqlMigrationSeparator, SqlMigrationSeparator);
             IfNullOrWhiteSpaceThrowsException(_configuration.SqlMigrationSuffix, SqlMigrationSuffix);
