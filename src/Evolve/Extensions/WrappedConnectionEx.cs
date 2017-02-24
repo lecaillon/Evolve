@@ -2,13 +2,41 @@
 using System.Collections.Generic;
 using System.Data;
 using Evolve.Connection;
+using Evolve.Dialect;
 using Evolve.Utilities;
 
 namespace Evolve
 {
     public static class WrappedConnectionEx
     {
+        private const string DBMSNotSUpported = "Connection to this DBMS is not supported.";
         private const string CommandExecutionError = "DbCommand ({0}) error: {1}";
+
+        public static DBMS GetDatabaseServerType(this WrappedConnection wrappedConnection)
+        {
+            string dbVersion = null;
+            try
+            {
+                dbVersion = QueryForString(wrappedConnection, "SELECT sqlite_version()");
+                if (!string.IsNullOrWhiteSpace(dbVersion))
+                {
+                    return DBMS.SQLite;
+                }
+            }
+            catch { }
+
+            try
+            {
+                dbVersion = QueryForString(wrappedConnection, "SELECT version()");
+                if (!string.IsNullOrWhiteSpace(dbVersion)) 
+                {
+                    return DBMS.PostgreSQL;
+                }
+            }
+            catch { }
+
+            throw new EvolveException(DBMSNotSUpported);
+        }
 
         public static long QueryForLong(this WrappedConnection wrappedConnection, string sql) => (long)ExecuteScalar(wrappedConnection, sql);
 
