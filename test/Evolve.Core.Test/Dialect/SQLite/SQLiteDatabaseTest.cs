@@ -1,4 +1,5 @@
-﻿using Evolve.Dialect.SQLite;
+﻿using Evolve.Dialect;
+using Evolve.Dialect.SQLite;
 using Xunit;
 
 namespace Evolve.Test.Core.Dialect.SQLite
@@ -10,7 +11,7 @@ namespace Evolve.Test.Core.Dialect.SQLite
         {
             using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
             {
-                var db = new SQLiteDatabase(connection);
+                var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLite, connection);
                 Assert.Equal("SQLite", db.DatabaseName);
             }
         }
@@ -20,7 +21,7 @@ namespace Evolve.Test.Core.Dialect.SQLite
         {
             using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
             {
-                var db = new SQLiteDatabase(connection);
+                var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLite, connection);
                 Assert.Equal("main", db.GetCurrentSchemaName());
             }
         }
@@ -30,7 +31,7 @@ namespace Evolve.Test.Core.Dialect.SQLite
         {
             using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
             {
-                var db = new SQLiteDatabase(connection);
+                var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLite, connection);
                 var schema = db.ChangeSchema("another_shema");
 
                 Assert.NotNull(schema);
@@ -43,7 +44,7 @@ namespace Evolve.Test.Core.Dialect.SQLite
         {
             using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
             {
-                var db = new SQLiteDatabase(connection);
+                var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLite, connection);
                 var metadataTable = db.GetMetadataTable("main", TestContext.DefaultMetadataTableName);
 
                 Assert.NotNull(metadataTable);
