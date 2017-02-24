@@ -102,7 +102,7 @@ namespace Evolve.Metadata
 
         public abstract void Lock();
 
-        protected abstract bool IsExists();
+        public abstract bool IsExists();
 
         protected abstract void Create();
 

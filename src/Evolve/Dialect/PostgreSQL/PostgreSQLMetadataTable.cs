@@ -23,7 +23,7 @@ namespace Evolve.Dialect.PostgreSQL
             _wrappedConnection.ExecuteNonQuery($"SELECT * FROM \"{Schema}\".\"{TableName}\" FOR UPDATE");
         }
 
-        protected override bool IsExists()
+        public override bool IsExists()
         {
             return _wrappedConnection.QueryForLong($"SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '{Schema}' AND table_name = '{TableName}'") == 1;
         }

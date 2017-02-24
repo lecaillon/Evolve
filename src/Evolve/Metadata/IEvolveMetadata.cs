@@ -13,6 +13,12 @@ namespace Evolve.Metadata
         void Lock();
 
         /// <summary>
+        ///     Check if Evolve metadata exists in the database or not.
+        /// </summary>
+        /// <returns> True if metadata exists, false otherwise. </returns>
+        bool IsExists();
+
+        /// <summary>
         ///     Create the metadata store if not exists.
         /// </summary>
         /// <returns> True if created, false if it already exists. </returns>

@@ -66,7 +66,9 @@ namespace Evolve.IntegrationTest.PostgreSQL
             var metadata = db.GetMetadataTable(metadataSchemaName, metadataTableName);
 
             // Create MetadataTable
+            Assert.False(metadata.IsExists(), "MetadataTable sould not already exist.");
             Assert.True(metadata.CreateIfNotExists(), "MetadataTable creation failed.");
+            Assert.True(metadata.IsExists(), "MetadataTable sould exist.");
             Assert.False(metadata.CreateIfNotExists(), "MetadataTable already exists. Creation should return false.");
             Assert.True(metadata.GetAllMigrationMetadata().Count() == 0, "No migration metadata should be found.");
 

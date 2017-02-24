@@ -9,6 +9,31 @@ namespace Evolve.Test.Core.Dialect.SQLite
 {
     public class SQLiteMetadataTableTest
     {
+        [Fact(DisplayName = "When_not_exists_IsExists_returns_false")]
+        public void When_not_exists_IsExists_returns_false()
+        {
+            using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
+            {
+                connection.Open();
+                var metadataTable = new SQLiteMetadataTable(TestContext.DefaultMetadataTableName, connection);
+
+                Assert.False(metadataTable.IsExists());
+            }
+        }
+
+        [Fact(DisplayName = "When_exists_IsExists_returns_true")]
+        public void When_exists_IsExists_returns_true()
+        {
+            using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
+            {
+                connection.Open();
+                var metadataTable = new SQLiteMetadataTable(TestContext.DefaultMetadataTableName, connection);
+
+                metadataTable.CreateIfNotExists();
+                Assert.True(metadataTable.IsExists());
+            }
+        }
+
         [Fact(DisplayName = "When_not_exists_create_metadataTable")]
         public void When_not_exists_create_metadataTable()
         {
