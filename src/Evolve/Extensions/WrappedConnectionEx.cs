@@ -15,22 +15,33 @@ namespace Evolve
         public static DBMS GetDatabaseServerType(this WrappedConnection wrappedConnection)
         {
             string dbVersion = null;
+
             try
             {
-                dbVersion = QueryForString(wrappedConnection, "SELECT sqlite_version()");
-                if (!string.IsNullOrWhiteSpace(dbVersion))
+                dbVersion = QueryForString(wrappedConnection, "SELECT version()"); // attention ca marche aussi pour mysql/mariadb ...
+                if (!string.IsNullOrWhiteSpace(dbVersion)) 
                 {
-                    return DBMS.SQLite;
+                    return DBMS.PostgreSQL;
                 }
             }
             catch { }
 
             try
             {
-                dbVersion = QueryForString(wrappedConnection, "SELECT version()");
-                if (!string.IsNullOrWhiteSpace(dbVersion)) 
+                dbVersion = QueryForString(wrappedConnection, "SELECT @@version");
+                if (!string.IsNullOrWhiteSpace(dbVersion))
                 {
-                    return DBMS.PostgreSQL;
+                    return DBMS.SQLServer;
+                }
+            }
+            catch { }
+
+            try
+            {
+                dbVersion = QueryForString(wrappedConnection, "SELECT sqlite_version()");
+                if (!string.IsNullOrWhiteSpace(dbVersion))
+                {
+                    return DBMS.SQLite;
                 }
             }
             catch { }
