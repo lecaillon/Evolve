@@ -9,6 +9,7 @@ namespace Evolve.Migration
     public class FileMigrationLoader : IMigrationLoader
     {
         private const string InvalidMigrationScriptLocation = "Invalid migration script location: {0}.";
+        private const string DuplicateMigrationScriptVersion = "Duplicate script version found: {0}.";
 
         public IEnumerable<MigrationScript> GetMigrations(IEnumerable<string> locations, string prefix, string separator, string suffix)
         {
@@ -20,7 +21,8 @@ namespace Evolve.Migration
             var migrations = new List<MigrationScript>();
 
             string searchPattern = $"{prefix}*{suffix}"; // "V*.sql"
-            foreach (string location in locations)
+
+            foreach (string location in locations.Distinct(StringComparer.OrdinalIgnoreCase)) // Remove duplicate locations if any
             {
                 DirectoryInfo dirToScan = ResolveDirectory(location);
                 dirToScan.GetFiles(searchPattern, SearchOption.AllDirectories)   // Get scripts recursively
@@ -29,7 +31,16 @@ namespace Evolve.Migration
                          .ForEach(f => migrations.Add(LoadMigrationFromFile(f.FullName, prefix, separator)));
             }
 
-            return migrations;
+            var duplicates = migrations.GroupBy(x => x.Version)
+                                       .Where(grp => grp.Count() > 1)
+                                       .Select(grp => grp.Key.Label);
+
+            if(duplicates.Count() > 0)
+            {
+                throw new EvolveException(string.Format(DuplicateMigrationScriptVersion, string.Join(", ", duplicates)));
+            }
+
+            return migrations.OrderBy(x => x.Version).ToList();
         }
 
         private MigrationScript LoadMigrationFromFile(string script, string prefix, string separator)
