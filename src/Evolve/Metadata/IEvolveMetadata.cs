@@ -55,9 +55,9 @@ namespace Evolve.Metadata
         void Save(MetadataType type, string version, string description, string name);
 
         /// <summary>
-        ///     Returns all the migration metadata.
+        ///     Returns all the migration metadata ordered by version.
         /// </summary>
-        /// <returns> The list of all migration metadata. </returns>
+        /// <returns> The ordered list of all migration metadata. </returns>
         IEnumerable<MigrationMetadata> GetAllMigrationMetadata();
 
         /// <summary>

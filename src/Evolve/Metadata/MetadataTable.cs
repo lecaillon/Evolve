@@ -73,7 +73,9 @@ namespace Evolve.Metadata
         public IEnumerable<MigrationMetadata> GetAllMigrationMetadata()
         {
             CreateIfNotExists();
-            return InternalGetAllMetadata().Where(x => x.Type == MetadataType.Migration);
+            return InternalGetAllMetadata().Where(x => x.Type == MetadataType.Migration)
+                                           .OrderBy(x => x.Version)
+                                           .ToList();
         }
 
         public bool CanDropSchema(string schemaName)
