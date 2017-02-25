@@ -40,6 +40,7 @@ namespace Evolve.Test.Configuration
 
             Assert.Equal("Server=127.0.0.1;Port=5432;Database=myDataBase;User Id=myUsername;Password=myPassword;", evolve.ConnectionString);
             Assert.Equal("npgsql", evolve.Driver);
+            Assert.NotNull(evolve.Locations);
             Assert.Equal(expectedEvolve.Encoding.BodyName, evolve.Encoding.BodyName);
             Assert.Equal(expectedEvolve.SqlMigrationPrefix, evolve.SqlMigrationPrefix);
             Assert.Equal(expectedEvolve.SqlMigrationSeparator, evolve.SqlMigrationSeparator);
