@@ -105,7 +105,7 @@ namespace Evolve.Configuration
             // MetadaTableSchema
             if (!string.IsNullOrWhiteSpace(appSettings[MetadaTableSchema]?.Value))
             {
-                _configuration.MetadaTableSchema = appSettings[MetadaTableSchema].Value;
+                _configuration.MetadataTableSchema = appSettings[MetadaTableSchema].Value;
             }
 
             // MetadaTableName

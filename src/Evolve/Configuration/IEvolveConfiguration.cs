@@ -67,7 +67,7 @@ namespace Evolve.Configuration
         /// <summary>
         ///     Returns the schema containing the metadata table. (default: The default schema for the datasource connection)
         /// </summary>
-        string MetadaTableSchema { get; set; }
+        string MetadataTableSchema { get; set; }
 
         /// <summary>
         ///     Returns the metadata table name. (default: changelog)
