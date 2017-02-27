@@ -20,6 +20,6 @@ namespace Evolve.Dialect.SQLite
 
         protected override Schema GetSchema(string schemaName) => new SQLiteSchema(WrappedConnection);
 
-        public override IEvolveMetadata GetMetadataTable(string schema, string tableName) => new SQLiteMetadataTable(tableName, WrappedConnection);
+        public override IEvolveMetadata GetMetadataTable(string schema, string tableName) => new SQLiteMetadataTable(tableName, this);
     }
 }

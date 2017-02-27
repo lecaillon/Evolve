@@ -1,7 +1,6 @@
-﻿using Evolve.Connection;
+﻿using System.Collections.Generic;
 using Evolve.Metadata;
 using Evolve.Migration;
-using System.Collections.Generic;
 
 namespace Evolve.Dialect.PostgreSQL
 {
@@ -12,23 +11,23 @@ namespace Evolve.Dialect.PostgreSQL
         /// </summary>
         /// <param name="schema"> Existing database schema name. </param>
         /// <param name="tableName"> Metadata table name. </param>
-        /// <param name="wrappedConnection"> A connection to the database. </param>
-        public PostgreSQLMetadataTable(string schema, string tableName, WrappedConnection wrappedConnection) 
-            : base(schema, tableName, wrappedConnection)
+        /// <param name="database"> A database helper used to change and restore schema of the metadata table. </param>
+        public PostgreSQLMetadataTable(string schema, string tableName, DatabaseHelper database) 
+            : base(schema, tableName, database)
         {
         }
 
-        public override void Lock()
+        protected override void InternalLock()
         {
-            _wrappedConnection.ExecuteNonQuery($"SELECT * FROM \"{Schema}\".\"{TableName}\" FOR UPDATE");
+            _database.WrappedConnection.ExecuteNonQuery($"SELECT * FROM \"{Schema}\".\"{TableName}\" FOR UPDATE");
         }
 
-        public override bool IsExists()
+        protected override bool InternalIsExists()
         {
-            return _wrappedConnection.QueryForLong($"SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '{Schema}' AND table_name = '{TableName}'") == 1;
+            return _database.WrappedConnection.QueryForLong($"SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '{Schema}' AND table_name = '{TableName}'") == 1;
         }
 
-        protected override void Create()
+        protected override void InternalCreate()
         {
             string sql = $"CREATE TABLE \"{Schema}\".\"{TableName}\" " +
              "( " +
@@ -43,7 +42,7 @@ namespace Evolve.Dialect.PostgreSQL
                  "success BOOLEAN NOT NULL " +
              ")";
 
-            _wrappedConnection.ExecuteNonQuery(sql);
+            _database.WrappedConnection.ExecuteNonQuery(sql);
         }
 
         protected override void InternalSave(MigrationMetadata metadata)
@@ -59,13 +58,13 @@ namespace Evolve.Dialect.PostgreSQL
                 $"{(metadata.Success ? "true" : "false")}" +
              ")";
 
-            _wrappedConnection.ExecuteNonQuery(sql);
+            _database.WrappedConnection.ExecuteNonQuery(sql);
         }
 
         protected override IEnumerable<MigrationMetadata> InternalGetAllMetadata()
         {
             string sql = $"SELECT id, type, version, description, name, checksum, installed_by, installed_on, success FROM \"{Schema}\".\"{TableName}\"";
-            return _wrappedConnection.QueryForList(sql, r =>
+            return _database.WrappedConnection.QueryForList(sql, r =>
             {
                 return new MigrationMetadata(r.GetString(2), r.GetString(3), r.GetString(4), (MetadataType)r.GetInt16(1))
                 {

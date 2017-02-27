@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Evolve.Dialect.SQLite;
+using Evolve.Dialect;
 using Evolve.Metadata;
 using Evolve.Migration;
 using Xunit;
@@ -15,8 +15,8 @@ namespace Evolve.Test.Core.Dialect.SQLite
             using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
             {
                 connection.Open();
-                var metadataTable = new SQLiteMetadataTable(TestContext.DefaultMetadataTableName, connection);
-
+                var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLite, connection);
+                var metadataTable = db.GetMetadataTable("", TestContext.DefaultMetadataTableName);
                 Assert.False(metadataTable.IsExists());
             }
         }
@@ -27,7 +27,8 @@ namespace Evolve.Test.Core.Dialect.SQLite
             using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
             {
                 connection.Open();
-                var metadataTable = new SQLiteMetadataTable(TestContext.DefaultMetadataTableName, connection);
+                var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLite, connection);
+                var metadataTable = db.GetMetadataTable("", TestContext.DefaultMetadataTableName);
 
                 metadataTable.CreateIfNotExists();
                 Assert.True(metadataTable.IsExists());
@@ -40,7 +41,8 @@ namespace Evolve.Test.Core.Dialect.SQLite
             using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
             {
                 connection.Open();
-                var metadataTable = new SQLiteMetadataTable(TestContext.DefaultMetadataTableName, connection);
+                var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLite, connection);
+                var metadataTable = db.GetMetadataTable("", TestContext.DefaultMetadataTableName);
 
                 Assert.True(metadataTable.CreateIfNotExists());
                 Assert.False(metadataTable.CreateIfNotExists());
@@ -55,7 +57,8 @@ namespace Evolve.Test.Core.Dialect.SQLite
             using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
             {
                 connection.Open();
-                var metadataTable = new SQLiteMetadataTable(TestContext.DefaultMetadataTableName, connection);
+                var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLite, connection);
+                var metadataTable = db.GetMetadataTable("", TestContext.DefaultMetadataTableName);
                 metadataTable.SaveMigration(migration, true);
             }
         }
@@ -68,7 +71,8 @@ namespace Evolve.Test.Core.Dialect.SQLite
             using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
             {
                 connection.Open();
-                var metadataTable = new SQLiteMetadataTable(TestContext.DefaultMetadataTableName, connection);
+                var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLite, connection);
+                var metadataTable = db.GetMetadataTable("", TestContext.DefaultMetadataTableName);
                 metadataTable.SaveMigration(migrationScript, true);
                 var migrationMetadata = metadataTable.GetAllMigrationMetadata().First();
 
@@ -89,7 +93,8 @@ namespace Evolve.Test.Core.Dialect.SQLite
             using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
             {
                 connection.Open();
-                var metadataTable = new SQLiteMetadataTable(TestContext.DefaultMetadataTableName, connection);
+                var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLite, connection);
+                var metadataTable = db.GetMetadataTable("", TestContext.DefaultMetadataTableName);
                 Assert.False(metadataTable.CanDropSchema("main"));
 
                 metadataTable.Save(MetadataType.NewSchema, "0", "New schema created.", "main");
@@ -103,7 +108,8 @@ namespace Evolve.Test.Core.Dialect.SQLite
             using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
             {
                 connection.Open();
-                var metadataTable = new SQLiteMetadataTable(TestContext.DefaultMetadataTableName, connection);
+                var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLite, connection);
+                var metadataTable = db.GetMetadataTable("", TestContext.DefaultMetadataTableName);
                 Assert.False(metadataTable.CanCleanSchema("main"));
 
                 metadataTable.Save(MetadataType.EmptySchema, "0", "Schema is empty.", "main");
@@ -117,11 +123,12 @@ namespace Evolve.Test.Core.Dialect.SQLite
             using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
             {
                 connection.Open();
-                var metadataTable = new SQLiteMetadataTable(TestContext.DefaultMetadataTableName, connection);
+                var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLite, connection);
+                var metadataTable = db.GetMetadataTable("", TestContext.DefaultMetadataTableName);
                 Assert.True(metadataTable.FindStartVersion() == new MigrationVersion("0"));
 
-                metadataTable.Save(MetadataType.StartVersion, "1.0", "New starting version = 1.0");
-                metadataTable.Save(MetadataType.StartVersion, "2.0", "New starting version = 2.0");
+                metadataTable.Save(MetadataType.StartVersion, "1.0", "New starting version = 1.0", "");
+                metadataTable.Save(MetadataType.StartVersion, "2.0", "New starting version = 2.0", "");
                 Assert.True(metadataTable.FindStartVersion() == new MigrationVersion("2.0"));
             }
         }

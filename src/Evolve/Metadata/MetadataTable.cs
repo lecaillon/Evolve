@@ -1,28 +1,28 @@
-﻿using Evolve.Connection;
-using Evolve.Migration;
-using Evolve.Utilities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Evolve.Dialect;
+using Evolve.Migration;
+using Evolve.Utilities;
 
 namespace Evolve.Metadata
 {
     public abstract class MetadataTable : IEvolveMetadata
     {
         protected const string MigrationMetadataTypeNotSupported = "This method does not support the save of migration metadata. Use SaveMigration() instead.";
-        protected readonly WrappedConnection _wrappedConnection;
+        protected readonly DatabaseHelper _database;
 
         /// <summary>
         ///     Constructor.
         /// </summary>
         /// <param name="schema"> Existing database schema name. </param>
         /// <param name="tableName"> Metadata table name. </param>
-        /// <param name="wrappedConnection"> A connection to the database. </param>
-        public MetadataTable(string schema, string tableName, WrappedConnection wrappedConnection)
+        /// <param name="database"> A database helper used to change and restore schema of the metadata table. </param>
+        public MetadataTable(string schema, string tableName, DatabaseHelper database)
         {
             Schema = Check.NotNullOrEmpty(schema, nameof(schema));
             TableName = Check.NotNullOrEmpty(tableName, nameof(tableName));
-            _wrappedConnection = Check.NotNull(wrappedConnection, nameof(wrappedConnection));
+            _database = Check.NotNull(database, nameof(database));
         }
 
         public string Schema { get; }
@@ -31,26 +31,20 @@ namespace Evolve.Metadata
 
         public bool CreateIfNotExists()
         {
-            if (IsExists())
-            {
-                return false;
-            }
-            else
-            {
-                Create();
-                return true;
-            }
+            return Execute(() => InternalCreateIfNotExists(), false);
         }
 
         public void SaveMigration(MigrationScript migration, bool success)
         {
             Check.NotNull(migration, nameof(migration));
 
-            CreateIfNotExists();
-            InternalSave(new MigrationMetadata(migration.Version.Label, migration.Description, migration.Name, MetadataType.Migration)
+            Execute(() =>
             {
-                Checksum = migration.CalculateChecksum(),
-                Success = success
+                InternalSave(new MigrationMetadata(migration.Version.Label, migration.Description, migration.Name, MetadataType.Migration)
+                {
+                    Checksum = migration.CalculateChecksum(),
+                    Success = success
+                });
             });
         }
 
@@ -62,54 +56,144 @@ namespace Evolve.Metadata
             Check.NotNullOrEmpty(description, nameof(description));
             Check.NotNull(name, nameof(name));
 
-            CreateIfNotExists();
-            InternalSave(new MigrationMetadata(version, description, name, type)
+            Execute(() =>
             {
-                Checksum = string.Empty,
-                Success = true
+                InternalSave(new MigrationMetadata(version, description, name, type)
+                {
+                    Checksum = string.Empty,
+                    Success = true
+                });
             });
         }
 
         public IEnumerable<MigrationMetadata> GetAllMigrationMetadata()
         {
-            CreateIfNotExists();
-            return InternalGetAllMetadata().Where(x => x.Type == MetadataType.Migration)
-                                           .OrderBy(x => x.Version)
-                                           .ToList();
+            return Execute(() =>
+            {
+                return InternalGetAllMetadata().Where(x => x.Type == MetadataType.Migration)
+                                               .OrderBy(x => x.Version)
+                                               .ToList();
+            });
         }
 
         public bool CanDropSchema(string schemaName)
         {
-            CreateIfNotExists();
-            return InternalGetAllMetadata().Where(x => x.Type == MetadataType.NewSchema && x.Name.Equals(schemaName, StringComparison.OrdinalIgnoreCase))
-                                           .Any();
+            return Execute(() =>
+            {
+                return InternalGetAllMetadata().Where(x => x.Type == MetadataType.NewSchema && x.Name.Equals(schemaName, StringComparison.OrdinalIgnoreCase))
+                                               .Any();
+            });
         }
 
         public bool CanCleanSchema(string schemaName)
         {
-            CreateIfNotExists();
-            return InternalGetAllMetadata().Where(x => x.Type == MetadataType.EmptySchema && x.Name.Equals(schemaName, StringComparison.OrdinalIgnoreCase))
-                                           .Any();
+            return Execute(() =>
+            {
+                return InternalGetAllMetadata().Where(x => x.Type == MetadataType.EmptySchema && x.Name.Equals(schemaName, StringComparison.OrdinalIgnoreCase))
+                                               .Any();
+            });
         }
 
         public MigrationVersion FindStartVersion()
         {
-            CreateIfNotExists();
-            var metadata = InternalGetAllMetadata().Where(x => x.Type == MetadataType.StartVersion)
-                                                   .OrderByDescending(x => x.Version)
-                                                   .FirstOrDefault();
+            return Execute(() =>
+            {
+                var metadata = InternalGetAllMetadata().Where(x => x.Type == MetadataType.StartVersion)
+                                                       .OrderByDescending(x => x.Version)
+                                                       .FirstOrDefault();
 
-            return metadata?.Version ?? new MigrationVersion("0");
+                return metadata?.Version ?? new MigrationVersion("0");
+            });
         }
 
-        public abstract void Lock();
+        public void Lock()
+        {
+            Execute(() =>
+            {
+                InternalLock();
+            });
+        }
 
-        public abstract bool IsExists();
+        public bool IsExists()
+        {
+            return Execute(() => InternalIsExists(), false);
+        }
 
-        protected abstract void Create();
+        protected abstract bool InternalIsExists();
+
+        protected void Create()
+        {
+            Execute(() =>
+            {
+                InternalCreate();
+            });
+        }
+
+        protected abstract void InternalCreate();
+
+        protected abstract void InternalLock();
 
         protected abstract void InternalSave(MigrationMetadata metadata);
 
         protected abstract IEnumerable<MigrationMetadata> InternalGetAllMetadata();
+
+        private bool InternalCreateIfNotExists()
+        {
+            if (InternalIsExists())
+            {
+                return false;
+            }
+            else
+            {
+                InternalCreate();
+                return true;
+            }
+        }
+
+        private void Execute(Action action, bool createIfNotExists = true)
+        {
+            bool restoreSchema = false;
+            if(!_database.GetCurrentSchemaName().Equals(Schema, StringComparison.OrdinalIgnoreCase))
+            {
+                _database.ChangeSchema(Schema);
+                restoreSchema = true;
+            }
+
+            if (createIfNotExists)
+            {
+                InternalCreateIfNotExists();
+            }
+
+            action();
+
+            if(restoreSchema)
+            {
+                _database.RestoreOriginalSchema();
+            }
+        }
+
+        private T Execute<T>(Func<T> func, bool createIfNotExists = true)
+        {
+            bool restoreSchema = false;
+            if (!_database.GetCurrentSchemaName().Equals(Schema, StringComparison.OrdinalIgnoreCase))
+            {
+                _database.ChangeSchema(Schema);
+                restoreSchema = true;
+            }
+
+            if (createIfNotExists)
+            {
+                InternalCreateIfNotExists();
+            }
+
+            T result = func();
+
+            if (restoreSchema)
+            {
+                _database.RestoreOriginalSchema();
+            }
+
+            return result;
+        }
     }
 }

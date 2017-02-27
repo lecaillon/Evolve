@@ -57,10 +57,6 @@ namespace Evolve.IntegrationTest.PostgreSQL
             Assert.True(metadataSchema.IsExists(), $"The schema [{metadataSchemaName}] should be created.");
             Assert.True(metadataSchema.IsEmpty(), $"The schema [{metadataSchemaName}] should be empty.");
 
-            // Change current schema
-            db.ChangeSchema(metadataSchemaName);
-            Assert.True(db.GetCurrentSchemaName() == metadataSchemaName, $"[{metadataSchemaName}] should be the current schema.");
-
             // Get MetadataTable
             string metadataTableName = "changelog";
             var metadata = db.GetMetadataTable(metadataSchemaName, metadataTableName);

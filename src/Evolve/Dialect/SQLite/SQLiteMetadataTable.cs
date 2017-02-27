@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using Evolve.Connection;
 using Evolve.Metadata;
 using Evolve.Migration;
 
@@ -12,24 +10,24 @@ namespace Evolve.Dialect.SQLite
         ///     Constructor.
         /// </summary>
         /// <param name="tableName"> Metadata table name. </param>
-        /// <param name="wrappedConnection"> A connection to the database. </param>
-        public SQLiteMetadataTable(string tableName, WrappedConnection wrappedConnection) : base("main", tableName, wrappedConnection)
+        /// <param name="database"> A database helper used to change and restore schema of the metadata table. </param>
+        public SQLiteMetadataTable(string tableName, DatabaseHelper database) : base("main", tableName, database)
         {
         }
 
         /// <summary>
         ///     SQLite does not support locking. No concurrent migration supported.
         /// </summary>
-        public override void Lock()
+        protected override void InternalLock()
         {
         }
 
-        public override bool IsExists()
+        protected override bool InternalIsExists()
         {
-            return _wrappedConnection.QueryForLong($"SELECT COUNT(tbl_name) FROM sqlite_master WHERE type = 'table' AND tbl_name = '{TableName}'") == 1;
+            return _database.WrappedConnection.QueryForLong($"SELECT COUNT(tbl_name) FROM sqlite_master WHERE type = 'table' AND tbl_name = '{TableName}'") == 1;
         }
 
-        protected override void Create()
+        protected override void InternalCreate()
         {
             string sql = $"CREATE TABLE [{TableName}] " +
              "( " +
@@ -44,7 +42,7 @@ namespace Evolve.Dialect.SQLite
                  "success BOOLEAN NOT NULL " +
              ")";
 
-            _wrappedConnection.ExecuteNonQuery(sql);
+            _database.WrappedConnection.ExecuteNonQuery(sql);
         }
 
         protected override void InternalSave(MigrationMetadata metadata)
@@ -60,13 +58,13 @@ namespace Evolve.Dialect.SQLite
                 $"{(metadata.Success ? 1 : 0)}" +
              ")";
 
-            _wrappedConnection.ExecuteNonQuery(sql);
+            _database.WrappedConnection.ExecuteNonQuery(sql);
         }
 
         protected override IEnumerable<MigrationMetadata> InternalGetAllMetadata()
         {
             string sql = $"SELECT id, type, version, description, name, checksum, installed_by, installed_on, success FROM [{TableName}]";
-            return _wrappedConnection.QueryForList(sql, r =>
+            return _database.WrappedConnection.QueryForList(sql, r =>
             {
                 return new MigrationMetadata(r.GetString(2), r.GetString(3), r.GetString(4), (MetadataType)r.GetInt16(1))
                 {
