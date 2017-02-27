@@ -4,6 +4,7 @@ using Evolve.Migration;
 using System;
 using System.Configuration;
 using System.IO;
+using System.Linq;
 
 namespace Evolve.Configuration
 {
@@ -62,7 +63,11 @@ namespace Evolve.Configuration
             // Locations
             if (!string.IsNullOrWhiteSpace(appSettings[Locations]?.Value))
             {
-                _configuration.Locations = appSettings[Locations].Value.Trim(';').Split(';');
+                _configuration.Locations = appSettings[Locations].Value
+                                                                 .Split(';')
+                                                                 .Where(s => !string.IsNullOrWhiteSpace(s))
+                                                                 .Distinct()
+                                                                 .ToList();
             }
 
             // Encoding
@@ -96,10 +101,14 @@ namespace Evolve.Configuration
                 _configuration.SqlMigrationSuffix = appSettings[SqlMigrationSuffix].Value;
             }
 
-            // DefaultSchema
-            if (!string.IsNullOrWhiteSpace(appSettings[DefaultSchema]?.Value))
+            // Schemas
+            if (!string.IsNullOrWhiteSpace(appSettings[Schemas]?.Value))
             {
-                _configuration.DefaultSchema = appSettings[DefaultSchema].Value;
+                _configuration.Schemas = appSettings[Schemas].Value
+                                                             .Split(';')
+                                                             .Where(s => !string.IsNullOrWhiteSpace(s))
+                                                             .Distinct()
+                                                             .ToList();
             }
 
             // MetadaTableSchema

@@ -16,7 +16,7 @@ namespace Evolve.Configuration
         protected const string SqlMigrationPrefix = "Evolve.SqlMigrationPrefix";
         protected const string SqlMigrationSeparator = "Evolve.SqlMigrationSeparator";
         protected const string SqlMigrationSuffix = "Evolve.SqlMigrationSuffix";
-        protected const string DefaultSchema = "Evolve.DefaultSchema";
+        protected const string Schemas = "Evolve.Schemas";
         protected const string MetadaTableSchema = "Evolve.MetadaTableSchema";
         protected const string MetadaTableName = "Evolve.MetadaTableName";
         protected const string PlaceholderPrefix = "Evolve.PlaceholderPrefix";

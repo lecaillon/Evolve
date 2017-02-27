@@ -22,7 +22,7 @@ namespace Evolve.Test.Configuration
             Assert.Equal("Ver", evolve.SqlMigrationPrefix);
             Assert.Equal("@", evolve.SqlMigrationSeparator);
             Assert.Equal(".query", evolve.SqlMigrationSuffix);
-            Assert.Equal("my_shema", evolve.DefaultSchema);
+            Assert.Equal("my_shema", evolve.Schemas.Single());
             Assert.Equal("my_metadata_schema", evolve.MetadataTableSchema);
             Assert.Equal("metadata_store", evolve.MetadaTableName);
             Assert.Equal("@{", evolve.PlaceholderPrefix);
@@ -45,8 +45,8 @@ namespace Evolve.Test.Configuration
             Assert.Equal(expectedEvolve.SqlMigrationPrefix, evolve.SqlMigrationPrefix);
             Assert.Equal(expectedEvolve.SqlMigrationSeparator, evolve.SqlMigrationSeparator);
             Assert.Equal(expectedEvolve.SqlMigrationSuffix, evolve.SqlMigrationSuffix);
-            Assert.Equal("my_shema", evolve.DefaultSchema);
-            Assert.Equal(evolve.DefaultSchema, evolve.MetadataTableSchema);
+            Assert.Equal("my_shema", evolve.Schemas.Single());
+            Assert.Equal(evolve.Schemas.Single(), evolve.MetadataTableSchema);
             Assert.Equal(expectedEvolve.MetadaTableName, evolve.MetadaTableName);
             Assert.Equal(expectedEvolve.PlaceholderPrefix, evolve.PlaceholderPrefix);
             Assert.Equal(expectedEvolve.PlaceholderSuffix, evolve.PlaceholderSuffix);

@@ -60,12 +60,14 @@ namespace Evolve.Configuration
         string SqlMigrationSuffix { get; set; }
 
         /// <summary>
-        ///     Returns the schema used by default for the migrations. (default: The default schema for the datasource connection)
+        ///     Returns the semicolon separated list of schema managed by Evolve. 
+        ///     (default: If empty, the default schema for the datasource connection.)
         /// </summary>
-        string DefaultSchema { get; set; }
+        IEnumerable<string> Schemas { get; set; }
 
         /// <summary>
-        ///     Returns the schema containing the metadata table. (default: The default schema for the datasource connection)
+        ///     Returns the schema containing the metadata table. 
+        ///     (default: The default schema for the datasource connection, or the first defined in Schemas if exists.)
         /// </summary>
         string MetadataTableSchema { get; set; }
 
