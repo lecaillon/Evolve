@@ -6,6 +6,7 @@ using System.Text;
 using Evolve.Configuration;
 using Evolve.Connection;
 using Evolve.Dialect;
+using Evolve.Metadata;
 using Evolve.Migration;
 using Evolve.Utilities;
 
@@ -15,6 +16,8 @@ namespace Evolve
     {
         private const string IncorrectChecksum = "Checksum validation failed for script: {0}.";
         private const string MigrationMetadataNotFound = "Script {0} not found in the metadata table of applied migrations.";
+        private const string NewSchemaCreated = "Create new schema: {0}.";
+        private const string EmptySchemaFound = "Empty schema found: {0}.";
 
         public Evolve()
         {
@@ -75,12 +78,12 @@ namespace Evolve
 
         #endregion
 
-        public void Validate(DatabaseHelper database, IMigrationLoader loader)
+        public void Validate(DatabaseHelper db, IMigrationLoader loader)
         {
-            Check.NotNull(database, nameof(database));
+            Check.NotNull(db, nameof(db));
             Check.NotNull(loader, nameof(loader));
 
-            var metadataTable = database.GetMetadataTable(MetadataTableSchema, MetadaTableName);                                // Get the metadata table
+            var metadataTable = db.GetMetadataTable(MetadataTableSchema, MetadaTableName);                                      // Get the metadata table
             if(!metadataTable.IsExists())
             {
                 return; // Nothing to validate
@@ -117,15 +120,15 @@ namespace Evolve
         {
             Check.FileExists(evolveConfigurationPath, nameof(evolveConfigurationPath));
 
-            Configure(evolveConfigurationPath);                                             // Load configuration
-            var connectionProvider = GetConnectionProvider(cnn);                            // Get a database connection provider
-            var connection = connectionProvider.GetConnection();                            // Get a connection to the database
-            connection.Validate();                                                          // Validate the reliabilty of the initiated connection
-            var dbmsType = connection.GetDatabaseServerType();                              // Get the DBMS type
-            var database = DatabaseHelperFactory.GetDatabaseHelper(dbmsType, connection);   // Get the DatabaseHelper
+            Configure(evolveConfigurationPath);                                       // Load configuration
+            var connectionProvider = GetConnectionProvider(cnn);                      // Get a database connection provider
+            var connection = connectionProvider.GetConnection();                      // Get a connection to the database
+            connection.Validate();                                                    // Validate the reliabilty of the initiated connection
+            var dbmsType = connection.GetDatabaseServerType();                        // Get the DBMS type
+            var db = DatabaseHelperFactory.GetDatabaseHelper(dbmsType, connection);   // Get the DatabaseHelper
             if(Schemas == null || Schemas.Count() == 0)
             {
-                Schemas = new List<string> { database.GetCurrentSchemaName() };             // If no schema, get the one associated to the datasource connection
+                Schemas = new List<string> { db.GetCurrentSchemaName() };             // If no schema, get the one associated to the datasource connection
             }
         }
 
@@ -137,16 +140,27 @@ namespace Evolve
             configurationProvider.Configure(evolveConfigurationPath, this);
         }
 
-        private void ManageSchemas(DatabaseHelper database)
+        private void ManageSchemas(DatabaseHelper db)
         {
-            var schemas = new List<string>().Union(Schemas ?? new List<string>())
-                                            .Union(new List<string> { MetadataTableSchema })
-                                            .Where(s => !string.IsNullOrWhiteSpace(s))
-                                            .Distinct(StringComparer.OrdinalIgnoreCase);
+            var metadataTable = db.GetMetadataTable(MetadataTableSchema, MetadaTableName);
 
-            foreach (var schema in schemas)
+            foreach (var schemaName in FindSchemas())
             {
+                var schema = db.GetSchema(schemaName);
 
+                if(!schema.IsExists())
+                {
+                    // Create new schema
+                    db.WrappedConnection.BeginTransaction();
+                    schema.Create();
+                    metadataTable.Save(MetadataType.NewSchema, "0", string.Format(NewSchemaCreated, schemaName), schemaName);
+                    db.WrappedConnection.Commit();
+                }
+                else if(schema.IsEmpty())
+                {
+                    // Mark schema as empty in the metadata table
+                    metadataTable.Save(MetadataType.EmptySchema, "0", string.Format(EmptySchemaFound, schemaName), schemaName);
+                }
             }
         }
 
@@ -154,6 +168,14 @@ namespace Evolve
         {
             return connection != null ? new ConnectionProvider(connection) as IConnectionProvider
                                       : new DriverConnectionProvider(Driver, ConnectionString);
+        }
+
+        private IEnumerable<string> FindSchemas()
+        {
+            return new List<string>().Union(Schemas ?? new List<string>())
+                                     .Union(new List<string> { MetadataTableSchema })
+                                     .Where(s => !string.IsNullOrWhiteSpace(s))
+                                     .Distinct(StringComparer.OrdinalIgnoreCase);
         }
     }
 }
