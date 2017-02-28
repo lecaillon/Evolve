@@ -17,7 +17,7 @@ namespace Evolve.Dialect.SQLite
         {
             try
             {
-                GetAllTables();
+                GetTables();
                 return true;
             }
             catch
@@ -28,7 +28,7 @@ namespace Evolve.Dialect.SQLite
 
         public override bool IsEmpty()
         {
-            return GetAllTables().Except(IgnoredSystemTableNames).Count() == 0;
+            return GetTables().Except(IgnoredSystemTableNames).Count() == 0;
         }
 
         /// <summary>
@@ -52,14 +52,14 @@ namespace Evolve.Dialect.SQLite
             return true;
         }
 
-        protected List<string> GetAllTables()
+        protected List<string> GetTables()
         {
             return _wrappedConnection.QueryForListOfString($"SELECT tbl_name FROM sqlite_master WHERE type = 'table'").ToList();
         }
 
         protected void CleanTables()
         {
-            GetAllTables().Except(UndroppableTableNames).ToList().ForEach(t =>
+            GetTables().Except(UndroppableTableNames).ToList().ForEach(t =>
             {
                 _wrappedConnection.ExecuteNonQuery($"DROP TABLE {t}");
             });
