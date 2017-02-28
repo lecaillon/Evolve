@@ -17,7 +17,7 @@ namespace Evolve.Connection
         {
             if(_wrappedConnection == null)
             {
-                _wrappedConnection = new WrappedConnection(_connection);
+                _wrappedConnection = new WrappedConnection(_connection, false);
             }
 
             return _wrappedConnection;
