@@ -66,7 +66,7 @@ namespace Evolve.Configuration
                 _configuration.Locations = appSettings[Locations].Value
                                                                  .Split(';')
                                                                  .Where(s => !string.IsNullOrWhiteSpace(s))
-                                                                 .Distinct()
+                                                                 .Distinct(StringComparer.OrdinalIgnoreCase)
                                                                  .ToList();
             }
 
@@ -107,7 +107,7 @@ namespace Evolve.Configuration
                 _configuration.Schemas = appSettings[Schemas].Value
                                                              .Split(';')
                                                              .Where(s => !string.IsNullOrWhiteSpace(s))
-                                                             .Distinct()
+                                                             .Distinct(StringComparer.OrdinalIgnoreCase)
                                                              .ToList();
             }
 

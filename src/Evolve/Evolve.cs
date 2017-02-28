@@ -137,9 +137,17 @@ namespace Evolve
             configurationProvider.Configure(evolveConfigurationPath, this);
         }
 
-        private void ManageSchemas()
+        private void ManageSchemas(DatabaseHelper database)
         {
-            throw new NotImplementedException();
+            var schemas = new List<string>().Union(Schemas ?? new List<string>())
+                                            .Union(new List<string> { MetadataTableSchema })
+                                            .Where(s => !string.IsNullOrWhiteSpace(s))
+                                            .Distinct(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var schema in schemas)
+            {
+
+            }
         }
 
         private IConnectionProvider GetConnectionProvider(IDbConnection connection = null)

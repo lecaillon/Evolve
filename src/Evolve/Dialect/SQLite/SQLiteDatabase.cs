@@ -13,12 +13,12 @@ namespace Evolve.Dialect.SQLite
 
         public override string GetCurrentSchemaName() => "main";
 
+        public override Schema GetSchema(string schemaName) => new SQLiteSchema(WrappedConnection);
+
         /// <summary>
         ///     SQLite does not support setting the schema.
         /// </summary>
         protected override void InternalChangeSchema(string toSchemaName) { }
-
-        protected override Schema GetSchema(string schemaName) => new SQLiteSchema(WrappedConnection);
 
         public override IEvolveMetadata GetMetadataTable(string schema, string tableName) => new SQLiteMetadataTable(tableName, this);
     }

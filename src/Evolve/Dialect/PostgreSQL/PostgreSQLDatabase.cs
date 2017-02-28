@@ -15,7 +15,7 @@ namespace Evolve.Dialect.PostgreSQL
 
         public override string GetCurrentSchemaName() => CleanSchemaName(WrappedConnection.QueryForString("SHOW search_path"));
 
-        protected override Schema GetSchema(string schemaName) => new PostgreSQLSchema(schemaName, WrappedConnection);
+        public override Schema GetSchema(string schemaName) => new PostgreSQLSchema(schemaName, WrappedConnection);
 
         protected override void InternalChangeSchema(string toSchemaName)
         {

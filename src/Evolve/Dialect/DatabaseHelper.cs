@@ -6,6 +6,7 @@ namespace Evolve.Dialect
 {
     public abstract class DatabaseHelper
     {
+        private const string SchemaNotFound = "Cannot change schema to {0}. This schema does not exist.";
         protected readonly string _originalSchemaName;
 
         public DatabaseHelper(WrappedConnection wrappedConnection)
@@ -24,7 +25,7 @@ namespace Evolve.Dialect
         {
             var schema = GetSchema(toSchemaName);
             if (!schema.IsExists())
-                return null;
+                throw new EvolveException(string.Format(SchemaNotFound, toSchemaName));
 
             InternalChangeSchema(toSchemaName);
             return schema;
@@ -34,9 +35,9 @@ namespace Evolve.Dialect
 
         public abstract string GetCurrentSchemaName();
 
-        protected abstract void InternalChangeSchema(string toSchemaName);
+        public abstract Schema GetSchema(string schemaName);
 
-        protected abstract Schema GetSchema(string schemaName);
+        protected abstract void InternalChangeSchema(string toSchemaName);
 
         #endregion
 
