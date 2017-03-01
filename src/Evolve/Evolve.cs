@@ -14,13 +14,24 @@ namespace Evolve
 {
     public class Evolve : IEvolveConfiguration, IMigrator
     {
+        #region Fields
+
         private const string IncorrectChecksum = "Checksum validation failed for script: {0}.";
         private const string MigrationMetadataNotFound = "Script {0} not found in the metadata table of applied migrations.";
         private const string NewSchemaCreated = "Create new schema: {0}.";
         private const string EmptySchemaFound = "Empty schema found: {0}.";
 
-        public Evolve()
+        private string _configurationPath;
+        private IDbConnection _userDbConnection;
+        private IMigrationLoader _loader = new FileMigrationLoader();
+
+        #endregion
+
+        public Evolve(string evolveConfigurationPath, IDbConnection dbConnection = null)
         {
+            _configurationPath = Check.FileExists(evolveConfigurationPath, nameof(evolveConfigurationPath));
+            _userDbConnection = dbConnection;
+
             // Set default configuration settings
             Schemas = new List<string>();
             Encoding = Encoding.UTF8;
@@ -31,6 +42,10 @@ namespace Evolve
             SqlMigrationPrefix = "V";
             SqlMigrationSeparator = "__";
             SqlMigrationSuffix = ".sql";
+
+            // Configure Evolve
+            var configurationProvider = ConfigurationFactoryProvider.GetProvider(evolveConfigurationPath);
+            configurationProvider.Configure(evolveConfigurationPath, this);
         }
 
         #region IEvolveConfiguration
@@ -62,8 +77,6 @@ namespace Evolve
 
         #endregion
 
-        public IEnumerable<MigrationScript> ValidatedScripts { get; private set; }
-
         #region IMigrator
 
         public string GenerateScript(string fromMigration = null, string toMigration = null)
@@ -73,76 +86,102 @@ namespace Evolve
 
         public void Migrate(string targetVersion = null)
         {
+            var db = Initialize();
+            Validate(db);
+            ManageSchemas(db);
+
             throw new NotImplementedException();
+        }
+
+        public void Validate()
+        {
+            var db = Initialize();
+            Validate(db);
+        }
+
+        public void Clean()
+        {
+            var db = Initialize();
+
+            var schemaToDrop = new List<string>();
+            var schemaToClean = new List<string>();
+            var metadata = db.GetMetadataTable(MetadataTableSchema, MetadaTableName);
+
+            foreach (var schemaName in FindSchemas())
+            {
+                if(metadata.CanDropSchema(schemaName))
+                {
+                    schemaToDrop.Add(schemaName);
+                }
+                else if (metadata.CanCleanSchema(schemaName))
+                {
+                    schemaToClean.Add(schemaName);
+                }
+            }
+
+            schemaToDrop.ForEach(x => db.GetSchema(x).Drop());
+            schemaToClean.ForEach(x => db.GetSchema(x).Clean());
         }
 
         #endregion
 
-        public void Validate(DatabaseHelper db, IMigrationLoader loader)
+        private DatabaseHelper Initialize()
+        {
+            var connectionProvider = GetConnectionProvider(_userDbConnection);              // Get a database connection provider
+            var evolveConnection = connectionProvider.GetConnection();                      // Get a connection to the database
+            evolveConnection.Validate();                                                    // Validate the reliabilty of the initiated connection
+            var dbmsType = evolveConnection.GetDatabaseServerType();                        // Get the DBMS type
+            var db = DatabaseHelperFactory.GetDatabaseHelper(dbmsType, evolveConnection);   // Get the DatabaseHelper
+            if(Schemas == null || Schemas.Count() == 0)
+            {
+                Schemas = new List<string> { db.GetCurrentSchemaName() };                   // If no schema, get the one associated to the datasource connection
+            }
+
+            return db;
+        }
+
+        private void Validate(DatabaseHelper db)
         {
             Check.NotNull(db, nameof(db));
-            Check.NotNull(loader, nameof(loader));
 
-            var metadataTable = db.GetMetadataTable(MetadataTableSchema, MetadaTableName);                                      // Get the metadata table
-            if(!metadataTable.IsExists())
-            {
-                return; // Nothing to validate
-            }
-
-            var appliedMigrations = metadataTable.GetAllMigrationMetadata();                                                    // Load all applied migrations metadata
-            if (appliedMigrations.Count() == 0)
-            {
-                return; // Nothing to validate
-            }
-
-            ValidatedScripts = loader.GetMigrations(Locations, SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix);  // Load scripts found at Locations
-            var lastAppliedVersion = appliedMigrations.Last().Version;                                                          // Get the last applied migration version
-            var startVersion = metadataTable.FindStartVersion();                                                                // Load start version from metadata
-            var scripts = ValidatedScripts.SkipWhile(x => x.Version < startVersion)
-                                          .TakeWhile(x => x.Version <= lastAppliedVersion);                                     // Keep scripts between first and last applied migration
-
-            foreach (var script in scripts)
-            {
-                var appliedMigration = appliedMigrations.SingleOrDefault(x => x.Version == script.Version);                     // Search script in the applied migrations
-                if(appliedMigration == null)
-                {
-                    throw new EvolveException(string.Format(MigrationMetadataNotFound, script.Name));
-                }
-
-                if(script.CalculateChecksum() != appliedMigration.Checksum)                                                     // Script found, verify checksum
+            var metadata = db.GetMetadataTable(MetadataTableSchema, MetadaTableName);                                       // Get the metadata table
+            if (!metadata.IsExists())                                                                                       
+            {                                                                                                               
+                return; // Nothing to validate                                                                              
+            }                                                                                                               
+                                                                                                                            
+            var appliedMigrations = metadata.GetAllMigrationMetadata();                                                     // Load all applied migrations metadata
+            if (appliedMigrations.Count() == 0)                                                                             
+            {                                                                                                               
+                return; // Nothing to validate                                                                              
+            }                                                                                                               
+                                                                                                                            
+            var lastAppliedVersion = appliedMigrations.Last().Version;                                                      // Get the last applied migration version
+            var startVersion = metadata.FindStartVersion();                                                                 // Load start version from metadata
+            var scripts = _loader.GetMigrations(Locations, SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix)
+                                 .SkipWhile(x => x.Version < startVersion)                                         
+                                 .TakeWhile(x => x.Version <= lastAppliedVersion);                                          // Keep scripts between first and last applied migration
+                                                                                                                            
+            foreach (var script in scripts)                                                                                 
+            {                                                                                                               
+                var appliedMigration = appliedMigrations.SingleOrDefault(x => x.Version == script.Version);                 // Search script in the applied migrations
+                if (appliedMigration == null)                                                                               
+                {                                                                                                           
+                    throw new EvolveException(string.Format(MigrationMetadataNotFound, script.Name));                       
+                }                                                                                                           
+                                                                                                                            
+                if (script.CalculateChecksum() != appliedMigration.Checksum)                                                // Script found, verify checksum
                 {
                     throw new EvolveException(string.Format(IncorrectChecksum, script.Name));
                 }
             }
         }
 
-        private void Initialize(string evolveConfigurationPath, IDbConnection cnn = null)
-        {
-            Check.FileExists(evolveConfigurationPath, nameof(evolveConfigurationPath));
-
-            Configure(evolveConfigurationPath);                                       // Load configuration
-            var connectionProvider = GetConnectionProvider(cnn);                      // Get a database connection provider
-            var connection = connectionProvider.GetConnection();                      // Get a connection to the database
-            connection.Validate();                                                    // Validate the reliabilty of the initiated connection
-            var dbmsType = connection.GetDatabaseServerType();                        // Get the DBMS type
-            var db = DatabaseHelperFactory.GetDatabaseHelper(dbmsType, connection);   // Get the DatabaseHelper
-            if(Schemas == null || Schemas.Count() == 0)
-            {
-                Schemas = new List<string> { db.GetCurrentSchemaName() };             // If no schema, get the one associated to the datasource connection
-            }
-        }
-
-        private void Configure(string evolveConfigurationPath)
-        {
-            Check.FileExists(evolveConfigurationPath, nameof(evolveConfigurationPath));
-
-            IConfigurationProvider configurationProvider = ConfigurationFactoryProvider.GetProvider(evolveConfigurationPath);
-            configurationProvider.Configure(evolveConfigurationPath, this);
-        }
-
         private void ManageSchemas(DatabaseHelper db)
         {
-            var metadataTable = db.GetMetadataTable(MetadataTableSchema, MetadaTableName);
+            Check.NotNull(db, nameof(db));
+
+            var metadata = db.GetMetadataTable(MetadataTableSchema, MetadaTableName);
 
             foreach (var schemaName in FindSchemas())
             {
@@ -153,13 +192,13 @@ namespace Evolve
                     // Create new schema
                     db.WrappedConnection.BeginTransaction();
                     schema.Create();
-                    metadataTable.Save(MetadataType.NewSchema, "0", string.Format(NewSchemaCreated, schemaName), schemaName);
+                    metadata.Save(MetadataType.NewSchema, "0", string.Format(NewSchemaCreated, schemaName), schemaName);
                     db.WrappedConnection.Commit();
                 }
                 else if(schema.IsEmpty())
                 {
                     // Mark schema as empty in the metadata table
-                    metadataTable.Save(MetadataType.EmptySchema, "0", string.Format(EmptySchemaFound, schemaName), schemaName);
+                    metadata.Save(MetadataType.EmptySchema, "0", string.Format(EmptySchemaFound, schemaName), schemaName);
                 }
             }
         }
