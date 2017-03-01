@@ -39,6 +39,7 @@ namespace Evolve
             MetadaTableName = "changelog";
             PlaceholderPrefix = "${";
             PlaceholderSuffix = "}";
+            Placeholders = new Dictionary<string, string>();
             SqlMigrationPrefix = "V";
             SqlMigrationSeparator = "__";
             SqlMigrationSuffix = ".sql";
@@ -70,6 +71,7 @@ namespace Evolve
 
         public string PlaceholderPrefix { get; set; }
         public string PlaceholderSuffix { get; set; }
+        public Dictionary<string, string> Placeholders { get; set; }
         public string SqlMigrationPrefix { get; set; }
         public string SqlMigrationSeparator { get; set; }
         public string SqlMigrationSuffix { get; set; }
@@ -86,11 +88,35 @@ namespace Evolve
 
         public void Migrate(string targetVersion = null)
         {
+            Check.NullableButNotEmpty(targetVersion, nameof(targetVersion));
+
             var db = Initialize();
             Validate(db);
             ManageSchemas(db);
 
-            throw new NotImplementedException();
+            var metadata = db.GetMetadataTable(MetadataTableSchema, MetadaTableName);
+            var lastAppliedVersion = metadata.GetAllMigrationMetadata().Last().Version;
+            var targetMigrationVersion = new MigrationVersion(targetVersion ?? long.MaxValue.ToString());
+            var scripts = _loader.GetMigrations(Locations, SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix)
+                                 .SkipWhile(x => x.Version <= lastAppliedVersion)
+                                 .TakeWhile(x => x.Version <= targetMigrationVersion);
+
+            foreach (var script in scripts)
+            {
+                try
+                {
+                    db.WrappedConnection.BeginTransaction();
+                    db.WrappedConnection.ExecuteNonQuery(script.LoadSQL(Placeholders, Encoding));
+                    metadata.SaveMigration(script, true);
+                    db.WrappedConnection.Commit();
+                }
+                catch
+                {
+                    db.WrappedConnection.Rollback();
+                    metadata.SaveMigration(script, false);
+                    throw;
+                }
+            }
         }
 
         public void Validate()
