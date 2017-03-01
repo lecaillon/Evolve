@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
-using Evolve.Utilities;
+using System.Text;
 using Evolve.Metadata;
+using Evolve.Utilities;
 
 namespace Evolve.Migration
 {
@@ -26,6 +29,20 @@ namespace Evolve.Migration
                     return BitConverter.ToString(checksum).Replace("-", string.Empty);
                 }
             }
+        }
+
+        public string LoadSQL(Dictionary<string, string> placeholders, Encoding encoding)
+        {
+            Check.NotNull(placeholders, nameof(placeholders));
+            Check.NotNull(encoding, nameof(encoding));
+
+            string sql = File.ReadAllText(Path, encoding);
+            foreach (var entry in placeholders)
+            {
+                sql = sql.Replace(entry.Key, entry.Value);
+            }
+
+            return sql;
         }
     }
 }
