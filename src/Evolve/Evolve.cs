@@ -119,8 +119,10 @@ namespace Evolve
                 }
             }
 
+            db.WrappedConnection.BeginTransaction();
             schemaToDrop.ForEach(x => db.GetSchema(x).Drop());
             schemaToClean.ForEach(x => db.GetSchema(x).Clean());
+            db.WrappedConnection.Commit();
         }
 
         #endregion
