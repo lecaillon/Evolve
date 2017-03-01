@@ -70,7 +70,7 @@ namespace Evolve.Metadata
         {
             return Execute(() =>
             {
-                return InternalGetAllMetadata().Where(x => x.Type == MetadataType.Migration)
+                return InternalGetAllMetadata().Where(x => x.Type == MetadataType.Migration && x.Success == true)
                                                .OrderBy(x => x.Version)
                                                .ToList();
             });
