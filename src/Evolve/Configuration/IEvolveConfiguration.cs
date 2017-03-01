@@ -87,6 +87,20 @@ namespace Evolve.Configuration
         string PlaceholderSuffix { get; set; }
 
         /// <summary>
+        ///     <para>
+        ///         Returns the list of supplied placeholders/values defined in the configuration file.
+        ///     </para>
+        ///     <para>
+        ///         Placeholders are strings prefixed by: "Evolve.Placeholder." to replace in sql migrations.
+        ///     </para>
+        ///     <para>
+        ///         Example: ${schema} will be replaced by the value defined by the property 
+        ///         Evolve.Placeholder.schema in the configuration file.
+        ///     </para>
+        /// </summary>
+        Dictionary<string, string> Placeholders { get; set; }
+
+        /// <summary>
         ///     Returns the target version to reach. If null or empty it evolves all the way up.
         /// </summary>
         MigrationVersion TargetVersion { get; set; }

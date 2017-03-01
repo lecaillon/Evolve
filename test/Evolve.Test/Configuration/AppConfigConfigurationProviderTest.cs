@@ -1,7 +1,7 @@
-﻿using Evolve.Configuration;
-using Evolve.Migration;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using Evolve.Migration;
 using Xunit;
 
 namespace Evolve.Test.Configuration
@@ -11,9 +11,7 @@ namespace Evolve.Test.Configuration
         [Fact(DisplayName = "Load_app_configuration_file_works")]
         public void Load_app_configuration_file_works()
         {
-            var evolve = new Evolve();
-            var configurationProvider = new AppConfigConfigurationProvider();
-            configurationProvider.Configure(TestContext.AppConfigPath, evolve);
+            var evolve = new Evolve(TestContext.AppConfigPath);
 
             Assert.Equal("Server=127.0.0.1;Port=5432;Database=myDataBase;User Id=myUsername;Password=myPassword;", evolve.ConnectionString);
             Assert.Equal("npgsql", evolve.Driver);
@@ -28,29 +26,28 @@ namespace Evolve.Test.Configuration
             Assert.Equal("@{", evolve.PlaceholderPrefix);
             Assert.Equal("@}", evolve.PlaceholderSuffix);
             Assert.Equal(new MigrationVersion("2_1_0"), evolve.TargetVersion);
+            Assert.True(new List<string>() { "@{Schema@}", "@{Pwd@}" }.SequenceEqual(evolve.Placeholders.Keys));
+            Assert.True(new List<string>() { "my_schema", "password" }.SequenceEqual(evolve.Placeholders.Values));
         }
 
         [Fact(DisplayName = "Load_web_configuration_file_works")]
         public void Load_web_configuration_file_works()
         {
-            var expectedEvolve = new Evolve();
-            var evolve = new Evolve();
-            var configurationProvider = new AppConfigConfigurationProvider();
-            configurationProvider.Configure(TestContext.WebConfigPath, evolve);
+            var evolve = new Evolve(TestContext.WebConfigPath);
 
             Assert.Equal("Server=127.0.0.1;Port=5432;Database=myDataBase;User Id=myUsername;Password=myPassword;", evolve.ConnectionString);
             Assert.Equal("npgsql", evolve.Driver);
             Assert.NotNull(evolve.Locations);
-            Assert.Equal(expectedEvolve.Encoding.BodyName, evolve.Encoding.BodyName);
-            Assert.Equal(expectedEvolve.SqlMigrationPrefix, evolve.SqlMigrationPrefix);
-            Assert.Equal(expectedEvolve.SqlMigrationSeparator, evolve.SqlMigrationSeparator);
-            Assert.Equal(expectedEvolve.SqlMigrationSuffix, evolve.SqlMigrationSuffix);
+            Assert.Equal(Encoding.UTF8, evolve.Encoding);
+            Assert.Equal("V", evolve.SqlMigrationPrefix);
+            Assert.Equal("__", evolve.SqlMigrationSeparator);
+            Assert.Equal(".sql", evolve.SqlMigrationSuffix);
             Assert.Equal("my_shema", evolve.Schemas.Single());
             Assert.Equal(evolve.Schemas.Single(), evolve.MetadataTableSchema);
-            Assert.Equal(expectedEvolve.MetadaTableName, evolve.MetadaTableName);
-            Assert.Equal(expectedEvolve.PlaceholderPrefix, evolve.PlaceholderPrefix);
-            Assert.Equal(expectedEvolve.PlaceholderSuffix, evolve.PlaceholderSuffix);
-            Assert.Equal(expectedEvolve.TargetVersion, evolve.TargetVersion);
+            Assert.Equal("changelog", evolve.MetadaTableName);
+            Assert.Equal("${", evolve.PlaceholderPrefix);
+            Assert.Equal("}", evolve.PlaceholderSuffix);
+            Assert.Equal(null, evolve.TargetVersion);
         }
     }
 }

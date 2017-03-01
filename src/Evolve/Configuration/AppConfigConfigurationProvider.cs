@@ -5,6 +5,7 @@ using System;
 using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Evolve.Configuration
 {
@@ -147,6 +148,15 @@ namespace Evolve.Configuration
                     throw new EvolveConfigurationException(string.Format(InvalidVersionPatternMatching, appSettings[TargetVersion].Value));
                 }
             }
+
+            // Placeholder
+            string prefix = _configuration.PlaceholderPrefix;
+            string suffix = _configuration.PlaceholderSuffix;
+            _configuration.Placeholders = new Dictionary<string, string>();
+            appSettings.AllKeys
+                       .Where(x => x.StartsWith(Placeholder, StringComparison.OrdinalIgnoreCase))
+                       .ToList()
+                       .ForEach(k => _configuration.Placeholders.Add(k.Replace(Placeholder, prefix) + suffix, appSettings[k].Value));
         }
     }
 }

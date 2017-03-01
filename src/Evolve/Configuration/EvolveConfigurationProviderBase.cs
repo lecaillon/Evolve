@@ -22,6 +22,7 @@ namespace Evolve.Configuration
         protected const string PlaceholderPrefix = "Evolve.PlaceholderPrefix";
         protected const string PlaceholderSuffix = "Evolve.PlaceholderSuffix";
         protected const string TargetVersion = "Evolve.TargetVersion";
+        protected const string Placeholder = "Evolve.Placeholder.";
 
         public void Configure(string evolveConfigurationPath, IEvolveConfiguration configuration)
         {
