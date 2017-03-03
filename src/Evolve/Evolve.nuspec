@@ -18,8 +18,6 @@
   <files>
     <file src="bin\Release\net35\*.dll" target="lib\net35" />
     <file src="bin\Release\net35\*.xml" target="lib\net35" />
-    <file src="bin\Release\net40\*.dll" target="lib\net40" />
-    <file src="bin\Release\net40\*.xml" target="lib\net40" />
     <file src="bin\Release\net45\*.dll" target="lib\net45" />
     <file src="bin\Release\net45\*.xml" target="lib\net45" />
     <file src="build\**" target="build" />
