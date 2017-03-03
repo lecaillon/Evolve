@@ -9,14 +9,16 @@
     <projectUrl>https://github.com/lecaillon/Evolve</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <summary>C# Evolve inspired by Flyway and MyBatis Migrations.</summary>
-    <description></description>
+    <description>Evolve description</description>
     <releaseNotes>Initial release.</releaseNotes>
     <copyright>Copyright © P.Lécaillon 2016</copyright>
     <tags>Evolve Flyway MyBatis Migration</tags>
     <dependencies />
   </metadata>
   <files>
-    <file src="bin\Release\**\*.dll" target="lib" />
-    <file src="bin\Release\**\*.xml" target="lib" />
+    <file src="bin\Release\net452\*.dll" target="lib\net452" />
+    <file src="bin\Release\net452\*.xml" target="lib\net452" />
+    <file src="build\**" target="build" />
+    <file src="content\**" target="content" />
   </files>
 </package>

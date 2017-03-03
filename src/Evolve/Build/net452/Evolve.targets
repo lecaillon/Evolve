@@ -1,0 +1,5 @@
+<Project ToolsVersion="15.0">
+  <Target Name="Test" AfterTargets="Build">
+    <Message Importance="High" Text="+++ Philippe Lécaillon +++" />
+  </Target>
+</Project>
