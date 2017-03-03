@@ -63,8 +63,8 @@ namespace Evolve
         {
             get
             {
-                return !string.IsNullOrWhiteSpace(_metadaTableSchema) ? _metadaTableSchema
-                                                                      : Schemas?.FirstOrDefault();
+                return !_metadaTableSchema.IsNullOrWhiteSpace() ? _metadaTableSchema
+                                                                : Schemas?.FirstOrDefault();
             }
             set { _metadaTableSchema = value; }
         }
@@ -241,7 +241,7 @@ namespace Evolve
         {
             return new List<string>().Union(Schemas ?? new List<string>())
                                      .Union(new List<string> { MetadataTableSchema })
-                                     .Where(s => !string.IsNullOrWhiteSpace(s))
+                                     .Where(s => !s.IsNullOrWhiteSpace())
                                      .Distinct(StringComparer.OrdinalIgnoreCase);
         }
     }

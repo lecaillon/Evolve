@@ -11,9 +11,9 @@ namespace Evolve.Test.Core.Utilities
         [InlineData(@"C:\MyFolder\V1_12_1_0__migration_description.sql", "1_12_1_0", "migration description")]
         public void Can_get_migration_version_and_description(string script, string expectedVersion, string expectedDescription)
         {
-            var versionAndDescription = MigrationUtil.ExtractVersionAndDescription(script, TestContext.SqlMigrationPrefix, TestContext.SqlMigrationSeparator);
-            Assert.Equal(expectedVersion, versionAndDescription.Item1);
-            Assert.Equal(expectedDescription, versionAndDescription.Item2);
+            MigrationUtil.ExtractVersionAndDescription(script, TestContext.SqlMigrationPrefix, TestContext.SqlMigrationSeparator, out string version, out string description);
+            Assert.Equal(expectedVersion, version);
+            Assert.Equal(expectedDescription, description);
         }
 
         [Theory(DisplayName = "When_migration_name_format_is_incorrect_Throws_EvolveConfigurationException")]
@@ -24,7 +24,7 @@ namespace Evolve.Test.Core.Utilities
         [InlineData("V1_3_1__.sql")]
         public void When_migration_name_format_is_incorrect_Throws_EvolveConfigurationException(string script)
         {
-            Assert.Throws<EvolveConfigurationException>(() => MigrationUtil.ExtractVersionAndDescription(script, TestContext.SqlMigrationPrefix, TestContext.SqlMigrationSeparator));
+            Assert.Throws<EvolveConfigurationException>(() => MigrationUtil.ExtractVersionAndDescription(script, TestContext.SqlMigrationPrefix, TestContext.SqlMigrationSeparator, out string version, out string description));
         }
     }
 }

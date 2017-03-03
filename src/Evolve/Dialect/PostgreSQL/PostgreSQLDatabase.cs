@@ -19,7 +19,7 @@ namespace Evolve.Dialect.PostgreSQL
 
         protected override void InternalChangeSchema(string toSchemaName)
         {
-            if(string.IsNullOrWhiteSpace(toSchemaName))
+            if(toSchemaName.IsNullOrWhiteSpace())
             {
                 WrappedConnection.ExecuteNonQuery("SELECT set_config('search_path', '', false)");
             }
@@ -31,7 +31,7 @@ namespace Evolve.Dialect.PostgreSQL
 
         private string CleanSchemaName(string schemaName)
         {
-            if(string.IsNullOrWhiteSpace(schemaName))
+            if(schemaName.IsNullOrWhiteSpace())
             {
                 return string.Empty;
             }

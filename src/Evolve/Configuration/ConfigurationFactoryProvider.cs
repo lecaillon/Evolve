@@ -10,7 +10,7 @@ namespace Evolve.Configuration
         private const string NotSupportedConfigurationFile = "Evolve only supports App.config, Web.config or .json files.";
         private static readonly Dictionary<string, Func<IConfigurationProvider>> _providers = new Dictionary<string, Func<IConfigurationProvider>>
         {
-#if NET452
+#if NET
             [".config"] = () => new AppConfigConfigurationProvider(),
 #endif
             [".json"] = () => new JsonConfigurationProvider(),

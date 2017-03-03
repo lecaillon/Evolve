@@ -1,4 +1,4 @@
-﻿#if NET452
+﻿#if NET
 
 using Evolve.Migration;
 using System;
@@ -42,10 +42,10 @@ namespace Evolve.Configuration
             var appSettings = config.AppSettings.Settings;
 
             // ConnectionString
-            if (!string.IsNullOrWhiteSpace(appSettings[ConnectionString]?.Value))
+            if (!appSettings[ConnectionString]?.Value.IsNullOrWhiteSpace() ?? false)
             {
                 string cnn = appSettings[ConnectionString].Value;
-                if (!string.IsNullOrWhiteSpace(config.ConnectionStrings.ConnectionStrings[cnn]?.ConnectionString))
+                if (!config.ConnectionStrings.ConnectionStrings[cnn]?.ConnectionString.IsNullOrWhiteSpace() ?? false)
                 {
                     _configuration.ConnectionString = config.ConnectionStrings.ConnectionStrings[cnn].ConnectionString;
                 }
@@ -56,23 +56,23 @@ namespace Evolve.Configuration
             }
 
             // Driver
-            if (!string.IsNullOrWhiteSpace(appSettings[Driver]?.Value))
+            if (!appSettings[Driver]?.Value.IsNullOrWhiteSpace() ?? false)
             {
                 _configuration.Driver = appSettings[Driver].Value;
             }
 
             // Locations
-            if (!string.IsNullOrWhiteSpace(appSettings[Locations]?.Value))
+            if (!appSettings[Locations]?.Value.IsNullOrWhiteSpace() ?? false)
             {
                 _configuration.Locations = appSettings[Locations].Value
                                                                  .Split(';')
-                                                                 .Where(s => !string.IsNullOrWhiteSpace(s))
+                                                                 .Where(s => !s.IsNullOrWhiteSpace())
                                                                  .Distinct(StringComparer.OrdinalIgnoreCase)
                                                                  .ToList();
             }
 
             // Encoding
-            if (!string.IsNullOrWhiteSpace(appSettings[Encoding]?.Value))
+            if (!appSettings[Encoding]?.Value.IsNullOrWhiteSpace() ?? false)
             {
                 try
                 {
@@ -85,59 +85,59 @@ namespace Evolve.Configuration
             }
 
             // SqlMigrationPrefix
-            if (!string.IsNullOrWhiteSpace(appSettings[SqlMigrationPrefix]?.Value))
+            if (!appSettings[SqlMigrationPrefix]?.Value.IsNullOrWhiteSpace() ?? false)
             {
                 _configuration.SqlMigrationPrefix = appSettings[SqlMigrationPrefix].Value;
             }
 
             // SqlMigrationSeparator
-            if (!string.IsNullOrWhiteSpace(appSettings[SqlMigrationSeparator]?.Value))
+            if (!appSettings[SqlMigrationSeparator]?.Value.IsNullOrWhiteSpace() ?? false)
             {
                 _configuration.SqlMigrationSeparator = appSettings[SqlMigrationSeparator].Value;
             }
 
             // SqlMigrationSuffix
-            if (!string.IsNullOrWhiteSpace(appSettings[SqlMigrationSuffix]?.Value))
+            if (!appSettings[SqlMigrationSuffix]?.Value.IsNullOrWhiteSpace() ?? false)
             {
                 _configuration.SqlMigrationSuffix = appSettings[SqlMigrationSuffix].Value;
             }
 
             // Schemas
-            if (!string.IsNullOrWhiteSpace(appSettings[Schemas]?.Value))
+            if (!appSettings[Schemas]?.Value.IsNullOrWhiteSpace() ?? false)
             {
                 _configuration.Schemas = appSettings[Schemas].Value
                                                              .Split(';')
-                                                             .Where(s => !string.IsNullOrWhiteSpace(s))
+                                                             .Where(s => !s.IsNullOrWhiteSpace())
                                                              .Distinct(StringComparer.OrdinalIgnoreCase)
                                                              .ToList();
             }
 
             // MetadaTableSchema
-            if (!string.IsNullOrWhiteSpace(appSettings[MetadaTableSchema]?.Value))
+            if (!appSettings[MetadaTableSchema]?.Value.IsNullOrWhiteSpace() ?? false)
             {
                 _configuration.MetadataTableSchema = appSettings[MetadaTableSchema].Value;
             }
 
             // MetadaTableName
-            if (!string.IsNullOrWhiteSpace(appSettings[MetadaTableName]?.Value))
+            if (!appSettings[MetadaTableName]?.Value.IsNullOrWhiteSpace() ?? false)
             {
                 _configuration.MetadaTableName = appSettings[MetadaTableName].Value;
             }
 
             // PlaceholderPrefix
-            if (!string.IsNullOrWhiteSpace(appSettings[PlaceholderPrefix]?.Value))
+            if (!appSettings[PlaceholderPrefix]?.Value.IsNullOrWhiteSpace() ?? false)
             {
                 _configuration.PlaceholderPrefix = appSettings[PlaceholderPrefix].Value;
             }
 
             // PlaceholderSuffix
-            if (!string.IsNullOrWhiteSpace(appSettings[PlaceholderSuffix]?.Value))
+            if (!appSettings[PlaceholderSuffix]?.Value.IsNullOrWhiteSpace() ?? false)
             {
                 _configuration.PlaceholderSuffix = appSettings[PlaceholderSuffix].Value;
             }
 
             // TargetVersion
-            if (!string.IsNullOrWhiteSpace(appSettings[TargetVersion]?.Value))
+            if (!appSettings[TargetVersion]?.Value.IsNullOrWhiteSpace() ?? false)
             {
                 try
                 {

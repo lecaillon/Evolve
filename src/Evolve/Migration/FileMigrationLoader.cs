@@ -33,7 +33,8 @@ namespace Evolve.Migration
 
             var duplicates = migrations.GroupBy(x => x.Version)
                                        .Where(grp => grp.Count() > 1)
-                                       .Select(grp => grp.Key.Label);
+                                       .Select(grp => grp.Key.Label)
+                                       .ToArray();
 
             if(duplicates.Count() > 0)
             {
@@ -49,8 +50,8 @@ namespace Evolve.Migration
             Check.NotNullOrEmpty(prefix, nameof(prefix)); // V
             Check.NotNullOrEmpty(separator, nameof(separator)); // __
 
-            var versionAndDescription = MigrationUtil.ExtractVersionAndDescription(script, prefix, separator);
-            return new MigrationScript(script, versionAndDescription.Item1, versionAndDescription.Item2);
+            MigrationUtil.ExtractVersionAndDescription(script, prefix, separator, out string version, out string description);
+            return new MigrationScript(script, version, description);
         }
 
         private DirectoryInfo ResolveDirectory(string location)

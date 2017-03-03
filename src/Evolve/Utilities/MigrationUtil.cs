@@ -11,7 +11,7 @@ namespace Evolve.Utilities
         private const string MigrationNameVersionNotFound = "No version found in migration: {0}.";
         private const string MigrationNameDescriptionNotFound = "No description found in migration: {0}.";
 
-        public static Tuple<string, string> ExtractVersionAndDescription(string script, string prefix, string separator)
+        public static void ExtractVersionAndDescription(string script, string prefix, string separator, out string version, out string description)
         {
             Check.NotNullOrEmpty(script, nameof(script)); // V1_3_1__Migration_description.sql
             Check.NotNullOrEmpty(prefix, nameof(prefix)); // V
@@ -28,19 +28,17 @@ namespace Evolve.Utilities
             if (indexOfSeparator == -1)
                 throw new EvolveConfigurationException(string.Format(MigrationNameSeparatorNotFound, separator, script));
 
-            string version = new string(migrationName.Take(indexOfSeparator).ToArray());
-            string description = migrationName.Substring(indexOfSeparator + separator.Length)
+            version = new string(migrationName.Take(indexOfSeparator).ToArray());
+            description = migrationName.Substring(indexOfSeparator + separator.Length)
                                               .Replace("_", " ");
 
             // Check version
-            if (string.IsNullOrWhiteSpace(version))
+            if (version.IsNullOrWhiteSpace())
                 throw new EvolveConfigurationException(string.Format(MigrationNameVersionNotFound, script));
 
             // Check description
-            if (string.IsNullOrWhiteSpace(description))
+            if (description.IsNullOrWhiteSpace())
                 throw new EvolveConfigurationException(string.Format(MigrationNameDescriptionNotFound, script));
-
-            return Tuple.Create(version, description);
         }
     }
 }

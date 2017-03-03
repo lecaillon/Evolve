@@ -57,7 +57,7 @@ namespace Evolve.Configuration
 
         private void IfNullOrWhiteSpaceThrowsException(string value, string name)
         {
-            if (string.IsNullOrWhiteSpace(value))
+            if (value.IsNullOrWhiteSpace())
             {
                 throw new EvolveConfigurationException(string.Format(ValueCannotBeNull, name, _filePath));
             }

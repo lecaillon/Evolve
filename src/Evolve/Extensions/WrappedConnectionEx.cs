@@ -19,7 +19,7 @@ namespace Evolve
             try
             {
                 dbVersion = QueryForString(wrappedConnection, "SELECT version()"); // attention ca marche aussi pour mysql/mariadb ...
-                if (!string.IsNullOrWhiteSpace(dbVersion)) 
+                if (!dbVersion.IsNullOrWhiteSpace()) 
                 {
                     return DBMS.PostgreSQL;
                 }
@@ -29,7 +29,7 @@ namespace Evolve
             try
             {
                 dbVersion = QueryForString(wrappedConnection, "SELECT @@version");
-                if (!string.IsNullOrWhiteSpace(dbVersion))
+                if (!dbVersion.IsNullOrWhiteSpace())
                 {
                     return DBMS.SQLServer;
                 }
@@ -39,7 +39,7 @@ namespace Evolve
             try
             {
                 dbVersion = QueryForString(wrappedConnection, "SELECT sqlite_version()");
-                if (!string.IsNullOrWhiteSpace(dbVersion))
+                if (!dbVersion.IsNullOrWhiteSpace())
                 {
                     return DBMS.SQLite;
                 }

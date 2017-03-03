@@ -100,7 +100,7 @@ namespace Evolve.Driver
 
             public override string ToString()
             {
-                if (string.IsNullOrWhiteSpace(Assembly))
+                if (Assembly.IsNullOrWhiteSpace())
                 {
                     return Type;
                 }

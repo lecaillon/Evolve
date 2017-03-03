@@ -1,4 +1,4 @@
-﻿#if NET452
+﻿#if NET
 
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
