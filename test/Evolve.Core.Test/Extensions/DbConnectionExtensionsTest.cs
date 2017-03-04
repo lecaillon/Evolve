@@ -62,5 +62,17 @@ namespace Evolve.Test.Core.Extensions
                 Assert.True(connection.DbConnection.State == ConnectionState.Closed);
             }
         }
+
+        [Fact(DisplayName = "QueryForListOfT_never_returns_null")]
+        public void QueryForListOfT_never_returns_null()
+        {
+            string sql = "SELECT tbl_name FROM sqlite_master WHERE type = 'PSG'";
+
+            using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
+            {
+                Assert.True(WrappedConnectionEx.QueryForList(connection, sql, (r) => new { Item1 = r.GetString(0) }).Count() == 0);
+                Assert.True(connection.DbConnection.State == ConnectionState.Closed);
+            }
+        }
     }
 }
