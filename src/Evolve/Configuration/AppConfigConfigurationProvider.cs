@@ -1,29 +1,21 @@
 ﻿#if NET
 
-using Evolve.Migration;
 using System;
-using System.Configuration;
-using System.IO;
-using System.Linq;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Linq;
+using Evolve.Migration;
 
 namespace Evolve.Configuration
 {
     public class AppConfigConfigurationProvider : EvolveConfigurationProviderBase
     {
         private const string IncorrectFileFormat = "Incorrect file format: {0}.";
-        private const string NotSupportedAppConfigFileName = "AppConfigConfigurationProvider is designed to manage App.Config or Web.config files only.";
         private const string IncorrectEncodingValue = "Encoding does not support this value: {0}. See https://msdn.microsoft.com/en-us/library/system.text.encoding.getencodings(v=vs.110).aspx for all possible names.";
         private const string InvalidVersionPatternMatching = "Migration version {0} is invalid. Version must respect this regex: ^[0-9]+(?:.[0-9]+)*$";
 
         protected override void Configure()
         {
-            if(!(Path.GetFileName(_filePath).Equals("web.config", StringComparison.InvariantCultureIgnoreCase)
-              || Path.GetFileName(_filePath).Equals("app.config", StringComparison.InvariantCultureIgnoreCase)))
-            {
-                throw new EvolveConfigurationException(NotSupportedAppConfigFileName);
-            }
-
             var configMap = new ExeConfigurationFileMap()
             {
                 ExeConfigFilename = _filePath
