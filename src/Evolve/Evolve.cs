@@ -95,7 +95,7 @@ namespace Evolve
             ManageSchemas(db);
 
             var metadata = db.GetMetadataTable(MetadataTableSchema, MetadaTableName);
-            var lastAppliedVersion = metadata.GetAllMigrationMetadata().Last().Version;
+            var lastAppliedVersion = metadata.GetAllMigrationMetadata().LastOrDefault()?.Version ?? new MigrationVersion("0");
             var targetMigrationVersion = new MigrationVersion(targetVersion ?? long.MaxValue.ToString());
             var scripts = _loader.GetMigrations(Locations, SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix)
                                  .SkipWhile(x => x.Version <= lastAppliedVersion)
