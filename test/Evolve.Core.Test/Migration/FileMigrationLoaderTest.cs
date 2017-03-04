@@ -12,7 +12,7 @@ namespace Evolve.Core.Test.Migration
         public void GetMigrations_works()
         {
             var loader = new FileMigrationLoader();
-            var scripts = loader.GetMigrations(new List<string> { TestContext.ScriptsSQL1, TestContext.ScriptsSQL2, TestContext.ScriptsSQL1 }, 
+            var scripts = loader.GetMigrations(new List<string> { TestContext.ScriptsSQL1, TestContext.ScriptsSQL2, TestContext.ScriptsSQL1, TestContext.ScriptsSQL2 + @"\PSG" }, 
                                                TestContext.SqlMigrationPrefix, 
                                                TestContext.SqlMigrationSeparator, 
                                                TestContext.SqlMigrationSuffix).ToList();
