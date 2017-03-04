@@ -25,6 +25,8 @@ namespace Evolve.Migration
             foreach (string location in locations.Distinct(StringComparer.OrdinalIgnoreCase)) // Remove duplicate locations if any
             {
                 DirectoryInfo dirToScan = ResolveDirectory(location);
+                if(!dirToScan.Exists) continue;
+
                 dirToScan.GetFiles(searchPattern, SearchOption.AllDirectories)   // Get scripts recursively
                          .Where(f => !migrations.Any(m => m.Path == f.FullName)) // Scripts not already loaded
                          .ToList()
