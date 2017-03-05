@@ -55,12 +55,27 @@ namespace Evolve
 
         public static IEnumerable<string> QueryForListOfString(this WrappedConnection wrappedConnection, string sql)
         {
+            Check.NotNull(wrappedConnection, nameof(wrappedConnection));
+            Check.NotNullOrEmpty(sql, nameof(sql));
+
             var list = new List<string>();
-            using (var reader = (IDataReader)ExecuteReader(wrappedConnection, sql))
+            bool wasClosed = wrappedConnection.DbConnection.State == ConnectionState.Closed;
+
+            try
             {
-                while (reader.Read())
+                using (var reader = (IDataReader)ExecuteReader(wrappedConnection, sql))
                 {
-                    list.Add(reader[0] is DBNull ? null : reader[0].ToString());
+                    while (reader.Read())
+                    {
+                        list.Add(reader[0] is DBNull ? null : reader[0].ToString());
+                    }
+                }
+            }
+            finally
+            {
+                if (wasClosed)
+                {
+                    wrappedConnection.Close();
                 }
             }
 
@@ -69,27 +84,44 @@ namespace Evolve
 
         public static IEnumerable<T> QueryForList<T>(this WrappedConnection wrappedConnection, string sql, Func<IDataReader, T> map)
         {
+            Check.NotNull(wrappedConnection, nameof(wrappedConnection));
+            Check.NotNullOrEmpty(sql, nameof(sql));
             Check.NotNull(map, nameof(map));
 
-            using (var reader = (IDataReader)ExecuteReader(wrappedConnection, sql))
+            var list = new List<T>();
+            bool wasClosed = wrappedConnection.DbConnection.State == ConnectionState.Closed;
+
+            try
             {
-                while (reader.Read())
+                using (var reader = (IDataReader)ExecuteReader(wrappedConnection, sql))
                 {
-                    yield return map(reader);
+                    while (reader.Read())
+                    {
+                        list.Add(map(reader));
+                    }
                 }
             }
+            finally
+            {
+                if (wasClosed)
+                {
+                    wrappedConnection.Close();
+                }
+            }
+
+            return list;
         }
 
         public static int ExecuteNonQuery(this WrappedConnection wrappedConnection, string sql)
             => (int)Execute(wrappedConnection, sql, nameof(ExecuteNonQuery));
 
-        static object ExecuteScalar(WrappedConnection wrappedConnection, string sql)
+        private static object ExecuteScalar(WrappedConnection wrappedConnection, string sql)
             => Execute(wrappedConnection, sql, nameof(ExecuteScalar));
 
-        static object ExecuteReader(WrappedConnection wrappedConnection, string sql)
-            => Execute(wrappedConnection, sql, nameof(ExecuteReader));
+        private static object ExecuteReader(WrappedConnection wrappedConnection, string sql)
+            => Execute(wrappedConnection, sql, nameof(ExecuteReader), closeConnection: false);
 
-        static object Execute(WrappedConnection wrappedConnection, string sql, string executeMethod)
+        private static object Execute(WrappedConnection wrappedConnection, string sql, string executeMethod, bool closeConnection = true)
         {
             Check.NotNull(wrappedConnection, nameof(wrappedConnection));
             Check.NotNullOrEmpty(sql, nameof(sql));
@@ -140,19 +172,19 @@ namespace Evolve
                     }
                 }
 
-                if (wasClosed)
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw new EvolveException(string.Format(CommandExecutionError, executeMethod, sql), ex);
+            }
+            finally
+            {
+                if (wasClosed && closeConnection)
                 {
                     wrappedConnection.Close();
                 }
             }
-            catch (Exception ex)
-            {
-                wrappedConnection.Close();
-                throw new EvolveException(string.Format(CommandExecutionError, executeMethod, sql), ex);
-            }
-
-            return result;
         }
-
     }
 }
