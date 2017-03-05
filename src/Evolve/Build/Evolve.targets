@@ -1,5 +1,6 @@
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <UsingTask TaskName = "Evolve.MsBuild.EvolveBoot" AssemblyFile="$(TargetDir)\Evolve.dll" />
   <Target Name="Test" AfterTargets="Build">
-    <Message Importance="High" Text="+++ Philippe Lécaillon +++" />
+    <EvolveBoot TargetPath="$(TargetPath)" />
   </Target>
 </Project>
