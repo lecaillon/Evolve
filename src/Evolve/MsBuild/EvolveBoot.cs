@@ -11,6 +11,7 @@ namespace Evolve.MsBuild
     [Serializable]
     public class EvolveBoot : AppDomainIsolatedTask
     {
+        [Required]
         public string TargetPath { get; set; }
         public string TargetDir => Path.GetDirectoryName(TargetPath);
         public string EvolveConfigurationFile => TargetPath + ".config";
@@ -21,7 +22,7 @@ namespace Evolve.MsBuild
 
             try
             {
-                LogInfo("Sql migration begins");
+                WriteHeader();
 
                 Directory.SetCurrentDirectory(TargetDir);
 
