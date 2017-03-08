@@ -39,21 +39,21 @@ namespace Evolve.Dialect.PostgreSQL
 
         public override bool Clean()
         {
-            CleanMaterializedViews(); // PostgreSQL >= 9.3
-            CleanViews();
-            CleanTables();
-            CleanSequences();
-            CleanBaseTypes(true);
-            CleanBaseAggregates();
-            CleanRoutines();
-            CleanEnums();
-            CleanDomains();
-            CleanBaseTypes(false);
+            DropMaterializedViews(); // PostgreSQL >= 9.3
+            DropViews();
+            DropTables();
+            DropSequences();
+            DropBaseTypes(true);
+            DropBaseAggregates();
+            DropRoutines();
+            DropEnums();
+            DropDomains();
+            DropBaseTypes(false);
 
             return true;
         }
 
-        protected void CleanMaterializedViews()
+        protected void DropMaterializedViews()
         {
             var version = _wrappedConnection.QueryForString("SHOW server_version;").Split('.');
             if(int.Parse(version[0]) < 9 && int.Parse(version[1]) < 3)
@@ -68,7 +68,7 @@ namespace Evolve.Dialect.PostgreSQL
             });
         }
 
-        protected void CleanSequences()
+        protected void DropSequences()
         {
             string sql = $"SELECT sequence_name FROM information_schema.sequences WHERE sequence_schema = '{Name}'";
             _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(seq =>
@@ -77,7 +77,7 @@ namespace Evolve.Dialect.PostgreSQL
             });
         }
 
-        protected void CleanBaseTypes(bool recreate)
+        protected void DropBaseTypes(bool recreate)
         {
             string sql = "SELECT typname, typcategory " +
                          "FROM pg_catalog.pg_type t " +
@@ -103,7 +103,7 @@ namespace Evolve.Dialect.PostgreSQL
             }
         }
 
-        protected void CleanBaseAggregates()
+        protected void DropBaseAggregates()
         {
             string sql = "SELECT proname, oidvectortypes(proargtypes) AS args " +
                          "FROM pg_proc INNER JOIN pg_namespace ns ON (pg_proc.pronamespace = ns.oid) " +
@@ -115,7 +115,7 @@ namespace Evolve.Dialect.PostgreSQL
             });
         }
 
-        protected void CleanRoutines()
+        protected void DropRoutines()
         {
             string sql = "SELECT proname, oidvectortypes(proargtypes) AS args " +
                          "FROM pg_proc INNER JOIN pg_namespace ns ON (pg_proc.pronamespace = ns.oid) " +
@@ -128,7 +128,7 @@ namespace Evolve.Dialect.PostgreSQL
             });
         }
 
-        protected void CleanEnums()
+        protected void DropEnums()
         {
             string sql = $"SELECT t.typname FROM pg_catalog.pg_type t INNER JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace WHERE n.nspname = '{Name}' and t.typtype = 'e'";
             _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(enumName =>
@@ -137,7 +137,7 @@ namespace Evolve.Dialect.PostgreSQL
             });
         }
 
-        protected void CleanDomains()
+        protected void DropDomains()
         {
             string sql = $"SELECT domain_name FROM information_schema.domains WHERE domain_schema = '{Name}'";
             _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(domain =>
@@ -146,7 +146,7 @@ namespace Evolve.Dialect.PostgreSQL
             });
         }
 
-        protected void CleanViews()
+        protected void DropViews()
         {
             string sql = "SELECT relname " +
                          "FROM pg_catalog.pg_class c " +
@@ -160,7 +160,7 @@ namespace Evolve.Dialect.PostgreSQL
             });
         }
 
-        protected void CleanTables()
+        protected void DropTables()
         {
             string sql = "SELECT t.table_name " +
                          "FROM information_schema.tables t " +

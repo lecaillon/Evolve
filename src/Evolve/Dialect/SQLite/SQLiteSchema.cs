@@ -45,9 +45,9 @@ namespace Evolve.Dialect.SQLite
 
         public override bool Clean()
         {
-            CleanViews();
-            CleanTables();
-            CleanSequences();
+            DropViews();
+            DropTables();
+            DropSequences();
 
             return true;
         }
@@ -57,7 +57,7 @@ namespace Evolve.Dialect.SQLite
             return _wrappedConnection.QueryForListOfString($"SELECT tbl_name FROM sqlite_master WHERE type = 'table'").ToList();
         }
 
-        protected void CleanTables()
+        protected void DropTables()
         {
             GetTables().Except(UndroppableTableNames).ToList().ForEach(t =>
             {
@@ -65,7 +65,7 @@ namespace Evolve.Dialect.SQLite
             });
         }
 
-        protected void CleanViews()
+        protected void DropViews()
         {
             string sql = $"SELECT tbl_name FROM sqlite_master WHERE type = 'view'";
             _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(vw =>
@@ -74,7 +74,7 @@ namespace Evolve.Dialect.SQLite
             });
         }
 
-        protected void CleanSequences()
+        protected void DropSequences()
         {
             string sql = $"SELECT COUNT(tbl_name) FROM sqlite_master WHERE type = 'table' AND tbl_name = 'sqlite_sequence'";
             if(_wrappedConnection.QueryForLong(sql) == 1)

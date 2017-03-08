@@ -50,20 +50,20 @@ namespace Evolve.Dialect.SQLServer
 
         public override bool Clean()
         {
-            CleanForeignKeys();
-            CleanDefaultConstraints();
-            CleanProcedures();
-            CleanViews();
-            CleanTables();
-            CleanFunctions();
-            CleanTypes();
-            CleanSynonyms();
-            CleanSequences(); // SQLServer >= 11
+            DropForeignKeys();
+            DropDefaultConstraints();
+            DropProcedures();
+            DropViews();
+            DropTables();
+            DropFunctions();
+            DropTypes();
+            DropSynonyms();
+            DropSequences(); // SQLServer >= 11
 
             return true;
         }
 
-        protected void CleanForeignKeys()
+        protected void DropForeignKeys()
         {
             string sql = "SELECT TABLE_NAME, CONSTRAINT_NAME " + 
                          "FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS " +
@@ -76,7 +76,7 @@ namespace Evolve.Dialect.SQLServer
             });
         }
 
-        protected void CleanDefaultConstraints()
+        protected void DropDefaultConstraints()
         {
             string sql = "SELECT t.name as TABLE_NAME, d.name as CONSTRAINT_NAME " +
                          "FROM sys.tables t " +
@@ -90,7 +90,7 @@ namespace Evolve.Dialect.SQLServer
             });
         }
 
-        protected void CleanProcedures()
+        protected void DropProcedures()
         {
             string sql = $"SELECT routine_name FROM INFORMATION_SCHEMA.ROUTINES WHERE routine_schema = '{Name}' AND routine_type = 'PROCEDURE' ORDER BY created DESC";
             _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(proc =>
@@ -99,7 +99,7 @@ namespace Evolve.Dialect.SQLServer
             });
         }
 
-        protected void CleanViews()
+        protected void DropViews()
         {
             string sql = $"SELECT table_name FROM INFORMATION_SCHEMA.VIEWS WHERE table_schema = '{Name}'";
             _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(vw =>
@@ -108,7 +108,7 @@ namespace Evolve.Dialect.SQLServer
             });
         }
 
-        protected void CleanTables()
+        protected void DropTables()
         {
             string sql = $"SELECT table_name FROM INFORMATION_SCHEMA.TABLES WHERE table_type='BASE TABLE' AND table_schema = '{Name}'";
             _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(t =>
@@ -117,7 +117,7 @@ namespace Evolve.Dialect.SQLServer
             });
         }
 
-        protected void CleanFunctions()
+        protected void DropFunctions()
         {
             string sql = $"SELECT routine_name FROM INFORMATION_SCHEMA.ROUTINES WHERE routine_schema = '{Name}' AND routine_type = 'FUNCTION' ORDER BY created DESC";
             _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(fn =>
@@ -126,7 +126,7 @@ namespace Evolve.Dialect.SQLServer
             });
         }
 
-        protected void CleanTypes()
+        protected void DropTypes()
         {
             string sql = $"SELECT t.name FROM sys.types t INNER JOIN sys.schemas s ON t.schema_id = s.schema_id WHERE t.is_user_defined = 1 AND s.name = '{Name}'";
             _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(t =>
@@ -135,7 +135,7 @@ namespace Evolve.Dialect.SQLServer
             });
         }
 
-        protected void CleanSynonyms()
+        protected void DropSynonyms()
         {
             string sql = $"SELECT sn.name FROM sys.synonyms sn INNER JOIN sys.schemas s ON sn.schema_id = s.schema_id WHERE s.name = '{Name}'";
             _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(s =>
@@ -144,7 +144,7 @@ namespace Evolve.Dialect.SQLServer
             });
         }
 
-        protected void CleanSequences()
+        protected void DropSequences()
         {
             string sqlversion = "SELECT CAST (CASE WHEN CAST(SERVERPROPERTY ('productversion') as VARCHAR) LIKE '8%' THEN 8 " +
                                                   "WHEN CAST(SERVERPROPERTY ('productversion') as VARCHAR) LIKE '9%' THEN 9 " +
