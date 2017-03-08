@@ -72,14 +72,14 @@ namespace Evolve.Metadata
 
         /// <summary>
         ///     <para>
-        ///         Returns True if Evolve can clean the schema, false otherwise.
+        ///         Returns True if Evolve can erase the schema, false otherwise.
         ///     </para>
         ///     <para>
-        ///         Evolve can clean the schema if it was empty when it first run.
+        ///         Evolve can erase the schema if it was empty when it first run.
         ///     </para>
         /// </summary>
-        /// <returns> True if Evolve can clean the schema, false otherwise. </returns>
-        bool CanCleanSchema(string schemaName);
+        /// <returns> True if Evolve can erase the schema, false otherwise. </returns>
+        bool CanEraseSchema(string schemaName);
 
         /// <summary>
         ///     <para>

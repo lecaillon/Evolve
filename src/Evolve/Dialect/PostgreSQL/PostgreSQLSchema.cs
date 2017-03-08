@@ -37,7 +37,7 @@ namespace Evolve.Dialect.PostgreSQL
             return true;
         }
 
-        public override bool Clean()
+        public override bool Erase()
         {
             DropMaterializedViews(); // PostgreSQL >= 9.3
             DropViews();

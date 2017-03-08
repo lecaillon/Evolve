@@ -74,7 +74,7 @@ namespace Evolve.IntegrationTest.PostgreSQL
             // Save NewSchema metadata
             metadata.Save(MetadataType.NewSchema, "0", "New schema created.", metadataSchemaName);
             Assert.True(metadata.CanDropSchema(metadataSchemaName), $"[{metadataSchemaName}] should be droppable.");
-            Assert.False(metadata.CanCleanSchema(metadataSchemaName), $"[{metadataSchemaName}] should not be cleanable.");
+            Assert.False(metadata.CanEraseSchema(metadataSchemaName), $"[{metadataSchemaName}] should not be erasable.");
 
             // Add metadata migration
             var migrationScript = new MigrationScript(MigrationScriptPath, "1_3_2", "Migration_description");
@@ -92,8 +92,8 @@ namespace Evolve.IntegrationTest.PostgreSQL
             // Assert metadata schema is not empty
             Assert.False(metadataSchema.IsEmpty(), $"[{metadataSchemaName}] should not be empty.");
 
-            // Clean schema
-            metadataSchema.Clean();
+            // Erase schema
+            metadataSchema.Erase();
             Assert.True(metadataSchema.IsEmpty(), $"The schema [{metadataSchemaName}] should be empty.");
             Assert.True(metadataSchema.IsExists(), $"The schema [{metadataSchemaName}] should exist.");
 

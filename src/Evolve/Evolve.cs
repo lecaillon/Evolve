@@ -125,7 +125,7 @@ namespace Evolve
             Validate(db);
         }
 
-        public void Clean()
+        public void Erase()
         {
             var db = Initialize();
 
@@ -139,7 +139,7 @@ namespace Evolve
                 {
                     schemaToDrop.Add(schemaName);
                 }
-                else if (metadata.CanCleanSchema(schemaName))
+                else if (metadata.CanEraseSchema(schemaName))
                 {
                     schemaToClean.Add(schemaName);
                 }
@@ -147,7 +147,7 @@ namespace Evolve
 
             db.WrappedConnection.BeginTransaction();
             schemaToDrop.ForEach(x => db.GetSchema(x).Drop());
-            schemaToClean.ForEach(x => db.GetSchema(x).Clean());
+            schemaToClean.ForEach(x => db.GetSchema(x).Erase());
             db.WrappedConnection.Commit();
         }
 

@@ -66,7 +66,7 @@ namespace Evolve.Test.Core.Dialect.SQLite
             {
                 var schema = TestUtil.LoadChinookDatabase(connection);
 
-                Assert.True(schema.Clean());
+                Assert.True(schema.Erase());
                 Assert.True(schema.IsEmpty());
             }
         }
@@ -80,7 +80,7 @@ namespace Evolve.Test.Core.Dialect.SQLite
 
                 connection.BeginTransaction();
 
-                Assert.True(schema.Clean());
+                Assert.True(schema.Erase());
                 Assert.True(schema.IsEmpty());
 
                 connection.Rollback();

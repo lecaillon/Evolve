@@ -41,14 +41,14 @@ namespace Evolve.Dialect.SQLServer
 
         public override bool Drop()
         {
-            Clean();
+            Erase(); // ?
 
             _wrappedConnection.ExecuteNonQuery($"DROP SCHEMA [{Name}]");
 
             return true;
         }
 
-        public override bool Clean()
+        public override bool Erase()
         {
             DropForeignKeys();
             DropDefaultConstraints();

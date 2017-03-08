@@ -21,7 +21,7 @@ namespace Evolve.Dialect
 
         public abstract bool Create();
 
-        public abstract bool Clean();
+        public abstract bool Erase();
 
         public abstract bool Drop();
     }

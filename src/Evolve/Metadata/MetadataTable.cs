@@ -85,7 +85,7 @@ namespace Evolve.Metadata
             });
         }
 
-        public bool CanCleanSchema(string schemaName)
+        public bool CanEraseSchema(string schemaName)
         {
             return Execute(() =>
             {

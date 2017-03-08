@@ -43,7 +43,7 @@ namespace Evolve.Dialect.SQLite
         /// <returns> false. </returns>
         public override bool Drop() => false;
 
-        public override bool Clean()
+        public override bool Erase()
         {
             DropViews();
             DropTables();

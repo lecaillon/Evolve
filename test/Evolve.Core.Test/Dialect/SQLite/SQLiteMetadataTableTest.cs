@@ -102,18 +102,18 @@ namespace Evolve.Test.Core.Dialect.SQLite
             }
         }
 
-        [Fact(DisplayName = "CanCleanSchema_works")]
-        public void CanCleanSchema_works()
+        [Fact(DisplayName = "CanEraseSchema_works")]
+        public void CanEraseSchema_works()
         {
             using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
             {
                 connection.Open();
                 var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLite, connection);
                 var metadataTable = db.GetMetadataTable("", TestContext.DefaultMetadataTableName);
-                Assert.False(metadataTable.CanCleanSchema("main"));
+                Assert.False(metadataTable.CanEraseSchema("main"));
 
                 metadataTable.Save(MetadataType.EmptySchema, "0", "Schema is empty.", "main");
-                Assert.True(metadataTable.CanCleanSchema("main"));
+                Assert.True(metadataTable.CanEraseSchema("main"));
             }
         }
 

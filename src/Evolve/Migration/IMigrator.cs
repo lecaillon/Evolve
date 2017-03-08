@@ -8,6 +8,6 @@
 
         void Validate();
 
-        void Clean();
+        void Erase();
     }
 }
