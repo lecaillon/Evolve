@@ -45,13 +45,20 @@ namespace Evolve.Metadata
         ///     </para>
         /// </summary>
         /// <param name="type"> Metadata type to save. Cannot be null. </param>
-        /// <param name="version"> Version of the record . Cannot be null. </param>
+        /// <param name="version"> Version of the record. Cannot be null. </param>
         /// <param name="description"> Metadata description. Cannot be null. </param>
         /// <param name="name"> Metadata name. Cannot be null. </param>
         /// <exception cref="ArgumentException">
         ///     Throws ArgumentException when the type of the metadata to save is <see cref="MetadataType.Migration"/>. 
         /// </exception>
         void Save(MetadataType type, string version, string description, string name);
+
+        /// <summary>
+        ///     Update the checksum of a migration given its Id.
+        /// </summary>
+        /// <param name="id"> Id of the migration metadata to update. </param>
+        /// <param name="Checksum"> The new checksum. </param>
+        void UpdateChecksum(int migrationId, string Checksum);
 
         /// <summary>
         ///     Returns all the applied migration metadata ordered by version.

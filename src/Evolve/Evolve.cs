@@ -130,7 +130,7 @@ namespace Evolve
             var db = Initialize();
 
             var schemaToDrop = new List<string>();
-            var schemaToClean = new List<string>();
+            var schemaToErase = new List<string>();
             var metadata = db.GetMetadataTable(MetadataTableSchema, MetadaTableName);
 
             foreach (var schemaName in FindSchemas())
@@ -141,13 +141,13 @@ namespace Evolve
                 }
                 else if (metadata.CanEraseSchema(schemaName))
                 {
-                    schemaToClean.Add(schemaName);
+                    schemaToErase.Add(schemaName);
                 }
             }
 
             db.WrappedConnection.BeginTransaction();
             schemaToDrop.ForEach(x => db.GetSchema(x).Drop());
-            schemaToClean.ForEach(x => db.GetSchema(x).Erase());
+            schemaToErase.ForEach(x => db.GetSchema(x).Erase());
             db.WrappedConnection.Commit();
         }
 
