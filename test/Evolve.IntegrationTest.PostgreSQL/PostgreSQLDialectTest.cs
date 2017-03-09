@@ -89,6 +89,10 @@ namespace Evolve.IntegrationTest.PostgreSQL
             Assert.True(migrationMetadata.Id > 0, "Metadata id is not set.");
             Assert.True(migrationMetadata.InstalledOn.Date == DateTime.Now.Date, "Installed date is not set.");
 
+            // Update checksum
+            metadata.UpdateChecksum(migrationMetadata.Id, "Hi !");
+            Assert.Equal("Hi !", metadata.GetAllMigrationMetadata().First().Checksum);
+
             // Assert metadata schema is not empty
             Assert.False(metadataSchema.IsEmpty(), $"[{metadataSchemaName}] should not be empty.");
 
