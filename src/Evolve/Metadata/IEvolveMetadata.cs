@@ -57,8 +57,8 @@ namespace Evolve.Metadata
         ///     Update the checksum of a migration given its Id.
         /// </summary>
         /// <param name="id"> Id of the migration metadata to update. </param>
-        /// <param name="Checksum"> The new checksum. </param>
-        void UpdateChecksum(int migrationId, string Checksum);
+        /// <param name="checksum"> The new checksum. </param>
+        void UpdateChecksum(int migrationId, string checksum);
 
         /// <summary>
         ///     Returns all the applied migration metadata ordered by version.

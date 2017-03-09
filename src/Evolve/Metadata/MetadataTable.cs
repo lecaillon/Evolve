@@ -66,6 +66,17 @@ namespace Evolve.Metadata
             });
         }
 
+        public void UpdateChecksum(int migrationId, string checksum)
+        {
+            Check.NotNullOrEmpty(checksum, nameof(checksum));
+            if (migrationId < 1) throw new ArgumentOutOfRangeException(nameof(migrationId), nameof(migrationId) + " must be positive.");
+
+            Execute(() =>
+            {
+                InternalUpdateChecksum(migrationId, checksum);
+            });
+        }
+
         public IEnumerable<MigrationMetadata> GetAllMigrationMetadata()
         {
             return Execute(() =>
@@ -134,6 +145,8 @@ namespace Evolve.Metadata
         protected abstract void InternalLock();
 
         protected abstract void InternalSave(MigrationMetadata metadata);
+
+        protected abstract void InternalUpdateChecksum(int migrationId, string checksum);
 
         protected abstract IEnumerable<MigrationMetadata> InternalGetAllMetadata();
 

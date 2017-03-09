@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Evolve.Metadata;
 using Evolve.Migration;
 
@@ -54,9 +55,18 @@ namespace Evolve.Dialect.PostgreSQL
                 $"'{metadata.Description.TruncateWithEllipsis(200)}', " +
                 $"'{metadata.Name.TruncateWithEllipsis(1000)}', " +
                 $"'{metadata.Checksum}', " +
-                $"'', " +
+                $"{_database.CurrentUser}, " +
                 $"{(metadata.Success ? "true" : "false")}" +
              ")";
+
+            _database.WrappedConnection.ExecuteNonQuery(sql);
+        }
+
+        protected override void InternalUpdateChecksum(int migrationId, string checksum)
+        {
+            string sql = $"UPDATE \"{Schema}\".\"{TableName}\" " +
+                         $"SET checksum = '{checksum}' " +
+                         $"WHERE id = {migrationId}";
 
             _database.WrappedConnection.ExecuteNonQuery(sql);
         }
