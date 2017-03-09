@@ -60,6 +60,26 @@ namespace Evolve.Test.Core.Dialect.SQLite
                 var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLite, connection);
                 var metadataTable = db.GetMetadataTable("", TestContext.DefaultMetadataTableName);
                 metadataTable.SaveMigration(migration, true);
+
+                Assert.NotNull(metadataTable.GetAllMigrationMetadata().First().Id > 0);
+            }
+        }
+
+        [Fact(DisplayName = "UpdateChecksum_works")]
+        public void UpdateChecksum_works()
+        {
+            var migration = new MigrationScript(TestContext.ValidMigrationScriptPath, "1.0.0", "desc");
+
+            using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
+            {
+                connection.Open();
+                var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLite, connection);
+                var metadataTable = db.GetMetadataTable("", TestContext.DefaultMetadataTableName);
+                metadataTable.SaveMigration(migration, true);
+
+                var appliedMigration = metadataTable.GetAllMigrationMetadata().First();
+                metadataTable.UpdateChecksum(appliedMigration.Id, "Hi !");
+                Assert.Equal("Hi !", metadataTable.GetAllMigrationMetadata().First().Checksum);
             }
         }
 
