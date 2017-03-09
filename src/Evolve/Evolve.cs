@@ -49,11 +49,15 @@ namespace Evolve
             configurationProvider.Configure(evolveConfigurationPath, this);
         }
 
-        #region IEvolveConfiguration
+#region IEvolveConfiguration
 
         public string ConnectionString { get; set; }
         public IEnumerable<string> Schemas { get; set; }
         public string Driver { get; set; }
+        public bool IsEraseDisabled { get; set; }
+        public bool MustErase { get; set; }
+        public bool MustEraseOnValidationError { get; set; }
+        public bool MustRepair { get; set; }
         public Encoding Encoding { get; set; }
         public IEnumerable<string> Locations { get; set; }
         public string MetadaTableName { get; set; }
@@ -77,9 +81,9 @@ namespace Evolve
         public string SqlMigrationSuffix { get; set; }
         public MigrationVersion TargetVersion { get; set; }
 
-        #endregion
+#endregion
 
-        #region IMigrator
+#region IMigrator
 
         public string GenerateScript(string fromMigration = null, string toMigration = null)
         {
@@ -91,7 +95,24 @@ namespace Evolve
             Check.NullableButNotEmpty(targetVersion, nameof(targetVersion));
 
             var db = Initialize();
-            Validate(db);
+
+            try
+            {
+                Validate(db);
+            }
+            catch (EvolveException ex)
+            {
+                if (MustEraseOnValidationError)
+                {
+                    // TODO: Add LogMessage
+                    Erase();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
             ManageSchemas(db);
 
             var metadata = db.GetMetadataTable(MetadataTableSchema, MetadaTableName);
@@ -127,6 +148,12 @@ namespace Evolve
 
         public void Erase()
         {
+            if(IsEraseDisabled)
+            {
+                // TODO: Add LogMessage
+                return;
+            }
+
             var db = Initialize();
 
             var schemaToDrop = new List<string>();
@@ -151,7 +178,7 @@ namespace Evolve
             db.WrappedConnection.Commit();
         }
 
-        #endregion
+#endregion
 
         private DatabaseHelper Initialize()
         {

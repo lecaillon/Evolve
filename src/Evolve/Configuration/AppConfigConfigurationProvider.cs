@@ -53,6 +53,46 @@ namespace Evolve.Configuration
                 _configuration.Driver = appSettings[Driver].Value;
             }
 
+            // IsEraseDisabled
+            if (!appSettings[EraseDisabled]?.Value.IsNullOrWhiteSpace() ?? false)
+            {
+                try
+                {
+                    _configuration.IsEraseDisabled = Convert.ToBoolean(appSettings[EraseDisabled].Value);
+                }
+                catch { }
+            }
+
+            // Erase
+            if (!appSettings[Erase]?.Value.IsNullOrWhiteSpace() ?? false)
+            {
+                try
+                {
+                    _configuration.MustErase = Convert.ToBoolean(appSettings[Erase].Value);
+                }
+                catch { }
+            }
+
+            // EraseOnValidationError
+            if (!appSettings[EraseOnValidationError]?.Value.IsNullOrWhiteSpace() ?? false)
+            {
+                try
+                {
+                    _configuration.MustEraseOnValidationError = Convert.ToBoolean(appSettings[EraseOnValidationError].Value);
+                }
+                catch { }
+            }
+
+            // Repair
+            if (!appSettings[Repair]?.Value.IsNullOrWhiteSpace() ?? false)
+            {
+                try
+                {
+                    _configuration.MustRepair = Convert.ToBoolean(appSettings[Repair].Value);
+                }
+                catch { }
+            }
+
             // Locations
             if (!appSettings[Locations]?.Value.IsNullOrWhiteSpace() ?? false)
             {

@@ -12,6 +12,10 @@ namespace Evolve.Configuration
         protected const string ConnectionString = "Evolve.ConnectionString";
         protected const string Driver = "Evolve.Driver";
         protected const string Locations = "Evolve.Locations";
+        protected const string EraseDisabled = "Evolve.EraseDisabled";
+        protected const string Erase = "Evolve.Erase";
+        protected const string EraseOnValidationError = "Evolve.EraseOnValidationError";
+        protected const string Repair = "Evolve.Repair";
         protected const string Encoding = "Evolve.Encoding";
         protected const string SqlMigrationPrefix = "Evolve.SqlMigrationPrefix";
         protected const string SqlMigrationSeparator = "Evolve.SqlMigrationSeparator";

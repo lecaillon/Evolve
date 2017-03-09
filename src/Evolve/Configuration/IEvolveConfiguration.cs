@@ -40,6 +40,47 @@ namespace Evolve.Configuration
         IEnumerable<string> Locations { get; set; }
 
         /// <summary>
+        ///     <para>
+        ///         When true, ensures that Evolve will never erase schemas. (default: false;)
+        ///     </para>
+        ///     <para>
+        ///         Highly recommended in production !
+        ///     </para>
+        /// </summary>
+        bool IsEraseDisabled { get; set; }
+
+        /// <summary>
+        ///     <para>
+        ///         When true Evolve will erase the database schemas listed in <see cref="Schemas"/>. (default: false)
+        ///     </para>
+        ///     <para>
+        ///         Only works if Evolve has created the schema at first or found it empty.
+        ///         Otherwise Evolve won't do anything.
+        ///     </para>    
+        /// </summary>
+        bool MustErase { get; set; }
+
+        /// <summary>
+        ///     <para>
+        ///         When true, if incoherent migration checksums are found during validation phase,
+        ///         Evolve will erase the database schemas and will re-execute migration scripts from scratch. (default: false)
+        ///     </para>
+        ///     <para>
+        ///         Do not use in production !
+        ///     </para>
+        ///     <para>
+        ///         Obviously useful during development.
+        ///     </para>
+        /// </summary>
+        bool MustEraseOnValidationError { get; set; }
+
+        /// <summary>
+        ///     Correct checksums of the applied migrations in the metadata table, 
+        ///     with the ones from migration scripts. (default: false)
+        /// </summary>
+        bool MustRepair { get; set; }
+
+        /// <summary>
         ///     Returns the encoding of Sql migrations. (default: UTF-8)
         /// </summary>
         Encoding Encoding { get; set; }
