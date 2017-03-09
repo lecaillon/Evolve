@@ -65,12 +65,8 @@ namespace Evolve
         private string _metadaTableSchema;
         public string MetadataTableSchema
         {
-            get
-            {
-                return !_metadaTableSchema.IsNullOrWhiteSpace() ? _metadaTableSchema
-                                                                : Schemas?.FirstOrDefault();
-            }
-            set { _metadaTableSchema = value; }
+            get => _metadaTableSchema.IsNullOrWhiteSpace() ? Schemas?.FirstOrDefault() : _metadaTableSchema;
+            set => _metadaTableSchema = value;
         }
 
         public string PlaceholderPrefix { get; set; }
@@ -178,7 +174,13 @@ namespace Evolve
             db.WrappedConnection.Commit();
         }
 
-#endregion
+        public void Repair()
+        {
+            var db = Initialize();
+            Validate(db);
+        }
+
+        #endregion
 
         private DatabaseHelper Initialize()
         {
@@ -223,11 +225,19 @@ namespace Evolve
                 if (appliedMigration == null)                                                                               
                 {                                                                                                           
                     throw new EvolveException(string.Format(MigrationMetadataNotFound, script.Name));                       
-                }                                                                                                           
-                                                                                                                            
-                if (script.CalculateChecksum() != appliedMigration.Checksum)                                                // Script found, verify checksum
+                }
+
+                string scriptChecksum = script.CalculateChecksum();
+                if (scriptChecksum != appliedMigration.Checksum)                                                            // Script found, verify checksum
                 {
-                    throw new EvolveException(string.Format(IncorrectChecksum, script.Name));
+                    if (MustRepair)
+                    {
+                        metadata.UpdateChecksum(appliedMigration.Id, scriptChecksum);
+                    }
+                    else
+                    {
+                        throw new EvolveException(string.Format(IncorrectChecksum, script.Name));
+                    }
                 }
             }
         }

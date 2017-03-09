@@ -9,5 +9,7 @@
         void Validate();
 
         void Erase();
+
+        void Repair();
     }
 }
