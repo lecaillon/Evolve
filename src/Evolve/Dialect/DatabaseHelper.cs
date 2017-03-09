@@ -19,6 +19,9 @@ namespace Evolve.Dialect
 
         public abstract string DatabaseName { get; }
 
+        public abstract string CurrentUser { get; }
+
+
         #region Schema helper
 
         public virtual Schema ChangeSchema(string toSchemaName)
