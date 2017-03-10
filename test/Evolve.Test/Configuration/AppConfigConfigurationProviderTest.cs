@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using Evolve.Configuration;
+using Evolve.Migration;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Evolve.Migration;
 using Xunit;
 
 namespace Evolve.Test.Configuration
@@ -30,8 +31,7 @@ namespace Evolve.Test.Configuration
             Assert.True(new List<string>() { "my_schema", "password" }.SequenceEqual(evolve.Placeholders.Values));
             Assert.True(evolve.IsEraseDisabled);
             Assert.True(evolve.MustEraseOnValidationError);
-            Assert.True(evolve.MustErase);
-            Assert.False(evolve.MustRepair);
+            Assert.Equal(evolve.Command, CommandOptions.Erase);
         }
 
         [Fact(DisplayName = "Load_web_configuration_file_works")]
@@ -51,12 +51,10 @@ namespace Evolve.Test.Configuration
             Assert.Equal("changelog", evolve.MetadaTableName);
             Assert.Equal("${", evolve.PlaceholderPrefix);
             Assert.Equal("}", evolve.PlaceholderSuffix);
-            Assert.Equal(null, evolve.TargetVersion);
+            Assert.Equal(new MigrationVersion(long.MaxValue.ToString()), evolve.TargetVersion);
             Assert.False(evolve.IsEraseDisabled);
             Assert.False(evolve.MustEraseOnValidationError);
-            Assert.Equal("migrate", evolve.Command);
-            Assert.False(evolve.MustErase);
-            Assert.False(evolve.MustRepair);
+            Assert.Equal(evolve.Command, CommandOptions.Migrate);
         }
     }
 }

@@ -12,7 +12,7 @@ using Evolve.Utilities;
 
 namespace Evolve
 {
-    public class Evolve : IEvolveConfiguration, IMigrator
+    public class Evolve : IEvolveConfiguration
     {
         #region Fields
 
@@ -27,13 +27,26 @@ namespace Evolve
 
         #endregion
 
+        /// <summary>
+        ///     <para>
+        ///         Constructor.
+        ///     </para>
+        ///     <para>
+        ///         Set the default configuration values.
+        ///     </para>
+        ///     <para>
+        ///         Load the configuration file at <paramref name="evolveConfigurationPath"/>.
+        ///     </para>
+        /// </summary>
+        /// <param name="evolveConfigurationPath"></param>
+        /// <param name="dbConnection"></param>
         public Evolve(string evolveConfigurationPath, IDbConnection dbConnection = null)
         {
             _configurationPath = Check.FileExists(evolveConfigurationPath, nameof(evolveConfigurationPath));
             _userDbConnection = dbConnection;
 
             // Set default configuration settings
-            Command = "migrate";
+            Command = CommandOptions.Migrate;
             Schemas = new List<string>();
             Encoding = Encoding.UTF8;
             Locations = new List<string> { "Sql_Scripts" };
@@ -44,6 +57,7 @@ namespace Evolve
             SqlMigrationPrefix = "V";
             SqlMigrationSeparator = "__";
             SqlMigrationSuffix = ".sql";
+            TargetVersion = new MigrationVersion(long.MaxValue.ToString());
 
             // Configure Evolve
             var configurationProvider = ConfigurationFactoryProvider.GetProvider(evolveConfigurationPath);
@@ -55,7 +69,7 @@ namespace Evolve
         public string ConnectionString { get; set; }
         public IEnumerable<string> Schemas { get; set; }
         public string Driver { get; set; }
-        public string Command { get; set; }
+        public CommandOptions Command { get; set; }
         public bool IsEraseDisabled { get; set; }
         public bool MustEraseOnValidationError { get; set; }
         public Encoding Encoding { get; set; }
@@ -77,36 +91,36 @@ namespace Evolve
         public string SqlMigrationSuffix { get; set; }
         public MigrationVersion TargetVersion { get; set; }
 
-        /// <summary>
-        ///     <para>
-        ///         When true Evolve will erase the database schemas listed in <see cref="Schemas"/>. (default: false)
-        ///     </para>
-        ///     <para>
-        ///         Only works if Evolve has created the schema at first or found it empty.
-        ///         Otherwise Evolve won't do anything.
-        ///     </para>    
-        /// </summary>
-        public bool MustErase { get => Command?.Equals("erase", StringComparison.OrdinalIgnoreCase) ?? false; }
-
-        /// <summary>
-        ///     Correct checksums of the applied migrations in the metadata table, 
-        ///     with the ones from migration scripts. (default: false)
-        /// </summary>
-        public bool MustRepair { get => Command?.Equals("repair", StringComparison.OrdinalIgnoreCase) ?? false; }
-
         #endregion
 
-        #region IMigrator
+        #region Commands
+
+        public void ExecuteCommand()
+        {
+            switch (Command)
+            {
+                case CommandOptions.Migrate:
+                    Migrate();
+                    break;
+                case CommandOptions.Repair:
+                    Repair();
+                    break;
+                case CommandOptions.Erase:
+                    Erase();
+                    break;
+                default:
+                    Migrate();
+                    break;
+            }
+        }
 
         public string GenerateScript(string fromMigration = null, string toMigration = null)
         {
             throw new NotImplementedException();
         }
 
-        public void Migrate(string targetVersion = null)
+        public void Migrate()
         {
-            Check.NullableButNotEmpty(targetVersion, nameof(targetVersion));
-
             var db = Initialize();
 
             try
@@ -130,10 +144,9 @@ namespace Evolve
 
             var metadata = db.GetMetadataTable(MetadataTableSchema, MetadaTableName);
             var lastAppliedVersion = metadata.GetAllMigrationMetadata().LastOrDefault()?.Version ?? new MigrationVersion("0");
-            var targetMigrationVersion = new MigrationVersion(targetVersion ?? long.MaxValue.ToString());
             var scripts = _loader.GetMigrations(Locations, SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix)
                                  .SkipWhile(x => x.Version <= lastAppliedVersion)
-                                 .TakeWhile(x => x.Version <= targetMigrationVersion);
+                                 .TakeWhile(x => x.Version <= TargetVersion);
 
             foreach (var script in scripts)
             {
@@ -247,7 +260,7 @@ namespace Evolve
                 string scriptChecksum = script.CalculateChecksum();
                 if (scriptChecksum != appliedMigration.Checksum)                                                            // Script found, verify checksum
                 {
-                    if (MustRepair)
+                    if (Command == CommandOptions.Repair)
                     {
                         metadata.UpdateChecksum(appliedMigration.Id, scriptChecksum);
                     }

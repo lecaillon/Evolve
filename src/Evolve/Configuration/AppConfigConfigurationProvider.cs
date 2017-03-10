@@ -58,7 +58,7 @@ namespace Evolve.Configuration
             {
                 try
                 {
-                    _configuration.Command = appSettings[Command].Value;
+                    _configuration.Command = (CommandOptions)Enum.Parse(typeof(CommandOptions), appSettings[Command].Value.Trim(), true);
                 }
                 catch { }
             }

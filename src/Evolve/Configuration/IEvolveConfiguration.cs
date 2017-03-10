@@ -44,19 +44,19 @@ namespace Evolve.Configuration
         ///         The base command for Evolve. (default: migrate)
         ///     </para>
         ///     <para>
-        ///         - migrate : Migrates the database.
+        ///         <see cref="CommandOptions.Migrate"/> : Migrates the database.
         ///     </para>
         ///     <para>
-        ///         - erase : Erases the database schemas listed in <see cref="Schemas"/>.
-        ///                   Only works if Evolve has created the schema at first or found it empty.
-        ///                   Otherwise Evolve won't do anything.
+        ///         <see cref="CommandOptions.Erase"/> : Erases the database schemas listed in <see cref="Schemas"/>.
+        ///                                              Only works if Evolve has created the schema at first or found it empty.
+        ///                                              Otherwise Evolve won't do anything.
         ///     </para>
         ///     <para>
-        ///         - repair : Corrects checksums of the applied migrations in the metadata table,
-        ///                    with the ones from migration scripts. (default: false)
+        ///         <see cref="CommandOptions.Repair"/> : Corrects checksums of the applied migrations in the metadata table,
+        ///                                               with the ones from migration scripts.
         ///     </para>
         /// </summary>
-        string Command { get; set; }
+        CommandOptions Command { get; set; }
 
         /// <summary>
         ///     <para>
