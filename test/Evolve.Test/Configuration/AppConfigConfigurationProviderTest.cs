@@ -29,9 +29,9 @@ namespace Evolve.Test.Configuration
             Assert.True(new List<string>() { "@{Schema@}", "@{Pwd@}" }.SequenceEqual(evolve.Placeholders.Keys));
             Assert.True(new List<string>() { "my_schema", "password" }.SequenceEqual(evolve.Placeholders.Values));
             Assert.True(evolve.IsEraseDisabled);
-            Assert.True(evolve.MustErase);
             Assert.True(evolve.MustEraseOnValidationError);
-            Assert.True(evolve.MustRepair);
+            Assert.True(evolve.MustErase);
+            Assert.False(evolve.MustRepair);
         }
 
         [Fact(DisplayName = "Load_web_configuration_file_works")]
@@ -53,8 +53,9 @@ namespace Evolve.Test.Configuration
             Assert.Equal("}", evolve.PlaceholderSuffix);
             Assert.Equal(null, evolve.TargetVersion);
             Assert.False(evolve.IsEraseDisabled);
-            Assert.False(evolve.MustErase);
             Assert.False(evolve.MustEraseOnValidationError);
+            Assert.Equal("migrate", evolve.Command);
+            Assert.False(evolve.MustErase);
             Assert.False(evolve.MustRepair);
         }
     }

@@ -41,6 +41,25 @@ namespace Evolve.Configuration
 
         /// <summary>
         ///     <para>
+        ///         The base command for Evolve. (default: migrate)
+        ///     </para>
+        ///     <para>
+        ///         - migrate : Migrates the database.
+        ///     </para>
+        ///     <para>
+        ///         - erase : Erases the database schemas listed in <see cref="Schemas"/>.
+        ///                   Only works if Evolve has created the schema at first or found it empty.
+        ///                   Otherwise Evolve won't do anything.
+        ///     </para>
+        ///     <para>
+        ///         - repair : Corrects checksums of the applied migrations in the metadata table,
+        ///                    with the ones from migration scripts. (default: false)
+        ///     </para>
+        /// </summary>
+        string Command { get; set; }
+
+        /// <summary>
+        ///     <para>
         ///         When true, ensures that Evolve will never erase schemas. (default: false;)
         ///     </para>
         ///     <para>
@@ -48,17 +67,6 @@ namespace Evolve.Configuration
         ///     </para>
         /// </summary>
         bool IsEraseDisabled { get; set; }
-
-        /// <summary>
-        ///     <para>
-        ///         When true Evolve will erase the database schemas listed in <see cref="Schemas"/>. (default: false)
-        ///     </para>
-        ///     <para>
-        ///         Only works if Evolve has created the schema at first or found it empty.
-        ///         Otherwise Evolve won't do anything.
-        ///     </para>    
-        /// </summary>
-        bool MustErase { get; set; }
 
         /// <summary>
         ///     <para>
@@ -73,12 +81,6 @@ namespace Evolve.Configuration
         ///     </para>
         /// </summary>
         bool MustEraseOnValidationError { get; set; }
-
-        /// <summary>
-        ///     Correct checksums of the applied migrations in the metadata table, 
-        ///     with the ones from migration scripts. (default: false)
-        /// </summary>
-        bool MustRepair { get; set; }
 
         /// <summary>
         ///     Returns the encoding of Sql migrations. (default: UTF-8)

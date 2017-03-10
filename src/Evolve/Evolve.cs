@@ -33,6 +33,7 @@ namespace Evolve
             _userDbConnection = dbConnection;
 
             // Set default configuration settings
+            Command = "migrate";
             Schemas = new List<string>();
             Encoding = Encoding.UTF8;
             Locations = new List<string> { "Sql_Scripts" };
@@ -49,15 +50,14 @@ namespace Evolve
             configurationProvider.Configure(evolveConfigurationPath, this);
         }
 
-#region IEvolveConfiguration
+        #region IEvolveConfiguration
 
         public string ConnectionString { get; set; }
         public IEnumerable<string> Schemas { get; set; }
         public string Driver { get; set; }
+        public string Command { get; set; }
         public bool IsEraseDisabled { get; set; }
-        public bool MustErase { get; set; }
         public bool MustEraseOnValidationError { get; set; }
-        public bool MustRepair { get; set; }
         public Encoding Encoding { get; set; }
         public IEnumerable<string> Locations { get; set; }
         public string MetadaTableName { get; set; }
@@ -77,9 +77,26 @@ namespace Evolve
         public string SqlMigrationSuffix { get; set; }
         public MigrationVersion TargetVersion { get; set; }
 
-#endregion
+        /// <summary>
+        ///     <para>
+        ///         When true Evolve will erase the database schemas listed in <see cref="Schemas"/>. (default: false)
+        ///     </para>
+        ///     <para>
+        ///         Only works if Evolve has created the schema at first or found it empty.
+        ///         Otherwise Evolve won't do anything.
+        ///     </para>    
+        /// </summary>
+        public bool MustErase { get => Command?.Equals("erase", StringComparison.OrdinalIgnoreCase) ?? false; }
 
-#region IMigrator
+        /// <summary>
+        ///     Correct checksums of the applied migrations in the metadata table, 
+        ///     with the ones from migration scripts. (default: false)
+        /// </summary>
+        public bool MustRepair { get => Command?.Equals("repair", StringComparison.OrdinalIgnoreCase) ?? false; }
+
+        #endregion
+
+        #region IMigrator
 
         public string GenerateScript(string fromMigration = null, string toMigration = null)
         {
