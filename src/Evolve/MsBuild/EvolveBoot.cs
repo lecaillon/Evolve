@@ -64,7 +64,18 @@ namespace Evolve.MsBuild
                 var evolve = new Evolve(EvolveConfigurationFile);
                 CopyMigrationProjectDirToTargetDir(evolve.Locations);
 
-                evolve.Migrate();
+                if(evolve.MustRepair)
+                {
+                    evolve.Repair();
+                }
+                else if (evolve.MustErase)
+                {
+                    evolve.Erase();
+                }
+                else
+                {
+                    evolve.Migrate();
+                }
                 
                 return true;
             }
