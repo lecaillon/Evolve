@@ -8,6 +8,6 @@ namespace Evolve
 
         public EvolveException(string message) : base(message) { }
 
-        public EvolveException(string message, Exception innerException) : base(message, innerException) { }
+        public EvolveException(string message, Exception innerEx) : base($"{message} {innerEx.Message}" , innerEx) { }
     }
 }

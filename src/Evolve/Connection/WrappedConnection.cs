@@ -11,6 +11,7 @@ namespace Evolve.Connection
         private bool _openedInternally;
         private const string TransactionAlreadyStarted = "The connection is already in a transaction and cannot participate in another transaction.";
         private const string NoActiveTransaction = "The connection does not have any active transactions.";
+        private const string ConnectionValidationError = "Validation of the database connection failed.";
 
         public WrappedConnection(IDbConnection connection, bool connectionOwned = true)
         {
@@ -131,7 +132,7 @@ namespace Evolve.Connection
             }
             catch (Exception ex)
             {
-                throw new EvolveException("", ex);
+                throw new EvolveException(ConnectionValidationError, ex);
             }
         }
 

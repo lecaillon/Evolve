@@ -109,7 +109,7 @@ namespace Evolve.MsBuild
             }
             catch (Exception ex)
             {
-                throw new EvolveException(MigrationFolderCopyError + ex.Message, ex);
+                throw new EvolveException(MigrationFolderCopyError, ex);
             }
         }
 

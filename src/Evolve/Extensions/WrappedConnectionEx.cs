@@ -10,7 +10,6 @@ namespace Evolve
     public static class WrappedConnectionEx
     {
         private const string DBMSNotSUpported = "Connection to this DBMS is not supported.";
-        private const string CommandExecutionError = "DbCommand ({0}) error: {1}";
 
         public static DBMS GetDatabaseServerType(this WrappedConnection wrappedConnection)
         {
@@ -176,7 +175,7 @@ namespace Evolve
             }
             catch (Exception ex)
             {
-                throw new EvolveException(string.Format(CommandExecutionError, executeMethod, sql), ex);
+                throw new EvolveSqlException(sql, ex);
             }
             finally
             {

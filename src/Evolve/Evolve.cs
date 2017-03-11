@@ -20,6 +20,7 @@ namespace Evolve
         private const string MigrationMetadataNotFound = "Script {0} not found in the metadata table of applied migrations.";
         private const string NewSchemaCreated = "Create new schema: {0}.";
         private const string EmptySchemaFound = "Empty schema found: {0}.";
+        private const string ScriptMigrationError = "Error executing script: {0}.";
 
         private string _configurationPath;
         private IDbConnection _userDbConnection;
@@ -127,7 +128,7 @@ namespace Evolve
             {
                 Validate(db);
             }
-            catch (EvolveException ex)
+            catch (EvolveValidationException ex)
             {
                 if (MustEraseOnValidationError)
                 {
@@ -136,7 +137,7 @@ namespace Evolve
                 }
                 else
                 {
-                    throw;
+                    throw ex;
                 }
             }
 
@@ -157,11 +158,11 @@ namespace Evolve
                     metadata.SaveMigration(script, true);
                     db.WrappedConnection.Commit();
                 }
-                catch
+                catch(Exception ex)
                 {
                     db.WrappedConnection.Rollback();
                     metadata.SaveMigration(script, false);
-                    throw;
+                    throw new EvolveException(string.Format(ScriptMigrationError, script.Name), ex);
                 }
             }
         }
@@ -254,7 +255,7 @@ namespace Evolve
                 var appliedMigration = appliedMigrations.SingleOrDefault(x => x.Version == script.Version);                 // Search script in the applied migrations
                 if (appliedMigration == null)                                                                               
                 {                                                                                                           
-                    throw new EvolveException(string.Format(MigrationMetadataNotFound, script.Name));                       
+                    throw new EvolveValidationException(string.Format(MigrationMetadataNotFound, script.Name));                       
                 }
 
                 string scriptChecksum = script.CalculateChecksum();
@@ -266,7 +267,7 @@ namespace Evolve
                     }
                     else
                     {
-                        throw new EvolveException(string.Format(IncorrectChecksum, script.Name));
+                        throw new EvolveValidationException(string.Format(IncorrectChecksum, script.Name));
                     }
                 }
             }
