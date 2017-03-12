@@ -16,7 +16,7 @@ namespace Evolve
     {
         #region Fields
 
-        private const string IncorrectChecksum = "Checksum validation failed for script: {0}.";
+        private const string IncorrectMigrationChecksum = "Checksum validation failed for: {0}.";
         private const string MigrationMetadataNotFound = "Script {0} not found in the metadata table of applied migrations.";
         private const string NewSchemaCreated = "Create new schema: {0}.";
         private const string EmptySchemaFound = "Empty schema found: {0}.";
@@ -25,6 +25,7 @@ namespace Evolve
         private string _configurationPath;
         private IDbConnection _userDbConnection;
         private IMigrationLoader _loader = new FileMigrationLoader();
+        private Action<string> _logInfoDelegate;
 
         #endregion
 
@@ -39,12 +40,14 @@ namespace Evolve
         ///         Load the configuration file at <paramref name="evolveConfigurationPath"/>.
         ///     </para>
         /// </summary>
-        /// <param name="evolveConfigurationPath"></param>
-        /// <param name="dbConnection"></param>
-        public Evolve(string evolveConfigurationPath, IDbConnection dbConnection = null)
+        /// <param name="evolveConfigurationPath">Evolve configuration file.</param>
+        /// <param name="dbConnection">Optionnal database connection.</param>
+        /// <param name="logInfoDelegate">Optionnal logger.</param>
+        public Evolve(string evolveConfigurationPath, IDbConnection dbConnection = null, Action<string> logInfoDelegate = null)
         {
             _configurationPath = Check.FileExists(evolveConfigurationPath, nameof(evolveConfigurationPath));
             _userDbConnection = dbConnection;
+            _logInfoDelegate = logInfoDelegate ?? new Action<string>((msg) => { });
 
             // Set default configuration settings
             Command = CommandOptions.Migrate;
@@ -267,7 +270,7 @@ namespace Evolve
                     }
                     else
                     {
-                        throw new EvolveValidationException(string.Format(IncorrectChecksum, script.Name));
+                        throw new EvolveValidationException(string.Format(IncorrectMigrationChecksum, script.Name));
                     }
                 }
             }
@@ -314,3 +317,10 @@ namespace Evolve
         }
     }
 }
+
+// Successfully applied migration 
+//  A Migration must no change once it has been applied to the database!
+// Validate failed: Migration checksum mismatch for migration 2.1
+// Schema "public" is up to date. No migration necessary.
+// Successfully validated 3 migrations
+// Migrating schema "public" to version 1.1 - create test table

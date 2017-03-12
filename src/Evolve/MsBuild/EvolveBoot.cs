@@ -61,7 +61,7 @@ namespace Evolve.MsBuild
                 WriteHeader();
                 Directory.SetCurrentDirectory(TargetDir);
 
-                var evolve = new Evolve(EvolveConfigurationFile);
+                var evolve = new Evolve(EvolveConfigurationFile, logInfoDelegate: msg => LogInfo(msg));
                 CopyMigrationProjectDirToTargetDir(evolve.Locations);
                 evolve.ExecuteCommand();
                 
