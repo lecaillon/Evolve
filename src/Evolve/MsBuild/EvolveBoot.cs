@@ -63,6 +63,9 @@ namespace Evolve.MsBuild
 
                 var evolve = new Evolve(EvolveConfigurationFile, logInfoDelegate: msg => LogInfo(msg));
                 CopyMigrationProjectDirToTargetDir(evolve.Locations);
+
+                // ADD LOG : Copy migration scripts to {}
+
                 evolve.ExecuteCommand();
                 
                 return true;

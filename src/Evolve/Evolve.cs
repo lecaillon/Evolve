@@ -14,13 +14,49 @@ namespace Evolve
 {
     public class Evolve : IEvolveConfiguration
     {
-        #region Fields
+        #region Constants
 
-        private const string IncorrectMigrationChecksum = "Checksum validation failed for: {0}.";
-        private const string MigrationMetadataNotFound = "Script {0} not found in the metadata table of applied migrations.";
+        // Initialize
+        private const string EvolveInitialized = "Evolve initialized.";
+
+        // Validate
+        private const string IncorrectMigrationChecksum = "Validate failed: invalid checksum for: {0}.";
+        private const string MigrationMetadataNotFound = "Validate failed: script {0} not found in the metadata table of applied migrations.";
+        private const string ChecksumFixed = "Checksum fixed for migration: {0}.";
+        private const string ValidateSuccessfull = "Metadata validated.";
+
+        // ManageSchemas
         private const string NewSchemaCreated = "Create new schema: {0}.";
         private const string EmptySchemaFound = "Empty schema found: {0}.";
-        private const string ScriptMigrationError = "Error executing script: {0}.";
+        private const string SchemaNotExists = "Schema {0} does not exist.";
+        private const string SchemaCreated = "Schema {0} created.";
+        private const string SchemaMarkedEmpty = "Mark schema {0} as empty.";
+
+        // Migrate
+        private const string ExecutingMigrate = "Executing Erase...";
+        private const string MigrationError = "Error executing script: {0}.";
+        private const string MigrationErrorEraseOnValidationError = "{0} Erase database. (MustEraseOnValidationError = True)";
+        private const string MigrationSuccessfull = "Successfully applied migration {0}.";
+        private const string NothingToMigrate = "Database is up to date. No migration needed.";
+        private const string MigrateSuccessfull = "Database migrated to version {0}. {1} migration(s) applied.";
+
+        // Erase
+        private const string ExecutingErase = "Executing Erase...";
+        private const string EraseDisabled = "Erase is disabled.";
+        private const string EraseSchemaSuccessfull = "Successfully erased schema {0}.";
+        private const string DropSchemaSuccessfull = "Successfully dropped schema {0}.";
+        private const string EraseSchemaFailed = "Erase failed. Impossible to erase schema {0}.";
+        private const string DropSchemaFailed = "Erase failed. Impossible to drop schema {0}.";
+        private const string EraseCompleted = "Erase completed.";
+
+        // Repair
+        private const string ExecutingRepair = "Executing Repair...";
+        private const string RepairSuccessfull = "Successfully repaired {0} migration(s).";
+        private const string NothingToRepair = "Metadata are up to date. Nothing to repair.";
+
+        #endregion
+
+        #region Fields
 
         private string _configurationPath;
         private IDbConnection _userDbConnection;
@@ -165,7 +201,7 @@ namespace Evolve
                 {
                     db.WrappedConnection.Rollback();
                     metadata.SaveMigration(script, false);
-                    throw new EvolveException(string.Format(ScriptMigrationError, script.Name), ex);
+                    throw new EvolveException(string.Format(MigrationError, script.Name), ex);
                 }
             }
         }
@@ -318,9 +354,3 @@ namespace Evolve
     }
 }
 
-// Successfully applied migration 
-//  A Migration must no change once it has been applied to the database!
-// Validate failed: Migration checksum mismatch for migration 2.1
-// Schema "public" is up to date. No migration necessary.
-// Successfully validated 3 migrations
-// Migrating schema "public" to version 1.1 - create test table
