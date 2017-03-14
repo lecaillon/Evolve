@@ -34,7 +34,7 @@ namespace Evolve
 
         // Migrate
         private const string ExecutingMigrate = "Executing Erase...";
-        private const string MigrationError = "Error executing script: {0}.";
+        private const string MigrationError = "Error executing script: {0}."; // ajouter un résumé quand même
         private const string MigrationErrorEraseOnValidationError = "{0} Erase database. (MustEraseOnValidationError = True)";
         private const string MigrationSuccessfull = "Successfully applied migration {0}.";
         private const string NothingToMigrate = "Database is up to date. No migration needed.";
@@ -64,6 +64,8 @@ namespace Evolve
         private Action<string> _logInfoDelegate;
 
         #endregion
+
+        #region Constructor
 
         /// <summary>
         ///     <para>
@@ -104,6 +106,8 @@ namespace Evolve
             configurationProvider.Configure(evolveConfigurationPath, this);
         }
 
+        #endregion
+
         #region IEvolveConfiguration
 
         public string ConnectionString { get; set; }
@@ -130,6 +134,13 @@ namespace Evolve
         public string SqlMigrationSeparator { get; set; }
         public string SqlMigrationSuffix { get; set; }
         public MigrationVersion TargetVersion { get; set; }
+
+        #endregion
+
+        #region Properties
+
+        public int NbMigration { get; private set; }
+        public int NbReparation { get; private set; }
 
         #endregion
 
@@ -196,6 +207,7 @@ namespace Evolve
                     db.WrappedConnection.ExecuteNonQuery(script.LoadSQL(Placeholders, Encoding));
                     metadata.SaveMigration(script, true);
                     db.WrappedConnection.Commit();
+                    NbMigration++;
                 }
                 catch(Exception ex)
                 {
@@ -254,6 +266,9 @@ namespace Evolve
 
         private DatabaseHelper Initialize()
         {
+            NbMigration = 0;
+            NbReparation = 0;
+
             var connectionProvider = GetConnectionProvider(_userDbConnection);              // Get a database connection provider
             var evolveConnection = connectionProvider.GetConnection();                      // Get a connection to the database
             evolveConnection.Validate();                                                    // Validate the reliabilty of the initiated connection
@@ -303,6 +318,7 @@ namespace Evolve
                     if (Command == CommandOptions.Repair)
                     {
                         metadata.UpdateChecksum(appliedMigration.Id, scriptChecksum);
+                        NbReparation++;
                     }
                     else
                     {
