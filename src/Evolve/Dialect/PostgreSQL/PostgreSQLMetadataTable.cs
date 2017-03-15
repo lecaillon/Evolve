@@ -50,7 +50,7 @@ namespace Evolve.Dialect.PostgreSQL
         {
             string sql = $"INSERT INTO \"{Schema}\".\"{TableName}\" (type, version, description, name, checksum, installed_by, success) VALUES" +
              "( " +
-                $"'{(int)metadata.Type}', " +
+                $"{(int)metadata.Type}, " +
                 $"'{metadata.Version.Label}', " +
                 $"'{metadata.Description.TruncateWithEllipsis(200)}', " +
                 $"'{metadata.Name.TruncateWithEllipsis(1000)}', " +
