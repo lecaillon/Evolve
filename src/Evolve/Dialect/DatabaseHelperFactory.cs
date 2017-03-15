@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Evolve.Connection;
 using Evolve.Dialect.PostgreSQL;
 using Evolve.Dialect.SQLite;
+using Evolve.Dialect.SQLServer;
 using Evolve.Utilities;
 
 namespace Evolve.Dialect
@@ -15,6 +16,7 @@ namespace Evolve.Dialect
         {
             [DBMS.SQLite] = wcnn => new SQLiteDatabase(wcnn),
             [DBMS.PostgreSQL] = wcnn => new PostgreSQLDatabase(wcnn),
+            [DBMS.SQLServer] = wcnn => new SQLServerDatabase(wcnn),
         };
 
         public static DatabaseHelper GetDatabaseHelper(DBMS dbmsType, WrappedConnection connection)
