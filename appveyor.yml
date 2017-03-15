@@ -1,0 +1,29 @@
+version: 1.0.0-alpha.{build}
+image: Visual Studio 2017
+configuration: Release
+before_build:
+- ps: dotnet restore
+build:
+  verbosity: minimal
+test_script:
+- ps: >-
+    cd test/Evolve.Test/
+    
+    dotnet test
+    
+    cd ../..
+	
+    cd test/Evolve.Core.Test/
+    
+    dotnet test
+    
+    cd ../..
+after_test:
+- ps: >-
+    cd src/Evolve
+    
+    nuget pack Evolve.nuspec
+    
+    cd ../..
+artifacts:
+- path: '**\*.nupkg'
