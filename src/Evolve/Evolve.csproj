@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
     <TargetFrameworks>netstandard1.3;net35;net45;</TargetFrameworks>
+    <Version>1.0.0-alpha1</Version>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net35' Or '$(TargetFramework)' == 'net45'">
     <DefineConstants>NET</DefineConstants>
