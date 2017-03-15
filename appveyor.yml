@@ -12,7 +12,7 @@ test_script:
     dotnet test
     
     cd ../..
-	
+
     cd test/Evolve.Core.Test/
     
     dotnet test
