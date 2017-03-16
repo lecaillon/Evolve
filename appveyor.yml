@@ -1,6 +1,16 @@
 version: 1.0.0-alpha1.{build}
 image: Visual Studio 2017
 configuration: Release
+services: postgresql
+init:
+- ps: >-
+    SET PGUSER=postgres
+
+    SET PGPASSWORD=Password12!
+
+    PATH=C:\Program Files\PostgreSQL\9.5\bin\;%PATH%
+
+    createdb my_database
 before_build:
 - ps: >-
     dotnet restore
