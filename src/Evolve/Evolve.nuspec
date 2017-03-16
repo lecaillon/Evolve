@@ -17,9 +17,9 @@
   </metadata>
   <files>
     <file src="bin\Release\net35\*.dll" target="lib\net35" />
-    <file src="bin\Release\net35\*.xml" target="lib\net35" />
+    <!--<file src="bin\Release\net35\*.xml" target="lib\net35" />-->
     <file src="bin\Release\net45\*.dll" target="lib\net45" />
-    <file src="bin\Release\net45\*.xml" target="lib\net45" />
+    <!--<file src="bin\Release\net45\*.xml" target="lib\net45" />-->
     <file src="build\**" target="build" />
     <!--<file src="content\**" target="content" />-->
   </files>
