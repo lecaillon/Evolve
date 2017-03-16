@@ -4,7 +4,7 @@ configuration: Release
 before_build:
 - ps: >-
     dotnet restore
-
+    
     nuget restore
 build:
   verbosity: minimal
@@ -15,12 +15,14 @@ test_script:
     dotnet test
     
     cd ../..
-
+    
     cd test/Evolve.Core.Test/
     
     dotnet test
     
     cd ../..
+    
+    %xunit20%\xunit.console.x86 "C:\projects\evolve\test\Evolve.Test\bin\Debug\Evolve.Test.dll" -appveyor
 after_test:
 - ps: >-
     cd src/Evolve
@@ -29,4 +31,4 @@ after_test:
     
     cd ../..
 artifacts:
-- path: '**\*.nupkg'
+- path: '**\Evolve*.nupkg'
