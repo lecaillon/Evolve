@@ -2,7 +2,14 @@ version: 1.0.0-alpha1.{build}
 image: Visual Studio 2017
 configuration: Release
 services: postgresql
-init:
+before_build:
+- ps: >-
+    dotnet restore
+    
+    nuget restore
+build:
+  verbosity: minimal
+before_test:
 - cmd: >-
     SET PGUSER=postgres
 
@@ -11,13 +18,6 @@ init:
     SET PATH=C:\Program Files\PostgreSQL\9.5\bin\;%PATH%
 
     createdb my_database
-before_build:
-- ps: >-
-    dotnet restore
-    
-    nuget restore
-build:
-  verbosity: minimal
 test_script:
 - ps: >-
     cd test/Evolve.Test/
