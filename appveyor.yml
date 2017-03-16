@@ -21,8 +21,6 @@ test_script:
     dotnet test
     
     cd ../..
-    
-    %xunit20%\xunit.console.x86 "C:\projects\evolve\test\Evolve.Test\bin\Debug\Evolve.Test.dll" -appveyor
 after_test:
 - ps: >-
     cd src/Evolve
