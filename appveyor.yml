@@ -3,7 +3,7 @@ image: Visual Studio 2017
 configuration: Release
 services: postgresql
 init:
-- ps: >-
+- cmd: >-
     SET PGUSER=postgres
 
     SET PGPASSWORD=Password12!
