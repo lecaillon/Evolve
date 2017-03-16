@@ -23,7 +23,7 @@ namespace Evolve.IntegrationTest.PostgreSQL
         public const string ContainerName = "postgres-evolve";
         public const string ContainerPort = "5432";
         public const string DbName = "my_database";
-        public const string DbPwd = "postgres";
+        public const string DbPwd = "Password12!"; // AppVeyor
         public const string DbUser = "postgres";
 
         public static string ResourcesDirectory = Path.Combine(Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).AbsolutePath), "Resources");
@@ -111,6 +111,7 @@ namespace Evolve.IntegrationTest.PostgreSQL
         /// </summary>
         public PostgreSQLDialectTest()
         {
+#if DEBUG
             using (var ps = PowerShell.Create())
             {
                 ps.Commands.AddScript($"docker run --name {ContainerName} --publish={ContainerPort}:{ContainerPort} -e POSTGRES_PASSWORD={DbPwd} -e POSTGRES_DB={DbName} -d {ImageName}");
@@ -118,6 +119,7 @@ namespace Evolve.IntegrationTest.PostgreSQL
             }
 
             Thread.Sleep(5000);
+#endif
         }
 
         /// <summary>
@@ -125,12 +127,14 @@ namespace Evolve.IntegrationTest.PostgreSQL
         /// </summary>
         public void Dispose()
         {
+#if DEBUG
             using (var ps = PowerShell.Create())
             {
                 ps.Commands.AddScript($"docker stop '{ContainerName}'");
                 ps.Commands.AddScript($"docker rm '{ContainerName}'");
                 ps.Invoke();
             }
+#endif
         }
     }
 }
