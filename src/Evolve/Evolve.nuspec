@@ -12,7 +12,7 @@
     <description>Evolve description</description>
     <releaseNotes>Initial release.</releaseNotes>
     <copyright>Copyright © P.Lécaillon 2017</copyright>
-    <tags>Evolve Flyway MyBatis Migration</tags>
+    <tags>Evolve Flyway MyBatis SQL Migration</tags>
     <dependencies />
   </metadata>
   <files>
@@ -21,6 +21,6 @@
     <file src="bin\Release\net45\*.dll" target="lib\net45" />
     <file src="bin\Release\net45\*.xml" target="lib\net45" />
     <file src="build\**" target="build" />
-    <file src="content\**" target="content" />
+    <!--<file src="content\**" target="content" />-->
   </files>
 </package>
