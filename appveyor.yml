@@ -29,9 +29,9 @@ test_script:
     
     cd ../..
 - cmd: >-
-    xunit.console.exe test\Evolve.Test\bin\Release\Evolve.Test.dll
+    xunit.console.exe test\Evolve.Test\bin\%CONFIGURATION%\Evolve.Test.dll
     
-    xunit.console.exe test\Evolve.IntegrationTest.PostgreSQL\bin\Release\Evolve.IntegrationTest.PostgreSQL.dll
+    xunit.console.exe test\Evolve.IntegrationTest.PostgreSQL\bin\%CONFIGURATION%\Evolve.IntegrationTest.PostgreSQL.dll
 after_test:
 - ps: >-
     cd src/Evolve
