@@ -48,7 +48,7 @@ namespace Evolve
             throw new EvolveException(DBMSNotSUpported);
         }
 
-        public static long QueryForLong(this WrappedConnection wrappedConnection, string sql) => (long)ExecuteScalar(wrappedConnection, sql);
+        public static long QueryForLong(this WrappedConnection wrappedConnection, string sql) => Convert.ToInt64(ExecuteScalar(wrappedConnection, sql));
 
         public static string QueryForString(this WrappedConnection wrappedConnection, string sql) => (string)ExecuteScalar(wrappedConnection, sql);
 

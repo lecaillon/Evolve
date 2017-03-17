@@ -75,7 +75,7 @@ namespace Evolve.Dialect.SQLServer
             string sql = $"SELECT id, type, version, description, name, checksum, installed_by, installed_on, success FROM [{Schema}].[{TableName}]";
             return _database.WrappedConnection.QueryForList(sql, r =>
             {
-                return new MigrationMetadata(r.GetString(2), r.GetString(3), r.GetString(4), (MetadataType)r.GetInt16(1))
+                return new MigrationMetadata(r.GetString(2), r.GetString(3), r.GetString(4), (MetadataType)r.GetByte(1))
                 {
                     Id = r.GetInt32(0),
                     Checksum = r.GetString(5),
