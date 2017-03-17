@@ -29,7 +29,10 @@ test_script:
     
     cd ../..
     
+    SET PATH=C:\projects\evolve\packages\xunit.runner.console.2.2.0\tools\;%PATH%
+    
     xunit.console.exe test\Evolve.Test\bin\Release\Evolve.Test.dll
+    
     xunit.console.exe test\Evolve.IntegrationTest.PostgreSQL\bin\Release\Evolve.IntegrationTest.PostgreSQL.dll
 after_test:
 - ps: >-
