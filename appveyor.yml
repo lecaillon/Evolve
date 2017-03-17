@@ -2,6 +2,15 @@ version: 1.0.0-alpha1.{build}
 image: Visual Studio 2017
 configuration: Release
 services: postgresql
+init:
+- cmd: >-
+    SET PGUSER=postgres
+
+    SET PGPASSWORD=Password12!
+
+    SET PATH=C:\Program Files\PostgreSQL\9.5\bin\;%PATH%
+    
+    SET PATH=C:\projects\evolve\packages\xunit.runner.console.2.2.0\tools\;%PATH%
 before_build:
 - ps: >-
     dotnet restore
@@ -11,32 +20,17 @@ build:
   verbosity: minimal
 before_test:
 - cmd: >-
-    SET PGUSER=postgres
-
-    SET PGPASSWORD=Password12!
-
-    SET PATH=C:\Program Files\PostgreSQL\9.5\bin\;%PATH%
-
     createdb my_database
 test_script:
 - ps: >-
-    cd test/Evolve.Test/
-    
-    dotnet test
-    
-    cd ../..
-    
     cd test/Evolve.Core.Test/
     
     dotnet test
     
     cd ../..
     
-    cd test/Evolve.IntegrationTest.PostgreSQL/
-    
-    dotnet test
-    
-    cd ../..
+    xunit.console.exe test\Evolve.Test\bin\Release\Evolve.Test.dll
+    xunit.console.exe test\Evolve.IntegrationTest.PostgreSQL\bin\Release\Evolve.IntegrationTest.PostgreSQL.dll
 after_test:
 - ps: >-
     cd src/Evolve
