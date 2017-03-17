@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Evolve</id>
-    <version>1.0.0</version>
+    <version>1.0.0-alpha1</version>
     <authors>Philippe Lécaillon</authors>
     <owners>Philippe Lécaillon</owners>
     <licenseUrl>https://github.com/lecaillon/Evolve/blob/master/LICENSE</licenseUrl>
@@ -12,15 +12,15 @@
     <description>Evolve description</description>
     <releaseNotes>Initial release.</releaseNotes>
     <copyright>Copyright © P.Lécaillon 2017</copyright>
-    <tags>Evolve Flyway MyBatis Migration</tags>
+    <tags>Evolve Flyway MyBatis SQL Migration</tags>
     <dependencies />
   </metadata>
   <files>
     <file src="bin\Release\net35\*.dll" target="lib\net35" />
-    <file src="bin\Release\net35\*.xml" target="lib\net35" />
+    <!--<file src="bin\Release\net35\*.xml" target="lib\net35" />-->
     <file src="bin\Release\net45\*.dll" target="lib\net45" />
-    <file src="bin\Release\net45\*.xml" target="lib\net45" />
+    <!--<file src="bin\Release\net45\*.xml" target="lib\net45" />-->
     <file src="build\**" target="build" />
-    <file src="content\**" target="content" />
+    <!--<file src="content\**" target="content" />-->
   </files>
 </package>

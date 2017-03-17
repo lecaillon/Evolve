@@ -1,0 +1,48 @@
+version: 1.0.0-alpha1.{build}
+image: Visual Studio 2017
+configuration: Release
+services: postgresql
+before_build:
+- ps: >-
+    dotnet restore
+    
+    nuget restore
+build:
+  verbosity: minimal
+before_test:
+- cmd: >-
+    SET PGUSER=postgres
+
+    SET PGPASSWORD=Password12!
+
+    SET PATH=C:\Program Files\PostgreSQL\9.5\bin\;%PATH%
+
+    createdb my_database
+test_script:
+- ps: >-
+    cd test/Evolve.Test/
+    
+    dotnet test
+    
+    cd ../..
+    
+    cd test/Evolve.Core.Test/
+    
+    dotnet test
+    
+    cd ../..
+    
+    cd test/Evolve.IntegrationTest.PostgreSQL/
+    
+    dotnet test
+    
+    cd ../..
+after_test:
+- ps: >-
+    cd src/Evolve
+    
+    nuget pack Evolve.nuspec
+    
+    cd ../..
+artifacts:
+- path: '**\Evolve*.nupkg'
