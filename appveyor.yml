@@ -28,9 +28,7 @@ test_script:
     dotnet test
     
     cd ../..
-    
-    SET PATH=C:\projects\evolve\packages\xunit.runner.console.2.2.0\tools\;%PATH%
-    
+- cmd: >-
     xunit.console.exe test\Evolve.Test\bin\Release\Evolve.Test.dll
     
     xunit.console.exe test\Evolve.IntegrationTest.PostgreSQL\bin\Release\Evolve.IntegrationTest.PostgreSQL.dll
