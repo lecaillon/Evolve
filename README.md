@@ -20,10 +20,9 @@ Its purpose is to automate your database changes, and help keep those changes sy
 - [x] .NET 4.5+
 - [ ] .NET Core project support (more generally .NET Standard 1.3 support)
 
-## Getting Started
+## Quick Start
 1. Add a reference to the nuget Evolve package in your project.
-
-1. Add at least those variables to your Web.config/App.config and update their values according to your environment:
+2. Add at least those variables to your Web.config/App.config and update their values according to your environment:
 
 ```xml
 <appSettings>
@@ -33,3 +32,12 @@ Its purpose is to automate your database changes, and help keep those changes sy
   <add key="Evolve.Command" value="migrate" />
 </appSettings>
 ```
+3. Create the folder *Sql_Scripts* at the root of your project folder.
+4. And add your sql migration scripts following this file name structure (Example: *V1_3_1__Create_table.sql*):
+- prefix: configurable, default: **V**
+- version: numbers separated by _ (one underscore)
+- separator: configurable, default: **__** (two underscores)
+- description: words separated by underscores
+- suffix: configurable, default: **.sql** 
+
+Please refer to the wiki pages for a complete documentation on how to master Evolve.
