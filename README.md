@@ -21,9 +21,8 @@ Its purpose is to automate your database changes, and help keep those changes sy
 - [ ] .NET Core project support (more generally .NET Standard 1.3 support)
 
 ## Quick Start
-1. Add a reference to the nuget Evolve package in your project.
+1. Add a reference to the NuGet Evolve package in your project.
 2. Add at least those variables to your Web.config/App.config and update their values according to your environment:
-
 ```xml
 <appSettings>
   <add key="Evolve.ConnectionString" value="Server=127.0.0.1;Port=5432;Database=my_db;User Id=postgres;Password=postgres;" />
@@ -32,14 +31,13 @@ Its purpose is to automate your database changes, and help keep those changes sy
   <add key="Evolve.Command" value="migrate" />
 </appSettings>
 ```
-3. Create the folder *Sql_Scripts* at the root of your project folder.
-4. And add your sql migration scripts following this file name structure. Example: V1_3_1__Create_table.sql:
+3. Create the folder *Sql_Scripts* at the root of your project directory.
+4. And add your sql migration scripts following this file name structure. Example: *V1_3_1__Create_table.sql*:
 - **prefix**: configurable, default: **V**
 - **version**: numbers separated by _ (one underscore)
 - **separator**: configurable, default: **__** (two underscores)
 - **description**: words separated by underscores
 - **suffix**: configurable, default: **.sql** 
-
-5. 
+5. The next time you build your project, Evolve will start and run your migration script automatically.
 
 Please refer to the wiki pages for a complete documentation on how to master Evolve.
