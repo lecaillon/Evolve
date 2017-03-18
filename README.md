@@ -34,7 +34,7 @@ Over all Evolve embraces simplicity. Migration scripts remain plan old SQL.
   <add key="Evolve.Command" value="migrate" />
 </appSettings>
 ```
-3. Create a folder *Sql_Scripts* at the root of your project directory (script locations are configurable).
+3. Create a folder *Sql_Scripts* at the root of your project directory.
 4. And add your sql migration scripts following this file name structure. Example: *V1_3_1__Create_table.sql*:
 - **prefix**: configurable, default: **V**
 - **version**: numbers separated by _ (one underscore)
