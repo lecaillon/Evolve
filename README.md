@@ -33,11 +33,15 @@ Its purpose is to automate your database changes, and help keep those changes sy
 </appSettings>
 ```
 3. Create the folder *Sql_Scripts* at the root of your project folder.
-4. And add your sql migration scripts following this file name structure (Example: *V1_3_1__Create_table.sql*):
-- prefix: configurable, default: **V**
-- version: numbers separated by _ (one underscore)
-- separator: configurable, default: **__** (two underscores)
-- description: words separated by underscores
-- suffix: configurable, default: **.sql** 
+4. And add your sql migration scripts following this file name structure:
+
+Example: V1_3_1__Create_table.sql
+- *prefix*: configurable, default: **V**
+- *version*: numbers separated by _ (one underscore)
+- *separator*: configurable, default: **__** (two underscores)
+- *description*: words separated by underscores
+- *suffix*: configurable, default: **.sql** 
+
+5. 
 
 Please refer to the wiki pages for a complete documentation on how to master Evolve.
