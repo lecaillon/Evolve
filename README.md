@@ -4,18 +4,26 @@ Database migration tool for .NET. Inspired by Flyway.
 Its purpose is to automate your database changes, and help keep those changes synchronized in all your environments.
 
 ## Supported Databases
-- PostgreSQL
-- SQLite
-- SQL Server
+- [x] PostgreSQL
+- [x] SQLite
+- [x] SQL Server
+- [ ] MySQL / MariaDB
+- [ ] Oracle support (for .NET Framework only)
 
 ## Supported Modes
-- MSBuild
-- In-app
+- [x] MSBuild
+- [x] In-app
+- [ ] Evolve CLI tool
+
+## Supported Frameworks
+- [x] .NET 3.5+
+- [x] .NET 4.5+
+- [ ] .NET Core project support (more generally .NET Standard 1.3 support)
 
 ## Getting Started
-Add a reference to the nuget Evolve package in your project.
+1. Add a reference to the nuget Evolve package in your project.
 
-Add those variables to your Web.config/App.config and update their values according to your environment:
+1. Add at least those variables to your Web.config/App.config and update their values according to your environment:
 
 ```xml
 <appSettings>
@@ -25,10 +33,3 @@ Add those variables to your Web.config/App.config and update their values accord
   <add key="Evolve.Command" value="migrate" />
 </appSettings>
 ```
-
-## Roadmap
-- MySQL / MariaDB support
-- Oracle support (for .NET Framework only)
-- .NET Core project support (more generally .NET Standard 1.3 support)
-- Evolve CLI tool
-
