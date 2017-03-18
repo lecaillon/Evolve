@@ -1,4 +1,5 @@
 version: 1.0.0-alpha1.{build}
+skip_non_tags: true
 image: Visual Studio 2017
 configuration: Release
 services: postgresql
