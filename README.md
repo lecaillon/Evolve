@@ -11,3 +11,13 @@ Its purpose is to automate your database changes, and help keep those changes sy
 ## Supported Modes
 - MSBuild
 - In-app
+
+## Getting Started
+Add a reference to the nuget Evolve package in your project.
+
+## Roadmap
+- MySQL / MariaDB support
+- Oracle support (for .NET Framework only)
+- .NET Core project support (more generally .NET Standard 1.3 support)
+- Evolve CLI tool
+
