@@ -21,7 +21,7 @@ Over all Evolve embraces simplicity. Migration scripts remain plan old SQL.
 ## Supported Frameworks
 - [x] .NET 3.5+
 - [x] .NET 4.5+
-- [ ] .NET Core project support (more generally .NET Standard 1.3 support)
+- [ ] .NET Core (more generally .NET Standard 1.3)
 
 ## Quick Start
 1. Add a reference to the NuGet Evolve package in your project.
