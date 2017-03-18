@@ -2,6 +2,9 @@
 Database migration tool for .NET. Inspired by [Flyway](https://flywaydb.org/).
 
 Its purpose is to automate your database changes, and help keep those changes synchronized in all your environments.
+This makes it an ideal tool for continuous integration / delivery.
+
+Over all Evolve embraces simplicity. Migration scripts remain plan old SQL.
 
 ## Supported Databases
 - [x] PostgreSQL
