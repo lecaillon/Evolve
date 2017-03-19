@@ -4,8 +4,10 @@ namespace Evolve
 {
     public class EvolveConfigurationException : EvolveException
     {
-        public EvolveConfigurationException(string message) : base(message) { }
+        private const string EvolveConfigurationError = "Evolve configuration error: ";
 
-        public EvolveConfigurationException(string message, Exception innerException) : base(message, innerException) { }
+        public EvolveConfigurationException(string message) : base(EvolveConfigurationError + message) { }
+
+        public EvolveConfigurationException(string message, Exception innerException) : base(EvolveConfigurationError + message, innerException) { }
     }
 }
