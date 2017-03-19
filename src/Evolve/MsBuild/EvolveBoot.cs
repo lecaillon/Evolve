@@ -107,6 +107,8 @@ namespace Evolve.MsBuild
 
                     var sourceDirectory = new DirectoryInfo(sourcePath);
                     var targetDirectory = new DirectoryInfo(Path.Combine(TargetDir, sourceDirectory.Name));
+                    targetDirectory.Delete(true);
+
                     CopyAll(sourceDirectory, targetDirectory);
                 }
             }
