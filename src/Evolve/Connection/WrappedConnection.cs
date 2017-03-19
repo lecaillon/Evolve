@@ -69,7 +69,11 @@ namespace Evolve.Connection
                 throw new InvalidOperationException(NoActiveTransaction);
             }
 
-            CurrentTx.Rollback();
+            if(CurrentTx.Connection != null) // Check if tx is not already completed
+            {
+                CurrentTx.Rollback();
+            }
+            
             ClearTransaction();
         }
 
