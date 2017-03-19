@@ -29,7 +29,7 @@ Over all Evolve embraces simplicity. Migration scripts remain plan old SQL.
 ```xml
 <appSettings>
   <add key="Evolve.ConnectionString" value="Server=127.0.0.1;Port=5432;Database=my_db;User Id=postgres;Password=postgres;" />
-  <add key="Evolve.Driver" value="npgsql" />
+  <add key="Evolve.Driver" value="npgsql" /> <!-- or sqlserver or microsoftdatasqlite or sqlite or mysql or mariadb -->
   <add key="Evolve.Locations" value="Sql_Scripts" />
   <add key="Evolve.Command" value="migrate" />
 </appSettings>
