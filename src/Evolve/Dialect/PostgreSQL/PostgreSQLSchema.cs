@@ -85,17 +85,17 @@ namespace Evolve.Dialect.PostgreSQL
                          "AND NOT EXISTS(SELECT 1 FROM pg_catalog.pg_type el WHERE el.oid = t.typelem AND el.typarray = t.oid) " +
                         $"AND t.typnamespace in (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = '{Name}')";
 
-            _wrappedConnection.QueryForList(sql, r => new { TypeName = r.GetString(0), TypeCategory = r.GetString(1) }).ToList().ForEach(x =>
+            _wrappedConnection.QueryForList(sql, r => new { TypeName = r.GetString(0), TypeCategory = r.GetChar(1) }).ToList().ForEach(x =>
             {
                 _wrappedConnection.ExecuteNonQuery($"DROP TYPE IF EXISTS \"{Name}\".\"{x.TypeName}\" CASCADE");
             });
 
             if(recreate)
             {
-                _wrappedConnection.QueryForList(sql, r => new { TypeName = r.GetString(0), TypeCategory = r.GetString(1) }).ToList().ForEach(x =>
+                _wrappedConnection.QueryForList(sql, r => new { TypeName = r.GetString(0), TypeCategory = r.GetChar(1) }).ToList().ForEach(x =>
                 {
                     // Only recreate Pseudo-types (P) and User-defined types (U)
-                    if(x.TypeCategory == "P" || x.TypeCategory == "U")
+                    if(x.TypeCategory == 'P' || x.TypeCategory == 'U')
                     {
                         _wrappedConnection.ExecuteNonQuery($"CREATE TYPE \"{Name}\".\"{x.TypeName}\"");
                     }
@@ -111,7 +111,7 @@ namespace Evolve.Dialect.PostgreSQL
 
             _wrappedConnection.QueryForList(sql, r => new { ProName = r.GetString(0), Args = r.GetString(1) }).ToList().ForEach(x =>
             {
-                _wrappedConnection.ExecuteNonQuery($"DROP AGGREGATE IF EXISTS \"{Name}\".\"{x.ProName}\" (\"{x.Args})\" CASCADE");
+                _wrappedConnection.ExecuteNonQuery($"DROP AGGREGATE IF EXISTS \"{Name}\".\"{x.ProName}\" ({x.Args}) CASCADE");
             });
         }
 
@@ -124,7 +124,7 @@ namespace Evolve.Dialect.PostgreSQL
 
             _wrappedConnection.QueryForList(sql, r => new { ProName = r.GetString(0), Args = r.GetString(1) }).ToList().ForEach(x =>
             {
-                _wrappedConnection.ExecuteNonQuery($"DROP FUNCTION  IF EXISTS \"{Name}\".\"{x.ProName}\" (\"{x.Args})\" CASCADE");
+                _wrappedConnection.ExecuteNonQuery($"DROP FUNCTION  IF EXISTS \"{Name}\".\"{x.ProName}\" ({x.Args}) CASCADE");
             });
         }
 
