@@ -9,7 +9,7 @@ namespace Evolve.Migration
     public class FileMigrationLoader : IMigrationLoader
     {
         private const string InvalidMigrationScriptLocation = "Invalid migration script location: {0}.";
-        private const string DuplicateMigrationScriptVersion = "Duplicate script version found: {0}.";
+        private const string DuplicateMigrationScriptVersion = "Found multiple sql migration files with the same version: {0}.";
 
         public IEnumerable<MigrationScript> GetMigrations(IEnumerable<string> locations, string prefix, string separator, string suffix)
         {
@@ -40,7 +40,7 @@ namespace Evolve.Migration
 
             if(duplicates.Count() > 0)
             {
-                throw new EvolveException(string.Format(DuplicateMigrationScriptVersion, string.Join(", ", duplicates)));
+                throw new EvolveConfigurationException(string.Format(DuplicateMigrationScriptVersion, string.Join(", ", duplicates)));
             }
 
             return migrations.OrderBy(x => x.Version).ToList();

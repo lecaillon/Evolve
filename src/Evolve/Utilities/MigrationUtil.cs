@@ -1,15 +1,14 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 
 namespace Evolve.Utilities
 {
     public static class MigrationUtil
     {
-        private const string MigrationNamePrefixNotFound = "Prefix {0} not found in migration: {1}.";
-        private const string MigrationNameSeparatorNotFound = "Separator {0} not found in migration: {1}.";
-        private const string MigrationNameVersionNotFound = "No version found in migration: {0}.";
-        private const string MigrationNameDescriptionNotFound = "No description found in migration: {0}.";
+        private const string MigrationNamePrefixNotFound = "Prefix {0} not found in sql file name: {1}.";
+        private const string MigrationNameSeparatorNotFound = "Separator {0} not found in sql file name: {1}.";
+        private const string MigrationNameVersionNotFound = "No version found in sql file name: {0}.";
+        private const string MigrationNameDescriptionNotFound = "No description found in sql file name: {0}.";
 
         public static void ExtractVersionAndDescription(string script, string prefix, string separator, out string version, out string description)
         {
