@@ -44,6 +44,7 @@ namespace Evolve
         // Erase
         private const string ExecutingErase = "Executing Erase...";
         private const string EraseDisabled = "Erase is disabled.";
+        private const string EraseCancelled = "No metadata found. Erase cancelled.";
         private const string EraseSchemaSuccessfull = "Successfully erased schema {0}.";
         private const string DropSchemaSuccessfull = "Successfully dropped schema {0}.";
         private const string EraseSchemaImpossible = "Cannot erase schema {0}. This schema was not empty when Evolve first started migrations.";
@@ -54,7 +55,7 @@ namespace Evolve
         // Repair
         private const string ExecutingRepair = "Executing Repair...";
         private const string RepairSuccessfull = "Successfully repaired {0} migration(s).";
-        private const string NothingToRepair = "Metadata are up to date. Nothing to repair.";
+        private const string RepairCancelled = "Metadata are up to date. Repair cancelled.";
 
         #endregion
 
@@ -249,6 +250,12 @@ namespace Evolve
             var db = Initialize();
             var metadata = db.GetMetadataTable(MetadataTableSchema, MetadaTableName);
 
+            if(!metadata.IsExists())
+            {
+                _logInfoDelegate(EraseCancelled);
+                return;
+            }
+
             db.WrappedConnection.BeginTransaction();
 
             foreach (var schemaName in FindSchemas())
@@ -300,7 +307,7 @@ namespace Evolve
 
             if (NbReparation == 0)
             {
-                _logInfoDelegate(NothingToRepair);
+                _logInfoDelegate(RepairCancelled);
             }
             else
             {
