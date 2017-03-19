@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using Evolve.Connection;
 
 namespace Evolve.Dialect.PostgreSQL
@@ -64,7 +63,7 @@ namespace Evolve.Dialect.PostgreSQL
             string sql = $"SELECT relname FROM pg_catalog.pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace WHERE c.relkind = 'm' AND n.nspname = '{Name}'";
             _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(view =>
             {
-                _wrappedConnection.ExecuteNonQuery($"DROP MATERIALIZED VIEW IF EXISTS \"{Name}\".\"{view}\" CASCADE");
+                _wrappedConnection.ExecuteNonQuery($"DROP MATERIALIZED VIEW IF EXISTS \"{Name}\".\"{Quote(view)}\" CASCADE");
             });
         }
 
@@ -73,7 +72,7 @@ namespace Evolve.Dialect.PostgreSQL
             string sql = $"SELECT sequence_name FROM information_schema.sequences WHERE sequence_schema = '{Name}'";
             _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(seq =>
             {
-                _wrappedConnection.ExecuteNonQuery($"DROP SEQUENCE IF EXISTS \"{Name}\".\"{seq}\"");
+                _wrappedConnection.ExecuteNonQuery($"DROP SEQUENCE IF EXISTS \"{Name}\".\"{Quote(seq)}\"");
             });
         }
 
@@ -87,7 +86,7 @@ namespace Evolve.Dialect.PostgreSQL
 
             _wrappedConnection.QueryForList(sql, r => new { TypeName = r.GetString(0), TypeCategory = r.GetChar(1) }).ToList().ForEach(x =>
             {
-                _wrappedConnection.ExecuteNonQuery($"DROP TYPE IF EXISTS \"{Name}\".\"{x.TypeName}\" CASCADE");
+                _wrappedConnection.ExecuteNonQuery($"DROP TYPE IF EXISTS \"{Name}\".\"{Quote(x.TypeName)}\" CASCADE");
             });
 
             if(recreate)
@@ -97,7 +96,7 @@ namespace Evolve.Dialect.PostgreSQL
                     // Only recreate Pseudo-types (P) and User-defined types (U)
                     if(x.TypeCategory == 'P' || x.TypeCategory == 'U')
                     {
-                        _wrappedConnection.ExecuteNonQuery($"CREATE TYPE \"{Name}\".\"{x.TypeName}\"");
+                        _wrappedConnection.ExecuteNonQuery($"CREATE TYPE \"{Name}\".\"{Quote(x.TypeName)}\"");
                     }
                 });
             }
@@ -111,7 +110,7 @@ namespace Evolve.Dialect.PostgreSQL
 
             _wrappedConnection.QueryForList(sql, r => new { ProName = r.GetString(0), Args = r.GetString(1) }).ToList().ForEach(x =>
             {
-                _wrappedConnection.ExecuteNonQuery($"DROP AGGREGATE IF EXISTS \"{Name}\".\"{x.ProName}\" ({x.Args}) CASCADE");
+                _wrappedConnection.ExecuteNonQuery($"DROP AGGREGATE IF EXISTS \"{Name}\".\"{Quote(x.ProName)}\" ({x.Args}) CASCADE");
             });
         }
 
@@ -124,7 +123,7 @@ namespace Evolve.Dialect.PostgreSQL
 
             _wrappedConnection.QueryForList(sql, r => new { ProName = r.GetString(0), Args = r.GetString(1) }).ToList().ForEach(x =>
             {
-                _wrappedConnection.ExecuteNonQuery($"DROP FUNCTION  IF EXISTS \"{Name}\".\"{x.ProName}\" ({x.Args}) CASCADE");
+                _wrappedConnection.ExecuteNonQuery($"DROP FUNCTION  IF EXISTS \"{Name}\".\"{Quote(x.ProName)}\" ({x.Args}) CASCADE");
             });
         }
 
@@ -133,7 +132,7 @@ namespace Evolve.Dialect.PostgreSQL
             string sql = $"SELECT t.typname FROM pg_catalog.pg_type t INNER JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace WHERE n.nspname = '{Name}' and t.typtype = 'e'";
             _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(enumName =>
             {
-                _wrappedConnection.ExecuteNonQuery($"DROP TYPE \"{Name}\".\"{enumName}\"");
+                _wrappedConnection.ExecuteNonQuery($"DROP TYPE \"{Name}\".\"{Quote(enumName)}\"");
             });
         }
 
@@ -142,7 +141,7 @@ namespace Evolve.Dialect.PostgreSQL
             string sql = $"SELECT domain_name FROM information_schema.domains WHERE domain_schema = '{Name}'";
             _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(domain =>
             {
-                _wrappedConnection.ExecuteNonQuery($"DROP DOMAIN \"{Name}\".\"{domain}\"");
+                _wrappedConnection.ExecuteNonQuery($"DROP DOMAIN \"{Name}\".\"{Quote(domain)}\"");
             });
         }
 
@@ -156,7 +155,7 @@ namespace Evolve.Dialect.PostgreSQL
 
             _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(view =>
             {
-                _wrappedConnection.ExecuteNonQuery($"DROP VIEW IF EXISTS \"{Name}\".\"{view}\" CASCADE");
+                _wrappedConnection.ExecuteNonQuery($"DROP VIEW IF EXISTS \"{Name}\".\"{Quote(view)}\" CASCADE");
             });
         }
 
@@ -170,8 +169,10 @@ namespace Evolve.Dialect.PostgreSQL
 
             _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(table =>
             {
-                _wrappedConnection.ExecuteNonQuery($"DROP TABLE IF EXISTS \"{Name}\".\"{table}\" CASCADE");
+                _wrappedConnection.ExecuteNonQuery($"DROP TABLE IF EXISTS \"{Name}\".\"{Quote(table)}\" CASCADE");
             });
         }
+
+        private string Quote(string dbObject) => dbObject.Replace("\"", "\"\"");
     }
 }
