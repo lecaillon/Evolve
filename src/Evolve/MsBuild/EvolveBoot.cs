@@ -138,7 +138,7 @@ namespace Evolve.MsBuild
 
         private void LogError(Exception ex)
         {
-            Log.LogErrorFromException(ex, true, false, "Evolve");
+            Log.LogErrorFromException(ex, true, true, "Evolve");
         }
 
         private void LogInfo(string msg)
@@ -153,17 +153,10 @@ namespace Evolve.MsBuild
             Log.LogMessage(MessageImportance.High, @"__  __/  __ | / /  __ \_  /__ | / /  _ \");
             Log.LogMessage(MessageImportance.High, @"_  /___  __ |/ // /_/ /  / __ |/ //  __/");
             Log.LogMessage(MessageImportance.High, @"/_____/  _____/ \____//_/  _____/ \___/ ");
-
-            //"  _____               _             "
-            //" | ____|__   __ ___  | |__   __ ___ "
-            //" |  _|  \ \ / // _ \ | |\ \ / // _ \"
-            //" | |___  \ V /| (_) || | \ V /|  __/"
-            //" |_____|  \_/  \___/ |_|  \_/  \___|"
         }
 
         private void WriteFooter()
         {
-
         }
 
         private void WriteNewLine()
