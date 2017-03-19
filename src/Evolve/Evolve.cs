@@ -46,9 +46,10 @@ namespace Evolve
         private const string EraseDisabled = "Erase is disabled.";
         private const string EraseSchemaSuccessfull = "Successfully erased schema {0}.";
         private const string DropSchemaSuccessfull = "Successfully dropped schema {0}.";
+        private const string EraseSchemaImpossible = "Cannot erase schema {0}. This schema was not empty when Evolve first started migrations.";
         private const string EraseSchemaFailed = "Erase failed. Impossible to erase schema {0}.";
         private const string DropSchemaFailed = "Erase failed. Impossible to drop schema {0}.";
-        private const string EraseCompleted = "Erase completed.";
+        private const string EraseCompleted = "Erase schema(s) completed: {0} erased, {1} skipped.";
 
         // Repair
         private const string ExecutingRepair = "Executing Repair...";
@@ -142,6 +143,8 @@ namespace Evolve
 
         public int NbMigration { get; private set; }
         public int NbReparation { get; private set; }
+        public int NbSchemaErased { get; private set; }
+        public int NbSchemaToEraseSkipped { get; private set; }
 
         #endregion
 
@@ -256,6 +259,7 @@ namespace Evolve
                     {
                         db.GetSchema(schemaName).Drop();
                         _logInfoDelegate(string.Format(DropSchemaSuccessfull, schemaName));
+                        NbSchemaErased++;
                     }
                     catch (Exception ex)
                     {
@@ -268,17 +272,23 @@ namespace Evolve
                     {
                         db.GetSchema(schemaName).Erase();
                         _logInfoDelegate(string.Format(EraseSchemaSuccessfull, schemaName));
+                        NbSchemaErased++;
                     }
                     catch (Exception ex)
                     {
                         throw new EvolveException(string.Format(EraseSchemaFailed, schemaName), ex);
                     }
                 }
+                else
+                {
+                    _logInfoDelegate(string.Format(EraseSchemaImpossible, schemaName));
+                    NbSchemaToEraseSkipped++;
+                }
             }
 
             db.WrappedConnection.Commit();
 
-            _logInfoDelegate(EraseCompleted);
+            _logInfoDelegate(string.Format(EraseCompleted, NbSchemaErased, NbSchemaToEraseSkipped));
         }
 
         public void Repair()
@@ -304,6 +314,8 @@ namespace Evolve
         {
             NbMigration = 0;
             NbReparation = 0;
+            NbSchemaErased = 0;
+            NbSchemaToEraseSkipped = 0;
 
             var connectionProvider = GetConnectionProvider(_userDbConnection);              // Get a database connection provider
             var evolveConnection = connectionProvider.GetConnection();                      // Get a connection to the database
