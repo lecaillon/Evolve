@@ -106,9 +106,12 @@ namespace Evolve.MsBuild
                     if (!Directory.Exists(sourcePath)) continue;
 
                     var sourceDirectory = new DirectoryInfo(sourcePath);
-                    var targetDirectory = new DirectoryInfo(Path.Combine(TargetDir, sourceDirectory.Name));
+                    var targetDirectory = new DirectoryInfo(Path.Combine(TargetDir, location));
 
-                    targetDirectory.Delete(true); // clean target folder
+                    if (targetDirectory.Exists)
+                    {
+                        Directory.Delete(targetDirectory.FullName, true); // clean target folder
+                    }
 
                     CopyAll(sourceDirectory, targetDirectory);
                 }
