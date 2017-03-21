@@ -1,7 +1,8 @@
-﻿using Evolve.Migration;
-using Evolve.Test;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using Evolve.Migration;
+using Evolve.Test;
 using Xunit;
 
 namespace Evolve.Core.Test.Migration
@@ -25,7 +26,7 @@ namespace Evolve.Core.Test.Migration
                 ["${schema}"] = "my_schema",
                 ["${nothing}"] = "nil",
             };
-            string sql = script.LoadSQL(placeholders, Encoding.UTF8);
+            string sql = script.LoadSqlStatements(placeholders, Encoding.UTF8, null).First();
             Assert.False(sql.Contains("${schema}"));
             Assert.True(sql.Contains("my_schema"));
         }

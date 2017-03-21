@@ -29,10 +29,10 @@ namespace Evolve.Core.Test.Migration
         public void When_duplicate_version_found_Throws_EvolveException()
         {
             var loader = new FileMigrationLoader();
-            Assert.Throws<EvolveException>(() => loader.GetMigrations(new List<string> { TestContext.ResourcesDirectory },
-                                                                      TestContext.SqlMigrationPrefix,
-                                                                      TestContext.SqlMigrationSeparator,
-                                                                      TestContext.SqlMigrationSuffix));
+            Assert.Throws<EvolveConfigurationException>(() => loader.GetMigrations(new List<string> { TestContext.ResourcesDirectory },
+                                                                                   TestContext.SqlMigrationPrefix,
+                                                                                   TestContext.SqlMigrationSeparator,
+                                                                                   TestContext.SqlMigrationSuffix));
         }
     }
 }

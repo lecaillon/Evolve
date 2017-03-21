@@ -13,6 +13,8 @@ namespace Evolve.Dialect.SQLite
 
         public override string CurrentUser => "''";
 
+        public override string BatchDelimiter => null;
+
         public override string GetCurrentSchemaName() => "main";
 
         public override Schema GetSchema(string schemaName) => new SQLiteSchema(WrappedConnection);

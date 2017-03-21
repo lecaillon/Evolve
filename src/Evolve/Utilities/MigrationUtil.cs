@@ -1,5 +1,7 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Evolve.Utilities
 {
@@ -38,6 +40,19 @@ namespace Evolve.Utilities
             // Check description
             if (description.IsNullOrWhiteSpace())
                 throw new EvolveConfigurationException(string.Format(MigrationNameDescriptionNotFound, script));
+        }
+
+        public static IEnumerable<string> SplitSqlStatements(string sql, string delimiter)
+        {
+            if (sql.IsNullOrWhiteSpace()) return new List<string>();
+            if (delimiter.IsNullOrWhiteSpace()) return new List<string> { sql };
+
+            // Split by delimiter
+            var statements = Regex.Split(sql, $@"^[\t ]*{delimiter}(?!\w)[\t ]*\d*[\t ]*(?:--.*)?", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+
+            // Remove empties, trim, and return
+            return statements.Where(x => !x.IsNullOrWhiteSpace())
+                             .Select(x => x.Trim(' ', '\r', '\n'));
         }
     }
 }

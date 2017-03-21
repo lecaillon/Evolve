@@ -21,6 +21,7 @@ namespace Evolve.Dialect
 
         public abstract string CurrentUser { get; }
 
+        public abstract string BatchDelimiter { get; }
 
         #region Schema helper
 

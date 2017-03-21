@@ -212,7 +212,10 @@ namespace Evolve
                 try
                 {
                     db.WrappedConnection.BeginTransaction();
-                    db.WrappedConnection.ExecuteNonQuery(script.LoadSQL(Placeholders, Encoding));
+                    foreach (string sql in script.LoadSqlStatements(Placeholders, Encoding, db.BatchDelimiter))
+                    {
+                        db.WrappedConnection.ExecuteNonQuery(sql);
+                    }
                     metadata.SaveMigration(script, true);
                     db.WrappedConnection.Commit();
                     NbMigration++;

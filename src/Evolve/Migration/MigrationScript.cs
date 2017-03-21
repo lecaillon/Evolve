@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using Evolve.Metadata;
@@ -31,7 +30,7 @@ namespace Evolve.Migration
             }
         }
 
-        public string LoadSQL(Dictionary<string, string> placeholders, Encoding encoding)
+        public IEnumerable<string> LoadSqlStatements(Dictionary<string, string> placeholders, Encoding encoding, string delimiter)
         {
             Check.NotNull(placeholders, nameof(placeholders));
             Check.NotNull(encoding, nameof(encoding));
@@ -42,7 +41,7 @@ namespace Evolve.Migration
                 sql = sql.Replace(entry.Key, entry.Value);
             }
 
-            return sql;
+            return MigrationUtil.SplitSqlStatements(sql, delimiter);
         }
     }
 }
