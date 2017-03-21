@@ -4,7 +4,7 @@ Database migration tool for .NET. Inspired by [Flyway](https://flywaydb.org/).
 Its purpose is to automate your database changes, and help keep those changes synchronized in all your environments.
 This makes it an ideal tool for continuous integration / delivery.
 
-Over all Evolve embraces simplicity. Migration scripts remain plan old SQL.
+Over all Evolve embraces simplicity. Migration scripts remain plain old SQL.
 
 ## Supported Databases
 - [x] PostgreSQL
@@ -41,6 +41,6 @@ Over all Evolve embraces simplicity. Migration scripts remain plan old SQL.
 - **separator**: configurable, default: **__** (two underscores)
 - **description**: words separated by underscores
 - **suffix**: configurable, default: **.sql** 
-5. Next time you build your project, Evolve will start and run your migration script automatically.
+5. Next time you build your project, Evolve will start and run your migration scripts automatically.
 
 Please refer to the wiki pages for a complete documentation on how to master Evolve.
