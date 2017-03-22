@@ -23,6 +23,11 @@ Over all Evolve embraces simplicity. Migration scripts remain plain old SQL.
 - [x] .NET 4.5+
 - [ ] .NET Core (more generally .NET Standard 1.3)
 
+## Installation
+```
+PM> Install-Package ???
+```
+
 ## Quick Start
 1. Add a reference to the NuGet Evolve package in your project.
 2. Add at least those variables to your Web.config/App.config and update their values according to your environment:
