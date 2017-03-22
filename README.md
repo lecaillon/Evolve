@@ -48,4 +48,4 @@ PM> Install-Package ???
 - **suffix**: configurable, default: **.sql** 
 5. Next time you build your project, Evolve will start and run your migration scripts automatically.
 
-Please refer to the wiki pages for a complete documentation on how to master Evolve.
+Please refer to the [wiki](https://github.com/lecaillon/Evolve/wiki) pages for a complete [documentation](https://github.com/lecaillon/Evolve/wiki) on how to master Evolve.
