@@ -30,6 +30,11 @@ namespace Evolve.Connection
         public IDbTransaction CurrentTx { get; private set; }
 
         /// <summary>
+        ///     Return true if we are connected to an in-memomry SQLite database, false otherwisee.
+        /// </summary>
+        public bool SQLiteInMemoryDatabase => DbConnection.ConnectionString.Contains(":memory:");
+
+        /// <summary>
         ///     Begins a new transaction.
         /// </summary>
         public IDbTransaction BeginTransaction(IsolationLevel isolationLevel = IsolationLevel.Unspecified)
@@ -108,7 +113,7 @@ namespace Evolve.Connection
         /// </summary>
         public void Close()
         {
-            if (_openedCount > 0 && --_openedCount == 0 && _openedInternally)
+            if (_openedCount > 0 && --_openedCount == 0 && _openedInternally && !SQLiteInMemoryDatabase)
             {
                 if (DbConnection.State != ConnectionState.Closed)
                 {

@@ -50,8 +50,6 @@ namespace Evolve.Test.Core.Connection
             var cnn = new SqliteConnection("Data Source=:memory:");
             using (var wrappedConnection = new WrappedConnection(cnn))
             {
-                wrappedConnection.Open();
-
                 Assert.Throws<InvalidOperationException>(() => wrappedConnection.Commit());
             }
 
@@ -64,8 +62,6 @@ namespace Evolve.Test.Core.Connection
             var cnn = new SqliteConnection("Data Source=:memory:");
             using (var wrappedConnection = new WrappedConnection(cnn))
             {
-                wrappedConnection.Open();
-
                 Assert.Throws<InvalidOperationException>(() => wrappedConnection.Rollback());
             }
 
@@ -87,8 +83,8 @@ namespace Evolve.Test.Core.Connection
             Assert.True(cnn.State == ConnectionState.Closed);
         }
 
-        [Fact(DisplayName = "After_commit_transaction_is_cleared_and_connection_is_closed")]
-        public void When_commit_transaction_is_cleared_and_connection_is_closed()
+        [Fact(DisplayName = "After_commit_transaction_is_cleared")]
+        public void When_commit_transaction_is_cleared()
         {
             using (var wrappedConnection = new WrappedConnection(new SqliteConnection("Data Source=:memory:")))
             {
@@ -96,12 +92,11 @@ namespace Evolve.Test.Core.Connection
                 wrappedConnection.Commit();
 
                 Assert.Null(wrappedConnection.CurrentTx);
-                Assert.True(wrappedConnection.DbConnection.State == ConnectionState.Closed);
             }
         }
 
-        [Fact(DisplayName = "When_rollback_transaction_is_cleared_and_connection_is_closed")]
-        public void When_rollback_transaction_is_cleared_and_connection_is_closed()
+        [Fact(DisplayName = "When_rollback_transaction_is_cleared")]
+        public void When_rollback_transaction_is_cleared()
         {
             using (var wrappedConnection = new WrappedConnection(new SqliteConnection("Data Source=:memory:")))
             {
@@ -109,7 +104,6 @@ namespace Evolve.Test.Core.Connection
                 wrappedConnection.Rollback();
 
                 Assert.Null(wrappedConnection.CurrentTx);
-                Assert.True(wrappedConnection.DbConnection.State == ConnectionState.Closed);
             }
         }
 
