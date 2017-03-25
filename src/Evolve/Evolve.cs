@@ -246,8 +246,7 @@ namespace Evolve
 
             if(IsEraseDisabled)
             {
-                _logInfoDelegate(EraseDisabled);
-                return;
+                throw new EvolveConfigurationException(EraseDisabled);
             }
 
             var db = Initialize();
