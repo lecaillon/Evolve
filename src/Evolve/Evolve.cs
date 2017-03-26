@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Evolve.Configuration;
@@ -17,6 +18,7 @@ namespace Evolve
         #region Constants
 
         // Initialize
+        private const string InvalidConfigurationLocation = "Evolve configuration file not found at: {0}.";
         private const string EvolveInitialized = "Evolve initialized.";
 
         // Validate
@@ -68,41 +70,37 @@ namespace Evolve
 
         #endregion
 
-        #region Constructor
+        #region Constructors
+
+        /// <summary>
+        ///     <para>
+        ///         Constructor.
+        ///     </para>
+        /// </summary>
+        /// <param name="dbConnection">Optionnal database connection.</param>
+        /// <param name="logInfoDelegate">Optionnal logger.</param>
+        public Evolve(IDbConnection dbConnection = null, Action<string> logInfoDelegate = null)
+        {
+            _userDbConnection = dbConnection;
+            _logInfoDelegate = logInfoDelegate ?? new Action<string>((msg) => { });
+        }
 
         /// <summary>
         ///     <para>
         ///         Constructor.
         ///     </para>
         ///     <para>
-        ///         Set the default configuration values.
-        ///     </para>
-        ///     <para>
         ///         Load the configuration file at <paramref name="evolveConfigurationPath"/>.
         ///     </para>
         /// </summary>
-        /// <param name="evolveConfigurationPath">Evolve configuration file.</param>
+        /// <param name="evolveConfigurationPath">Evolve configuration file (can be relative).</param>
         /// <param name="dbConnection">Optionnal database connection.</param>
         /// <param name="logInfoDelegate">Optionnal logger.</param>
         public Evolve(string evolveConfigurationPath, IDbConnection dbConnection = null, Action<string> logInfoDelegate = null)
         {
-            _configurationPath = Check.FileExists(evolveConfigurationPath, nameof(evolveConfigurationPath));
+            _configurationPath = Check.FileExists(ResolveConfigurationFileLocation(evolveConfigurationPath), nameof(evolveConfigurationPath));
             _userDbConnection = dbConnection;
             _logInfoDelegate = logInfoDelegate ?? new Action<string>((msg) => { });
-
-            // Set default configuration settings
-            Command = CommandOptions.Migrate;
-            Schemas = new List<string>();
-            Encoding = Encoding.UTF8;
-            Locations = new List<string> { "Sql_Scripts" };
-            MetadaTableName = "changelog";
-            PlaceholderPrefix = "${";
-            PlaceholderSuffix = "}";
-            Placeholders = new Dictionary<string, string>();
-            SqlMigrationPrefix = "V";
-            SqlMigrationSeparator = "__";
-            SqlMigrationSuffix = ".sql";
-            TargetVersion = new MigrationVersion(long.MaxValue.ToString());
 
             // Configure Evolve
             var configurationProvider = ConfigurationFactoryProvider.GetProvider(evolveConfigurationPath);
@@ -114,14 +112,14 @@ namespace Evolve
         #region IEvolveConfiguration
 
         public string ConnectionString { get; set; }
-        public IEnumerable<string> Schemas { get; set; }
+        public IEnumerable<string> Schemas { get; set; } = new List<string>();
         public string Driver { get; set; }
-        public CommandOptions Command { get; set; }
+        public CommandOptions Command { get; set; } = CommandOptions.Migrate;
         public bool IsEraseDisabled { get; set; }
         public bool MustEraseOnValidationError { get; set; }
-        public Encoding Encoding { get; set; }
-        public IEnumerable<string> Locations { get; set; }
-        public string MetadaTableName { get; set; }
+        public Encoding Encoding { get; set; } = Encoding.UTF8;
+        public IEnumerable<string> Locations { get; set; } = new List<string> { "Sql_Scripts" };
+        public string MetadaTableName { get; set; } = "changelog";
 
         private string _metadaTableSchema;
         public string MetadataTableSchema
@@ -130,13 +128,13 @@ namespace Evolve
             set => _metadaTableSchema = value;
         }
 
-        public string PlaceholderPrefix { get; set; }
-        public string PlaceholderSuffix { get; set; }
-        public Dictionary<string, string> Placeholders { get; set; }
-        public string SqlMigrationPrefix { get; set; }
-        public string SqlMigrationSeparator { get; set; }
-        public string SqlMigrationSuffix { get; set; }
-        public MigrationVersion TargetVersion { get; set; }
+        public string PlaceholderPrefix { get; set; } = "${";
+        public string PlaceholderSuffix { get; set; } = "}";
+        public Dictionary<string, string> Placeholders { get; set; } = new Dictionary<string, string>();
+        public string SqlMigrationPrefix { get; set; } = "V";
+        public string SqlMigrationSeparator { get; set; } = "__";
+        public string SqlMigrationSuffix { get; set; } = ".sql";
+        public MigrationVersion TargetVersion { get; set; } = new MigrationVersion(long.MaxValue.ToString());
 
         #endregion
 
@@ -438,6 +436,19 @@ namespace Evolve
                                      .Where(s => !s.IsNullOrWhiteSpace())
                                      .Distinct(StringComparer.OrdinalIgnoreCase);
         }
+
+        private string ResolveConfigurationFileLocation(string location)
+        {
+            Check.NotNullOrEmpty(location, nameof(location));
+
+            try
+            {
+                return new FileInfo(location).FullName;
+            }
+            catch (Exception ex)
+            {
+                throw new EvolveConfigurationException(string.Format(InvalidConfigurationLocation, location), ex);
+            }
+        }
     }
 }
-
