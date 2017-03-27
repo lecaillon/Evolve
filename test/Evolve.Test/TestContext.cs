@@ -8,12 +8,12 @@ namespace Evolve.Test
     {
         static TestContext()
         {
-            ResourcesDirectory = Path.Combine(Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).AbsolutePath), "Resources");
-            AppConfigPath = Path.Combine(ResourcesDirectory, "App.config");
-            WebConfigPath = Path.Combine(ResourcesDirectory, "Web.config");
+            ResourcesFolder = Path.Combine(Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).AbsolutePath), "Resources");
+            AppConfigPath = Path.Combine(ResourcesFolder, "App.config");
+            WebConfigPath = Path.Combine(ResourcesFolder, "Web.config");
         }
 
-        public static string ResourcesDirectory { get; }
+        public static string ResourcesFolder { get; }
         public static string AppConfigPath { get; }
         public static string WebConfigPath { get; }
     }
