@@ -7,14 +7,14 @@ namespace Evolve.Test
     {
         static TestContext()
         {
-            ResourcesDirectory = Path.Combine(Path.GetDirectoryName(typeof(TestContext).GetTypeInfo().Assembly.Location), "Resources");
-            ScriptsSQL1 = Path.Combine(ResourcesDirectory, "Scripts_SQL_1");
-            ScriptsSQL2 = Path.Combine(ResourcesDirectory, "Scripts_SQL_2");
-            ValidMigrationScriptPath = Path.Combine(ResourcesDirectory, "V1_3_1__Migration_description.sql");
-            ChinookScriptPath = Path.Combine(ResourcesDirectory, "Chinook_Sqlite.sql");
+            ResourcesFolder = Path.Combine(Path.GetDirectoryName(typeof(TestContext).GetTypeInfo().Assembly.Location), "Resources");
+            ScriptsSQL1 = Path.Combine(ResourcesFolder, "Scripts_SQL_1");
+            ScriptsSQL2 = Path.Combine(ResourcesFolder, "Scripts_SQL_2");
+            ValidMigrationScriptPath = Path.Combine(ResourcesFolder, "V1_3_1__Migration_description.sql");
+            ChinookScriptPath = Path.Combine(ResourcesFolder, "Chinook_Sqlite.sql");
         }
 
-        public static string ResourcesDirectory { get; }
+        public static string ResourcesFolder { get; }
 
         public static string ScriptsSQL1 { get; }
 
