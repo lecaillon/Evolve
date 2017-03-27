@@ -197,8 +197,6 @@ namespace Evolve
                 }
             }
 
-            ManageSchemas(db);
-
             var metadata = db.GetMetadataTable(MetadataTableSchema, MetadaTableName);
             var lastAppliedVersion = metadata.GetAllMigrationMetadata().LastOrDefault()?.Version ?? new MigrationVersion("0");
             var scripts = _loader.GetMigrations(Locations, SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix)
@@ -258,7 +256,7 @@ namespace Evolve
 
             db.WrappedConnection.BeginTransaction();
 
-            foreach (var schemaName in FindSchemas())
+            foreach (var schemaName in FindSchemas().Reverse())
             {
                 if (metadata.CanDropSchema(schemaName))
                 {
@@ -335,6 +333,8 @@ namespace Evolve
             }
 
             _logInfoDelegate(EvolveInitialized);
+
+            ManageSchemas(db);
 
             return db;
         }
@@ -431,8 +431,8 @@ namespace Evolve
 
         private IEnumerable<string> FindSchemas()
         {
-            return new List<string>().Union(Schemas ?? new List<string>())
-                                     .Union(new List<string> { MetadataTableSchema })
+            return new List<string>().Union(new List<string> { MetadataTableSchema ?? string.Empty })
+                                     .Union(Schemas ?? new List<string>())
                                      .Where(s => !s.IsNullOrWhiteSpace())
                                      .Distinct(StringComparer.OrdinalIgnoreCase);
         }
