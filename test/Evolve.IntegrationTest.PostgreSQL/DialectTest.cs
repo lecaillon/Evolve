@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Data;
-using System.IO;
 using System.Linq;
-using System.Management.Automation;
-using System.Reflection;
-using System.Threading;
 using Evolve.Connection;
 using Evolve.Dialect;
 using Evolve.Dialect.PostgreSQL;
@@ -15,27 +11,13 @@ using Xunit;
 
 namespace Evolve.IntegrationTest.PostgreSQL
 {
-    public class PostgreSQLDialectTest : IDisposable
+    public class DialectTest : IDisposable
     {
-        #region Test config
-
-        public const string ImageName = "postgres:latest";
-        public const string ContainerName = "postgres-evolve";
-        public const string ContainerPort = "5432";
-        public const string DbName = "my_database";
-        public const string DbPwd = "Password12!"; // AppVeyor
-        public const string DbUser = "postgres";
-
-        public static string ResourcesDirectory = Path.Combine(Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).AbsolutePath), "Resources");
-        public static string MigrationScriptPath = Path.Combine(ResourcesDirectory, "V1_3_2__Migration_description.sql");
-
-        #endregion
-
         [Fact(DisplayName = "Run_all_PostgreSQL_integration_tests_work")]
         public void Run_all_PostgreSQL_integration_tests_work()
         {
             // Open a connection to the PostgreSQL database
-            var cnn = new NpgsqlConnection($"Server=127.0.0.1;Port={ContainerPort};Database={DbName};User Id={DbUser};Password={DbPwd};");
+            var cnn = new NpgsqlConnection($"Server=127.0.0.1;Port={TestContext.ContainerPort};Database={TestContext.DbName};User Id={TestContext.DbUser};Password={TestContext.DbPwd};");
             cnn.Open();
             Assert.True(cnn.State == ConnectionState.Open, "Cannot open a connection to the database.");
 
@@ -77,7 +59,7 @@ namespace Evolve.IntegrationTest.PostgreSQL
             Assert.False(metadata.CanEraseSchema(metadataSchemaName), $"[{metadataSchemaName}] should not be erasable.");
 
             // Add metadata migration
-            var migrationScript = new MigrationScript(MigrationScriptPath, "1_3_2", "Migration_description");
+            var migrationScript = new MigrationScript(TestContext.EmptyMigrationScriptPath, "1_3_2", "Migration_description");
             metadata.SaveMigration(migrationScript, true);
             var migrationMetadata = metadata.GetAllMigrationMetadata().FirstOrDefault();
             Assert.True(migrationMetadata != null, "One migration metadata should be found.");
@@ -109,17 +91,9 @@ namespace Evolve.IntegrationTest.PostgreSQL
         /// <summary>
         ///     Start PostgreSQL server.
         /// </summary>
-        public PostgreSQLDialectTest()
+        public DialectTest()
         {
-#if DEBUG
-            using (var ps = PowerShell.Create())
-            {
-                ps.Commands.AddScript($"docker run --name {ContainerName} --publish={ContainerPort}:{ContainerPort} -e POSTGRES_PASSWORD={DbPwd} -e POSTGRES_DB={DbName} -d {ImageName}");
-                ps.Invoke();
-            }
-
-            Thread.Sleep(5000);
-#endif
+            TestUtil.RunContainer();
         }
 
         /// <summary>
@@ -127,14 +101,7 @@ namespace Evolve.IntegrationTest.PostgreSQL
         /// </summary>
         public void Dispose()
         {
-#if DEBUG
-            using (var ps = PowerShell.Create())
-            {
-                ps.Commands.AddScript($"docker stop '{ContainerName}'");
-                ps.Commands.AddScript($"docker rm '{ContainerName}'");
-                ps.Invoke();
-            }
-#endif
+            TestUtil.RemoveContainer();
         }
     }
 }
