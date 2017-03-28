@@ -124,8 +124,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PostgreSQLDialectTest.cs" />
+    <Compile Include="DialectTest.cs" />
+    <Compile Include="MigrationTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestContext.cs" />
+    <Compile Include="TestUtil.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -140,6 +143,39 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\Sql_Scripts\Checksum_mismatch\V8_0__empty_script.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Sql_Scripts\Migration\V1_0__create_tables.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Sql_Scripts\Migration\V2_0__create_views.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Sql_Scripts\Migration\V2_1__create_mat_views.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Sql_Scripts\Migration\V3_0__create_sequences.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Sql_Scripts\Migration\V4_0__base_types.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Sql_Scripts\Migration\V5_0__aggregates.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Sql_Scripts\Migration\V6_0__routines.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Sql_Scripts\Migration\V8_0__empty_script.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Sql_Scripts\Migration\V7_0__enums.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Sql_Scripts\Migration\V4_1__domains.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\V1_3_2__Migration_description.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
