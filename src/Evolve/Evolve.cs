@@ -177,6 +177,8 @@ namespace Evolve
         {
             _logInfoDelegate(ExecutingMigrate);
 
+            Command = CommandOptions.Migrate;
+
             var db = Initialize();
 
             try
@@ -189,7 +191,8 @@ namespace Evolve
                 {
                     _logInfoDelegate(string.Format(MigrationErrorEraseOnValidationError, ex.Message));
 
-                    Erase();
+                    Erase(recreateSchema: true);
+                    Command = CommandOptions.Migrate; // overridden by the call to Erase()
                 }
                 else
                 {
@@ -236,11 +239,11 @@ namespace Evolve
             }
         }
 
-        public void Erase()
+        public void Erase(bool recreateSchema = false)
         {
             _logInfoDelegate(ExecutingErase);
 
-            if(IsEraseDisabled)
+            if (IsEraseDisabled)
             {
                 throw new EvolveConfigurationException(EraseDisabled);
             }
@@ -294,12 +297,18 @@ namespace Evolve
             db.WrappedConnection.Commit();
 
             _logInfoDelegate(string.Format(EraseCompleted, NbSchemaErased, NbSchemaToEraseSkipped));
+
+            if(recreateSchema)
+            {
+                ManageSchemas(db);
+            }
         }
 
         public void Repair()
         {
             _logInfoDelegate(ExecutingRepair);
 
+            Command = CommandOptions.Repair;
             var db = Initialize();
             Validate(db);
 
