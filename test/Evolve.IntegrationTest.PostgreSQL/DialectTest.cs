@@ -29,6 +29,8 @@ namespace Evolve.IntegrationTest.PostgreSQL
 
             // Init the DatabaseHelper
             DatabaseHelper db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.PostgreSQL, wcnn);
+
+            // Test default schema name
             Assert.True(db.GetCurrentSchemaName() == "public", "The default PostgreSQL schema should be 'public'.");
 
             // Create schema
