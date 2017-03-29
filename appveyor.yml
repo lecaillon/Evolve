@@ -1,8 +1,10 @@
 version: 1.0.0-alpha1.{build}
-skip_non_tags: true
+skip_non_tags: false
 image: Visual Studio 2017
 configuration: Release
-services: postgresql
+services:
+- postgresql
+- mssql2016
 init:
 - cmd: >-
     SET PGUSER=postgres
@@ -33,6 +35,8 @@ test_script:
     xunit.console.exe test\Evolve.Test\bin\%CONFIGURATION%\Evolve.Test.dll
     
     xunit.console.exe test\Evolve.IntegrationTest.PostgreSQL\bin\%CONFIGURATION%\Evolve.IntegrationTest.PostgreSQL.dll
+    
+    xunit.console.exe test\Evolve.IntegrationTest.SQLServer\bin\%CONFIGURATION%\Evolve.IntegrationTest.SQLServer.dll
 after_test:
 - ps: >-
     cd src/Evolve
