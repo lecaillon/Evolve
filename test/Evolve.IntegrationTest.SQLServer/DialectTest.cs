@@ -13,7 +13,7 @@ namespace Evolve.IntegrationTest.SQLServer
             // Open a connection to the PostgreSQL database
             var cnn = new SqlConnection($"Server=127.0.0.1;Database=master;User Id={TestContext.DbUser};Password={TestContext.DbPwd};");
             cnn.Open();
-            Assert.True(cnn.State == ConnectionState.Open, "Cannot open a connection to the database.");
+            Assert.False(cnn.State == ConnectionState.Open, "Cannot open a connection to the database.");
 
         }
 
