@@ -64,7 +64,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\Sql_Scripts\Checksum_mismatch\" />
-    <Folder Include="Resources\Sql_Scripts\Migration\" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
@@ -76,6 +75,33 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\Sql_Scripts\Migration\V1__create_types.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Sql_Scripts\Migration\V2_0__create_table_calendrier_and_constraints.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Sql_Scripts\Migration\V2_1__create_table_test.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Sql_Scripts\Migration\V3_0__create_functions.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Sql_Scripts\Migration\V4__create_views.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Sql_Scripts\Migration\V5.0.0__create_synonyms.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Sql_Scripts\Migration\V7_0__create_procedures.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Sql_Scripts\Migration\V8_0__create_triggers.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Sql_Scripts\Migration\V9__create_sequences.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\V1_3_2__Migration_description.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
