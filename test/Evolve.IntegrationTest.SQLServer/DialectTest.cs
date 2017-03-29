@@ -81,7 +81,7 @@ namespace Evolve.IntegrationTest.SQLServer
         }
 
         /// <summary>
-        ///     Start PostgreSQL server.
+        ///     Start SQLServer server.
         /// </summary>
         public DialectTest()
         {
@@ -89,7 +89,7 @@ namespace Evolve.IntegrationTest.SQLServer
         }
 
         /// <summary>
-        ///     Stop PostgreSQL server and remove container.
+        ///     Stop SQLServer server and remove container.
         /// </summary>
         public void Dispose()
         {
