@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.Test", "test\Evolve.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.IntegrationTest.SQLServer", "test\Evolve.IntegrationTest.SQLServer\Evolve.IntegrationTest.SQLServer.csproj", "{22C14CF8-85C2-4D5B-9305-8931B329FDE3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.IntegrationTest.SQLite", "test\Evolve.IntegrationTest.SQLite\Evolve.IntegrationTest.SQLite.csproj", "{29AA03E7-A395-4D54-A4B9-2601677E0C2C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,6 +89,18 @@ Global
 		{22C14CF8-85C2-4D5B-9305-8931B329FDE3}.Release|x64.Build.0 = Release|Any CPU
 		{22C14CF8-85C2-4D5B-9305-8931B329FDE3}.Release|x86.ActiveCfg = Release|Any CPU
 		{22C14CF8-85C2-4D5B-9305-8931B329FDE3}.Release|x86.Build.0 = Release|Any CPU
+		{29AA03E7-A395-4D54-A4B9-2601677E0C2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29AA03E7-A395-4D54-A4B9-2601677E0C2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29AA03E7-A395-4D54-A4B9-2601677E0C2C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{29AA03E7-A395-4D54-A4B9-2601677E0C2C}.Debug|x64.Build.0 = Debug|Any CPU
+		{29AA03E7-A395-4D54-A4B9-2601677E0C2C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{29AA03E7-A395-4D54-A4B9-2601677E0C2C}.Debug|x86.Build.0 = Debug|Any CPU
+		{29AA03E7-A395-4D54-A4B9-2601677E0C2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29AA03E7-A395-4D54-A4B9-2601677E0C2C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29AA03E7-A395-4D54-A4B9-2601677E0C2C}.Release|x64.ActiveCfg = Release|Any CPU
+		{29AA03E7-A395-4D54-A4B9-2601677E0C2C}.Release|x64.Build.0 = Release|Any CPU
+		{29AA03E7-A395-4D54-A4B9-2601677E0C2C}.Release|x86.ActiveCfg = Release|Any CPU
+		{29AA03E7-A395-4D54-A4B9-2601677E0C2C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -97,5 +111,6 @@ Global
 		{5D083251-040D-40E6-AA6F-7AB5959E2B76} = {7FA35BAF-800D-4435-9E01-58CBBDDF9C69}
 		{8CDC7D97-26F6-4CA2-9D55-0434E86664D4} = {7FA35BAF-800D-4435-9E01-58CBBDDF9C69}
 		{22C14CF8-85C2-4D5B-9305-8931B329FDE3} = {7FA35BAF-800D-4435-9E01-58CBBDDF9C69}
+		{29AA03E7-A395-4D54-A4B9-2601677E0C2C} = {7FA35BAF-800D-4435-9E01-58CBBDDF9C69}
 	EndGlobalSection
 EndGlobal
