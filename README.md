@@ -25,7 +25,7 @@ Over all Evolve embraces simplicity. Every time you build your project, it will 
 
 ## Installation
 ```
-PM> Install-Package ???
+PM> Install-Package Evolve
 ```
 
 ## Quick Start
