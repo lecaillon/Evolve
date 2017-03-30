@@ -16,7 +16,7 @@ namespace Evolve.IntegrationTest.SQLServer
         [Fact(DisplayName = "Run_all_SQLServer_integration_tests_work")]
         public void Run_all_SQLServer_integration_tests_work()
         {
-            // Open a connection to the PostgreSQL database
+            // Open a connection to the SQLServer database
             var cnn = new SqlConnection($"Server=127.0.0.1;Database=master;User Id={TestContext.DbUser};Password={TestContext.DbPwd};");
             cnn.Open();
             Assert.True(cnn.State == ConnectionState.Open, "Cannot open a connection to the database.");
