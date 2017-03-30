@@ -1,4 +1,4 @@
-version: 1.0.0-alpha1.{build}
+version: 1.0.0.{build}
 skip_non_tags: false
 image: Visual Studio 2017
 configuration: Release
