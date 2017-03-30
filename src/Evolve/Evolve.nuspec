@@ -14,7 +14,10 @@ Every time you build your project, it will automatically ensure that your databa
     <releaseNotes>Initial release. Supported database: SQL Server, PostgreSQL, SQLite.</releaseNotes>
     <copyright>Copyright © P.Lécaillon 2017</copyright>
     <tags>Evolve Flyway sql database-migration continuous-integration continuous-delivery</tags>
-    <dependencies />
+    <dependencies>
+      <group targetFramework="net35" />
+      <group targetFramework="net45" />
+    </dependencies>
   </metadata>
   <files>
     <file src="bin\Release\net35\*.dll" target="lib\net35" />
