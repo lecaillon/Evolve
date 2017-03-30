@@ -37,6 +37,8 @@ test_script:
     xunit.console.exe test\Evolve.IntegrationTest.PostgreSQL\bin\%CONFIGURATION%\Evolve.IntegrationTest.PostgreSQL.dll
     
     xunit.console.exe test\Evolve.IntegrationTest.SQLServer\bin\%CONFIGURATION%\Evolve.IntegrationTest.SQLServer.dll
+    
+    xunit.console.exe test\Evolve.IntegrationTest.SQLite\bin\%CONFIGURATION%\Evolve.IntegrationTest.SQLite.dll
 after_test:
 - ps: >-
     cd src/Evolve
