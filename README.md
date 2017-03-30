@@ -49,3 +49,10 @@ PM> Install-Package ???
 5. Next time you build your project, Evolve will start and run your migration scripts automatically.
 
 Please refer to the [wiki](https://github.com/lecaillon/Evolve/wiki) pages for a complete [documentation](https://github.com/lecaillon/Evolve/wiki) on how to master Evolve.
+
+## Feedback and issues
+Feedback, improvements, ideas are welcomed.
+Feel free to create new [issues](https://github.com/lecaillon/Evolve/issues) at the issues section and/or send emails to evolve-db@hotmail.com
+
+## Credits
+Again, many thanks to the [Flyway](https://flywaydb.org/) project. Great idea, big inspiration, a tool that I could not do without in .NET.
