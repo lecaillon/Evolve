@@ -20,7 +20,8 @@ namespace Evolve.Driver
         /// <param name="connectionTypeName"> DbConnection type name. </param>
         protected ReflectionBasedDriver(string driverAssemblyName, string connectionTypeName)
         {
-            DriverTypeName = new AssemblyQualifiedTypeName(connectionTypeName, driverAssemblyName);
+            DriverTypeName = new AssemblyQualifiedTypeName(Check.NotNullOrEmpty(connectionTypeName, nameof(connectionTypeName)), 
+                                                           Check.NotNullOrEmpty(driverAssemblyName, nameof(driverAssemblyName)));
             DbConnectionType = TypeFromLoadedAssembly();
             if(DbConnectionType == null)
             {
@@ -28,14 +29,11 @@ namespace Evolve.Driver
             }
         }
 
-        public Type DbConnectionType { get; set; }
-
         protected AssemblyQualifiedTypeName DriverTypeName { get; }
 
-        public IDbConnection CreateConnection()
-        {
-            return (IDbConnection)Activator.CreateInstance(DbConnectionType);
-        }
+        public Type DbConnectionType { get; set; }
+
+        public IDbConnection CreateConnection() => (IDbConnection)Activator.CreateInstance(DbConnectionType);
 
         /// <summary>
         ///     Try to return a DbConnection from an already loaded assembly.
@@ -90,8 +88,8 @@ namespace Evolve.Driver
         {
             public AssemblyQualifiedTypeName(string type, string assembly)
             {
-                Type = Check.NotNullOrEmpty(type, nameof(type));
-                Assembly = Check.NotNullOrEmpty(assembly, nameof(assembly));
+                Type = type;
+                Assembly = assembly;
             }
 
             public string Type { get; }

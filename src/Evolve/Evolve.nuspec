@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Evolve</id>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <authors>Philippe Lécaillon</authors>
     <owners>Philippe Lécaillon</owners>
     <licenseUrl>https://github.com/lecaillon/Evolve/blob/master/LICENSE</licenseUrl>
@@ -17,14 +17,19 @@ Every time you build your project, it will automatically ensure that your databa
     <dependencies>
       <group targetFramework="net35" />
       <group targetFramework="net45" />
+      <group targetFramework=".NETStandard1.3">
+        <!--<dependency id="Microsoft.Build.Framework" />-->
+      </group>
     </dependencies>
   </metadata>
   <files>
-    <file src="bin\Release\net35\*.dll" target="lib\net35" />
-    <!--<file src="bin\Release\net35\*.xml" target="lib\net35" />-->
-    <file src="bin\Release\net45\*.dll" target="lib\net45" />
-    <!--<file src="bin\Release\net45\*.xml" target="lib\net45" />-->
-    <file src="build\**" target="build" />
+    <file src="bin\Release\net35\*.dll"           target="lib\net35" />
+    <file src="bin\Release\net45\*.dll"           target="lib\net45" />
+    <file src="bin\Release\netstandard1.3\*.dll"  target="lib\netstandard1.3" />
+    
+    <file src="build\**"                          target="build" />
+    <file src="bin\Release\netstandard1.3\*.dll"  target="build\netstandard1.3" />
+    
     <!--<file src="content\**" target="content" />-->
   </files>
 </package>

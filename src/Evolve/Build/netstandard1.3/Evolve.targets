@@ -1,0 +1,6 @@
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <UsingTask TaskName="Evolve.MsBuild.EvolveBootCore" AssemblyFile="$(MSBuildThisFileDirectory)Evolve.dll" />
+  <Target Name="SqlMigration" AfterTargets="Build">
+    <EvolveBootCore TargetPath="$(TargetPath)" ProjectDir="$(ProjectDir)" EvolveNugetPackageBuildDir="$(MSBuildThisFileDirectory)" />
+  </Target>
+</Project>
