@@ -1,10 +1,21 @@
-﻿using Evolve.Utilities;
-using System;
+﻿using System;
 using System.Data;
 using System.Reflection;
+using Evolve.Utilities;
 
 namespace Evolve.Driver
 {
+    /// <summary>
+    ///     <para>
+    ///         Base class for database drivers loaded by reflection.
+    ///     </para>
+    ///     <para>
+    ///         In order to load the driver type, the current working directory 
+    ///         must be the one where the application to Evolve is located.
+    ///         
+    ///         If not, the driver type must be in an already loaded asssembly.
+    ///     </para>
+    /// </summary>
     public abstract class ReflectionBasedDriver : IDriver
     {
 #if NETSTANDARD
