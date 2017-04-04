@@ -67,6 +67,8 @@ namespace Evolve
         private IDbConnection _userDbConnection;
         private IMigrationLoader _loader = new FileMigrationLoader();
         private Action<string> _logInfoDelegate;
+        private readonly string _depsFile;
+        private readonly string _nugetPackageDir;
 
         #endregion
 
@@ -77,13 +79,41 @@ namespace Evolve
         ///         Constructor.
         ///     </para>
         /// </summary>
-        /// <param name="dbConnection">Optionnal database connection.</param>
-        /// <param name="logInfoDelegate">Optionnal logger.</param>
+        /// <param name="dbConnection"> Optionnal database connection. </param>
+        /// <param name="logInfoDelegate"> Optionnal logger. </param>
         public Evolve(IDbConnection dbConnection = null, Action<string> logInfoDelegate = null)
         {
             _userDbConnection = dbConnection;
             _logInfoDelegate = logInfoDelegate ?? new Action<string>((msg) => { });
         }
+
+#if NETCORE
+
+        /// <summary>
+        ///     <para>
+        ///         .NET Core Constructor.
+        ///     </para>
+        ///     <para>
+        ///         Load the configuration file at <paramref name="evolveConfigurationPath"/>.
+        ///     </para>
+        /// </summary>
+        /// <param name="evolveConfigurationPath"> Evolve configuration file (can be relative). </param>
+        /// <param name="depsFile"> Dependency file of the project to migrate. </param>
+        /// <param name="nugetPackageDir"> Path to the NuGet package folder. </param>
+        /// <param name="dbConnection"> Optionnal database connection. </param>
+        /// <param name="logInfoDelegate"> Optionnal logger. </param>
+        public Evolve(string evolveConfigurationPath, string depsFile, string nugetPackageDir, IDbConnection dbConnection = null, Action<string> logInfoDelegate = null)
+        {
+            _configurationPath = Check.FileExists(ResolveConfigurationFileLocation(evolveConfigurationPath), nameof(evolveConfigurationPath));
+            _userDbConnection = dbConnection;
+            _logInfoDelegate = logInfoDelegate ?? new Action<string>((msg) => { });
+
+            // Configure Evolve
+            var configurationProvider = ConfigurationFactoryProvider.GetProvider(evolveConfigurationPath);
+            configurationProvider.Configure(evolveConfigurationPath, this);
+        }
+
+#else
 
         /// <summary>
         ///     <para>
@@ -93,9 +123,9 @@ namespace Evolve
         ///         Load the configuration file at <paramref name="evolveConfigurationPath"/>.
         ///     </para>
         /// </summary>
-        /// <param name="evolveConfigurationPath">Evolve configuration file (can be relative).</param>
-        /// <param name="dbConnection">Optionnal database connection.</param>
-        /// <param name="logInfoDelegate">Optionnal logger.</param>
+        /// <param name="evolveConfigurationPath"> Evolve configuration file (can be relative). </param>
+        /// <param name="dbConnection"> Optionnal database connection. </param>
+        /// <param name="logInfoDelegate"> Optionnal logger. </param>
         public Evolve(string evolveConfigurationPath, IDbConnection dbConnection = null, Action<string> logInfoDelegate = null)
         {
             _configurationPath = Check.FileExists(ResolveConfigurationFileLocation(evolveConfigurationPath), nameof(evolveConfigurationPath));
@@ -106,6 +136,8 @@ namespace Evolve
             var configurationProvider = ConfigurationFactoryProvider.GetProvider(evolveConfigurationPath);
             configurationProvider.Configure(evolveConfigurationPath, this);
         }
+
+#endif
 
         #endregion
 
@@ -136,7 +168,7 @@ namespace Evolve
         public string SqlMigrationSuffix { get; set; } = ".sql";
         public MigrationVersion TargetVersion { get; set; } = new MigrationVersion(long.MaxValue.ToString());
 
-        #endregion
+#endregion
 
         #region Properties
 
@@ -435,7 +467,11 @@ namespace Evolve
         private IConnectionProvider GetConnectionProvider(IDbConnection connection = null)
         {
             return connection != null ? new ConnectionProvider(connection) as IConnectionProvider
+#if NETCORE
+                                      : new DriverConnectionProvider(Driver, ConnectionString, _depsFile, _nugetPackageDir);
+#else
                                       : new DriverConnectionProvider(Driver, ConnectionString);
+#endif
         }
 
         private IEnumerable<string> FindSchemas()

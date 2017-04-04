@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if NET
+
+using System;
 using System.Data;
 using System.Reflection;
 using Evolve.Utilities;
@@ -18,11 +20,8 @@ namespace Evolve.Driver
     /// </summary>
     public abstract class ReflectionBasedDriver : IDriver
     {
-#if NETSTANDARD
-        protected const string IDbConnectionImplementationNotFound = "";
-#else
         protected const string IDbConnectionImplementationNotFound = "The IDbConnection implementation could not be found in the assembly {0}. Ensure that the assembly is located in the application directory.";
-#endif
+      
         /// <summary>
         ///     Initializes a new instance of <see cref="ReflectionBasedDriver" /> with
         ///     type names that are loaded from the specified assembly.
@@ -42,12 +41,31 @@ namespace Evolve.Driver
 
         protected AssemblyQualifiedTypeName DriverTypeName { get; }
 
-        public Type DbConnectionType { get; set; }
-
-        public IDbConnection CreateConnection() => (IDbConnection)Activator.CreateInstance(DbConnectionType);
+        protected Type DbConnectionType { get; set; }
 
         /// <summary>
-        ///     Try to return a DbConnection from an already loaded assembly.
+        ///     <para>
+        ///         Creates an IDbConnection object for the specific Driver.
+        ///     </para>
+        ///     <para>
+        ///         The connectionString is used to open a connection to the database to
+        ///         force a load of the driver while the application current directory
+        ///         is temporary changed to a folder where are stored the native dependencies.
+        ///         
+        ///         In the .NET framework world it is useless though.
+        ///     </para>
+        /// </summary>
+        /// <param name="connectionString"> The connection string. </param>
+        /// <returns>An IDbConnection object for the specific Driver.</returns>
+        public IDbConnection CreateConnection(string connectionString)
+        {
+            var cnn = (IDbConnection)Activator.CreateInstance(DbConnectionType);
+            cnn.ConnectionString = connectionString;
+            return cnn;
+        }
+
+        /// <summary>
+        ///     Attempt to return a DbConnection from an already loaded assembly.
         /// </summary>
         /// <returns> A DbConnection type or null. </returns>
         private Type TypeFromLoadedAssembly()
@@ -61,19 +79,6 @@ namespace Evolve.Driver
                 return null;
             }
         }
-
-#if NETSTANDARD
-
-        /// <summary>
-        ///     Try to return a DbConnection from an assembly.
-        /// </summary>
-        /// <returns> A DbConnection type or null. </returns>
-        protected virtual Type TypeFromAssembly()
-        {
-            throw new NotImplementedException();
-        }
-
-#else
 
         /// <summary>
         ///     Try to return a DbConnection from an assembly.
@@ -92,8 +97,6 @@ namespace Evolve.Driver
                 throw new EvolveException(string.Format(IDbConnectionImplementationNotFound, DriverTypeName.Assembly + ".dll"), ex);
             }
         }
-
-#endif
 
         protected class AssemblyQualifiedTypeName
         {
@@ -119,3 +122,5 @@ namespace Evolve.Driver
         }
     }
 }
+
+#endif
