@@ -32,7 +32,7 @@ test_script:
     
     cd ../..
 
-    cd test/Evolve.Core.Driver.Test/
+    cd test/Evolve.Core.Test.Driver/
     
     dotnet test
     
