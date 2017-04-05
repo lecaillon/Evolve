@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Text;
 using Evolve.Migration;
-using Evolve.Test;
 using Xunit;
 
 namespace Evolve.Core.Test.Migration

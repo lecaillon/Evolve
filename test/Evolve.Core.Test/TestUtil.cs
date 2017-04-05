@@ -3,7 +3,7 @@ using Evolve.Connection;
 using Evolve.Dialect.SQLite;
 using Microsoft.Data.Sqlite;
 
-namespace Evolve.Test
+namespace Evolve.Core.Test
 {
     public static class TestUtil
     {

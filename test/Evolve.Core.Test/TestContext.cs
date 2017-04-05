@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Reflection;
 
-namespace Evolve.Test
+namespace Evolve.Core.Test
 {
     public static class TestContext
     {

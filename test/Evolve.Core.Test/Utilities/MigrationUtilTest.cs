@@ -1,7 +1,7 @@
 ﻿using Evolve.Utilities;
 using Xunit;
 
-namespace Evolve.Test.Core.Utilities
+namespace Evolve.Core.Test.Utilities
 {
     public class MigrationUtilTest
     {
