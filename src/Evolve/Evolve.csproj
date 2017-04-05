@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
-    <TargetFrameworks>net35;net45;netcoreapp1.1;</TargetFrameworks>
+    <TargetFrameworks>netcoreapp1.1;net35;net45;</TargetFrameworks>
     <Version>1.1.0</Version>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net35' Or '$(TargetFramework)' == 'net45'">
