@@ -26,27 +26,23 @@ namespace Evolve.Driver
     ///         It lists all the dependencies, as well as compilation context data and compilation dependencies.
     ///         
     ///         Once deserialized, this file gives us a <see cref="DependencyContext"/> where we can find
-    ///         the path of the database driver assembly.
+    ///         the path of the database driver assembly and its dependencies we store in <see cref="_nativeDependencies"/>.
     ///         
-    ///         Then we load the driver with <see cref="AssemblyLoadContext.LoadFromAssemblyPath(string)"/> and copy all the native dependency in a temp <see cref="WorkingDir"/>
-    ///         
-    ///         And now it's hack time !
-    ///         We open a connection to the database in <see cref="CoreReflectionBasedDriver.CreateConnection(string)"/> to force a load 
-    ///         of the driver while the application current directory is temporary changed to a folder where are stored the native dependencies.
-    ///         Then we restore the previous current directory because libraries are now loaded in memory.
+    ///         Finally we load the driver with <see cref="AssemblyLoadContext.LoadFromAssemblyPath(string)"/>
+    ///         And the depenencies with <see cref="AssemblyLoadContext.LoadUnmanagedDllFromPath(string)"/>
     ///     </para>
     /// </summary>
     public abstract class CoreReflectionBasedDriver : AssemblyLoadContext, IDriver
     {
         private const string RuntimeLibraryLoadingError = "Failed to load assembly {0} from deps file at {1}.";
         private const string DependencyContextLoadingError = "Failed to load dependency context from {0}.";
-        private const string WorkingDirectoryCreationError = "Failed to create the driver temp working folder at {0}.";
         private const string NoRuntimeTargetsFound = "No <runtimeTargets> found in the deps file for the assembly: {0}.";
         private const string NoRuntimeTargetsFoundForOS = "None of the <runtimeTargets> matches the corresponding os: {0} for the assembly: {1}.";
         private const string NoRuntimeTargetsFoundForOSArchitecture = "None of the <runtimeTargets> matches the corresponding os: {0} and os architecture: {1} for the assembly: {2}.";
         private const string MultipleRuntimeTargetsFound = "Evolve can not define the correct assembly for your system: {0}";
 
         private string _depsFile;
+        private List<string> _nativeDependencies = new List<string>();
 
         /// <summary>
         ///     Initializes a new instance of <see cref="CoreReflectionBasedDriver" /> with
@@ -63,7 +59,6 @@ namespace Evolve.Driver
             ProjectDependencyContext = LoadDependencyContext(_depsFile);
             DriverTypeName = new AssemblyQualifiedTypeName(Check.NotNullOrEmpty(connectionTypeName, nameof(connectionTypeName)),
                                                            Check.NotNullOrEmpty(driverAssemblyName, nameof(driverAssemblyName)));
-            WorkingDir = CreateWorkingDirectory();
 
             DbConnectionType = TypeFromLoadedAssembly();
             if (DbConnectionType == null)
@@ -89,53 +84,47 @@ namespace Evolve.Driver
         #endregion
 
         /// <summary>
-        ///     <para>
-        ///         Creates an IDbConnection object for the specific Driver.
-        ///     </para>
-        ///     <para>
-        ///         The connectionString is used to open a connection to the database to
-        ///         force a load of the driver while the application current directory
-        ///         is temporary changed to a folder where are stored the native dependencies.
-        ///     </para>
+        ///     Creates an IDbConnection object for the specific Driver.
         /// </summary>
-        /// <param name="connectionString"> The connection string. </param>
-        /// <returns>An IDbConnection object for the specific Driver.</returns>
         public IDbConnection CreateConnection(string connectionString)
         {
             Check.NotNullOrEmpty(connectionString, nameof(connectionString));
 
             var cnn = (IDbConnection)Activator.CreateInstance(DbConnectionType);
-            string originalCurrentDirectory = Directory.GetCurrentDirectory();
-
-            try
-            {
-                Directory.SetCurrentDirectory(WorkingDir);
-                cnn.ConnectionString = connectionString;
-                // hack
-                cnn.Open();
-                cnn.Close();
-            }
-            catch { }
-            finally
-            {
-                Directory.SetCurrentDirectory(originalCurrentDirectory);
-            }
-
+            cnn.ConnectionString = connectionString;
             return cnn;
         }
 
         /// <summary>
-        ///     Load a DbConnection from a .deps file definition.
+        ///     Load a DbConnection type from a .deps file definition.
         /// </summary>
         protected virtual Type TypeFromAssembly()
         {
             var lib = GetRuntimeLibrary(DriverTypeName.Assembly);
 
-            CopyNativeDepsToWorkingDir(lib);
+            StoreDriverNativeDependencies(lib);
 
             string driverPath = GetAssemblyPath(lib);
             var driverAssembly = base.LoadFromAssemblyPath(driverPath);
             return driverAssembly.GetType(DriverTypeName.Type);
+        }
+
+        /// <summary>
+        ///     Find and store native driver dependencies for later loading.
+        /// </summary>
+        /// <param name="lib"> The driver runtime library. </param>
+        protected virtual void StoreDriverNativeDependencies(RuntimeLibrary lib)
+        {
+            foreach (var dependency in lib.Dependencies)
+            {
+                var depLib = GetRuntimeLibrary(dependency.Name);
+                if (IsLibraryNative(depLib) && !_nativeDependencies.Contains(dependency.Name))
+                {
+                    _nativeDependencies.Add(GetNativeAssemblyPath(depLib));
+                }
+
+                StoreDriverNativeDependencies(depLib); // recursive
+            }
         }
 
         /// <summary>
@@ -156,6 +145,20 @@ namespace Evolve.Driver
         }
 
         /// <summary>
+        ///     Load the unmanaged dependency where the path was previously stored in <see cref="_nativeDependencies"/>
+        /// </summary>
+        /// <param name="unmanagedDllName"></param>
+        /// <returns></returns>
+        protected override IntPtr LoadUnmanagedDll(string unmanagedDllName)
+        {
+            // hack for the SQLClient driver: remove all native dependencies that do not target the current OSArchitecture
+            _nativeDependencies.RemoveAll(x => x.Contains(RuntimeInformation.OSArchitecture == Architecture.X64 ? "x86" : "x64"));
+
+            string path = _nativeDependencies.Single(x => Path.GetFileNameWithoutExtension(x).Equals(Path.GetFileNameWithoutExtension(unmanagedDllName), StringComparison.OrdinalIgnoreCase));
+            return base.LoadUnmanagedDllFromPath(path);
+        }
+
+        /// <summary>
         ///     Called by the <see cref="AssemblyLoadContext"/> when it does not know how to load the <paramref name="assemblyName"/>.
         ///     Me neither :-) Do nothing.
         /// </summary>
@@ -163,30 +166,6 @@ namespace Evolve.Driver
         /// <param name="assemblyName"> The name of the assembly. </param>
         /// <returns> null. </returns>
         protected override Assembly Load(AssemblyName assemblyName) => null;
-
-        /// <summary>
-        ///     Copy all the driver's native dependencies to the working directory.
-        ///     Do nothing if there is none.
-        /// </summary>
-        /// <param name="lib"> The driver runtime library. </param>
-        protected virtual void CopyNativeDepsToWorkingDir(RuntimeLibrary lib)
-        {
-            foreach (var dependency in lib.Dependencies)
-            {
-                var depLib = GetRuntimeLibrary(dependency.Name);
-                if (IsLibraryNative(depLib))
-                {
-                    string source = GetNativeAssemblyPath(depLib);
-                    string dest = Path.Combine(WorkingDir, Path.GetFileName(source));
-                    if (!File.Exists(dest))
-                    {
-                        File.Copy(source, dest);
-                    }
-                }
-
-                CopyNativeDepsToWorkingDir(depLib); // recursive
-            }
-        }
 
         private string GetAssemblyPath(RuntimeLibrary lib) => Path.Combine(GetLibraryPackagePath(lib), GetAssemblyRelativePath(lib));
 
@@ -296,32 +275,6 @@ namespace Evolve.Driver
             catch (Exception ex)
             {
                 throw new EvolveException(string.Format(RuntimeLibraryLoadingError, assemblyName, _depsFile), ex);
-            }
-        }
-
-        /// <summary>
-        ///     <para>
-        ///         Creates a folder used as a temp working directory where the 
-        ///         driver native dependency assemblies are copied to and loaded from.
-        ///     </para>
-        ///     <para>
-        ///         This folder is created in the user temp directory to avoid permission issues.
-        ///     </para>
-        /// </summary>
-        /// <returns> Path to the working directory. </returns>
-        /// <exception cref="EvolveException"> Throws an EvolveException when the creation fails. </exception>
-        protected virtual string CreateWorkingDirectory()
-        {
-            string tempDir = "";
-            try
-            {
-                tempDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-                Directory.CreateDirectory(tempDir);
-                return tempDir;
-            }
-            catch (Exception ex)
-            {
-                throw new EvolveException(string.Format(WorkingDirectoryCreationError, tempDir), ex);
             }
         }
 

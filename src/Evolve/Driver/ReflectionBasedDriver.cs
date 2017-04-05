@@ -44,19 +44,8 @@ namespace Evolve.Driver
         protected Type DbConnectionType { get; set; }
 
         /// <summary>
-        ///     <para>
-        ///         Creates an IDbConnection object for the specific Driver.
-        ///     </para>
-        ///     <para>
-        ///         The connectionString is used to open a connection to the database to
-        ///         force a load of the driver while the application current directory
-        ///         is temporary changed to a folder where are stored the native dependencies.
-        ///         
-        ///         In the .NET framework world it is useless though.
-        ///     </para>
+        ///     Creates an IDbConnection object for the specific Driver.
         /// </summary>
-        /// <param name="connectionString"> The connection string. </param>
-        /// <returns>An IDbConnection object for the specific Driver.</returns>
         public IDbConnection CreateConnection(string connectionString)
         {
             var cnn = (IDbConnection)Activator.CreateInstance(DbConnectionType);
