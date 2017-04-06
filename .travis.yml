@@ -16,3 +16,4 @@ before_install:
 script:
   - dotnet restore
   - dotnet build ./src/Evolve/Evolve.csproj -c Release -f netstandard1.3
+  - dotnet build ./test/Evolve.Core.Test/Evolve.Core.Test.csproj -c Release -f netcoreapp1.1
