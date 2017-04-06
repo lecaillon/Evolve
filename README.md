@@ -1,4 +1,4 @@
-# Evolve [![Build status](https://ci.appveyor.com/api/projects/status/oj9wf4bk0p0npggu?svg=true)](https://ci.appveyor.com/project/lecaillon/evolve) [![NuGet](https://buildstats.info/nuget/Evolve)](https://www.nuget.org/packages/Evolve)
+# Evolve [![Build status](https://img.shields.io/appveyor/ci/lecaillon/Evolve.svg?label=appveyor&branch=master)](https://ci.appveyor.com/project/lecaillon/evolve) [![Build Status](https://img.shields.io/travis/lecaillon/Evolve.svg?label=travis-ci&branch=master)](https://travis-ci.org/lecaillon/Evolve) [![NuGet](https://buildstats.info/nuget/Evolve)](https://www.nuget.org/packages/Evolve)
 Database migration tool for .NET. Inspired by [Flyway](https://flywaydb.org/).
 
 Evolve is an easy migration tool that uses plain old sql scripts. Its purpose is to automate your database changes, and help keep those changes synchronized through all your environments and developpement teams.
