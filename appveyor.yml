@@ -1,5 +1,5 @@
 version: 1.0.0.{build}
-skip_non_tags: false
+skip_non_tags: true
 image: Visual Studio 2017
 configuration: Release
 services:
