@@ -5,3 +5,4 @@ mono: none
 dotnet: 1.0.1
 script:
   - dotnet restore
+  - dotnet build
