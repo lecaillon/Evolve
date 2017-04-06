@@ -15,5 +15,4 @@ before_install:
   # - chmod +x build.sh
 script:
   - dotnet restore
-  - cd src/Evolve
-  - dotnet build -c Release -f netcoreapp1.1
+  - dotnet build -c Release -f netcoreapp1.1 -r ubuntu.14.04-x64
