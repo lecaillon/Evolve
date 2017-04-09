@@ -20,7 +20,7 @@ Over all Evolve embraces simplicity. Every time you build your project, it will 
 
 ## Supported Frameworks
 - [x] .NET 3.5+
-- [x] .NET 4.5+
+- [x] .NET 4.5.1+
 - [ ] .NET Core
 
 ## Installation
