@@ -1,4 +1,4 @@
-﻿#if NET
+﻿#if NETSTANDARD
 
 using System;
 using System.Collections.Generic;
@@ -7,9 +7,10 @@ using Evolve.Utilities;
 
 namespace Evolve.Connection
 {
-    public class DriverConnectionProvider : IConnectionProvider
+    public class CoreDriverConnectionProvider : IConnectionProvider
     {
         private const string UnknownDriver = "Driver name {0} is unknown. Try one of the following: Microsoft.Sqlite, SQLite, MySQL.Data, MariaDB, Npgsql, SqlClient.";
+        private const string DriverCreationError = "Database driver creation error.";
 
         private readonly string _driverName;
         private readonly string _connectionString;
@@ -17,36 +18,26 @@ namespace Evolve.Connection
         private readonly string _nugetPackageDir;
         private WrappedConnection _wrappedConnection;
 
-        private const string DriverCreationError = "Database driver creation error. Verify that your driver assembly is in the same folder that your application.";
-
-        private readonly Dictionary<string, Func<IDriver>> _driverMap = new Dictionary<string, Func<IDriver>>
+        private readonly Dictionary<string, Func<string, string, IDriver>> _driverMap = new Dictionary<string, Func<string, string, IDriver>>
         {
-            ["microsoftdatasqlite"] = () => new MicrosoftDataSqliteDriver(),
-            ["microsoftsqlite"]     = () => new MicrosoftDataSqliteDriver(),
+            ["microsoftdatasqlite"] = (depsFile, nugetPackageDir) => new MicrosoftDataSqliteDriver(depsFile, nugetPackageDir),
+            ["microsoftsqlite"] = (depsFile, nugetPackageDir) => new MicrosoftDataSqliteDriver(depsFile, nugetPackageDir),
 
-            ["sqlite"]              = () => new SystemDataSQLiteDriver(),
-            ["systemdatasqlite"]    = () => new SystemDataSQLiteDriver(),
+            ["sqlite"] = (depsFile, nugetPackageDir) => new SystemDataSQLiteDriver(depsFile, nugetPackageDir),
+            ["systemdatasqlite"] = (depsFile, nugetPackageDir) => new SystemDataSQLiteDriver(depsFile, nugetPackageDir),
 
-            ["mysql"]               = () => new MySqlDataDriver(),
-            ["mariadb"]             = () => new MySqlDataDriver(),
-            ["mysqldata"]           = () => new MySqlDataDriver(),
+            ["mysql"] = (depsFile, nugetPackageDir) => new MySqlDataDriver(depsFile, nugetPackageDir),
+            ["mariadb"] = (depsFile, nugetPackageDir) => new MySqlDataDriver(depsFile, nugetPackageDir),
+            ["mysqldata"] = (depsFile, nugetPackageDir) => new MySqlDataDriver(depsFile, nugetPackageDir),
 
-            ["npgsql"]              = () => new NpgsqlDriver(),
-            ["postgresql"]          = () => new NpgsqlDriver(),
+            ["npgsql"] = (depsFile, nugetPackageDir) => new NpgsqlDriver(depsFile, nugetPackageDir),
+            ["postgresql"] = (depsFile, nugetPackageDir) => new NpgsqlDriver(depsFile, nugetPackageDir),
 
-            ["sqlserver"]           = () => new SqlClientDriver(),
-            ["sqlclient"]           = () => new SqlClientDriver(),
+            ["sqlserver"] = (depsFile, nugetPackageDir) => new SqlClientDriver(depsFile, nugetPackageDir),
+            ["sqlclient"] = (depsFile, nugetPackageDir) => new SqlClientDriver(depsFile, nugetPackageDir),
         };
 
-        public DriverConnectionProvider(string driverName, string connectionString)
-        {
-            _driverName = Check.NotNullOrEmpty(driverName, nameof(driverName));
-            _connectionString = Check.NotNullOrEmpty(connectionString, nameof(connectionString));
-
-            Driver = LoadDriver();
-        }
-
-        public DriverConnectionProvider(string driverName, string connectionString, string depsFile, string nugetPackageDir)
+        public CoreDriverConnectionProvider(string driverName, string connectionString, string depsFile, string nugetPackageDir)
         {
             _driverName = Check.NotNullOrEmpty(driverName, nameof(driverName));
             _connectionString = Check.NotNullOrEmpty(connectionString, nameof(connectionString));
@@ -71,18 +62,11 @@ namespace Evolve.Connection
 
         private IDriver LoadDriver()
         {
-#if NET45
-            // hack ^^
-            if (!_depsFile.IsNullOrWhiteSpace())
-            {
-                return new CoreNpgsqlDriverForNet(_depsFile, _nugetPackageDir);
-            }
-#endif
             string cleanDriverName = _driverName.ToLowerInvariant()
                                                 .Replace(" ", "")
                                                 .Replace(".", "");
 
-            _driverMap.TryGetValue(cleanDriverName, out Func<IDriver> driverCreationDelegate);
+            _driverMap.TryGetValue(cleanDriverName, out Func<string, string, IDriver> driverCreationDelegate);
 
             if (driverCreationDelegate == null)
             {
@@ -91,7 +75,7 @@ namespace Evolve.Connection
 
             try
             {
-                return driverCreationDelegate();
+                return driverCreationDelegate(_depsFile, _nugetPackageDir);
             }
             catch (Exception ex)
             {
