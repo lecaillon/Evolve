@@ -1,4 +1,4 @@
-﻿#if NETCORE
+﻿#if NETSTANDARD
 
 namespace Evolve.Driver
 {
@@ -17,7 +17,7 @@ namespace Evolve.Driver
 
 namespace Evolve.Driver
 {
-    public class SystemDataSQLiteDriver : ReflectionBasedDriver
+    public class SystemDataSQLiteDriver : NetReflectionBasedDriver
     {
         public const string DriverAssemblyName = "System.Data.SQLite";
         public const string ConnectionTypeName = "System.Data.SQLite.SQLiteConnection";

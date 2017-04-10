@@ -1,4 +1,4 @@
-﻿#if NETCORE
+﻿#if NETSTANDARD
 
 namespace Evolve.Driver
 {
@@ -17,7 +17,7 @@ namespace Evolve.Driver
 
 namespace Evolve.Driver
 {
-    public class MySqlDataDriver : ReflectionBasedDriver
+    public class MySqlDataDriver : NetReflectionBasedDriver
     {
         public const string DriverAssemblyName = "MySql.Data";
         public const string ConnectionTypeName = "MySql.Data.MySqlClient.MySqlConnection";

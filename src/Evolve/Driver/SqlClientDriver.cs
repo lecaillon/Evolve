@@ -1,4 +1,4 @@
-﻿#if NETCORE
+﻿#if NETSTANDARD
 
 namespace Evolve.Driver
 {
