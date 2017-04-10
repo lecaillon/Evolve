@@ -1,4 +1,4 @@
-﻿#if NETCORE
+﻿#if NETSTANDARD
 
 namespace Evolve.Driver
 {
@@ -17,7 +17,7 @@ namespace Evolve.Driver
 
 namespace Evolve.Driver
 {
-    public class NpgsqlDriver : ReflectionBasedDriver
+    public class NpgsqlDriver : NetReflectionBasedDriver
     {
         public const string DriverAssemblyName = "Npgsql";
         public const string ConnectionTypeName = "Npgsql.NpgsqlConnection";
@@ -26,6 +26,21 @@ namespace Evolve.Driver
         {
         }
     }
+
+#if NET45
+
+    public class CoreNpgsqlDriverForNet : CoreReflectionBasedDriverForNet
+    {
+        public const string DriverAssemblyName = "Npgsql";
+        public const string ConnectionTypeName = "Npgsql.NpgsqlConnection";
+
+        public CoreNpgsqlDriverForNet(string depsFile, string nugetPackageDir) : base(DriverAssemblyName, ConnectionTypeName, depsFile, nugetPackageDir)
+        {
+        }
+    }
+
+#endif
+
 }
 
 #endif
