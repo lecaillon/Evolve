@@ -87,8 +87,29 @@ namespace Evolve
             _logInfoDelegate = logInfoDelegate ?? new Action<string>((msg) => { });
         }
 
-#if NETCORE
+        /// <summary>
+        ///     <para>
+        ///         Constructor.
+        ///     </para>
+        ///     <para>
+        ///         Load the configuration file at <paramref name="evolveConfigurationPath"/>.
+        ///     </para>
+        /// </summary>
+        /// <param name="evolveConfigurationPath"> Evolve configuration file (can be relative). </param>
+        /// <param name="dbConnection"> Optionnal database connection. </param>
+        /// <param name="logInfoDelegate"> Optionnal logger. </param>
+        public Evolve(string evolveConfigurationPath, IDbConnection dbConnection = null, Action<string> logInfoDelegate = null)
+        {
+            _configurationPath = Check.FileExists(ResolveConfigurationFileLocation(evolveConfigurationPath), nameof(evolveConfigurationPath));
+            _userDbConnection = dbConnection;
+            _logInfoDelegate = logInfoDelegate ?? new Action<string>((msg) => { });
 
+            // Configure Evolve
+            var configurationProvider = ConfigurationFactoryProvider.GetProvider(evolveConfigurationPath);
+            configurationProvider.Configure(evolveConfigurationPath, this);
+        }
+
+#if NETSTANDARD
         /// <summary>
         ///     <para>
         ///         .NET Core Constructor.
@@ -112,31 +133,6 @@ namespace Evolve
             var configurationProvider = ConfigurationFactoryProvider.GetProvider(evolveConfigurationPath);
             configurationProvider.Configure(evolveConfigurationPath, this);
         }
-
-#else
-
-        /// <summary>
-        ///     <para>
-        ///         Constructor.
-        ///     </para>
-        ///     <para>
-        ///         Load the configuration file at <paramref name="evolveConfigurationPath"/>.
-        ///     </para>
-        /// </summary>
-        /// <param name="evolveConfigurationPath"> Evolve configuration file (can be relative). </param>
-        /// <param name="dbConnection"> Optionnal database connection. </param>
-        /// <param name="logInfoDelegate"> Optionnal logger. </param>
-        public Evolve(string evolveConfigurationPath, IDbConnection dbConnection = null, Action<string> logInfoDelegate = null)
-        {
-            _configurationPath = Check.FileExists(ResolveConfigurationFileLocation(evolveConfigurationPath), nameof(evolveConfigurationPath));
-            _userDbConnection = dbConnection;
-            _logInfoDelegate = logInfoDelegate ?? new Action<string>((msg) => { });
-
-            // Configure Evolve
-            var configurationProvider = ConfigurationFactoryProvider.GetProvider(evolveConfigurationPath);
-            configurationProvider.Configure(evolveConfigurationPath, this);
-        }
-
 #endif
 
         #endregion
@@ -168,10 +164,11 @@ namespace Evolve
         public string SqlMigrationSuffix { get; set; } = ".sql";
         public MigrationVersion TargetVersion { get; set; } = new MigrationVersion(long.MaxValue.ToString());
 
-#endregion
+        #endregion
 
         #region Properties
 
+        public bool IsDotNetStandardProject { get; set; }
         public int NbMigration { get; private set; }
         public int NbReparation { get; private set; }
         public int NbSchemaErased { get; private set; }
@@ -466,11 +463,15 @@ namespace Evolve
 
         private IConnectionProvider GetConnectionProvider(IDbConnection connection = null)
         {
+            string depsFile = @"C:\Users\Phil-Dev\Desktop\NetCore.Migration.Test\bin\Debug\netcoreapp1.1\NetCore.Migration.Test.deps.json";
+            string nugetPath = @"C:\Users\Phil-Dev\.nuget\packages";
+
             return connection != null ? new ConnectionProvider(connection) as IConnectionProvider
-#if NETCORE
-                                      : new DriverConnectionProvider(Driver, ConnectionString, _depsFile, _nugetPackageDir);
+#if NETSTANDARD
+                                      : new CoreDriverConnectionProvider(Driver, ConnectionString, _depsFile, _nugetPackageDir);
 #else
-                                      : new DriverConnectionProvider(Driver, ConnectionString);
+                                      : IsDotNetStandardProject ? new DriverConnectionProvider(Driver, ConnectionString, depsFile, nugetPath)
+                                                                : new DriverConnectionProvider(Driver, ConnectionString);
 #endif
         }
 

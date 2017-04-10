@@ -1,4 +1,4 @@
-﻿#if NETCORE
+﻿#if NETSTANDARD
 
 using System;
 using System.IO;
@@ -7,7 +7,7 @@ using Microsoft.Build.Utilities;
 
 namespace Evolve.MsBuild
 {
-    public class EvolveBootCore : Task
+    public class EvolveBoot : Task
     {
         /// <summary>
         ///     The absolute path name of the primary output file for the build.
@@ -26,6 +26,17 @@ namespace Evolve.MsBuild
         /// </summary>
         [Required]
         public string EvolveNugetPackageBuildDir { get; set; }
+
+        /// <summary>
+        ///     <para>
+        ///         True if the project to migrate targets netcoreapp or netstandard, otherwise false.
+        ///     </para>
+        ///     <para>
+        ///         Always true for this netstandard class.
+        ///     </para>
+        /// </summary>
+        [Required]
+        public bool IsDotNetStandardProject { get; set; }
 
         /// <summary>
         ///     The directory of the primary output file for the build.
@@ -48,8 +59,6 @@ namespace Evolve.MsBuild
         /// <returns> true if successful; otherwise, false. </returns>
         public override bool Execute()
         {
-            string originalCurrentDirectory = Directory.GetCurrentDirectory();
-
             try
             {
                 WriteHeader();
@@ -75,12 +84,11 @@ namespace Evolve.MsBuild
             }
             finally
             {
-                Directory.SetCurrentDirectory(originalCurrentDirectory);
                 WriteFooter();
             }
         }
 
-        #region Logger
+#region Logger
 
         private void LogError(Exception ex)
         {
@@ -110,7 +118,7 @@ namespace Evolve.MsBuild
             Log.LogMessage(MessageImportance.High, string.Empty);
         }
 
-        #endregion
+#endregion
     }
 }
 

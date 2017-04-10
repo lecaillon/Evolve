@@ -25,6 +25,7 @@ namespace Evolve.MsBuild
     public class EvolveBoot : AppDomainIsolatedTask
     {
         private const string MigrationFolderCopyError = "Evolve cannot copy the migration folders to the output directory.";
+        private const string MigrationFolderCopy = "Migration folder {0} copied to {1}.";
 
         /// <summary>
         ///     The absolute path name of the primary output file for the build.
@@ -37,6 +38,18 @@ namespace Evolve.MsBuild
         /// </summary>
         [Required]
         public string ProjectDir { get; set; }
+
+        /// <summary>
+        ///     The directory of the Evolve NuGet package build folder (includes the trailing backslash '\').
+        /// </summary>
+        [Required]
+        public string EvolveNugetPackageBuildDir { get; set; }
+
+        /// <summary>
+        ///     True if the project to migrate targets netcoreapp or netstandard, otherwise false.
+        /// </summary>
+        [Required]
+        public bool IsDotNetStandardProject { get; set; }
 
         /// <summary>
         ///     The directory of the primary output file for the build.
@@ -54,31 +67,63 @@ namespace Evolve.MsBuild
         /// <returns> true if successful; otherwise, false. </returns>
         public override bool Execute()
         {
-            string originalCurrentDirectory = Directory.GetCurrentDirectory();
-
-            try
+            if (IsDotNetStandardProject)
             {
-                WriteHeader();
-                Directory.SetCurrentDirectory(TargetDir);
+                try
+                {
+                    WriteHeader();
 
-                var evolve = new Evolve(EvolveConfigurationFile, logInfoDelegate: msg => LogInfo(msg));
-                CopyMigrationProjectDirToTargetDir(evolve.Locations);
+                    LogInfo("IsDotNetStandardProject = true");
 
-                // ADD LOG : Copy migration scripts to {}
+                    var evolve = new Evolve(logInfoDelegate: msg => LogInfo(msg));
+                    evolve.ConnectionString = @"Server=127.0.0.1;Port=5432;Database=my_database;User Id=postgres;Password=Password12!;";
+                    evolve.Driver = "npgsql";
+                    evolve.IsDotNetStandardProject = true; // temp
+                    evolve.Erase();
 
-                evolve.ExecuteCommand();
-                
-                return true;
+                    WriteFooter();
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    LogError(ex);
+                    return false;
+                }
+                finally
+                {
+                    WriteFooter();
+                }
             }
-            catch (Exception ex)
+            else
             {
-                LogError(ex);
-                return false;
-            }
-            finally
-            {
-                Directory.SetCurrentDirectory(originalCurrentDirectory);
-                WriteFooter();
+                string originalCurrentDirectory = Directory.GetCurrentDirectory();
+
+                try
+                {
+                    WriteHeader();
+
+                    LogInfo("IsDotNetStandardProject = false");
+
+                    Directory.SetCurrentDirectory(TargetDir);
+
+                    var evolve = new Evolve(EvolveConfigurationFile, logInfoDelegate: msg => LogInfo(msg));
+                    CopyMigrationProjectDirToTargetDir(evolve.Locations);
+
+                    evolve.ExecuteCommand();
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    LogError(ex);
+                    return false;
+                }
+                finally
+                {
+                    Directory.SetCurrentDirectory(originalCurrentDirectory);
+                    WriteFooter();
+                }
             }
         }
 
@@ -114,6 +159,7 @@ namespace Evolve.MsBuild
                     }
 
                     CopyAll(sourceDirectory, targetDirectory);
+                    LogInfo(string.Format(MigrationFolderCopy, location, targetDirectory.FullName));
                 }
             }
             catch (Exception ex)
