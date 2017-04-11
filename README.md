@@ -17,7 +17,6 @@ Over all Evolve embraces simplicity. Every time you build your project, it will 
 - [x] MSBuild
 - [x] In-app
 - [ ] .NET Core CLI tools
-- [ ] Evolve CLI tool
 
 ## Supported Frameworks
 - [x] .NET 3.5+
