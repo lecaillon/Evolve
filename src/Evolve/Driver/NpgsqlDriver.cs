@@ -2,12 +2,16 @@
 
 namespace Evolve.Driver
 {
-    public class NpgsqlDriver : CoreReflectionBasedDriver
+    /// <summary>
+    ///     Npgsql (PostgreSQL) driver for projects targeting the .NET Standard/Core and build with a dotnet-build command.
+    /// </summary>
+    public class CoreNpgsqlDriver : CoreReflectionBasedDriver
     {
         public const string DriverAssemblyName = "Npgsql";
         public const string ConnectionTypeName = "Npgsql.NpgsqlConnection";
 
-        public NpgsqlDriver(string depsFile, string nugetPackageDir) : base(DriverAssemblyName, ConnectionTypeName, depsFile, nugetPackageDir)
+        public CoreNpgsqlDriver(string depsFile, string nugetPackageDir) 
+            : base(DriverAssemblyName, ConnectionTypeName, depsFile, nugetPackageDir)
         {
         }
     }
@@ -17,6 +21,9 @@ namespace Evolve.Driver
 
 namespace Evolve.Driver
 {
+    /// <summary>
+    ///     Npgsql (PostgreSQL) driver for projects targeting the .NET Framework.
+    /// </summary>
     public class NpgsqlDriver : NetReflectionBasedDriver
     {
         public const string DriverAssemblyName = "Npgsql";
@@ -29,12 +36,16 @@ namespace Evolve.Driver
 
 #if NET45
 
+    /// <summary>
+    ///     Npgsql (PostgreSQL) driver for projects targeting the .NET Standard/Core and build with MSBuild.
+    /// </summary>
     public class CoreNpgsqlDriverForNet : CoreReflectionBasedDriverForNet
     {
         public const string DriverAssemblyName = "Npgsql";
         public const string ConnectionTypeName = "Npgsql.NpgsqlConnection";
 
-        public CoreNpgsqlDriverForNet(string depsFile, string nugetPackageDir) : base(DriverAssemblyName, ConnectionTypeName, depsFile, nugetPackageDir)
+        public CoreNpgsqlDriverForNet(string depsFile, string nugetPackageDir) 
+            : base(DriverAssemblyName, ConnectionTypeName, depsFile, nugetPackageDir)
         {
         }
     }

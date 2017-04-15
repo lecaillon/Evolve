@@ -2,12 +2,16 @@
 
 namespace Evolve.Driver
 {
-    public class SqlClientDriver : CoreReflectionBasedDriver
+    /// <summary>
+    ///     SqlClient driver for projects targeting the .NET Standard/Core and build with a dotnet-build command.
+    /// </summary>
+    public class CoreSqlClientDriver : CoreReflectionBasedDriver
     {
         public const string DriverAssemblyName = "System.Data.SqlClient";
         public const string ConnectionTypeName = "System.Data.SqlClient.SqlConnection";
 
-        public SqlClientDriver(string depsFile, string nugetPackageDir) : base(DriverAssemblyName, ConnectionTypeName, depsFile, nugetPackageDir)
+        public CoreSqlClientDriver(string depsFile, string nugetPackageDir) 
+            : base(DriverAssemblyName, ConnectionTypeName, depsFile, nugetPackageDir)
         {
         }
     }
@@ -17,23 +21,22 @@ namespace Evolve.Driver
 
 namespace Evolve.Driver
 {
+    using System.Data;
+    using System.Data.SqlClient;
+
     /// <summary>
-    ///     <para>
-    ///         Creates an IDbConnection object for the specific Driver.
-    ///     </para>
-    ///     <para>
-    ///         The connectionString is used to open a connection to the database to
-    ///         force a load of the driver while the application current directory
-    ///         is temporary changed to a folder where are stored the native dependencies.
-    ///     </para>
+    ///     SqlClient driver for projects targeting the .NET Framework or .NET Standard/Core projects if build with MSBuild.
     /// </summary>
-    /// <param name="connectionString"> The connection string. </param>
-    /// <returns> An IDbConnection object for the specific Driver. </returns>
     public class SqlClientDriver : IDriver
     {
-        public System.Data.IDbConnection CreateConnection(string connectionString)
+        /// <summary>
+        ///     Creates an <see cref="IDbConnection"/> object for SQL Server.
+        /// </summary>
+        /// <param name="connectionString"> The connection string used to initialize the SqlConnection. </param>
+        /// <returns> An initialized database connection. </returns>
+        public IDbConnection CreateConnection(string connectionString)
         {
-            var cnn = new System.Data.SqlClient.SqlConnection();
+            var cnn = new SqlConnection();
             cnn.ConnectionString = connectionString;
             return cnn;
         }
