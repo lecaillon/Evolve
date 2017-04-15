@@ -67,20 +67,25 @@ namespace Evolve
         private IDbConnection _userDbConnection;
         private IMigrationLoader _loader = new FileMigrationLoader();
         private Action<string> _logInfoDelegate;
-        private readonly string _depsFile;
+        private readonly string _depsFile = "";
+        #if NETSTANDARD || NET45
         private readonly string _nugetPackageDir;
+        #endif
 
-        #endregion
+#endregion
 
         #region Constructors
 
         /// <summary>
         ///     <para>
-        ///         Constructor.
+        ///         Simple constructor.
+        ///     </para>
+        ///     <para>
+        ///         Usefull when Evolve is used "in-app" or for unit tests. 
         ///     </para>
         /// </summary>
-        /// <param name="dbConnection"> Optionnal database connection. </param>
-        /// <param name="logInfoDelegate"> Optionnal logger. </param>
+        /// <param name="dbConnection"> Optional database connection. </param>
+        /// <param name="logInfoDelegate"> Optional logger. </param>
         public Evolve(IDbConnection dbConnection = null, Action<string> logInfoDelegate = null)
         {
             _userDbConnection = dbConnection;
@@ -89,15 +94,15 @@ namespace Evolve
 
         /// <summary>
         ///     <para>
-        ///         Constructor.
+        ///         Initializes a new instance of a <see cref="Evolve"/> with the given <paramref name="evolveConfigurationPath"/>.
         ///     </para>
         ///     <para>
-        ///         Load the configuration file at <paramref name="evolveConfigurationPath"/>.
+        ///         This constructor is used to evolve .NET projects.
         ///     </para>
         /// </summary>
         /// <param name="evolveConfigurationPath"> Evolve configuration file (can be relative). </param>
-        /// <param name="dbConnection"> Optionnal database connection. </param>
-        /// <param name="logInfoDelegate"> Optionnal logger. </param>
+        /// <param name="dbConnection"> Optional database connection. </param>
+        /// <param name="logInfoDelegate"> Optional logger. </param>
         public Evolve(string evolveConfigurationPath, IDbConnection dbConnection = null, Action<string> logInfoDelegate = null)
         {
             _configurationPath = Check.FileExists(ResolveConfigurationFileLocation(evolveConfigurationPath), nameof(evolveConfigurationPath));
@@ -109,23 +114,27 @@ namespace Evolve
             configurationProvider.Configure(evolveConfigurationPath, this);
         }
 
-#if NETSTANDARD
+#if NETSTANDARD || NET45
+
         /// <summary>
         ///     <para>
-        ///         .NET Core Constructor.
+        ///         Initializes a new instance of a <see cref="Evolve"/> with the given 
+        ///         <paramref name="evolveConfigurationPath"/>, <paramref name="depsFile"/> and <paramref name="nugetPackageDir"/>
         ///     </para>
         ///     <para>
-        ///         Load the configuration file at <paramref name="evolveConfigurationPath"/>.
+        ///         This constructor is used to evolve .NET Standard/Core projects.
         ///     </para>
         /// </summary>
         /// <param name="evolveConfigurationPath"> Evolve configuration file (can be relative). </param>
-        /// <param name="depsFile"> Dependency file of the project to migrate. </param>
+        /// <param name="depsFile"> Dependency file of the project to migrate (can be relative). </param>
         /// <param name="nugetPackageDir"> Path to the NuGet package folder. </param>
-        /// <param name="dbConnection"> Optionnal database connection. </param>
-        /// <param name="logInfoDelegate"> Optionnal logger. </param>
+        /// <param name="dbConnection"> Optional database connection. </param>
+        /// <param name="logInfoDelegate"> Optional logger. </param>
         public Evolve(string evolveConfigurationPath, string depsFile, string nugetPackageDir, IDbConnection dbConnection = null, Action<string> logInfoDelegate = null)
         {
             _configurationPath = Check.FileExists(ResolveConfigurationFileLocation(evolveConfigurationPath), nameof(evolveConfigurationPath));
+            _depsFile = Check.FileExists(ResolveConfigurationFileLocation(depsFile), nameof(depsFile));
+            _nugetPackageDir = Check.DirectoryExists(nugetPackageDir, nameof(nugetPackageDir));
             _userDbConnection = dbConnection;
             _logInfoDelegate = logInfoDelegate ?? new Action<string>((msg) => { });
 
@@ -133,6 +142,7 @@ namespace Evolve
             var configurationProvider = ConfigurationFactoryProvider.GetProvider(evolveConfigurationPath);
             configurationProvider.Configure(evolveConfigurationPath, this);
         }
+
 #endif
 
         #endregion
@@ -168,7 +178,10 @@ namespace Evolve
 
         #region Properties
 
-        public bool IsDotNetStandardProject { get; set; }
+        /// <summary>
+        ///     True if the project to migrate targets netcoreapp or netstandard, otherwise false.
+        /// </summary>
+        public bool IsDotNetStandardProject => !_depsFile.IsNullOrWhiteSpace();
         public int NbMigration { get; private set; }
         public int NbReparation { get; private set; }
         public int NbSchemaErased { get; private set; }
@@ -360,7 +373,7 @@ namespace Evolve
             NbSchemaErased = 0;
             NbSchemaToEraseSkipped = 0;
 
-            var connectionProvider = GetConnectionProvider(_userDbConnection);              // Get a database connection provider
+            var connectionProvider = GetConnectionProvider();                               // Get a database connection provider
             var evolveConnection = connectionProvider.GetConnection();                      // Get a connection to the database
             evolveConnection.Validate();                                                    // Validate the reliabilty of the initiated connection
             var dbmsType = evolveConnection.GetDatabaseServerType();                        // Get the DBMS type
@@ -461,17 +474,23 @@ namespace Evolve
             }
         }
 
-        private IConnectionProvider GetConnectionProvider(IDbConnection connection = null)
+        private IConnectionProvider GetConnectionProvider()
         {
-            string depsFile = @"C:\Users\Phil-Dev\Desktop\NetCore.Migration.Test\bin\Debug\netcoreapp1.1\NetCore.Migration.Test.deps.json";
-            string nugetPath = @"C:\Users\Phil-Dev\.nuget\packages";
+            if(_userDbConnection != null)
+            {
+                return new ConnectionProvider(_userDbConnection);
+            }
 
-            return connection != null ? new ConnectionProvider(connection) as IConnectionProvider
 #if NETSTANDARD
-                                      : new CoreDriverConnectionProvider(Driver, ConnectionString, _depsFile, _nugetPackageDir);
+            return new CoreDriverConnectionProvider(Driver, ConnectionString, _depsFile, _nugetPackageDir);
 #else
-                                      : IsDotNetStandardProject ? new DriverConnectionProvider(Driver, ConnectionString, depsFile, nugetPath)
-                                                                : new DriverConnectionProvider(Driver, ConnectionString);
+    #if NET45
+            if(IsDotNetStandardProject)
+            {
+                return new CoreDriverConnectionProviderForNet(Driver, ConnectionString, _depsFile, _nugetPackageDir);
+            }
+    #endif
+            return new DriverConnectionProvider(Driver, ConnectionString);
 #endif
         }
 
