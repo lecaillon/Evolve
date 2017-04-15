@@ -30,7 +30,7 @@ namespace Evolve.Configuration
         string ConnectionString { get; set; }
 
         /// <summary>
-        ///     Returns the full name of the driver used to interact with the database. (default: Evolve.Driver.SqlClientDriver)
+        ///     Returns the full name of the driver used to interact with the database.)
         /// </summary>
         string Driver { get; set; }
 
@@ -110,7 +110,7 @@ namespace Evolve.Configuration
 
         /// <summary>
         ///     Returns the schema containing the metadata table. 
-        ///     (default: The default schema for the datasource connection, or the first defined in Schemas if exists.)
+        ///     (default: If empty, the first schema defined in <see cref="Schemas"/> or the one of the datasource connection.)
         /// </summary>
         string MetadataTableSchema { get; set; }
 
@@ -144,7 +144,7 @@ namespace Evolve.Configuration
         Dictionary<string, string> Placeholders { get; set; }
 
         /// <summary>
-        ///     Returns the target version to reach. If null or empty it evolves all the way up.
+        ///     Returns the target version to reach. If null or empty, it evolves all the way up.
         /// </summary>
         MigrationVersion TargetVersion { get; set; }
     }

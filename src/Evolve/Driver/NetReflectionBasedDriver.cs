@@ -10,31 +10,31 @@ namespace Evolve.Driver
     ///         Base class for .NET database drivers loaded by reflection.
     ///     </para>
     ///     <para>
-    ///         In order to load the driver type, the current directory 
-    ///         must be the one where the application to Evolve is located.
+    ///         In order to load the driver <see cref="Type"/>, the current directory 
+    ///         must be the one where the application to evolve is located.
     ///         
-    ///         If not, the driver type must be in an already loaded asssembly.
+    ///         If not, the driver <see cref="Type"/> must be in an already loaded asssembly.
     ///     </para>
     /// </summary>
     public abstract class NetReflectionBasedDriver : ReflectionBasedDriver
     {
-        protected const string IDbConnectionImplementationNotFound = "The IDbConnection implementation could not be found in the assembly {0}. Ensure that the assembly is located in the application directory.";
+        protected const string DriverTypeNotFound = "Driver connection Type not be found in assembly {0}. Ensure that the assembly is located in the application directory.";
 
         /// <summary>
         ///     Initializes a new instance of <see cref="NetReflectionBasedDriver"/> with
         ///     type names that are loaded from the specified assembly.
         /// </summary>
-        /// <param name="driverAssemblyName"> Assembly to load the DbConnection type from. </param>
-        /// <param name="connectionTypeName"> DbConnection type name. </param>
+        /// <param name="driverAssemblyName"> Assembly to load the driver Type from. </param>
+        /// <param name="connectionTypeName"> Name of the driver Type. </param>
         protected NetReflectionBasedDriver(string driverAssemblyName, string connectionTypeName) : base(driverAssemblyName, connectionTypeName)
         {
         }
 
         /// <summary>
-        ///     Try to return a DbConnection from an assembly.
+        ///     Returns the driver <see cref="Type"/> from the assembly specified in <see cref="DriverTypeName"/>
         /// </summary>
-        /// <returns> A DbConnection type. </returns>
-        /// <exception cref="EvolveException"> When the DbConnection type can't be loaded. </exception>
+        /// <returns> The driver type. </returns>
+        /// <exception cref="EvolveException"> When the driver type can't be loaded. </exception>
         protected override Type TypeFromAssembly()
         {
             try
@@ -44,7 +44,7 @@ namespace Evolve.Driver
             }
             catch(Exception ex)
             {
-                throw new EvolveException(string.Format(IDbConnectionImplementationNotFound, DriverTypeName.Assembly + ".dll"), ex);
+                throw new EvolveException(string.Format(DriverTypeNotFound, DriverTypeName.Assembly + ".dll"), ex);
             }
         }
     }

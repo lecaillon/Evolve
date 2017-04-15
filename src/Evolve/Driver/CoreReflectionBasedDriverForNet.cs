@@ -12,16 +12,50 @@ using Microsoft.Extensions.DependencyModel;
 
 namespace Evolve.Driver
 {
+    /// <summary>
+    ///     <para>
+    ///         Base class for drivers loaded by reflection from a .NET Standard/Core project via MSBuild.
+    ///     </para>
+    ///     <para>
+    ///         Because MSBuild does not support the .NET Core class <see cref="AssemblyLoadContext"/> (see https://github.com/Microsoft/msbuild/issues/1940)
+    ///         we can not use the <see cref="CoreReflectionBasedDriver"/> to load a driver of a .NET Standard/Core project.
+    ///         We have to implement a .NET class for that.
+    ///         
+    ///         The idea is to locate the .NET Core driver assembly with the .deps.json file and then find its equivalent .NET version from it.
+    ///         <see cref="CoreReflectionBasedDriverForNet.GetAssemblyPath(RuntimeLibrary)"/>
+    ///     </para>
+    /// </summary>
     public abstract class CoreReflectionBasedDriverForNet : CoreReflectionBasedDriver
     {
+        private const string SupportedNetFrameworkVersion = @"net4[5-6](\d)*"; // .NET 4.5.x .NET 4.6.x
+
         private const string WorkingDirectoryCreationError = "Failed to create the driver temp working folder at {0}.";
 
+        /// <summary>
+        ///     Initializes a new instance of <see cref="CoreReflectionBasedDriverForNet" /> with
+        ///     the connection type name loaded from the specified assembly.
+        /// </summary>
+        /// <param name="driverAssemblyName"> Assembly to load the driver Type from. </param>
+        /// <param name="connectionTypeName"> Name of the driver Type. </param>
+        /// <param name="depsFile"> Dependency file of the project to migrate. </param>
+        /// <param name="nugetPackageDir"> Path to the NuGet package folder. </param>
         public CoreReflectionBasedDriverForNet(string driverAssemblyName, string connectionTypeName, string depsFile, string nugetPackageDir) 
             : base(driverAssemblyName, connectionTypeName, depsFile, nugetPackageDir)
         {
             AppDomain.CurrentDomain.AssemblyResolve += CurrentAppDomain_AssemblyResolve;
         }
 
+        /// <summary>
+        ///     <para>
+        ///         Creates an <see cref="IDbConnection"/> object for the specific driver.
+        ///     </para>
+        ///     <para>
+        ///         If the driver has native dependencies, we create a temp folder where they are copied and loaded from.
+        ///         To do that, we change the application current directory to the temp folder and open a connection to the database.
+        ///     </para>
+        /// </summary>
+        /// <param name="connectionString"> The connection string used to initialize the IDbConnection. </param>
+        /// <returns> An initialized database connection. </returns>
         public override IDbConnection CreateConnection(string connectionString)
         {
             Check.NotNullOrEmpty(connectionString, nameof(connectionString));
@@ -47,18 +81,22 @@ namespace Evolve.Driver
                     }
                 }
 
-                cnn.Open();
+                cnn.Open(); // force the load of the native dependencies
                 cnn.Close();
             }
             catch { }
             finally
             {
-                Directory.SetCurrentDirectory(originalCurrentDirectory);
+                Directory.SetCurrentDirectory(originalCurrentDirectory); // restore applicaiton current directory
             }
 
             return cnn;
         }
 
+        /// <summary>
+        ///     Load the driver <see cref="Type"/> from a .deps file definition.
+        /// </summary>
+        /// <returns> The driver type. </returns>
         protected override Type TypeFromAssembly()
         {
             var lib = base.GetRuntimeLibrary(DriverTypeName.Assembly);
@@ -70,34 +108,62 @@ namespace Evolve.Driver
             return driverAssembly.GetType(DriverTypeName.Type);
         }
 
+        /// <summary>
+        ///     <para>
+        ///         Returns the path of the .NET version of the driver assembly.
+        ///     </para>
+        ///     <para>
+        ///         From the .NET Standard/Core driver assembly, navigate to the parent directory and search all folders 
+        ///         containing "*net45*" or "*net46*" (<see cref="SupportedNetFrameworkVersion"/>). Take the higher.
+        ///     </para>
+        /// </summary>
+        /// <param name="lib"> The driver runtime library. </param>
+        /// <returns> The path to the .NET version of the driver assembly. </returns>
         protected override string GetAssemblyPath(RuntimeLibrary lib)
         {
             string coreAssemblyPath = base.GetAssemblyPath(lib);
             string coreAssemblyName = Path.GetFileName(coreAssemblyPath);
             DirectoryInfo packageFolder = Directory.GetParent(Path.GetDirectoryName(coreAssemblyPath));
             string netAssemblyFolder = packageFolder.GetDirectories("*net4*", SearchOption.TopDirectoryOnly)
-                                                    .Where(x => Regex.Match(x.Name, @"net4[5-6](\d)*").Success)
+                                                    .Where(x => Regex.Match(x.Name, SupportedNetFrameworkVersion).Success)
                                                     .Max(x => x.FullName);
 
             return Path.Combine(netAssemblyFolder, coreAssemblyName);
         }
 
+        /// <summary>
+        ///     <para>
+        ///         Occurs when loading the driver requires a dependency the current AppDomain does not know.
+        ///     </para>
+        ///     <para>
+        ///         Given the path of the NuGet package cache and the name of the dependency, 
+        ///         inferred the root folder path of the package assembly to resolve.
+        ///         
+        ///         From there, given the version of the dependency, find the folder which matches best: 
+        ///         take the equal or higher closest version available.
+        ///         
+        ///         Finally, find the .NET 4.5.* or .NET 4.6.* version of the dependency (take the higher).
+        ///     </para>
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        /// <returns> The driver dependency assembly to resolve. </returns>
         private Assembly CurrentAppDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
             string assemblyName = args.Name.Split(',')[0].Trim();
             var assemblyVersion = new AssemblyVersion(args.Name.Split(',')[1].Trim().Replace("Version=", string.Empty));
             string packageFolder = Path.Combine(NugetPackageDir, assemblyName);
             string assemblyFolder = Directory.GetDirectories(packageFolder, "*", SearchOption.TopDirectoryOnly)
-                                          .Select(x => new DirectoryInfo(x))
-                                          .ToLookup(x => new AssemblyVersion(Regex.Match(x.Name, "^[0-9](?:.[0-9]+)*").Value), x => x)
-                                          .Where(x => x.Key >= assemblyVersion)
-                                          .OrderBy(x => x.Key).First().ToList().First()
-                                          .FullName;
+                                             .Select(x => new DirectoryInfo(x))
+                                             .ToLookup(x => new AssemblyVersion(Regex.Match(x.Name, "^[0-9]+(?:.[0-9]+)*").Value), x => x) // extract the version of the available packages
+                                             .Where(x => x.Key >= assemblyVersion) // keep only versions equal or higher than the requested
+                                             .OrderBy(x => x.Key).First().ToList().First() // take the closest
+                                             .FullName;
 
             assemblyFolder = Path.Combine(assemblyFolder, "lib");
             string netAssemblyFolder = Directory.GetDirectories(assemblyFolder, "*net4*", SearchOption.TopDirectoryOnly)
                                                 .Select(x => new DirectoryInfo(x))
-                                                .Where(x => Regex.Match(x.Name, @"net4[5-6](\d)*").Success)
+                                                .Where(x => Regex.Match(x.Name, SupportedNetFrameworkVersion).Success)
                                                 .Max(x => x.FullName);
 
             return Assembly.LoadFile(Path.Combine(netAssemblyFolder, assemblyName + ".dll"));
@@ -129,6 +195,9 @@ namespace Evolve.Driver
             }
         }
 
+        /// <summary>
+        ///     Convenient class for assembly version comparaison. Inspired by <see cref="Evolve.Migration.MigrationVersion"/> 
+        /// </summary>
         private class AssemblyVersion : IComparable<AssemblyVersion>, IComparable
         {
             private const string InvalidVersionPatternMatching = "version {0} is invalid. Version must respect this regex: ^[0-9]+(?:.[0-9]+)*$";

@@ -6,9 +6,9 @@
     public interface IConnectionProvider
     {
         /// <summary>
-        ///     Returns a <see cref="WrappedConnection"/>.
+        ///     Returns a wrapped <see cref="System.Data.IDbConnection"/>.
         /// </summary>
-        /// <returns> A <see cref="WrappedConnection"/>. </returns>
+        /// <returns> A connection to the database to evolve. </returns>
         WrappedConnection GetConnection();
     }
 }
