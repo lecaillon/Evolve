@@ -1,6 +1,4 @@
-﻿#if NET
-
-using System;
+﻿using System;
 using System.IO;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
@@ -13,19 +11,25 @@ namespace Evolve.MsBuild
     ///         Custom MsBuild Task that runs an Evolve command.
     ///     </para>
     ///     <para>
-    ///         1- Change the MsBuild.exe current directory to the output folder.
-    ///         2- Locate the application configuration file (app.config or web.config).
+    ///         1- Change the current directory to the application output folder. (not usefull for netstandard/core projects but keep it that way anyway)
+    ///         2- Locate the application configuration file (app.config or evolve.json).
     ///         3- Copy sql migration files and folders to the output directory.
     ///         4- Run the Evolve command (migrate, clean...) defined in the configuration file.
-    ///         5- Restore the original MsBuild.exe default directory.
+    ///         5- Restore the original current directory.
     ///     </para>
     /// </summary>
-    [LoadInSeparateAppDomain]
+#if NET
     [Serializable]
+    [LoadInSeparateAppDomain]
     public class EvolveBoot : AppDomainIsolatedTask
+#else
+    [LoadInSeparateAppDomain]
+    public class EvolveBoot : Task
+#endif
     {
         private const string MigrationFolderCopyError = "Evolve cannot copy the migration folders to the output directory.";
         private const string MigrationFolderCopy = "Migration folder {0} copied to {1}.";
+        private const string EvolveJsonConfigFileNotFound = "Evolve configuration file not found at {0}. Ensure you created and copied it to your application output build directory.";
 
         /// <summary>
         ///     The absolute path name of the primary output file for the build.
@@ -57,9 +61,41 @@ namespace Evolve.MsBuild
         public string TargetDir => Path.GetDirectoryName(TargetPath);
 
         /// <summary>
-        ///     Full path to the App.config or Web.config
+        ///     Full path to the app.config or evolve.json
         /// </summary>
-        public string EvolveConfigurationFile => TargetPath + ".config";
+        /// <exception cref="EvolveConfigurationException"> When configuration file is not found. </exception>
+        public string EvolveConfigurationFile
+        {
+            get
+            {
+                string configFile = null;
+
+                if(IsDotNetStandardProject)
+                {
+                    configFile = Path.Combine(ProjectDir, "evolve.json");
+                    if (!File.Exists(configFile))
+                    {
+                        throw new EvolveConfigurationException(string.Format(EvolveJsonConfigFileNotFound, configFile));
+                    }
+                }
+                else
+                {
+                    configFile = TargetPath + ".config";
+                }
+
+                return configFile;
+            }
+        }
+
+        /// <summary>
+        ///     Full path to the deps file of the project.
+        /// </summary>
+        public string AppDepsFile => ProjectDir + Path.GetFileNameWithoutExtension(TargetPath) + ".deps.json";
+
+        /// <summary>
+        ///     The directory of the Nuget package repository.
+        /// </summary>
+        public string NugetPackageDir => Path.GetFullPath(Path.Combine(EvolveNugetPackageBuildDir, @"../../../.."));
 
         /// <summary>
         ///     Runs the task.
@@ -67,63 +103,43 @@ namespace Evolve.MsBuild
         /// <returns> true if successful; otherwise, false. </returns>
         public override bool Execute()
         {
-            if (IsDotNetStandardProject)
+            string originalCurrentDirectory = Directory.GetCurrentDirectory();
+
+            try
             {
-                try
+                WriteHeader();
+
+                Directory.SetCurrentDirectory(TargetDir);
+                Evolve evolve = null;
+#if NETSTANDARD
+                evolve = new Evolve(EvolveConfigurationFile, AppDepsFile, NugetPackageDir, logInfoDelegate: msg => LogInfo(msg));
+#else
+    #if NET45
+                if (IsDotNetStandardProject)
                 {
-                    WriteHeader();
-
-                    LogInfo("IsDotNetStandardProject = true");
-
-                    var evolve = new Evolve(logInfoDelegate: msg => LogInfo(msg));
-                    evolve.ConnectionString = @"Server=127.0.0.1;Port=5432;Database=my_database;User Id=postgres;Password=Password12!;";
-                    evolve.Driver = "npgsql";
-                    evolve.IsDotNetStandardProject = true; // temp
-                    evolve.Erase();
-
-                    WriteFooter();
-
-                    return true;
+                    evolve = new Evolve(EvolveConfigurationFile, AppDepsFile, NugetPackageDir, logInfoDelegate: msg => LogInfo(msg));
                 }
-                catch (Exception ex)
+    #endif
+                if (!IsDotNetStandardProject)
                 {
-                    LogError(ex);
-                    return false;
+                    evolve = new Evolve(EvolveConfigurationFile, logInfoDelegate: msg => LogInfo(msg));
                 }
-                finally
-                {
-                    WriteFooter();
-                }
+#endif
+                CopyMigrationProjectDirToTargetDir(evolve.Locations);
+
+                evolve.ExecuteCommand();
+
+                return true;
             }
-            else
+            catch (Exception ex)
             {
-                string originalCurrentDirectory = Directory.GetCurrentDirectory();
-
-                try
-                {
-                    WriteHeader();
-
-                    LogInfo("IsDotNetStandardProject = false");
-
-                    Directory.SetCurrentDirectory(TargetDir);
-
-                    var evolve = new Evolve(EvolveConfigurationFile, logInfoDelegate: msg => LogInfo(msg));
-                    CopyMigrationProjectDirToTargetDir(evolve.Locations);
-
-                    evolve.ExecuteCommand();
-
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    LogError(ex);
-                    return false;
-                }
-                finally
-                {
-                    Directory.SetCurrentDirectory(originalCurrentDirectory);
-                    WriteFooter();
-                }
+                LogError(ex);
+                return false;
+            }
+            finally
+            {
+                Directory.SetCurrentDirectory(originalCurrentDirectory);
+                WriteFooter();
             }
         }
 
@@ -186,7 +202,7 @@ namespace Evolve.MsBuild
             }
         }
 
-        #region Logger
+#region Logger
 
         private void LogError(Exception ex)
         {
@@ -216,8 +232,6 @@ namespace Evolve.MsBuild
             Log.LogMessage(MessageImportance.High, string.Empty);
         }
 
-        #endregion
+#endregion
     }
 }
-
-#endif
