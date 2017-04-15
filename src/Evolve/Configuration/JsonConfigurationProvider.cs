@@ -8,7 +8,7 @@ namespace Evolve.Configuration
     {
         protected override void Configure()
         {
-            throw new NotImplementedException();
+
         }
     }
 }
