@@ -12,27 +12,31 @@ namespace Evolve.Driver
         private Type _dbConnectionType;
 
         /// <summary>
-        ///     Initializes a new instance of <see cref="ReflectionBasedDriver"/> with
+        ///     Initializes a new instance of a <see cref="ReflectionBasedDriver"/> with
         ///     type names that are loaded from the specified assembly.
         /// </summary>
-        /// <param name="driverAssemblyName"> Assembly to load the DbConnection type from. </param>
-        /// <param name="connectionTypeName"> DbConnection type name. </param>
+        /// <param name="driverAssemblyName"> Assembly to load the driver Type from. </param>
+        /// <param name="connectionTypeName"> Name of the driver Type. </param>
         protected ReflectionBasedDriver(string driverAssemblyName, string connectionTypeName)
         {
             DriverTypeName = new AssemblyQualifiedTypeName(Check.NotNullOrEmpty(connectionTypeName, nameof(connectionTypeName)), 
                                                            Check.NotNullOrEmpty(driverAssemblyName, nameof(driverAssemblyName)));
         }
 
+        /// <summary>
+        ///     Stores the database driver type designation
+        /// </summary>
         protected AssemblyQualifiedTypeName DriverTypeName { get; }
 
         /// <summary>
         ///     <para>
-        ///         Try to load the <see cref="DbConnectionType"/> from an already loaded assembly.
-        ///         <see cref="ReflectionBasedDriver.TypeFromLoadedAssembly()"/>
+        ///         Returns the database driver connection type.
         ///     </para>
         ///     <para>
-        ///         If the <see cref="DbConnectionType"/> is not in memory, load it from the driver assembly.
-        ///         <see cref="ReflectionBasedDriver.TypeFromAssembly()"/>
+        ///         Try to first find it from an already loaded assembly. <see cref="ReflectionBasedDriver.TypeFromLoadedAssembly()"/>
+        ///     </para>
+        ///     <para>
+        ///         If it is not in memory, load it from the driver assembly. <see cref="ReflectionBasedDriver.TypeFromAssembly()"/>
         ///     </para>
         /// </summary>
         protected virtual Type DbConnectionType
@@ -49,8 +53,10 @@ namespace Evolve.Driver
         }
 
         /// <summary>
-        ///     Creates an IDbConnection object for the specific Driver.
+        ///     Creates an <see cref="IDbConnection"/> object for the specific driver.
         /// </summary>
+        /// <param name="connectionString"> The connection string used to initialize the IDbConnection. </param>
+        /// <returns> An initialized database connection. </returns>
         public virtual IDbConnection CreateConnection(string connectionString)
         {
             Check.NotNullOrEmpty(connectionString, nameof(connectionString));
@@ -61,16 +67,16 @@ namespace Evolve.Driver
         }
 
         /// <summary>
-        ///     Try to return a DbConnection from an assembly.
+        ///     Returns the driver <see cref="Type"/> from the assembly specified in <see cref="DriverTypeName"/>
         /// </summary>
-        /// <returns> A DbConnection type. </returns>
-        /// <exception cref="EvolveException"> When the DbConnection type can't be loaded. </exception>
+        /// <returns> The driver type. </returns>
+        /// <exception cref="EvolveException"> When the driver type can't be loaded. </exception>
         protected abstract Type TypeFromAssembly();
 
         /// <summary>
-        ///     Attempt to return a DbConnection from an already loaded assembly.
+        ///     Attempt to return the driver <see cref="Type"/> from an already loaded assembly.
         /// </summary>
-        /// <returns> A DbConnection type or null. </returns>
+        /// <returns> The driver Type or null if not found. </returns>
         private Type TypeFromLoadedAssembly()
         {
             try
@@ -83,6 +89,9 @@ namespace Evolve.Driver
             }
         }
 
+        /// <summary>
+        ///     Convenient class that stores usefull driver connection type informations.
+        /// </summary>
         protected class AssemblyQualifiedTypeName
         {
             public AssemblyQualifiedTypeName(string type, string assembly)
