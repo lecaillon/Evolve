@@ -1,4 +1,4 @@
-﻿#if NETSTANDARD || NET45
+﻿#if NETCORE || NET45
 
 using System;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.Linq;
 using Evolve.Utilities;
 using Microsoft.Extensions.DependencyModel;
 
-#if NETSTANDARD
+#if NETCORE
 using System.Reflection;
 using System.Runtime.Loader;
 using System.Runtime.InteropServices;
@@ -23,7 +23,7 @@ namespace Evolve.Driver
     ///         The loading strategy differs from a .NET project because all
     ///         the assemblies needed by the driver are not in the application build folder.
     ///         
-    ///         Moreover AppDomain is not available and replaced in netstandard by <see cref="AssemblyLoadContext"/>
+    ///         Moreover AppDomain is not available and replaced in NETCORE by <see cref="AssemblyLoadContext"/>
     ///      </para>
     ///      <para>
     ///         This class rely on the dependency file ([appname].deps.json) of the .NET core application.
@@ -48,7 +48,7 @@ namespace Evolve.Driver
 
         private readonly string _depsFile;
 
-#if NETSTANDARD
+#if NETCORE
         private readonly CustomAssemblyLoader _assemblyLoader;
 #endif
 
@@ -67,7 +67,7 @@ namespace Evolve.Driver
             ProjectDependencyContext = LoadDependencyContext(_depsFile);
             NativeDependencies = new List<string>();
 
-#if NETSTANDARD
+#if NETCORE
             _assemblyLoader = new CustomAssemblyLoader(this);
 #endif
         }
@@ -87,7 +87,7 @@ namespace Evolve.Driver
         /// </summary>
         protected List<string> NativeDependencies { get; set; }
 
-#if NETSTANDARD
+#if NETCORE
         /// <summary>
         ///     Load the driver <see cref="Type"/> from a .deps file definition.
         /// </summary>
@@ -233,7 +233,7 @@ namespace Evolve.Driver
         /// <returns> x64 or x86 </returns>
         private static string GetProcessArchitecture()
         {
-#if NETSTANDARD
+#if NETCORE
             return RuntimeInformation.ProcessArchitecture.ToString();
 #else
             return Environment.Is64BitProcess ? "x64" : "x86";
@@ -249,7 +249,7 @@ namespace Evolve.Driver
         /// </exception>
         private static IEnumerable<string> GetOSPlatform()
         {
-#if NETSTANDARD
+#if NETCORE
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 return new List<string> { "win" };
@@ -293,7 +293,7 @@ namespace Evolve.Driver
             }
         }
 
-#if NETSTANDARD
+#if NETCORE
 
         /// <summary>
         ///     Class responsible for dynamic load of assemblies in .NET Core

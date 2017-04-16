@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.5;net35;net452;</TargetFrameworks>
+    <TargetFrameworks>netcoreapp1.0;net35;net452;</TargetFrameworks>
     <Version>1.1.0</Version>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net35'">
@@ -9,15 +9,15 @@
   <PropertyGroup Condition="'$(TargetFramework)' == 'net452'">
     <DefineConstants>NET;NET45</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard1.5|AnyCPU'">
-    <DefineConstants>DEBUG;TRACE;NETSTANDARD</DefineConstants>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp1.0|AnyCPU'">
+    <DefineConstants>DEBUG;TRACE;NETCORE</DefineConstants>
     <NoWarn>1701;1702;1705</NoWarn>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard1.5|AnyCPU'">
-    <DefineConstants>TRACE;NETSTANDARD</DefineConstants>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp1.0|AnyCPU'">
+    <DefineConstants>TRACE;NETCORE</DefineConstants>
     <NoWarn>1701;1702;1705</NoWarn>
   </PropertyGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.5'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp1.0'">
     <PackageReference Include="Microsoft.Build.Framework">
       <Version>15.1.548</Version>
     </PackageReference>
@@ -48,7 +48,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1" /> <!-- must be this 9.0.1 exact version because of Microsoft.Extensions.DependencyModel dependency -->
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Build\netstandard1.5\MSBuildCore\" />
-    <Folder Include="Build\netstandard1.5\MSBuildFull\" />
+    <Folder Include="Build\netcoreapp1.0\MSBuildFull\" />
+    <Folder Include="Build\netcoreapp1.0\MSBuildCore\" />
   </ItemGroup>
 </Project>

@@ -11,7 +11,7 @@ namespace Evolve.MsBuild
     ///         Custom MsBuild Task that runs an Evolve command.
     ///     </para>
     ///     <para>
-    ///         1- Change the current directory to the application output folder. (not usefull for netstandard/core projects but keep it that way anyway)
+    ///         1- Change the current directory to the application output folder. (not usefull for NETCORE/core projects but keep it that way anyway)
     ///         2- Locate the application configuration file (app.config or evolve.json).
     ///         3- Copy sql migration files and folders to the output directory.
     ///         4- Run the Evolve command (migrate, clean...) defined in the configuration file.
@@ -50,7 +50,7 @@ namespace Evolve.MsBuild
         public string EvolveNugetPackageBuildDir { get; set; }
 
         /// <summary>
-        ///     True if the project to migrate targets netcoreapp or netstandard, otherwise false.
+        ///     True if the project to migrate targets netcoreapp or NETCORE, otherwise false.
         /// </summary>
         [Required]
         public bool IsDotNetStandardProject { get; set; }
@@ -111,7 +111,7 @@ namespace Evolve.MsBuild
 
                 Directory.SetCurrentDirectory(TargetDir);
                 Evolve evolve = null;
-#if NETSTANDARD
+#if NETCORE
                 evolve = new Evolve(EvolveConfigurationFile, AppDepsFile, NugetPackageDir, logInfoDelegate: msg => LogInfo(msg));
 #else
     #if NET45

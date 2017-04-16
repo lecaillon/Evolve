@@ -1,4 +1,4 @@
-﻿#if NETSTANDARD || NET45
+﻿#if NETCORE || NET45
 
 using System;
 using System.Collections.Generic;

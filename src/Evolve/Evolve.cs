@@ -68,7 +68,7 @@ namespace Evolve
         private IMigrationLoader _loader = new FileMigrationLoader();
         private Action<string> _logInfoDelegate;
         private readonly string _depsFile = "";
-        #if NETSTANDARD || NET45
+        #if NETCORE || NET45
         private readonly string _nugetPackageDir;
         #endif
 
@@ -114,7 +114,7 @@ namespace Evolve
             configurationProvider.Configure(evolveConfigurationPath, this);
         }
 
-#if NETSTANDARD || NET45
+#if NETCORE || NET45
 
         /// <summary>
         ///     <para>
@@ -179,7 +179,7 @@ namespace Evolve
         #region Properties
 
         /// <summary>
-        ///     True if the project to migrate targets netcoreapp or netstandard, otherwise false.
+        ///     True if the project to migrate targets netcoreapp or NETCORE, otherwise false.
         /// </summary>
         public bool IsDotNetStandardProject => !_depsFile.IsNullOrWhiteSpace();
         public int NbMigration { get; private set; }
@@ -481,7 +481,7 @@ namespace Evolve
                 return new ConnectionProvider(_userDbConnection);
             }
 
-#if NETSTANDARD
+#if NETCORE
             return new CoreDriverConnectionProvider(Driver, ConnectionString, _depsFile, _nugetPackageDir);
 #else
     #if NET45

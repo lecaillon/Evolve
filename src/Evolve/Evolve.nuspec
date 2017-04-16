@@ -17,7 +17,7 @@ Every time you build your project, it will automatically ensure that your databa
     <dependencies>
       <group targetFramework="net35" />
       <group targetFramework="net451" />
-      <group targetFramework="netstandard1.5">
+      <group targetFramework="netcoreapp1.0">
         <dependency id="System.Data.Common"                     version="4.1.0" />
         <dependency id="Microsoft.Build.Framework"              version="15.1.548" />
         <dependency id="Microsoft.Build.Utilities.Core"         version="15.1.548" />
@@ -29,10 +29,10 @@ Every time you build your project, it will automatically ensure that your databa
   <files>
     <file src="bin\Release\net35\*.dll"             target="lib\net35" />
     <file src="bin\Release\net452\*.dll"            target="lib\net451" />
-    <file src="bin\Release\netstandard1.5\*.dll"    target="lib\netstandard1.5" />
+    <file src="bin\Release\netcoreapp1.0\*.dll"     target="lib\netcoreapp1.0" />
     
     <file src="build\**"                            target="build" />
-    <file src="bin\Release\net452\*.dll"            target="build\netstandard1.5\MSBuildFull" />
-    <file src="bin\Release\netstandard1.5\*.dll"    target="build\netstandard1.5\MSBuildCore" />
+    <file src="bin\Release\net452\*.dll"            target="build\netcoreapp1.0\MSBuildFull" />
+    <file src="bin\Release\netcoreapp1.0\*.dll"     target="build\netcoreapp1.0\MSBuildCore" />
   </files>
 </package>
