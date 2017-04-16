@@ -113,12 +113,12 @@ namespace Evolve.Driver
             foreach (var dependency in lib.Dependencies)
             {
                 RuntimeLibrary depLib = GetRuntimeLibrary(dependency.Name);
-                if (IsLibraryNative(depLib) && !NativeDependencies.Contains(dependency.Name))
+                if (depLib != null && IsLibraryNative(depLib) && !NativeDependencies.Contains(dependency.Name))
                 {
                     NativeDependencies.Add(GetNativeLibraryPath(depLib));
                 }
 
-                StoreDriverNativeDependencies(depLib); // recursive
+                // StoreDriverNativeDependencies(depLib); // no need for recursion for now
             }
         }
 
@@ -204,17 +204,26 @@ namespace Evolve.Driver
         ///     found in the deps file for a given assembly.
         /// </summary>
         /// <param name="assemblyName"> The name of the assembly to find in the deps file. </param>
-        /// <returns></returns>
-        /// <exception cref="EvolveException"> Throws an EvolveException when the data of the given assembly can not be loaded. </exception>
+        /// <returns> The runtime library or null if its a "compileOnly" assembly. </returns>
+        /// <exception cref="EvolveException"> Throws an EvolveException when data of the given assembly name is not found in deps file. </exception>
         protected RuntimeLibrary GetRuntimeLibrary(string assemblyName)
         {
-            try
+            RuntimeLibrary lib = ProjectDependencyContext.RuntimeLibraries.SingleOrDefault(x => x.Name.Equals(assemblyName, StringComparison.OrdinalIgnoreCase));
+            if (lib != null)
             {
-                return ProjectDependencyContext.RuntimeLibraries.Single(x => x.Name.Equals(assemblyName, StringComparison.OrdinalIgnoreCase));
+                return lib;
             }
-            catch (Exception ex)
+            else
             {
-                throw new EvolveException(string.Format(RuntimeLibraryLoadingError, assemblyName, _depsFile), ex);
+                try
+                {
+                    ProjectDependencyContext.CompileLibraries.Single(x => x.Name.Equals(assemblyName, StringComparison.OrdinalIgnoreCase));
+                    return null;
+                }
+                catch (Exception ex)
+                {
+                    throw new EvolveException(string.Format(RuntimeLibraryLoadingError, assemblyName, _depsFile), ex);
+                }
             }
         }
 
