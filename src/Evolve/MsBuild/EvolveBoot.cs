@@ -90,7 +90,7 @@ namespace Evolve.MsBuild
         /// <summary>
         ///     Full path to the deps file of the project.
         /// </summary>
-        public string AppDepsFile => ProjectDir + Path.GetFileNameWithoutExtension(TargetPath) + ".deps.json";
+        public string AppDepsFile => Path.Combine(Path.GetDirectoryName(TargetPath), Path.GetFileNameWithoutExtension(TargetPath) + ".deps.json");
 
         /// <summary>
         ///     The directory of the Nuget package repository.
