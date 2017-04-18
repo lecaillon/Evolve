@@ -118,7 +118,6 @@ namespace Evolve.Driver
                     NativeDependencies.Add(GetNativeLibraryPath(depLib));
                 }
 
-                // StoreDriverNativeDependencies(depLib); // no need for recursion for now
             }
         }
 
