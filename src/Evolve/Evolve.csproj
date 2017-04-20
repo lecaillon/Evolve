@@ -43,7 +43,12 @@
   </ItemGroup>
   
   <!-- Add System.Data.Common.dll to the Evolve netcoreapp\MSBuildCore task -->
+  <PropertyGroup>
+    <HomePath Condition=" '$(HomePath)' == '' and '$(HOME)' != '' ">$(HOME)/</HomePath>
+    <HomePath Condition=" '$(HomePath)' == '' ">$(USERPROFILE)/</HomePath>
+  </PropertyGroup>
+
   <Target Name="CopyEvolveTaskDependency" AfterTargets="Build">
-    <Copy SourceFiles="$(home)\.nuget\packages\system.data.common\4.1.0\lib\netstandard1.2\System.Data.Common.dll" DestinationFolder="$(ProjectDir)\Build\netcoreapp1.0\MSBuildCore" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(HomePath)\.nuget\packages\system.data.common\4.1.0\lib\netstandard1.2\System.Data.Common.dll" DestinationFolder="$(ProjectDir)\Build\netcoreapp1.0\MSBuildCore" SkipUnchangedFiles="true" />
   </Target>
 </Project>
