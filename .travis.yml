@@ -15,6 +15,6 @@ before_install:
   # - chmod +x build.sh
 script:
   - dotnet restore
-  - dotnet build ./src/Evolve/Evolve.csproj -c Release -f netstandard1.3
+  - dotnet build ./src/Evolve/Evolve.csproj -c Release -f netcoreapp1.0
   - dotnet build ./test/Evolve.Core.Test/Evolve.Core.Test.csproj -c Release -f netcoreapp1.1
   - dotnet test ./test/Evolve.Core.Test/Evolve.Core.Test.csproj -c Release -f netcoreapp1.1
