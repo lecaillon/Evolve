@@ -44,6 +44,6 @@
   
   <!-- Add System.Data.Common.dll to the Evolve netcoreapp\MSBuildCore task -->
   <Target Name="CopyEvolveTaskDependency" AfterTargets="Build">
-    <Copy SourceFiles="$(userprofile)\.nuget\packages\system.data.common\4.1.0\lib\netstandard1.2\System.Data.Common.dll" DestinationFolder="$(ProjectDir)\Build\netcoreapp1.0\MSBuildCore" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="$(home)\.nuget\packages\system.data.common\4.1.0\lib\netstandard1.2\System.Data.Common.dll" DestinationFolder="$(ProjectDir)\Build\netcoreapp1.0\MSBuildCore" SkipUnchangedFiles="true" />
   </Target>
 </Project>
