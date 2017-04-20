@@ -119,7 +119,7 @@ namespace Evolve.Core.Test.Connection
         [Fact(DisplayName = "When_dbconnection_is_not_ok_validation_fails")]
         public void When_dbconnection_is_not_ok_validation_fails()
         {
-            using (var wrappedConnection = new WrappedConnection(new SqliteConnection("Data Source=:memory:fails")))
+            using (var wrappedConnection = new WrappedConnection(new SqliteConnection("Data Source=:fails")))
             {
                 Assert.ThrowsAny<Exception>(() => wrappedConnection.Validate());
             }

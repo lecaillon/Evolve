@@ -8,7 +8,6 @@ namespace Evolve.Core.Test.Utilities
         [Theory(DisplayName = "Can_get_version_and_description")]
         [InlineData("V1__desc.sql", "1", "desc")]
         [InlineData("V1_3_1__Migration-desc.sql", "1_3_1", "Migration-desc")]
-        [InlineData(@"C:\MyFolder\V1_12_1_0__migration_description.sql", "1_12_1_0", "migration description")]
         public void Can_get_migration_version_and_description(string script, string expectedVersion, string expectedDescription)
         {
             MigrationUtil.ExtractVersionAndDescription(script, TestContext.SqlMigrationPrefix, TestContext.SqlMigrationSeparator, out string version, out string description);
