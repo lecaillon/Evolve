@@ -16,6 +16,8 @@ os:
 before_install:
   - if test "$TRAVIS_OS_NAME" == "osx"; then brew update; brew install openssl; ln -s /usr/local/opt/openssl/lib/libcrypto.1.0.0.dylib /usr/local/lib/; ln -s /usr/local/opt/openssl/lib/libssl.1.0.0.dylib /usr/local/lib/; fi
   # - chmod +x build.sh
+before_script:
+  - psql -c 'create database my_database;' -U postgres
 script:
   - dotnet restore
   - dotnet build ./src/Evolve/Evolve.csproj -c Release -f netcoreapp1.0
