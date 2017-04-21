@@ -22,7 +22,7 @@ namespace Evolve.Core.Test.Driver
         {
             
             var driver = new CoreNpgsqlDriver(TestContext.DriverResourcesDepsFile, TestContext.NugetPackageFolder);
-            var cnn = driver.CreateConnection("Server=127.0.0.1;Port=5432;Database=my_database;User Id=postgres;Password={PgPassword};");
+            var cnn = driver.CreateConnection($"Server=127.0.0.1;Port=5432;Database=my_database;User Id=postgres;Password={TestContext.PgPassword};");
             cnn.Open();
 
             Assert.True(cnn.State == ConnectionState.Open);
