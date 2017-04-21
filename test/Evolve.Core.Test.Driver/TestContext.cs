@@ -22,5 +22,6 @@ namespace Evolve.Core.Test.Driver
         public static string DriverResourcesProjectFolder { get; }
         public static string DriverResourcesDepsFile { get; }
         public static string NugetPackageFolder { get; }
+        public static string PgPassword => Environment.GetEnvironmentVariable("PGPASSWORD") ?? "Password12!";
     }
 }
