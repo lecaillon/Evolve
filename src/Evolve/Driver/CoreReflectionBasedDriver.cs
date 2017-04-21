@@ -116,6 +116,7 @@ namespace Evolve.Driver
                 if (depLib != null && IsLibraryNative(depLib) && !NativeDependencies.Contains(dependency.Name))
                 {
                     NativeDependencies.Add(GetNativeLibraryPath(depLib));
+                    throw new Exception($"NativeDependencies.Count={NativeDependencies.Count} PATH={NativeDependencies[0]}");
                 }
 
                 StoreDriverNativeDependencies(depLib); // rec
