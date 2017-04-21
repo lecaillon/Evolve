@@ -1,4 +1,3 @@
-using System;
 using System.Data;
 using Evolve.Driver;
 using Xunit;
@@ -17,7 +16,7 @@ namespace Evolve.Core.Test.Driver
             Assert.True(cnn.State == ConnectionState.Open);
         }
 
-        [Fact(DisplayName = "NpgsqlDriver_works")]
+        [Fact(DisplayName = "NpgsqlDriver_works", Skip = "Temp skipped")]
         public void NpgsqlDriver_works()
         {
             
