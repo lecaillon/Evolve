@@ -2,6 +2,7 @@ language: csharp
 dist: trusty
 services:
   - postgresql
+  - docker
 env:
   global:
     - PGPASSWORD: 
@@ -15,6 +16,7 @@ os:
   # - osx CoreCLR tests time out too frequently on OSX to be useful.
 before_install:
   - if test "$TRAVIS_OS_NAME" == "osx"; then brew update; brew install openssl; ln -s /usr/local/opt/openssl/lib/libcrypto.1.0.0.dylib /usr/local/lib/; ln -s /usr/local/opt/openssl/lib/libssl.1.0.0.dylib /usr/local/lib/; fi
+  - docker run --name sqlserver -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=Password12!' -p 1433:1433 -d microsoft/mssql-server-linux:latest
   # - chmod +x build.sh
 before_script:
   - psql -c 'create database my_database;' -U postgres

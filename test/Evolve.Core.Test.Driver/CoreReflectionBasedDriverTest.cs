@@ -27,7 +27,7 @@ namespace Evolve.Core.Test.Driver
             Assert.True(cnn.State == ConnectionState.Open);
         }
 
-        [Fact(DisplayName = "SqlClientDriver_works", Skip = "Temp skipped")]
+        [Fact(DisplayName = "SqlClientDriver_works")]
         public void SqlClientDriver_works()
         {
             var driver = new CoreSqlClientDriver(TestContext.DriverResourcesDepsFile, TestContext.NugetPackageFolder);
