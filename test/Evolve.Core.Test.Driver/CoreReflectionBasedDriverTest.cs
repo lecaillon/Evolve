@@ -28,6 +28,13 @@ namespace Evolve.Core.Test.Driver
             Assert.True(cnn.State == ConnectionState.Open);
         }
 
+        [Fact(DisplayName = "TEST")]
+        public void TEST()
+        {
+            Assert.True(TestContext.DriverResourcesDepsFile == "PSG");
+        }
+
+
         [Fact(DisplayName = "SqlClientDriver_works", Skip = "Temp skipped")]
         public void SqlClientDriver_works()
         {
