@@ -116,7 +116,6 @@ namespace Evolve.Driver
                 if (depLib != null && IsLibraryNative(depLib) && !NativeDependencies.Contains(dependency.Name))
                 {
                     NativeDependencies.Add(GetNativeLibraryPath(depLib));
-                    throw new Exception($"NativeDependencies.Count={NativeDependencies.Count} PATH={NativeDependencies[0]}");
                 }
 
                 StoreDriverNativeDependencies(depLib); // rec
@@ -327,7 +326,7 @@ namespace Evolve.Driver
             protected override IntPtr LoadUnmanagedDll(string unmanagedDllName)
             {
                 // hack for the SQLClient driver: remove all native dependencies that do not target the current ProcessArchitecture
-                _driverLoader.NativeDependencies.RemoveAll(x => x.Contains(RuntimeInformation.ProcessArchitecture == Architecture.X64 ? "x86" : "x64"));
+                //_driverLoader.NativeDependencies.RemoveAll(x => x.Contains(RuntimeInformation.ProcessArchitecture == Architecture.X64 ? "x86" : "x64"));
 
                 string unmanagedDllNameWithoutExt = Path.GetFileNameWithoutExtension(unmanagedDllName); // clean the name
                 string unmanagedDllPath = _driverLoader.NativeDependencies.Single(x => Path.GetFileNameWithoutExtension(x).Equals(unmanagedDllNameWithoutExt, StringComparison.OrdinalIgnoreCase));
