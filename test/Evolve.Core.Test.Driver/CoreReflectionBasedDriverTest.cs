@@ -31,7 +31,7 @@ namespace Evolve.Core.Test.Driver
         [Fact(DisplayName = "TEST")]
         public void TEST()
         {
-            Assert.True(TestContext.DriverResourcesDepsFile == "PSG");
+            throw new Exception("PATH="+TestContext.DriverResourcesDepsFile);
         }
 
 
