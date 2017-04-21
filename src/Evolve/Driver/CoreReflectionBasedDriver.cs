@@ -327,9 +327,9 @@ namespace Evolve.Driver
             {
                 // hack for the SQLClient driver: remove all native dependencies that do not target the current ProcessArchitecture
                 //_driverLoader.NativeDependencies.RemoveAll(x => x.Contains(RuntimeInformation.ProcessArchitecture == Architecture.X64 ? "x86" : "x64"));
-                throw new Exception("unmanagedDllName: " + unmanagedDllName);
+
                 string unmanagedDllNameWithoutExt = Path.GetFileNameWithoutExtension(unmanagedDllName); // clean the name
-                string unmanagedDllPath = _driverLoader.NativeDependencies.Single(x => Path.GetFileNameWithoutExtension(x).Equals(unmanagedDllNameWithoutExt, StringComparison.OrdinalIgnoreCase));
+                string unmanagedDllPath = _driverLoader.NativeDependencies.Single(x => Path.GetFileNameWithoutExtension(x).Contains(unmanagedDllNameWithoutExt, StringComparison.OrdinalIgnoreCase));
                 if (unmanagedDllPath != null)
                 {
                     return LoadUnmanagedDllFromPath(unmanagedDllPath);
