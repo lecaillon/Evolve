@@ -21,5 +21,6 @@ script:
   - dotnet build ./src/Evolve/Evolve.csproj -c Release -f netcoreapp1.0
   - dotnet build ./test/Evolve.Core.Test/Evolve.Core.Test.csproj -c Release -f netcoreapp1.1
   - dotnet build ./test/Evolve.Core.Test.Driver/Evolve.Core.Test.Driver.csproj -c Release -f netcoreapp1.1
+  - dotnet build ./test/Evolve.Core.Test.Resources.SupportedDrivers/Evolve.Core.Test.Resources.SupportedDrivers.csproj -c Release -f netcoreapp1.1
   - dotnet test ./test/Evolve.Core.Test/Evolve.Core.Test.csproj -c Release -f netcoreapp1.1
   - dotnet test ./test/Evolve.Core.Test.Driver/Evolve.Core.Test.Driver.csproj -c Release -f netcoreapp1.1
