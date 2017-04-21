@@ -10,7 +10,6 @@ namespace Evolve.Core.Test.Driver
         {
             ProjectFolder = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(typeof(TestContext).GetTypeInfo().Assembly.Location), @"../../../"));
             DriverResourcesProjectFolder = Path.GetFullPath(Path.Combine(ProjectFolder, @"../Evolve.Core.Test.Resources.SupportedDrivers"));
-            NugetPackageFolder = Environment.ExpandEnvironmentVariables(@"%USERPROFILE%/.nuget/packages");
 #if DEBUG
             DriverResourcesDepsFile = Path.Combine(DriverResourcesProjectFolder, @"bin/Debug/netcoreapp1.1/Evolve.Core.Test.Resources.SupportedDrivers.deps.json");
 #else
@@ -21,7 +20,8 @@ namespace Evolve.Core.Test.Driver
         public static string ProjectFolder { get; }
         public static string DriverResourcesProjectFolder { get; }
         public static string DriverResourcesDepsFile { get; }
-        public static string NugetPackageFolder { get; }
+        public static string NugetPackageFolder => $@"{EnvHome}/.nuget/packages";
         public static string PgPassword => Environment.GetEnvironmentVariable("PGPASSWORD") ?? "Password12!";
+        public static string EnvHome => Environment.GetEnvironmentVariable("USERPROFILE") ?? Environment.GetEnvironmentVariable("HOME");
     }
 }
