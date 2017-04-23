@@ -18,6 +18,7 @@ namespace Evolve.Test
             ResourcesFolder = Path.Combine(Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).AbsolutePath), "Resources");
             AppConfigPath = Path.Combine(ResourcesFolder, "App.config");
             WebConfigPath = Path.Combine(ResourcesFolder, "Web.config");
+            JsonConfigPath = Path.Combine(ResourcesFolder, "evolve.json");
         }
 
         public static string ProjectFolder { get; }
@@ -29,5 +30,6 @@ namespace Evolve.Test
         public static string ResourcesFolder { get; }
         public static string AppConfigPath { get; }
         public static string WebConfigPath { get; }
+        public static string JsonConfigPath { get; }
     }
 }

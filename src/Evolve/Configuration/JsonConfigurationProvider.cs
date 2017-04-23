@@ -1,20 +1,50 @@
-﻿using System;
+﻿#if NETCORE || NET45
+
+using System;
 using System.Collections.Generic;
-using System.Text;
+using System.IO;
+using System.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Evolve.Configuration
 {
     public class JsonConfigurationProvider : EvolveConfigurationProviderBase
     {
-        protected override void Configure()
+        private Dictionary<string, string> _datasource = null;
+
+        private const string IncorrectFileFormat = "Incorrect Evolve configuration file format at: {0}.";
+
+        protected override Dictionary<string, string> Datasource
         {
-            _configuration.Command = CommandOptions.Erase;
+            get
+            {
+                if (_datasource == null)
+                {
+                    try
+                    {
+                        using (StreamReader file = File.OpenText(_filePath))
+                        {
+                            using (var reader = new JsonTextReader(file))
+                            {
+                                var jObject = (JObject)JToken.ReadFrom(reader);
+                                _datasource = jObject.Children<JProperty>()
+                                                     .Where(x => x.Name.StartsWith("Evolve.", StringComparison.OrdinalIgnoreCase))
+                                                     .Where(x => x.Value is JValue)
+                                                     .ToDictionary(x => x.Name, x => x.Value.ToString());
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new EvolveConfigurationException(string.Format(IncorrectFileFormat, _filePath), ex);
+                    }
+                }
 
-            //_configuration.Driver = "npgsql";
-            //_configuration.ConnectionString = "Server=127.0.0.1;Port=5432;Database=my_database;User Id=postgres;Password=Password12!;";
-
-            _configuration.Driver = "microsoftdatasqlite";
-            _configuration.ConnectionString = "Data Source=:memory:;";
+                return _datasource;
+            }
         }
     }
 }
+
+#endif

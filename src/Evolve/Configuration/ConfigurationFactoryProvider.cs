@@ -13,7 +13,9 @@ namespace Evolve.Configuration
 #if NET
             [".config"] = () => new AppConfigConfigurationProvider(),
 #endif
+#if NETCORE || NET45
             [".json"] = () => new JsonConfigurationProvider(),
+#endif
         };
 
         public static IConfigurationProvider GetProvider(string evolveConfigurationPath)
