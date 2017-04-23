@@ -157,7 +157,7 @@ namespace Evolve
         public bool MustEraseOnValidationError { get; set; }
         public Encoding Encoding { get; set; } = Encoding.UTF8;
         public IEnumerable<string> Locations { get; set; } = new List<string> { "Sql_Scripts" };
-        public string MetadaTableName { get; set; } = "changelog";
+        public string MetadataTableName { get; set; } = "changelog";
 
         private string _metadaTableSchema;
         public string MetadataTableSchema
@@ -242,7 +242,7 @@ namespace Evolve
                 }
             }
 
-            var metadata = db.GetMetadataTable(MetadataTableSchema, MetadaTableName);
+            var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
             var lastAppliedVersion = metadata.GetAllMigrationMetadata().LastOrDefault()?.Version ?? new MigrationVersion("0");
             var scripts = _loader.GetMigrations(Locations, SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix)
                                  .SkipWhile(x => x.Version <= lastAppliedVersion)
@@ -291,7 +291,7 @@ namespace Evolve
             }
 
             var db = Initialize();
-            var metadata = db.GetMetadataTable(MetadataTableSchema, MetadaTableName);
+            var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
 
             if(!metadata.IsExists())
             {
@@ -394,7 +394,7 @@ namespace Evolve
         {
             Check.NotNull(db, nameof(db));
 
-            var metadata = db.GetMetadataTable(MetadataTableSchema, MetadaTableName);                                       // Get the metadata table
+            var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);                                       // Get the metadata table
             if (!metadata.IsExists())
             {
                 _logInfoDelegate(NoMetadataFound); // Nothing to validate
@@ -446,7 +446,7 @@ namespace Evolve
         {
             Check.NotNull(db, nameof(db));
 
-            var metadata = db.GetMetadataTable(MetadataTableSchema, MetadaTableName);
+            var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
 
             foreach (var schemaName in FindSchemas())
             {

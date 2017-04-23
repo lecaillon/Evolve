@@ -117,7 +117,7 @@ namespace Evolve.Configuration
         /// <summary>
         ///     Returns the metadata table name. (default: changelog)
         /// </summary>
-        string MetadaTableName { get; set; }
+        string MetadataTableName { get; set; }
 
         /// <summary>
         ///     Returns the prefix of the placeholders. (default: ${)
