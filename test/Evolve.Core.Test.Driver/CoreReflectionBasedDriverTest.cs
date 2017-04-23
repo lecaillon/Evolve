@@ -31,7 +31,7 @@ namespace Evolve.Core.Test.Driver
         [Fact(DisplayName = "SqlClientDriver_works")]
         public void SqlClientDriver_works()
         {
-            Thread.Sleep(60000);
+            Thread.Sleep(30000);
             var driver = new CoreSqlClientDriver(TestContext.DriverResourcesDepsFile, TestContext.NugetPackageFolder);
             var cnn = driver.CreateConnection("Server=127.0.0.1;Database=master;User Id=sa;Password=Password12!;");
             cnn.Open();
