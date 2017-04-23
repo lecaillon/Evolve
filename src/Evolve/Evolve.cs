@@ -67,18 +67,25 @@ namespace Evolve
         private IDbConnection _userDbConnection;
         private IMigrationLoader _loader = new FileMigrationLoader();
         private Action<string> _logInfoDelegate;
+        private readonly string _depsFile = "";
+        #if NETCORE || NET45
+        private readonly string _nugetPackageDir;
+        #endif
 
-        #endregion
+#endregion
 
         #region Constructors
 
         /// <summary>
         ///     <para>
-        ///         Constructor.
+        ///         Simple constructor.
+        ///     </para>
+        ///     <para>
+        ///         Usefull when Evolve is used "in-app" or for unit tests. 
         ///     </para>
         /// </summary>
-        /// <param name="dbConnection">Optionnal database connection.</param>
-        /// <param name="logInfoDelegate">Optionnal logger.</param>
+        /// <param name="dbConnection"> Optional database connection. </param>
+        /// <param name="logInfoDelegate"> Optional logger. </param>
         public Evolve(IDbConnection dbConnection = null, Action<string> logInfoDelegate = null)
         {
             _userDbConnection = dbConnection;
@@ -87,15 +94,15 @@ namespace Evolve
 
         /// <summary>
         ///     <para>
-        ///         Constructor.
+        ///         Initializes a new instance of a <see cref="Evolve"/> with the given <paramref name="evolveConfigurationPath"/>.
         ///     </para>
         ///     <para>
-        ///         Load the configuration file at <paramref name="evolveConfigurationPath"/>.
+        ///         This constructor is used to evolve .NET projects.
         ///     </para>
         /// </summary>
-        /// <param name="evolveConfigurationPath">Evolve configuration file (can be relative).</param>
-        /// <param name="dbConnection">Optionnal database connection.</param>
-        /// <param name="logInfoDelegate">Optionnal logger.</param>
+        /// <param name="evolveConfigurationPath"> Evolve configuration file (can be relative). </param>
+        /// <param name="dbConnection"> Optional database connection. </param>
+        /// <param name="logInfoDelegate"> Optional logger. </param>
         public Evolve(string evolveConfigurationPath, IDbConnection dbConnection = null, Action<string> logInfoDelegate = null)
         {
             _configurationPath = Check.FileExists(ResolveConfigurationFileLocation(evolveConfigurationPath), nameof(evolveConfigurationPath));
@@ -106,6 +113,37 @@ namespace Evolve
             var configurationProvider = ConfigurationFactoryProvider.GetProvider(evolveConfigurationPath);
             configurationProvider.Configure(evolveConfigurationPath, this);
         }
+
+#if NETCORE || NET45
+
+        /// <summary>
+        ///     <para>
+        ///         Initializes a new instance of a <see cref="Evolve"/> with the given 
+        ///         <paramref name="evolveConfigurationPath"/>, <paramref name="depsFile"/> and <paramref name="nugetPackageDir"/>
+        ///     </para>
+        ///     <para>
+        ///         This constructor is used to evolve .NET Standard/Core projects.
+        ///     </para>
+        /// </summary>
+        /// <param name="evolveConfigurationPath"> Evolve configuration file (can be relative). </param>
+        /// <param name="depsFile"> Dependency file of the project to migrate (can be relative). </param>
+        /// <param name="nugetPackageDir"> Path to the NuGet package folder. </param>
+        /// <param name="dbConnection"> Optional database connection. </param>
+        /// <param name="logInfoDelegate"> Optional logger. </param>
+        public Evolve(string evolveConfigurationPath, string depsFile, string nugetPackageDir, IDbConnection dbConnection = null, Action<string> logInfoDelegate = null)
+        {
+            _configurationPath = Check.FileExists(ResolveConfigurationFileLocation(evolveConfigurationPath), nameof(evolveConfigurationPath));
+            _depsFile = Check.FileExists(ResolveConfigurationFileLocation(depsFile), nameof(depsFile));
+            _nugetPackageDir = Check.DirectoryExists(nugetPackageDir, nameof(nugetPackageDir));
+            _userDbConnection = dbConnection;
+            _logInfoDelegate = logInfoDelegate ?? new Action<string>((msg) => { });
+
+            // Configure Evolve
+            var configurationProvider = ConfigurationFactoryProvider.GetProvider(evolveConfigurationPath);
+            configurationProvider.Configure(evolveConfigurationPath, this);
+        }
+
+#endif
 
         #endregion
 
@@ -119,7 +157,7 @@ namespace Evolve
         public bool MustEraseOnValidationError { get; set; }
         public Encoding Encoding { get; set; } = Encoding.UTF8;
         public IEnumerable<string> Locations { get; set; } = new List<string> { "Sql_Scripts" };
-        public string MetadaTableName { get; set; } = "changelog";
+        public string MetadataTableName { get; set; } = "changelog";
 
         private string _metadaTableSchema;
         public string MetadataTableSchema
@@ -140,6 +178,10 @@ namespace Evolve
 
         #region Properties
 
+        /// <summary>
+        ///     True if the project to migrate targets netcoreapp or NETCORE, otherwise false.
+        /// </summary>
+        public bool IsDotNetStandardProject => !_depsFile.IsNullOrWhiteSpace();
         public int NbMigration { get; private set; }
         public int NbReparation { get; private set; }
         public int NbSchemaErased { get; private set; }
@@ -200,7 +242,7 @@ namespace Evolve
                 }
             }
 
-            var metadata = db.GetMetadataTable(MetadataTableSchema, MetadaTableName);
+            var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
             var lastAppliedVersion = metadata.GetAllMigrationMetadata().LastOrDefault()?.Version ?? new MigrationVersion("0");
             var scripts = _loader.GetMigrations(Locations, SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix)
                                  .SkipWhile(x => x.Version <= lastAppliedVersion)
@@ -249,7 +291,7 @@ namespace Evolve
             }
 
             var db = Initialize();
-            var metadata = db.GetMetadataTable(MetadataTableSchema, MetadaTableName);
+            var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
 
             if(!metadata.IsExists())
             {
@@ -331,7 +373,7 @@ namespace Evolve
             NbSchemaErased = 0;
             NbSchemaToEraseSkipped = 0;
 
-            var connectionProvider = GetConnectionProvider(_userDbConnection);              // Get a database connection provider
+            var connectionProvider = GetConnectionProvider();                               // Get a database connection provider
             var evolveConnection = connectionProvider.GetConnection();                      // Get a connection to the database
             evolveConnection.Validate();                                                    // Validate the reliabilty of the initiated connection
             var dbmsType = evolveConnection.GetDatabaseServerType();                        // Get the DBMS type
@@ -352,7 +394,7 @@ namespace Evolve
         {
             Check.NotNull(db, nameof(db));
 
-            var metadata = db.GetMetadataTable(MetadataTableSchema, MetadaTableName);                                       // Get the metadata table
+            var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);                                       // Get the metadata table
             if (!metadata.IsExists())
             {
                 _logInfoDelegate(NoMetadataFound); // Nothing to validate
@@ -404,7 +446,7 @@ namespace Evolve
         {
             Check.NotNull(db, nameof(db));
 
-            var metadata = db.GetMetadataTable(MetadataTableSchema, MetadaTableName);
+            var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
 
             foreach (var schemaName in FindSchemas())
             {
@@ -432,10 +474,24 @@ namespace Evolve
             }
         }
 
-        private IConnectionProvider GetConnectionProvider(IDbConnection connection = null)
+        private IConnectionProvider GetConnectionProvider()
         {
-            return connection != null ? new ConnectionProvider(connection) as IConnectionProvider
-                                      : new DriverConnectionProvider(Driver, ConnectionString);
+            if(_userDbConnection != null)
+            {
+                return new ConnectionProvider(_userDbConnection);
+            }
+
+#if NETCORE
+            return new CoreDriverConnectionProvider(Driver, ConnectionString, _depsFile, _nugetPackageDir);
+#else
+    #if NET45
+            if(IsDotNetStandardProject)
+            {
+                return new CoreDriverConnectionProviderForNet(Driver, ConnectionString, _depsFile, _nugetPackageDir);
+            }
+    #endif
+            return new DriverConnectionProvider(Driver, ConnectionString);
+#endif
         }
 
         private IEnumerable<string> FindSchemas()

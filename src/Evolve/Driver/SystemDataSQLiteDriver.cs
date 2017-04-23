@@ -1,6 +1,14 @@
-﻿namespace Evolve.Driver
+﻿#if NET
+
+namespace Evolve.Driver
 {
-    public class SystemDataSQLiteDriver : ReflectionBasedDriver
+    /// <summary>
+    ///     System.Data.SQlite driver for projects targeting the .NET Framework.
+    /// </summary>
+    /// <remarks>
+    ///     This driver does not support .NET Core.
+    /// </remarks>
+    public class SystemDataSQLiteDriver : NetReflectionBasedDriver
     {
         public const string DriverAssemblyName = "System.Data.SQLite";
         public const string ConnectionTypeName = "System.Data.SQLite.SQLiteConnection";
@@ -10,3 +18,5 @@
         }
     }
 }
+
+#endif

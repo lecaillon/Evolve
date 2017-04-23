@@ -14,6 +14,7 @@ namespace Evolve.Utilities
         private const string CollectionArgumentIsEmpty = "The collection must contain at least one element.";
         private const string CollectionArgumentHasNullElement = "The collection must not contain any null element.";
         private const string FileNotFound = "The file does not exist.";
+        private const string DirectoryNotFound = "Directory not found at: {0}";
 
         /// <summary>
         ///     Ensures that the string passed as a parameter is neither null or empty.
@@ -173,6 +174,29 @@ namespace Evolve.Utilities
             }
 
             return filePath;
+        }
+
+        /// <summary>
+        ///     Ensures that the specified directory exists.
+        /// </summary>
+        /// <param name="path"> The full path of the directory to test. </param>
+        /// <param name="parameterName"> The name of the parameter to test. </param>
+        /// <returns> The full path of the directory tested and found. </returns>
+        /// <exception cref="ArgumentNullException"> Throws ArgumentNullException if the path is null. </exception>
+        /// <exception cref="ArgumentException"> Throws ArgumentException (with an inner DirectoryNotFoundException) if the directory is not found. </exception>
+        public static string DirectoryExists(string path, string parameterName)
+        {
+            NotNullOrEmpty(path, parameterName);
+
+            if (!Directory.Exists(path))
+            {
+                NotNullOrEmpty(parameterName, nameof(parameterName));
+
+                throw new ArgumentException(string.Format(DirectoryNotFound, path), parameterName,
+                                            new DirectoryNotFoundException(path));
+            }
+
+            return path;
         }
     }
 }

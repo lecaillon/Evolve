@@ -31,6 +31,12 @@ test_script:
     dotnet test
     
     cd ../..
+
+    cd test/Evolve.Core.Test.Driver/
+    
+    dotnet test
+    
+    cd ../..
 - cmd: >-
     xunit.console.exe test\Evolve.Test\bin\%CONFIGURATION%\Evolve.Test.dll
     

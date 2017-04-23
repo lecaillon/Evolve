@@ -1,8 +1,7 @@
 ﻿using Evolve.Dialect;
-using Evolve.Dialect.SQLite;
 using Xunit;
 
-namespace Evolve.Test.Core.Dialect.SQLite
+namespace Evolve.Core.Test.Dialect.SQLite
 {
     public class SQLiteDatabaseTest
     {

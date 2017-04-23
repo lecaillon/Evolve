@@ -1,4 +1,4 @@
-﻿#if NET
+﻿#if NETCORE || NET45
 
 using System;
 using System.Collections.Generic;
@@ -8,53 +8,42 @@ using Evolve.Utilities;
 namespace Evolve.Connection
 {
     /// <summary>
-    ///     Base class for obtaining a <see cref="WrappedConnection"/> from a .NET driver.
+    ///     Base class for obtaining a <see cref="WrappedConnection"/> from a .NET Core driver.
     /// </summary>
-    public class DriverConnectionProvider : IConnectionProvider
+    public abstract class CoreDriverConnectionProviderBase : IConnectionProvider
     {
         private const string UnknownDriver = "Driver name {0} is unknown. Try one of the following: Microsoft.Sqlite, SQLite, MySQL.Data, MariaDB, Npgsql, SqlClient.";
-        private const string DriverCreationError = "Database driver creation error. Verify that your driver assembly is in the same folder that your application.";
+        private const string DriverCreationError = "Database driver creation error.";
 
         private readonly string _driverName;
         private readonly string _connectionString;
+        private readonly string _depsFile;
+        private readonly string _nugetPackageDir;
         private WrappedConnection _wrappedConnection;
 
         /// <summary>
-        ///     Map a driver name to its <see cref="IDriver"/> implementation.
-        /// </summary>
-        private readonly Dictionary<string, Func<IDriver>> _driverMap = new Dictionary<string, Func<IDriver>>
-        {
-            ["microsoftdatasqlite"] = () => new MicrosoftDataSqliteDriver(),
-            ["microsoftsqlite"]     = () => new MicrosoftDataSqliteDriver(),
-
-            ["sqlite"]              = () => new SystemDataSQLiteDriver(),
-            ["systemdatasqlite"]    = () => new SystemDataSQLiteDriver(),
-
-            ["mysql"]               = () => new MySqlDataDriver(),
-            ["mariadb"]             = () => new MySqlDataDriver(),
-            ["mysqldata"]           = () => new MySqlDataDriver(),
-
-            ["npgsql"]              = () => new NpgsqlDriver(),
-            ["postgresql"]          = () => new NpgsqlDriver(),
-
-            ["sqlserver"]           = () => new SqlClientDriver(),
-            ["sqlclient"]           = () => new SqlClientDriver(),
-        };
-
-        /// <summary>
-        ///     Initializes a new instance of a <see cref="DriverConnectionProvider"/> from the given <paramref name="driverName"/>.
+        ///     Initializes a new instance of a <see cref="CoreDriverConnectionProviderBase"/> from the given <paramref name="driverName"/>.
         /// </summary>
         /// <param name="driverName"> Name of the driver to load. </param>
         /// <param name="connectionString"> Connection string used to initialised a database connection. </param>
-        public DriverConnectionProvider(string driverName, string connectionString)
+        /// <param name="depsFile"> Dependency file of the project to migrate. </param>
+        /// <param name="nugetPackageDir"> Path to the NuGet package folder. </param>
+        public CoreDriverConnectionProviderBase(string driverName, string connectionString, string depsFile, string nugetPackageDir)
         {
             _driverName = Check.NotNullOrEmpty(driverName, nameof(driverName));
             _connectionString = Check.NotNullOrEmpty(connectionString, nameof(connectionString));
+            _depsFile = Check.NotNullOrEmpty(depsFile, nameof(depsFile));
+            _nugetPackageDir = Check.NotNullOrEmpty(nugetPackageDir, nameof(nugetPackageDir));
 
             Driver = LoadDriver();
         }
 
         public IDriver Driver { get; }
+
+        /// <summary>
+        ///     Returns a map of driver names and their implementations.
+        /// </summary>
+        protected abstract Dictionary<string, Func<string, string, IDriver>> DriversMap { get; }
 
         /// <summary>
         ///     Returns a wrapped <see cref="System.Data.IDbConnection"/> initiated by the loaded <see cref="Driver"/>.
@@ -77,7 +66,7 @@ namespace Evolve.Connection
                                                 .Replace(" ", "")
                                                 .Replace(".", "");
 
-            _driverMap.TryGetValue(cleanDriverName, out Func<IDriver> driverCreationDelegate);
+            DriversMap.TryGetValue(cleanDriverName, out Func<string, string, IDriver> driverCreationDelegate);
 
             if (driverCreationDelegate == null)
             {
@@ -86,7 +75,7 @@ namespace Evolve.Connection
 
             try
             {
-                return driverCreationDelegate();
+                return driverCreationDelegate(_depsFile, _nugetPackageDir);
             }
             catch (Exception ex)
             {

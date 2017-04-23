@@ -1,9 +1,12 @@
-﻿using Evolve.Utilities;
-using System;
+﻿using System;
 using System.Data;
+using Evolve.Utilities;
 
 namespace Evolve.Connection
 {
+    /// <summary>
+    ///     A wrapper of <see cref="IDbConnection"/> used to managed all the queries and transactions to the database to evolve.
+    /// </summary>
     public class WrappedConnection : IDisposable
     {
         private readonly bool _connectionOwned;
@@ -13,6 +16,11 @@ namespace Evolve.Connection
         private const string NoActiveTransaction = "The connection does not have any active transactions.";
         private const string ConnectionValidationError = "Validation of the database connection failed.";
 
+        /// <summary>
+        ///     Initializes a new instance of <see cref="WrappedConnection"/>.
+        /// </summary>
+        /// <param name="connection"> The connection used to interact with the database. </param>
+        /// <param name="connectionOwned"> true if Evolve is responsible of disposing the underlying connection, otherwise false. </param>
         public WrappedConnection(IDbConnection connection, bool connectionOwned = true)
         {
             DbConnection = Check.NotNull(connection, nameof(connection));

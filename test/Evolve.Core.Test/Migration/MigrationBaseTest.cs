@@ -1,9 +1,9 @@
-﻿using Evolve.Migration;
-using System.Collections.Generic;
-using Xunit;
+﻿using System.Collections.Generic;
 using Evolve.Metadata;
+using Evolve.Migration;
+using Xunit;
 
-namespace Evolve.Test.Core.Migration
+namespace Evolve.Core.Test.Migration
 {
     public class MigrationBaseTest
     {

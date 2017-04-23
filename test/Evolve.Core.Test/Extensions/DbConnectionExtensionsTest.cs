@@ -1,10 +1,9 @@
-﻿using System.Data;
-using Xunit;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Evolve.Dialect;
+using Xunit;
 
-namespace Evolve.Test.Core.Extensions
+namespace Evolve.Core.Test.Extensions
 {
     public class WrappedConnectionExtensionsTest
     {

@@ -1,0 +1,12 @@
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Evolve_PlatformSuffix Condition=" '$(Evolve_PlatformSuffix)' == '' and '$(MSBuildRuntimeType)' == 'Core' ">MSBuildCore/</Evolve_PlatformSuffix>
+    <Evolve_PlatformSuffix Condition=" '$(Evolve_PlatformSuffix)' == '' ">MSBuildFull/</Evolve_PlatformSuffix>
+  </PropertyGroup>
+  
+  <UsingTask TaskName="Evolve.MsBuild.EvolveBoot" AssemblyFile="$(MSBuildThisFileDirectory)$(Evolve_PlatformSuffix)Evolve.dll" />
+  
+  <Target Name="SqlMigration" AfterTargets="Build">
+    <EvolveBoot TargetPath="$(TargetPath)" ProjectDir="$(ProjectDir)" EvolveNugetPackageBuildDir="$(MSBuildThisFileDirectory)" IsDotNetStandardProject="true" />
+  </Target>
+</Project>

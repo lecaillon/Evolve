@@ -5,8 +5,10 @@ namespace Evolve.Driver
     public interface IDriver
     {
         /// <summary>
-        /// Creates an uninitialized IDbConnection object for the specific Driver
+        ///     Creates an <see cref="IDbConnection"/> object for the specific driver.
         /// </summary>
-        IDbConnection CreateConnection();
+        /// <param name="connectionString"> The connection string used to initialize the IDbConnection. </param>
+        /// <returns> An initialized database connection. </returns>
+        IDbConnection CreateConnection(string connectionString);
     }
 }

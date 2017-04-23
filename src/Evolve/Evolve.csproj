@@ -1,33 +1,54 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.3;net35;net45;</TargetFrameworks>
-    <Version>1.0.0-alpha1</Version>
+    <TargetFrameworks>netcoreapp1.0;net35;net452;</TargetFrameworks>
+    <Version>1.1.0</Version>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net35' Or '$(TargetFramework)' == 'net45'">
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net35'">
     <DefineConstants>NET</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard1.3|AnyCPU'">
-    <DefineConstants>DEBUG;TRACE;NETSTANDARD</DefineConstants>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net452'">
+    <DefineConstants>NET;NET45</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp1.0|AnyCPU'">
+    <DefineConstants>DEBUG;TRACE;NETCORE</DefineConstants>
     <NoWarn>1701;1702;1705</NoWarn>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard1.3|AnyCPU'">
-    <DefineConstants>TRACE;NETSTANDARD</DefineConstants>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp1.0|AnyCPU'">
+    <DefineConstants>TRACE;NETCORE</DefineConstants>
     <NoWarn>1701;1702;1705</NoWarn>
   </PropertyGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.3'">
-    <PackageReference Include="System.Data.Common" Version="4.3.0" />
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp1.0'">
+    <PackageReference Include="Microsoft.Build.Framework" Version="15.1.548" />
+    <PackageReference Include="Microsoft.Build.Utilities.Core" Version="15.1.548" />
+    <PackageReference Include="System.Data.Common" Version="4.1.0" />
+    <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="1.0.3" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net35'">
     <Reference Include="System.Configuration" />
     <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.Build.Utilities.v3.5" />
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net452'">
     <Reference Include="System.Configuration" />
     <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.Build.Utilities.v4.0" />
+    <PackageReference Include="Microsoft.DotNet.PlatformAbstractions" Version="1.1.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyModel" Version="1.1.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" /> <!-- must be this 9.0.1 exact version because of Microsoft.Extensions.DependencyModel dependency -->
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Content\" />
+    <Folder Include="Build\netcoreapp1.0\MSBuildFull\" />
+    <Folder Include="Build\netcoreapp1.0\MSBuildCore\" />
   </ItemGroup>
+  
+  <!-- Add System.Data.Common.dll to the Evolve netcoreapp\MSBuildCore task -->
+  <PropertyGroup>
+    <HomePath Condition=" '$(HomePath)' == '' and '$(HOME)' != '' ">$(HOME)/</HomePath>
+    <HomePath Condition=" '$(HomePath)' == '' ">$(USERPROFILE)/</HomePath>
+  </PropertyGroup>
+
+  <Target Name="CopyEvolveTaskDependency" AfterTargets="Build">
+    <Copy SourceFiles="$(HomePath)\.nuget\packages\system.data.common\4.1.0\lib\netstandard1.2\System.Data.Common.dll" DestinationFolder="$(ProjectDir)\Build\netcoreapp1.0\MSBuildCore" SkipUnchangedFiles="true" />
+  </Target>
 </Project>

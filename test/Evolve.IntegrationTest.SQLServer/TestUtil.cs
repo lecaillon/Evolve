@@ -14,7 +14,7 @@ namespace Evolve.IntegrationTest.SQLServer
                 ps.Invoke();
             }
 
-            Thread.Sleep(5000);
+            Thread.Sleep(30000);
 #endif
         }
 
