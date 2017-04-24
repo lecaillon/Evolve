@@ -22,7 +22,7 @@ Every time you build your project, it will automatically ensure that your databa
         <dependency id="Microsoft.Build.Framework"              version="15.1.548" />
         <dependency id="Microsoft.Build.Utilities.Core"         version="15.1.548" />
         <dependency id="Microsoft.Extensions.DependencyModel"   version="1.0.3" />
-        <dependency id="System.Runtime.Loader"                  version="4.3.0" /> <!--Voir si on passe pas à la 4.0.0-->
+        <dependency id="System.Runtime.Loader"                  version="4.0.0" />
       </group>
     </dependencies>
   </metadata>
