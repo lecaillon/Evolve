@@ -48,7 +48,7 @@ Example of an evolve.json file for a .NET Core application
 {
   "Evolve.ConnectionString": "Server=127.0.0.1;Database=Northwind;User Id=sa;Password=Password12!;",
   "Evolve.Driver": "sqlserver",
-  "Evolve.Locations": "Scripts/SQLServer/Sql",
+  "Evolve.Locations": "Sql_Scripts/SQLServer/Sql",
   "Evolve.Command": "migrate"
 }
 ```
