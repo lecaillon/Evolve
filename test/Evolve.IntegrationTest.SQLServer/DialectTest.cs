@@ -13,7 +13,7 @@ namespace Evolve.IntegrationTest.SQLServer
 {
     public class DialectTest : IDisposable
     {
-        [Fact(DisplayName = "Run_all_SQLServer_integration_tests_work")]
+        //[Fact(DisplayName = "Run_all_SQLServer_integration_tests_work")]
         public void Run_all_SQLServer_integration_tests_work()
         {
             // Open a connection to the SQLServer database
