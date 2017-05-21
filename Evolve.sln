@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.10
+VisualStudioVersion = 15.0.26430.6
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{2A25B1AD-2629-4D99-BAB5-172EED85FFE8}"
 EndProject
@@ -22,6 +22,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.Core.Test.Resources.SupportedDrivers", "test\Evolve.Core.Test.Resources.SupportedDrivers\Evolve.Core.Test.Resources.SupportedDrivers.csproj", "{E6632649-0322-4C8E-AA89-21F52355E25B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.Core.Test.Driver", "test\Evolve.Core.Test.Driver\Evolve.Core.Test.Driver.csproj", "{9CCBCBFF-9586-46F7-A840-D278AE7C6740}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.IntegrationTest.MySQL", "test\Evolve.IntegrationTest.MySQL\Evolve.IntegrationTest.MySQL.csproj", "{DD92CAD5-2C4B-48A5-B508-19FCABCF2F5E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -129,6 +131,18 @@ Global
 		{9CCBCBFF-9586-46F7-A840-D278AE7C6740}.Release|x64.Build.0 = Release|Any CPU
 		{9CCBCBFF-9586-46F7-A840-D278AE7C6740}.Release|x86.ActiveCfg = Release|Any CPU
 		{9CCBCBFF-9586-46F7-A840-D278AE7C6740}.Release|x86.Build.0 = Release|Any CPU
+		{DD92CAD5-2C4B-48A5-B508-19FCABCF2F5E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD92CAD5-2C4B-48A5-B508-19FCABCF2F5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD92CAD5-2C4B-48A5-B508-19FCABCF2F5E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DD92CAD5-2C4B-48A5-B508-19FCABCF2F5E}.Debug|x64.Build.0 = Debug|Any CPU
+		{DD92CAD5-2C4B-48A5-B508-19FCABCF2F5E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DD92CAD5-2C4B-48A5-B508-19FCABCF2F5E}.Debug|x86.Build.0 = Debug|Any CPU
+		{DD92CAD5-2C4B-48A5-B508-19FCABCF2F5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD92CAD5-2C4B-48A5-B508-19FCABCF2F5E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD92CAD5-2C4B-48A5-B508-19FCABCF2F5E}.Release|x64.ActiveCfg = Release|Any CPU
+		{DD92CAD5-2C4B-48A5-B508-19FCABCF2F5E}.Release|x64.Build.0 = Release|Any CPU
+		{DD92CAD5-2C4B-48A5-B508-19FCABCF2F5E}.Release|x86.ActiveCfg = Release|Any CPU
+		{DD92CAD5-2C4B-48A5-B508-19FCABCF2F5E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -142,5 +156,6 @@ Global
 		{29AA03E7-A395-4D54-A4B9-2601677E0C2C} = {7FA35BAF-800D-4435-9E01-58CBBDDF9C69}
 		{E6632649-0322-4C8E-AA89-21F52355E25B} = {7FA35BAF-800D-4435-9E01-58CBBDDF9C69}
 		{9CCBCBFF-9586-46F7-A840-D278AE7C6740} = {7FA35BAF-800D-4435-9E01-58CBBDDF9C69}
+		{DD92CAD5-2C4B-48A5-B508-19FCABCF2F5E} = {7FA35BAF-800D-4435-9E01-58CBBDDF9C69}
 	EndGlobalSection
 EndGlobal

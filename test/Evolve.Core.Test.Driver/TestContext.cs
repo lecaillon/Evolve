@@ -22,6 +22,7 @@ namespace Evolve.Core.Test.Driver
         public static string DriverResourcesDepsFile { get; }
         public static string NugetPackageFolder => $@"{EnvHome}/.nuget/packages";
         public static string PgPassword => Environment.GetEnvironmentVariable("PGPASSWORD") ?? "Password12!";
+        public static string MySqlPassword => Environment.GetEnvironmentVariable("MYSQLPASSWORD") ?? "Password12!";
         public static string EnvHome => Environment.GetEnvironmentVariable("USERPROFILE") ?? Environment.GetEnvironmentVariable("HOME");
     }
 }

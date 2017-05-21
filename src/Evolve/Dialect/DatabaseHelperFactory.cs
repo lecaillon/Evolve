@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Evolve.Connection;
+using Evolve.Dialect.MySQL;
 using Evolve.Dialect.PostgreSQL;
 using Evolve.Dialect.SQLite;
 using Evolve.Dialect.SQLServer;
@@ -14,9 +15,10 @@ namespace Evolve.Dialect
 
         private static Dictionary<DBMS, Func<WrappedConnection, DatabaseHelper>> _dbmsMap = new Dictionary<DBMS, Func<WrappedConnection, DatabaseHelper>>
         {
-            [DBMS.SQLite] = wcnn => new SQLiteDatabase(wcnn),
-            [DBMS.PostgreSQL] = wcnn => new PostgreSQLDatabase(wcnn),
-            [DBMS.SQLServer] = wcnn => new SQLServerDatabase(wcnn),
+            [DBMS.SQLite]           = wcnn => new SQLiteDatabase(wcnn),
+            [DBMS.PostgreSQL]       = wcnn => new PostgreSQLDatabase(wcnn),
+            [DBMS.MySQL_MariaDB]    = wcnn => new MySQLDatabase(wcnn),
+            [DBMS.SQLServer]        = wcnn => new SQLServerDatabase(wcnn),
         };
 
         public static DatabaseHelper GetDatabaseHelper(DBMS dbmsType, WrappedConnection connection)

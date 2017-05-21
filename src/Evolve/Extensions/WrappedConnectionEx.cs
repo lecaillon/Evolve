@@ -17,7 +17,17 @@ namespace Evolve
 
             try
             {
-                dbVersion = QueryForString(wrappedConnection, "SELECT version()"); // attention ca marche aussi pour mysql/mariadb ...
+                dbVersion = QueryForString(wrappedConnection, "SHOW VARIABLES LIKE '%version%';");
+                if (!dbVersion.IsNullOrWhiteSpace())
+                {
+                    return DBMS.MySQL_MariaDB;
+                }
+            }
+            catch { }
+
+            try
+            {
+                dbVersion = QueryForString(wrappedConnection, "SELECT version()"); // attention ca marche aussi pour mysql
                 if (!dbVersion.IsNullOrWhiteSpace()) 
                 {
                     return DBMS.PostgreSQL;
@@ -48,130 +58,86 @@ namespace Evolve
             throw new EvolveException(DBMSNotSUpported);
         }
 
-        public static long QueryForLong(this WrappedConnection wrappedConnection, string sql) => Convert.ToInt64(ExecuteScalar(wrappedConnection, sql));
+        public static long QueryForLong(this WrappedConnection wrappedConnection, string sql)
+        {
+            return Execute(wrappedConnection, sql, (cmd) =>
+            {
+                return Convert.ToInt64(cmd.ExecuteScalar());
+            });
+        }
 
-        public static string QueryForString(this WrappedConnection wrappedConnection, string sql) => (string)ExecuteScalar(wrappedConnection, sql);
+        public static string QueryForString(this WrappedConnection wrappedConnection, string sql)
+        {
+            return Execute(wrappedConnection, sql, (cmd) =>
+            {
+                return (string)cmd.ExecuteScalar();
+            });
+        }
 
         public static IEnumerable<string> QueryForListOfString(this WrappedConnection wrappedConnection, string sql)
         {
-            Check.NotNull(wrappedConnection, nameof(wrappedConnection));
-            Check.NotNullOrEmpty(sql, nameof(sql));
-
-            var list = new List<string>();
-            bool wasClosed = wrappedConnection.DbConnection.State == ConnectionState.Closed;
-
-            try
+            return Execute(wrappedConnection, sql, (cmd) =>
             {
-                using (var reader = (IDataReader)ExecuteReader(wrappedConnection, sql))
+                var list = new List<string>();
+                using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
                     {
                         list.Add(reader[0] is DBNull ? null : reader[0].ToString());
                     }
                 }
-            }
-            finally
-            {
-                if (wasClosed)
-                {
-                    wrappedConnection.Close();
-                }
-            }
 
-            return list;
+                return list;
+            });
         }
 
         public static IEnumerable<T> QueryForList<T>(this WrappedConnection wrappedConnection, string sql, Func<IDataReader, T> map)
         {
-            Check.NotNull(wrappedConnection, nameof(wrappedConnection));
-            Check.NotNullOrEmpty(sql, nameof(sql));
-            Check.NotNull(map, nameof(map));
-
-            var list = new List<T>();
-            bool wasClosed = wrappedConnection.DbConnection.State == ConnectionState.Closed;
-
-            try
+            return Execute(wrappedConnection, sql, (cmd) =>
             {
-                using (var reader = (IDataReader)ExecuteReader(wrappedConnection, sql))
+                var list = new List<T>();
+                using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
                     {
                         list.Add(map(reader));
                     }
                 }
-            }
-            finally
-            {
-                if (wasClosed)
-                {
-                    wrappedConnection.Close();
-                }
-            }
 
-            return list;
+                return list;
+            });
         }
 
         public static int ExecuteNonQuery(this WrappedConnection wrappedConnection, string sql)
-            => (int)Execute(wrappedConnection, sql, nameof(ExecuteNonQuery));
+        {
+            return Execute(wrappedConnection, sql, (cmd) =>
+            {
+                return cmd.ExecuteNonQuery();
+            });
+        }
 
-        private static object ExecuteScalar(WrappedConnection wrappedConnection, string sql)
-            => Execute(wrappedConnection, sql, nameof(ExecuteScalar));
-
-        private static object ExecuteReader(WrappedConnection wrappedConnection, string sql)
-            => Execute(wrappedConnection, sql, nameof(ExecuteReader), closeConnection: false);
-
-        private static object Execute(WrappedConnection wrappedConnection, string sql, string executeMethod, bool closeConnection = true)
+        private static T Execute<T>(WrappedConnection wrappedConnection, string sql, Func<IDbCommand, T> query)
         {
             Check.NotNull(wrappedConnection, nameof(wrappedConnection));
             Check.NotNullOrEmpty(sql, nameof(sql));
-            Check.NotNullOrEmpty(executeMethod, nameof(executeMethod));
-            
-            bool wasClosed = wrappedConnection.DbConnection.State == ConnectionState.Closed;
-            var dbCommand = wrappedConnection.DbConnection.CreateCommand();
-            dbCommand.CommandText = sql;
-            dbCommand.Transaction = wrappedConnection.CurrentTx;
+            Check.NotNull(query, nameof(query));
 
-            object result;
+            bool wasClosed = wrappedConnection.DbConnection.State == ConnectionState.Closed;
+
             try
             {
-                if (wasClosed) wrappedConnection.Open();
-
-                switch (executeMethod)
+                if (wasClosed)
                 {
-                    case nameof(ExecuteNonQuery):
-                    {
-                        using (dbCommand)
-                        {
-                            result = dbCommand.ExecuteNonQuery();
-                        }
-
-                        break;
-                    }
-                    case nameof(ExecuteScalar):
-                    {
-                        using (dbCommand)
-                        {
-                            result = dbCommand.ExecuteScalar();
-                        }
-
-                        break;
-                    }
-                    case nameof(ExecuteReader):
-                    {
-                        using (dbCommand)
-                        {
-                            result = dbCommand.ExecuteReader();
-                        }
-
-                        break;
-                    }
-                    default:
-                    {
-                        throw new NotSupportedException();
-                    }
+                    wrappedConnection.Open();
                 }
 
-                return result;
+                using (IDbCommand cmd = wrappedConnection.DbConnection.CreateCommand())
+                {
+                    cmd.CommandText = sql;
+                    cmd.Transaction = wrappedConnection.CurrentTx;
+
+                    return query(cmd);
+                }
             }
             catch (Exception ex)
             {
@@ -179,7 +145,7 @@ namespace Evolve
             }
             finally
             {
-                if (wasClosed && closeConnection)
+                if (wasClosed)
                 {
                     wrappedConnection.Close();
                 }

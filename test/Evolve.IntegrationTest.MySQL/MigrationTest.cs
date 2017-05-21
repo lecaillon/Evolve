@@ -1,28 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using Evolve.Migration;
+using MySql.Data.MySqlClient;
 using Xunit;
 
-namespace Evolve.IntegrationTest.SQLServer
+namespace Evolve.IntegrationTest.MySQL
 {
     public class MigrationTest : IDisposable
     {
-        [Fact(DisplayName = "Run_all_SQLServer_migrations_work")]
-        public void Run_all_SQLServer_migrations_work()
+        [Fact(DisplayName = "Run_all_MySQL_migrations_work")]
+        public void Run_all_MySQL_migrations_work()
         {
-            var cnn = new SqlConnection($"Server=127.0.0.1;Database=master;User Id={TestContext.DbUser};Password={TestContext.DbPwd};");
+            var cnn = new MySqlConnection($"Server=127.0.0.1;Port={TestContext.ContainerPort};Database={TestContext.DbName};Uid={TestContext.DbUser};Pwd={TestContext.DbPwd};");
             var evolve = new Evolve(cnn, msg => Debug.WriteLine(msg))
             {
                 Locations = new List<string> { TestContext.MigrationFolder },
-                Placeholders = new Dictionary<string, string> { ["${db}"] = "master", ["${schema2}"] = "dbo" },
-                TargetVersion = new MigrationVersion("8_9"),
             };
 
-            int nbMigration = Directory.GetFiles(TestContext.MigrationFolder).Length - 1; // -1 because of the script V9__do_not_run.sql
+            int nbMigration = Directory.GetFiles(TestContext.MigrationFolder).Length;
 
             // Migrate Sql_Scripts\Migration
             evolve.Migrate();
@@ -48,11 +45,24 @@ namespace Evolve.IntegrationTest.SQLServer
             evolve.IsEraseDisabled = true;
             Assert.Throws<EvolveConfigurationException>(() => evolve.Erase());
 
-            // Can test the erase schema on the master one. I should think to 
+            // Erase sucessfull
+            evolve.IsEraseDisabled = false;
+            evolve.Erase();
+            Assert.True(evolve.NbSchemaErased == evolve.Schemas.Count(), $"{evolve.Schemas.Count()} schemas should have been erased, not {evolve.NbSchemaErased}.");
+
+            // Migrate sucessfull after a validation error (MustEraseOnValidationError = true)
+            evolve.Locations = new List<string> { TestContext.MigrationFolder }; // Migrate Sql_Scripts\Migration
+            evolve.Migrate();
+            Assert.True(evolve.NbMigration == nbMigration, $"{nbMigration} migrations should have been applied, not {evolve.NbMigration}.");
+            evolve.Locations = new List<string> { TestContext.ChecksumMismatchFolder }; // Migrate Sql_Scripts\Checksum_mismatch
+            evolve.MustEraseOnValidationError = true;
+            evolve.Migrate();
+            Assert.True(evolve.NbSchemaErased == evolve.Schemas.Count(), $"{evolve.Schemas.Count()} schemas should have been erased, not {evolve.NbSchemaErased}.");
+            Assert.True(evolve.NbMigration == 1, $"1 migration should have been applied, not {evolve.NbMigration}.");
         }
 
         /// <summary>
-        ///     Start SQL Server.
+        ///     Start MySQL server.
         /// </summary>
         public MigrationTest()
         {
@@ -60,7 +70,7 @@ namespace Evolve.IntegrationTest.SQLServer
         }
 
         /// <summary>
-        ///     Stop SQL Server and remove container.
+        ///     Stop MySQL server and remove container.
         /// </summary>
         public void Dispose()
         {

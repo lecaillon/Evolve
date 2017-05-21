@@ -39,6 +39,17 @@ namespace Evolve.Test.Driver
             Assert.True(cnn.State == ConnectionState.Open);
         }
 
+        [Fact(DisplayName = "CoreMySqlDriverForNet_works")]
+        public void CoreMySqlDriverForNet_works()
+        {
+
+            var driver = new CoreMySqlDataDriverForNet(TestContext.DriverResourcesDepsFile, TestContext.NugetPackageFolder);
+            var cnn = driver.CreateConnection($"Server=127.0.0.1;Port=3306;Database=my_database;Uid=root;Pwd={TestContext.MySqlPassword};");
+            cnn.Open();
+
+            Assert.True(cnn.State == ConnectionState.Open);
+        }
+
         [Fact(DisplayName = "SqlClientDriver_works")]
         public void SqlClientDriver_works()
         {

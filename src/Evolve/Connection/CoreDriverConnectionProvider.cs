@@ -17,13 +17,17 @@ namespace Evolve.Connection
         private readonly Dictionary<string, Func<string, string, IDriver>> _driversMap = new Dictionary<string, Func<string, string, IDriver>>
         {
             ["microsoftdatasqlite"] = (depsFile, nugetPackageDir) => new CoreMicrosoftDataSqliteDriver(depsFile, nugetPackageDir),
-            ["microsoftsqlite"] = (depsFile, nugetPackageDir) => new CoreMicrosoftDataSqliteDriver(depsFile, nugetPackageDir),
+            ["microsoftsqlite"]     = (depsFile, nugetPackageDir) => new CoreMicrosoftDataSqliteDriver(depsFile, nugetPackageDir),
 
-            ["npgsql"] = (depsFile, nugetPackageDir) => new CoreNpgsqlDriver(depsFile, nugetPackageDir),
-            ["postgresql"] = (depsFile, nugetPackageDir) => new CoreNpgsqlDriver(depsFile, nugetPackageDir),
+            ["npgsql"]              = (depsFile, nugetPackageDir) => new CoreNpgsqlDriver(depsFile, nugetPackageDir),
+            ["postgresql"]          = (depsFile, nugetPackageDir) => new CoreNpgsqlDriver(depsFile, nugetPackageDir),
 
-            ["sqlserver"] = (depsFile, nugetPackageDir) => new CoreSqlClientDriver(depsFile, nugetPackageDir),
-            ["sqlclient"] = (depsFile, nugetPackageDir) => new CoreSqlClientDriver(depsFile, nugetPackageDir),
+            ["mysql"]               = (depsFile, nugetPackageDir) => new CoreMySqlDataDriver(depsFile, nugetPackageDir),
+            ["mariadb"]             = (depsFile, nugetPackageDir) => new CoreMySqlDataDriver(depsFile, nugetPackageDir),
+            ["mysqldata"]           = (depsFile, nugetPackageDir) => new CoreMySqlDataDriver(depsFile, nugetPackageDir),
+
+            ["sqlserver"]           = (depsFile, nugetPackageDir) => new CoreSqlClientDriver(depsFile, nugetPackageDir),
+            ["sqlclient"]           = (depsFile, nugetPackageDir) => new CoreSqlClientDriver(depsFile, nugetPackageDir),
         };
 
         /// <summary>

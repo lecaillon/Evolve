@@ -2,8 +2,7 @@
 {
     public enum DBMS
     {
-        MariaDB,
-        MySQL,
+        MySQL_MariaDB,
         Oracle,
         PostgreSQL,
         SQLite,

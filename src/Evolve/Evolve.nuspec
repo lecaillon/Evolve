@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Evolve</id>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
     <authors>Philippe Lécaillon</authors>
     <owners>Philippe Lécaillon</owners>
     <licenseUrl>https://github.com/lecaillon/Evolve/blob/master/LICENSE</licenseUrl>
@@ -11,7 +11,7 @@
     <summary>Database migration tool for .NET. Inspired by Flyway.</summary>
     <description>Evolve is an easy migration tool that uses plain old sql scripts. Its purpose is to automate your database changes, and help keep those changes synchronized through all your environments and developpement teams.
 Every time you build your project, it will automatically ensure that your database is up-to-date, without having to do anything other than build. Install it and forget it !</description>
-    <releaseNotes>Add support of .NET Core.</releaseNotes>
+    <releaseNotes>Add MySQL / MariaDB support.</releaseNotes>
     <copyright>Copyright © P.Lécaillon 2017</copyright>
     <tags>Evolve Flyway sql database-migration continuous-integration continuous-delivery</tags>
     <dependencies>
