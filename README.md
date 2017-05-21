@@ -10,7 +10,7 @@ Over all Evolve embraces simplicity. Every time you build your project, it will 
 - [x] PostgreSQL
 - [x] SQLite
 - [x] SQL Server
-- [ ] MySQL / MariaDB
+- [x] MySQL / MariaDB
 - [ ] Oracle support (for .NET Framework only)
 
 ## Supported Modes
