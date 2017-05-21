@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Evolve.Test.Driver
 {
-    public class SystemDataSQLiteDriverTest
+    public class NetDriverTest
     {
         [Fact(DisplayName = "Load_ConnectionType_from_an_already_loaded_assembly")]
         public void Load_ConnectionType_from_an_already_loaded_assembly()
@@ -33,7 +33,7 @@ namespace Evolve.Test.Driver
         {
 
             var driver = new CoreNpgsqlDriverForNet(TestContext.DriverResourcesDepsFile, TestContext.NugetPackageFolder);
-            var cnn = driver.CreateConnection($"Server=127.0.0.1;Port=5432;Database=my_database;User Id=postgres;Password={TestContext.PgPassword};");
+            var cnn = driver.CreateConnection($"Server=127.0.0.1;Port=5432;Database=my_database;User Id=postgres;Password=Password12!;");
             cnn.Open();
 
             Assert.True(cnn.State == ConnectionState.Open);
@@ -44,7 +44,7 @@ namespace Evolve.Test.Driver
         {
 
             var driver = new CoreMySqlDataDriverForNet(TestContext.DriverResourcesDepsFile, TestContext.NugetPackageFolder);
-            var cnn = driver.CreateConnection($"Server=127.0.0.1;Port=3306;Database=my_database;Uid=root;Pwd={TestContext.MySqlPassword};");
+            var cnn = driver.CreateConnection($"Server=127.0.0.1;Port=3306;Database=my_database;Uid=root;Pwd=Password12!;");
             cnn.Open();
 
             Assert.True(cnn.State == ConnectionState.Open);
