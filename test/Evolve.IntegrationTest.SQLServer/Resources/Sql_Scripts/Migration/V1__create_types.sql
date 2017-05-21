@@ -1,3 +1,5 @@
+blah blah
+
 PRINT 'CREATE TYPE'
 
 /* Create a user-defined table type */  
