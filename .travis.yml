@@ -22,7 +22,7 @@ before_install:
   # - chmod +x build.sh
 before_script:
   - psql -c 'create database my_database;' -U postgres
-  - mysql -e 'CREATE DATABASE my_database;'
+  - mysql -e 'CREATE DATABASE my_database;' --user=root
 script:
   - dotnet restore
   - dotnet build ./src/Evolve/Evolve.csproj -c Release -f netcoreapp1.0
