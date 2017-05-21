@@ -31,14 +31,14 @@ namespace Evolve.IntegrationTest.SQLServer
 #endif
         }
 
-        public static void CreateTestDatabase()
+        public static void CreateTestDatabase(string name)
         {
             var cnn = new SqlConnection($"Server=127.0.0.1;Database=master;User Id={TestContext.DbUser};Password={TestContext.DbPwd};");
             cnn.Open();
 
             using (var cmd = cnn.CreateCommand())
             {
-                cmd.CommandText = $"CREATE DATABASE {TestContext.DbName};";
+                cmd.CommandText = $"CREATE DATABASE {name};";
                 cmd.ExecuteNonQuery();
             }
 

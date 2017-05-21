@@ -11,15 +11,17 @@ namespace Evolve.IntegrationTest.SQLServer
 {
     public class MigrationTest : IDisposable
     {
+        public const string DbName = "my_database_2";
+
         [Fact(DisplayName = "Run_all_SQLServer_migrations_work")]
         public void Run_all_SQLServer_migrations_work()
         {
-            var cnn = new SqlConnection($"Server=127.0.0.1;Database={TestContext.DbName};User Id={TestContext.DbUser};Password={TestContext.DbPwd};");
+            var cnn = new SqlConnection($"Server=127.0.0.1;Database={DbName};User Id={TestContext.DbUser};Password={TestContext.DbPwd};");
 
             var evolve = new Evolve(cnn, msg => Debug.WriteLine(msg))
             {
                 Locations = new List<string> { TestContext.MigrationFolder },
-                Placeholders = new Dictionary<string, string> { ["${db}"] = TestContext.DbName, ["${schema2}"] = "dbo" },
+                Placeholders = new Dictionary<string, string> { ["${db}"] = DbName, ["${schema2}"] = "dbo" },
                 TargetVersion = new MigrationVersion("8_9"),
             };
 
@@ -72,7 +74,7 @@ namespace Evolve.IntegrationTest.SQLServer
         public MigrationTest()
         {
             TestUtil.RunContainer();
-            TestUtil.CreateTestDatabase();
+            TestUtil.CreateTestDatabase(DbName);
         }
 
         /// <summary>
