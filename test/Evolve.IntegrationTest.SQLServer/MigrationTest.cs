@@ -25,8 +25,8 @@ namespace Evolve.IntegrationTest.SQLServer
             int nbMigration = Directory.GetFiles(TestContext.MigrationFolder).Length - 1; // -1 because of the script V9__do_not_run.sql
 
             // Migrate Sql_Scripts\Migration
-            evolve.Migrate();
-            Assert.True(evolve.NbMigration == nbMigration, $"{nbMigration} migrations should have been applied, not {evolve.NbMigration}.");
+            //evolve.Migrate();
+            //Assert.True(evolve.NbMigration == nbMigration, $"{nbMigration} migrations should have been applied, not {evolve.NbMigration}.");
 
             // Migrate: nothing to do. Database is already up to date.
             //evolve.Migrate();
