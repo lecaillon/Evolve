@@ -22,7 +22,11 @@ namespace Evolve.Core.Test.Driver
         public static string DriverResourcesDepsFile { get; }
         public static string NugetPackageFolder => $@"{EnvHome}/.nuget/packages";
         public static string PgPassword => Environment.GetEnvironmentVariable("PGPASSWORD") ?? "Password12!";
-        public static string MySqlPassword => Environment.GetEnvironmentVariable("MYSQL_PWD") ?? "";
+#if DEBUG
+        public static string MySqlPassword => "Password12!";
+#else
+        public static string MySqlPassword => Environment.GetEnvironmentVariable("MYSQL_PWD") ?? ""; // "" pour Travis CI
+#endif
         public static string EnvHome => Environment.GetEnvironmentVariable("USERPROFILE") ?? Environment.GetEnvironmentVariable("HOME");
     }
 }
