@@ -29,24 +29,24 @@ namespace Evolve.IntegrationTest.SQLServer
             Assert.True(evolve.NbMigration == nbMigration, $"{nbMigration} migrations should have been applied, not {evolve.NbMigration}.");
 
             // Migrate: nothing to do. Database is already up to date.
-            //evolve.Migrate();
-            //Assert.True(evolve.NbMigration == 0, $"There should be no more migration after a successful one, not {evolve.NbMigration}.");
+            evolve.Migrate();
+            Assert.True(evolve.NbMigration == 0, $"There should be no more migration after a successful one, not {evolve.NbMigration}.");
 
-            //// Migrate Sql_Scripts\Checksum_mismatch: validation should fail due to a checksum mismatch.
-            //evolve.Locations = new List<string> { TestContext.ChecksumMismatchFolder };
-            //Assert.Throws<EvolveValidationException>(() => evolve.Migrate());
+            // Migrate Sql_Scripts\Checksum_mismatch: validation should fail due to a checksum mismatch.
+            evolve.Locations = new List<string> { TestContext.ChecksumMismatchFolder };
+            Assert.Throws<EvolveValidationException>(() => evolve.Migrate());
 
-            //// Repair sucessfull
-            //evolve.Repair();
-            //Assert.True(evolve.NbReparation == 1, $"There should be 1 migration repaired, not {evolve.NbReparation}.");
+            // Repair sucessfull
+            evolve.Repair();
+            Assert.True(evolve.NbReparation == 1, $"There should be 1 migration repaired, not {evolve.NbReparation}.");
 
-            //// Migrate: nothing to do. Database is already up to date.
-            //evolve.Migrate();
-            //Assert.True(evolve.NbMigration == 0, $"There should be no more migration after a successful one, not {evolve.NbMigration}.");
+            // Migrate: nothing to do. Database is already up to date.
+            evolve.Migrate();
+            Assert.True(evolve.NbMigration == 0, $"There should be no more migration after a successful one, not {evolve.NbMigration}.");
 
-            //// Erase cancelled (EraseDisabled = true)
-            //evolve.IsEraseDisabled = true;
-            //Assert.Throws<EvolveConfigurationException>(() => evolve.Erase());
+            // Erase cancelled (EraseDisabled = true)
+            evolve.IsEraseDisabled = true;
+            Assert.Throws<EvolveConfigurationException>(() => evolve.Erase());
 
             // Can test the erase schema on the master one. I should think to 
         }

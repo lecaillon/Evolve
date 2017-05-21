@@ -17,7 +17,7 @@ namespace Evolve.IntegrationTest.SQLServer
         public void Run_all_SQLServer_integration_tests_work()
         {
             // Open a connection to the SQLServer database
-            var cnn = new SqlConnection($"Server=127.0.0.1;Database=master;User Id={TestContext.DbUser};Password={TestContext.DbPwd};");
+            var cnn = new SqlConnection($"Server=127.0.0.1;Database={TestContext.DbName};User Id={TestContext.DbUser};Password={TestContext.DbPwd};");
             cnn.Open();
             Assert.True(cnn.State == ConnectionState.Open, "Cannot open a connection to the database.");
 
@@ -35,7 +35,7 @@ namespace Evolve.IntegrationTest.SQLServer
             Assert.True(metadataSchemaName == "dbo", "The default SQLServer schema should be 'dbo'.");
 
             // Get MetadataTable
-            string metadataTableName = "changelog";
+            string metadataTableName = "changelog2";
             var metadata = db.GetMetadataTable(metadataSchemaName, metadataTableName);
 
             // Create MetadataTable
