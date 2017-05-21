@@ -35,7 +35,7 @@ namespace Evolve.IntegrationTest.SQLServer
             Assert.True(metadataSchemaName == "dbo", "The default SQLServer schema should be 'dbo'.");
 
             // Get MetadataTable
-            string metadataTableName = "changelog2";
+            string metadataTableName = "changelog";
             var metadata = db.GetMetadataTable(metadataSchemaName, metadataTableName);
 
             // Create MetadataTable
@@ -86,6 +86,7 @@ namespace Evolve.IntegrationTest.SQLServer
         public DialectTest()
         {
             TestUtil.RunContainer();
+            TestUtil.CreateTestDatabase();
         }
 
         /// <summary>

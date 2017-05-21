@@ -15,6 +15,7 @@ namespace Evolve.IntegrationTest.SQLServer
         public void Run_all_SQLServer_migrations_work()
         {
             var cnn = new SqlConnection($"Server=127.0.0.1;Database={TestContext.DbName};User Id={TestContext.DbUser};Password={TestContext.DbPwd};");
+
             var evolve = new Evolve(cnn, msg => Debug.WriteLine(msg))
             {
                 Locations = new List<string> { TestContext.MigrationFolder },
@@ -48,15 +49,30 @@ namespace Evolve.IntegrationTest.SQLServer
             evolve.IsEraseDisabled = true;
             Assert.Throws<EvolveConfigurationException>(() => evolve.Erase());
 
-            // Can test the erase schema on the master one. I should think to 
+            // Erase sucessfull
+            evolve.IsEraseDisabled = false;
+            evolve.Erase();
+            Assert.True(evolve.NbSchemaErased == evolve.Schemas.Count(), $"{evolve.Schemas.Count()} schemas should have been erased, not {evolve.NbSchemaErased}.");
+
+            // Migrate sucessfull after a validation error (MustEraseOnValidationError = true)
+            evolve.Locations = new List<string> { TestContext.MigrationFolder }; // Migrate Sql_Scripts\Migration
+            evolve.Migrate();
+            Assert.True(evolve.NbMigration == nbMigration, $"{nbMigration} migrations should have been applied, not {evolve.NbMigration}.");
+            evolve.Locations = new List<string> { TestContext.ChecksumMismatchFolder }; // Migrate Sql_Scripts\Checksum_mismatch
+            evolve.MustEraseOnValidationError = true;
+            evolve.Migrate();
+            Assert.True(evolve.NbSchemaErased == evolve.Schemas.Count(), $"{evolve.Schemas.Count()} schemas should have been erased, not {evolve.NbSchemaErased}.");
+            Assert.True(evolve.NbMigration == 1, $"1 migration should have been applied, not {evolve.NbMigration}.");
         }
 
         /// <summary>
         ///     Start SQL Server.
+        ///     Create test database.
         /// </summary>
         public MigrationTest()
         {
             TestUtil.RunContainer();
+            TestUtil.CreateTestDatabase();
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
-﻿using System.Management.Automation;
+﻿using System.Data.SqlClient;
+using System.Management.Automation;
 using System.Threading;
 
 namespace Evolve.IntegrationTest.SQLServer
@@ -28,6 +29,20 @@ namespace Evolve.IntegrationTest.SQLServer
                 ps.Invoke();
             }
 #endif
+        }
+
+        public static void CreateTestDatabase()
+        {
+            var cnn = new SqlConnection($"Server=127.0.0.1;Database=master;User Id={TestContext.DbUser};Password={TestContext.DbPwd};");
+            cnn.Open();
+
+            using (var cmd = cnn.CreateCommand())
+            {
+                cmd.CommandText = $"CREATE DATABASE {TestContext.DbName};";
+                cmd.ExecuteNonQuery();
+            }
+
+            cnn.Close();
         }
     }
 }
