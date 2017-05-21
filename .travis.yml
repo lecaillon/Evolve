@@ -7,7 +7,7 @@ services:
 env:
   global:
     - PGPASSWORD: 
-    - MYSQL_PWD: 
+    - MYSQL_PWD:
     - DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
     - DOTNET_CLI_TELEMETRY_OPTOUT: 1
 sudo: required
