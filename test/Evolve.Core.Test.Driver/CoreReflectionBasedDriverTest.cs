@@ -33,7 +33,7 @@ namespace Evolve.Core.Test.Driver
         {
 
             var driver = new CoreMySqlDataDriver(TestContext.DriverResourcesDepsFile, TestContext.NugetPackageFolder);
-            var cnn = driver.CreateConnection($"Server=127.0.0.1;Port=3306;Database=my_database;Uid=root;Pwd={TestContext.MySqlPassword};");
+            var cnn = driver.CreateConnection($"Server=127.0.0.1;Port=3306;Database=my_database;Uid=root;Pwd=;");
             cnn.Open();
 
             Assert.True(cnn.State == ConnectionState.Open);
