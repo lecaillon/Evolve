@@ -11,7 +11,7 @@ namespace Evolve.IntegrationTest.SQLServer
 {
     public class MigrationTest : IDisposable
     {
-        [Fact(DisplayName = "Run_all_SQLServer_migrations_work")]
+        //[Fact(DisplayName = "Run_all_SQLServer_migrations_work")]
         public void Run_all_SQLServer_migrations_work()
         {
             var cnn = new SqlConnection($"Server=127.0.0.1;Database={TestContext.DbName};User Id={TestContext.DbUser};Password={TestContext.DbPwd};");
