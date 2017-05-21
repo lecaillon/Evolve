@@ -9,7 +9,7 @@ namespace Evolve.IntegrationTest.SQLServer
         public const string ImageName = "microsoft/mssql-server-linux";
         public const string ContainerName = "mssql-evolve";
         public const string ContainerPort = "1433";
-        public const string DbName = "my_database";
+        public const string DbName = "master";
         public const string DbPwd = "Password12!"; // AppVeyor
         public const string DbUser = "sa";
 
