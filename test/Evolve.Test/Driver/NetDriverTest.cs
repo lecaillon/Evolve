@@ -33,7 +33,7 @@ namespace Evolve.Test.Driver
         {
 
             var driver = new CoreNpgsqlDriverForNet(TestContext.DriverResourcesDepsFile, TestContext.NugetPackageFolder);
-            var cnn = driver.CreateConnection($"Server=127.0.0.1;Port=5432;Database=my_database;User Id=postgres;Password=Password12!;");
+            var cnn = driver.CreateConnection($"Server=127.0.0.1;Port=5432;Database={TestContext.DbName};User Id=postgres;Password={TestContext.DbPassword};");
             cnn.Open();
 
             Assert.True(cnn.State == ConnectionState.Open);
@@ -44,7 +44,7 @@ namespace Evolve.Test.Driver
         {
 
             var driver = new CoreMySqlDataDriverForNet(TestContext.DriverResourcesDepsFile, TestContext.NugetPackageFolder);
-            var cnn = driver.CreateConnection($"Server=127.0.0.1;Port=3306;Database=my_database;Uid=root;Pwd=Password12!;");
+            var cnn = driver.CreateConnection($"Server=127.0.0.1;Port=3306;Database={TestContext.DbName};Uid=root;Pwd={TestContext.DbPassword};");
             cnn.Open();
 
             Assert.True(cnn.State == ConnectionState.Open);
@@ -54,7 +54,7 @@ namespace Evolve.Test.Driver
         public void SqlClientDriver_works()
         {
             var driver = new SqlClientDriver();
-            var cnn = driver.CreateConnection("Server=127.0.0.1;Database=master;User Id=sa;Password=Password12!;");
+            var cnn = driver.CreateConnection($"Server=127.0.0.1;Database=master;User Id=sa;Password={TestContext.DbPassword};");
             cnn.Open();
 
             Assert.True(cnn.State == ConnectionState.Open);
