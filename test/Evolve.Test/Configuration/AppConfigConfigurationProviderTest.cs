@@ -27,6 +27,7 @@ namespace Evolve.Test.Configuration
             Assert.Equal("@{", evolve.PlaceholderPrefix);
             Assert.Equal("@}", evolve.PlaceholderSuffix);
             Assert.Equal(new MigrationVersion("2_1_0"), evolve.TargetVersion);
+            Assert.Equal(new MigrationVersion("1_1_0"), evolve.StartVersion);
             Assert.True(new List<string>() { "@{Schema@}", "@{Pwd@}" }.SequenceEqual(evolve.Placeholders.Keys));
             Assert.True(new List<string>() { "my_schema", "password" }.SequenceEqual(evolve.Placeholders.Values));
             Assert.True(evolve.IsEraseDisabled);

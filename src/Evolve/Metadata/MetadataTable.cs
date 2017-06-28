@@ -113,7 +113,7 @@ namespace Evolve.Metadata
                                                        .OrderByDescending(x => x.Version)
                                                        .FirstOrDefault();
 
-                return metadata?.Version ?? new MigrationVersion("0");
+                return metadata?.Version ?? MigrationVersion.MinVersion;
             });
         }
 

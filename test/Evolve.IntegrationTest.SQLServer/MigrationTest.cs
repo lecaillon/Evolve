@@ -35,6 +35,11 @@ namespace Evolve.IntegrationTest.SQLServer
             evolve.Migrate();
             Assert.True(evolve.NbMigration == 0, $"There should be no more migration after a successful one, not {evolve.NbMigration}.");
 
+            // StartVersion fails because migraiton scripts had been applied.
+            evolve.StartVersion = new MigrationVersion("3.0");
+            Assert.Throws<EvolveConfigurationException>(() => evolve.Migrate());
+            evolve.StartVersion = MigrationVersion.MinVersion;
+
             // Migrate Sql_Scripts\Checksum_mismatch: validation should fail due to a checksum mismatch.
             evolve.Locations = new List<string> { TestContext.ChecksumMismatchFolder };
             Assert.Throws<EvolveValidationException>(() => evolve.Migrate());
@@ -65,6 +70,19 @@ namespace Evolve.IntegrationTest.SQLServer
             evolve.Migrate();
             Assert.True(evolve.NbSchemaErased == evolve.Schemas.Count(), $"{evolve.Schemas.Count()} schemas should have been erased, not {evolve.NbSchemaErased}.");
             Assert.True(evolve.NbMigration == 1, $"1 migration should have been applied, not {evolve.NbMigration}.");
+
+            // StartVersion = 2.0
+            evolve.Locations = new List<string> { TestContext.MigrationFolder }; // Migrate Sql_Scripts\Migration
+            evolve.StartVersion = new MigrationVersion("2.0");
+            evolve.Migrate();
+            Assert.True(evolve.NbMigration == (nbMigration - 1), $"{nbMigration - 1} migrations should have been applied, not {evolve.NbMigration} (StartVersion tests).");
+            evolve.Migrate();
+            Assert.True(evolve.NbMigration == 0, $"There should be no more migration after a successful one, not {evolve.NbMigration} (StartVersion tests).");
+            evolve.StartVersion = MigrationVersion.MinVersion;
+            evolve.Migrate();
+            Assert.True(evolve.NbMigration == 0, $"There should be no more migration after a successful one, not {evolve.NbMigration} (StartVersion tests).");
+            evolve.StartVersion = new MigrationVersion("3.0");
+            Assert.Throws<EvolveConfigurationException>(() => evolve.Migrate());
         }
 
         /// <summary>

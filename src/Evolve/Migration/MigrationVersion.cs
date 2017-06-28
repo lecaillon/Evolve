@@ -33,6 +33,8 @@ namespace Evolve.Migration
 
         public List<long> VersionParts { get; set; }
 
+        public static MigrationVersion MinVersion => new MigrationVersion("0");
+
         #region IComparable
 
         public int CompareTo(MigrationVersion other)

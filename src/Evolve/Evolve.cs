@@ -35,6 +35,12 @@ namespace Evolve
         private const string SchemaCreated = "Schema {0} created.";
         private const string SchemaMarkedEmpty = "Mark schema {0} as empty.";
 
+        // ManageStartVersion
+        private const string MultipleStartVersionError = "The database has already been flagged with a StartVersion ({0}). Only one StartVersion parameter is allowed.";
+        private const string StartVersionMetadataDesc = "Skip migration scripts until version {0} excluded.";
+        private const string StartVersionMetadataName = "StartVersion = {0}";
+        private const string StartVersionNotAllowed = "Use of the StartVersion parameter is not allowed when migrations have already been applied.";
+
         // Migrate
         private const string ExecutingMigrate = "Executing Migrate...";
         private const string MigrationError = "Error executing script: {0}.";
@@ -173,6 +179,7 @@ namespace Evolve
         public string SqlMigrationSeparator { get; set; } = "__";
         public string SqlMigrationSuffix { get; set; } = ".sql";
         public MigrationVersion TargetVersion { get; set; } = new MigrationVersion(long.MaxValue.ToString());
+        public MigrationVersion StartVersion { get; set; } = MigrationVersion.MinVersion;
 
         #endregion
 
@@ -243,7 +250,7 @@ namespace Evolve
             }
 
             var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
-            var lastAppliedVersion = metadata.GetAllMigrationMetadata().LastOrDefault()?.Version ?? new MigrationVersion("0");
+            var lastAppliedVersion = metadata.GetAllMigrationMetadata().LastOrDefault()?.Version ?? MigrationVersion.MinVersion;
             var scripts = _loader.GetMigrations(Locations, SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix)
                                  .SkipWhile(x => x.Version <= lastAppliedVersion)
                                  .TakeWhile(x => x.Version <= TargetVersion);
@@ -387,6 +394,8 @@ namespace Evolve
 
             ManageSchemas(db);
 
+            ManageStartVersion(db);
+
             return db;
         }
 
@@ -472,6 +481,35 @@ namespace Evolve
                     _logInfoDelegate(string.Format(SchemaMarkedEmpty, schemaName));
                 }
             }
+        }
+
+        private void ManageStartVersion(DatabaseHelper db)
+        {
+            if(StartVersion == null || StartVersion == MigrationVersion.MinVersion)
+            { // StartVersion parameter undefined
+                return;
+            }
+
+            var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
+            var currentStartVersion = metadata.FindStartVersion();
+
+            if(currentStartVersion == StartVersion)
+            { // The StartVersion parameter has already been applied
+                return; 
+            }
+
+            if(currentStartVersion != MigrationVersion.MinVersion)
+            { // Metadatatable StartVersion found and do not match the StartVersion parameter
+                throw new EvolveConfigurationException(string.Format(MultipleStartVersionError, currentStartVersion));
+            }
+
+            if(metadata.GetAllMigrationMetadata().Any())
+            { // At least one migration has already been applied, StartVersion parameter not allowed anymore
+                throw new EvolveConfigurationException(StartVersionNotAllowed);
+            }
+
+            // Apply StartVersion parameter
+            metadata.Save(MetadataType.StartVersion, StartVersion.Label, string.Format(StartVersionMetadataDesc, StartVersion.Label), string.Format(StartVersionMetadataName, StartVersion.Label));
         }
 
         private IConnectionProvider GetConnectionProvider()

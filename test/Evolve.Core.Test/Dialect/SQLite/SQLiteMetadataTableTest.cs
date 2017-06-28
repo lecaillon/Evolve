@@ -136,7 +136,7 @@ namespace Evolve.Core.Test.Dialect.SQLite
             {
                 var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLite, connection);
                 var metadataTable = db.GetMetadataTable("", TestContext.DefaultMetadataTableName);
-                Assert.True(metadataTable.FindStartVersion() == new MigrationVersion("0"));
+                Assert.True(metadataTable.FindStartVersion() == MigrationVersion.MinVersion);
 
                 metadataTable.Save(MetadataType.StartVersion, "1.0", "New starting version = 1.0", "");
                 metadataTable.Save(MetadataType.StartVersion, "2.0", "New starting version = 2.0", "");

@@ -147,5 +147,10 @@ namespace Evolve.Configuration
         ///     Returns the target version to reach. If null or empty, it evolves all the way up.
         /// </summary>
         MigrationVersion TargetVersion { get; set; }
+
+        /// <summary>
+        ///     Returns the version used as a starting point for migrations. If null or empty it returns 0.
+        /// </summary>
+        MigrationVersion StartVersion { get; set; }
     }
 }
