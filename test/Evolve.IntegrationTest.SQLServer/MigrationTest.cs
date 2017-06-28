@@ -71,6 +71,11 @@ namespace Evolve.IntegrationTest.SQLServer
             Assert.True(evolve.NbSchemaErased == evolve.Schemas.Count(), $"{evolve.Schemas.Count()} schemas should have been erased, not {evolve.NbSchemaErased}.");
             Assert.True(evolve.NbMigration == 1, $"1 migration should have been applied, not {evolve.NbMigration}.");
 
+            // Erase sucessfull
+            evolve.IsEraseDisabled = false;
+            evolve.Erase();
+            Assert.True(evolve.NbSchemaErased == evolve.Schemas.Count(), $"{evolve.Schemas.Count()} schemas should have been erased, not {evolve.NbSchemaErased}.");
+
             // StartVersion = 2.0
             evolve.Locations = new List<string> { TestContext.MigrationFolder }; // Migrate Sql_Scripts\Migration
             evolve.StartVersion = new MigrationVersion("2.0");
