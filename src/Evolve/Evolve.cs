@@ -251,7 +251,9 @@ namespace Evolve
 
             var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
             var lastAppliedVersion = metadata.GetAllMigrationMetadata().LastOrDefault()?.Version ?? MigrationVersion.MinVersion;
+            var startVersion = metadata.FindStartVersion();                                                                 // Load start version from metadata
             var scripts = _loader.GetMigrations(Locations, SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix)
+                                 .SkipWhile(x => x.Version < startVersion)                                         
                                  .SkipWhile(x => x.Version <= lastAppliedVersion)
                                  .TakeWhile(x => x.Version <= TargetVersion);
 
