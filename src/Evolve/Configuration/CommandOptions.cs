@@ -6,6 +6,11 @@
     public enum CommandOptions
     {
         /// <summary>
+        ///     Does nothing.
+        /// </summary>
+        DoNothing,
+
+        /// <summary>
         ///     Migrates the database.
         /// </summary>
         Migrate,
