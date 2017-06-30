@@ -28,6 +28,9 @@ namespace Evolve
         private const string NoMetadataFound = "No metadata found.";
         private const string ValidateSuccessfull = "Metadata validated.";
 
+        private const string NoCommandSpecified =
+            "Evolve.Command parameter is not set. No migration applied. See: https://github.com/lecaillon/Evolve/wiki/Configuration for more information.";
+
         // ManageSchemas
         private const string NewSchemaCreated = "Create new schema: {0}.";
         private const string EmptySchemaFound = "Empty schema found: {0}.";
@@ -210,6 +213,9 @@ namespace Evolve
                     break;
                 case CommandOptions.Erase:
                     Erase();
+                    break;
+                default:
+                    _logInfoDelegate(NoCommandSpecified);
                     break;
             }
         }
