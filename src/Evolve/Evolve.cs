@@ -158,7 +158,7 @@ namespace Evolve
         public string ConnectionString { get; set; }
         public IEnumerable<string> Schemas { get; set; } = new List<string>();
         public string Driver { get; set; }
-        public CommandOptions Command { get; set; } = CommandOptions.Migrate;
+        public CommandOptions Command { get; set; } = CommandOptions.DoNothing;
         public bool IsEraseDisabled { get; set; }
         public bool MustEraseOnValidationError { get; set; }
         public Encoding Encoding { get; set; } = Encoding.UTF8;
@@ -210,9 +210,6 @@ namespace Evolve
                     break;
                 case CommandOptions.Erase:
                     Erase();
-                    break;
-                default:
-                    Migrate();
                     break;
             }
         }

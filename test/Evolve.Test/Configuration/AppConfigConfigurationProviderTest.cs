@@ -55,7 +55,7 @@ namespace Evolve.Test.Configuration
             Assert.Equal(new MigrationVersion(long.MaxValue.ToString()), evolve.TargetVersion);
             Assert.False(evolve.IsEraseDisabled);
             Assert.False(evolve.MustEraseOnValidationError);
-            Assert.Equal(evolve.Command, CommandOptions.Migrate);
+            Assert.Equal(evolve.Command, CommandOptions.DoNothing);
         }
     }
 }

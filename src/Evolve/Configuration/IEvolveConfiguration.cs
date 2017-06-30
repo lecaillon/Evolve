@@ -41,7 +41,11 @@ namespace Evolve.Configuration
 
         /// <summary>
         ///     <para>
-        ///         The base command for Evolve. (default: migrate)
+        ///         The base command for Evolve. (default: doNothing)
+        ///     </para>
+        /// 
+        ///     <para>
+        ///         <see cref="CommandOptions.DoNothing"/> : Does nothing.
         ///     </para>
         ///     <para>
         ///         <see cref="CommandOptions.Migrate"/> : Migrates the database.
