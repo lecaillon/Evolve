@@ -20,6 +20,7 @@ namespace Evolve
         // Initialize
         private const string InvalidConfigurationLocation = "Evolve configuration file not found at: {0}.";
         private const string EvolveInitialized = "Evolve initialized.";
+        private const string NoCommandSpecified = "Evolve.Command parameter is not set. No migration applied. See: https://github.com/lecaillon/Evolve/wiki/Configuration for more information.";
 
         // Validate
         private const string IncorrectMigrationChecksum = "Validate failed: invalid checksum for migration: {0}.";
@@ -27,9 +28,6 @@ namespace Evolve
         private const string ChecksumFixed = "Checksum fixed for migration: {0}.";
         private const string NoMetadataFound = "No metadata found.";
         private const string ValidateSuccessfull = "Metadata validated.";
-
-        private const string NoCommandSpecified =
-            "Evolve.Command parameter is not set. No migration applied. See: https://github.com/lecaillon/Evolve/wiki/Configuration for more information.";
 
         // ManageSchemas
         private const string NewSchemaCreated = "Create new schema: {0}.";
