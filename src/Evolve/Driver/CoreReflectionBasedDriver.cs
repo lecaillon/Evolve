@@ -113,7 +113,12 @@ namespace Evolve.Driver
             foreach (var dependency in lib.Dependencies)
             {
                 RuntimeLibrary depLib = GetRuntimeLibrary(dependency.Name);
-                if (depLib != null && IsLibraryNative(depLib) && !NativeDependencies.Contains(dependency.Name))
+                if (depLib == null)
+                {
+                    continue; // it's a "compileOnly" assembly
+                }
+
+                if (IsLibraryNative(depLib) && !NativeDependencies.Contains(dependency.Name))
                 {
                     NativeDependencies.Add(GetNativeLibraryPath(depLib));
                 }
