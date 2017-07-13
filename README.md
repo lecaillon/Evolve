@@ -1,10 +1,10 @@
 # Evolve [![Build status](https://img.shields.io/appveyor/ci/lecaillon/Evolve.svg?label=appveyor&branch=master)](https://ci.appveyor.com/project/lecaillon/evolve) [![Build Status](https://img.shields.io/travis/lecaillon/Evolve.svg?label=travis-ci&branch=master)](https://travis-ci.org/lecaillon/Evolve) [![NuGet](https://buildstats.info/nuget/Evolve)](https://www.nuget.org/packages/Evolve)
 Database migration tool for .NET and .NET Core. Inspired by [Flyway](https://flywaydb.org/).
 
-Evolve is an easy migration tool that uses plain old sql scripts. Its purpose is to automate your database changes, and help keep those changes synchronized through all your environments and developpement teams.
+Evolve is an easy migration tool that uses plain old sql scripts. Its purpose is to automate your database changes, and help keep those changes synchronized through all your environments and development teams.
 This makes it an ideal tool for continuous integration / delivery.
 
-Over all Evolve embraces simplicity. Every time you build your project, it will automatically ensure that your database is up-to-date, without having to do anything other than build. Install it and forget it !
+Over all Evolve embraces simplicity. Every time you build your project, it will automatically ensure that your database is up-to-date, without having to do anything other than build. Install it and forget it!
 
 ## Supported Databases
 - [x] PostgreSQL
