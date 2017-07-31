@@ -28,8 +28,8 @@ namespace Evolve.Test.Configuration
             Assert.Equal("@}", evolve.PlaceholderSuffix);
             Assert.Equal(new MigrationVersion("2_1_0"), evolve.TargetVersion);
             Assert.Equal(new MigrationVersion("1_1_0"), evolve.StartVersion);
-            Assert.True(new List<string>() { "@{Schema@}", "@{Pwd@}" }.SequenceEqual(evolve.Placeholders.Keys));
-            Assert.True(new List<string>() { "my_schema", "password" }.SequenceEqual(evolve.Placeholders.Values));
+            Assert.True(new List<string>() { "@{Pwd@}", "@{Schema@}" }.SequenceEqual(evolve.Placeholders.Keys.OrderBy(x => x)));
+            Assert.True(new List<string>() { "my_schema", "password" }.SequenceEqual(evolve.Placeholders.Values.OrderBy(x => x)));
             Assert.True(evolve.IsEraseDisabled);
             Assert.True(evolve.MustEraseOnValidationError);
             Assert.Equal(evolve.Command, CommandOptions.Erase);

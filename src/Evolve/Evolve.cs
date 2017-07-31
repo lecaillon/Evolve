@@ -74,12 +74,13 @@ namespace Evolve
         private IDbConnection _userDbConnection;
         private IMigrationLoader _loader = new FileMigrationLoader();
         private Action<string> _logInfoDelegate;
+        private string _environmentName;
         private readonly string _depsFile = "";
-        #if NETCORE || NET45
+#if NETCORE || NET45
         private readonly string _nugetPackageDir;
-        #endif
+#endif
 
-#endregion
+        #endregion
 
         #region Constructors
 
@@ -93,7 +94,8 @@ namespace Evolve
         /// </summary>
         /// <param name="dbConnection"> Optional database connection. </param>
         /// <param name="logInfoDelegate"> Optional logger. </param>
-        public Evolve(IDbConnection dbConnection = null, Action<string> logInfoDelegate = null)
+        public Evolve(IDbConnection dbConnection = null, 
+                      Action<string> logInfoDelegate = null)
         {
             _userDbConnection = dbConnection;
             _logInfoDelegate = logInfoDelegate ?? new Action<string>((msg) => { });
@@ -110,15 +112,20 @@ namespace Evolve
         /// <param name="evolveConfigurationPath"> Evolve configuration file (can be relative). </param>
         /// <param name="dbConnection"> Optional database connection. </param>
         /// <param name="logInfoDelegate"> Optional logger. </param>
-        public Evolve(string evolveConfigurationPath, IDbConnection dbConnection = null, Action<string> logInfoDelegate = null)
+        /// <param name="environmentName"> The environment is typically set to one of Development, Staging, or Production. Optional. </param>
+        public Evolve(string evolveConfigurationPath, 
+                      IDbConnection dbConnection = null, 
+                      Action<string> logInfoDelegate = null, 
+                      string environmentName = "")
         {
             _configurationPath = Check.FileExists(ResolveConfigurationFileLocation(evolveConfigurationPath), nameof(evolveConfigurationPath));
             _userDbConnection = dbConnection;
             _logInfoDelegate = logInfoDelegate ?? new Action<string>((msg) => { });
+            _environmentName = environmentName;
 
             // Configure Evolve
             var configurationProvider = ConfigurationFactoryProvider.GetProvider(evolveConfigurationPath);
-            configurationProvider.Configure(evolveConfigurationPath, this);
+            configurationProvider.Configure(evolveConfigurationPath, this, environmentName);
         }
 
 #if NETCORE || NET45
@@ -137,17 +144,24 @@ namespace Evolve
         /// <param name="nugetPackageDir"> Path to the NuGet package folder. </param>
         /// <param name="dbConnection"> Optional database connection. </param>
         /// <param name="logInfoDelegate"> Optional logger. </param>
-        public Evolve(string evolveConfigurationPath, string depsFile, string nugetPackageDir, IDbConnection dbConnection = null, Action<string> logInfoDelegate = null)
+        /// <param name="environmentName"> The environment is typically set to one of Development, Staging, or Production. Optional. </param>
+        public Evolve(string evolveConfigurationPath, 
+                      string depsFile, 
+                      string nugetPackageDir, 
+                      IDbConnection dbConnection = null, 
+                      Action<string> logInfoDelegate = null, 
+                      string environmentName = "")
         {
             _configurationPath = Check.FileExists(ResolveConfigurationFileLocation(evolveConfigurationPath), nameof(evolveConfigurationPath));
             _depsFile = Check.FileExists(ResolveConfigurationFileLocation(depsFile), nameof(depsFile));
             _nugetPackageDir = Check.DirectoryExists(nugetPackageDir, nameof(nugetPackageDir));
             _userDbConnection = dbConnection;
             _logInfoDelegate = logInfoDelegate ?? new Action<string>((msg) => { });
+            _environmentName = environmentName;
 
             // Configure Evolve
             var configurationProvider = ConfigurationFactoryProvider.GetProvider(evolveConfigurationPath);
-            configurationProvider.Configure(evolveConfigurationPath, this);
+            configurationProvider.Configure(evolveConfigurationPath, this, environmentName);
         }
 
 #endif

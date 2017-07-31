@@ -7,6 +7,6 @@
   <UsingTask TaskName="Evolve.MsBuild.EvolveBoot" AssemblyFile="$(MSBuildThisFileDirectory)$(Evolve_PlatformSuffix)Evolve.dll" />
   
   <Target Name="SqlMigration" AfterTargets="Build">
-    <EvolveBoot TargetPath="$(TargetPath)" ProjectDir="$(ProjectDir)" EvolveNugetPackageBuildDir="$(MSBuildThisFileDirectory)" IsDotNetStandardProject="true" />
+    <EvolveBoot TargetPath="$(TargetPath)" ProjectDir="$(ProjectDir)" EvolveNugetPackageBuildDir="$(MSBuildThisFileDirectory)" IsDotNetStandardProject="true" Configuration="$(Configuration)" />
   </Target>
 </Project>

@@ -10,6 +10,7 @@
         /// </summary>
         /// <param name="evolveConfigurationPath"> Full path to the Evolve configuration file. </param>
         /// <param name="configuration"> Default Evolve configuration. </param>
-        void Configure(string evolveConfigurationPath, IEvolveConfiguration configuration);
+        /// <param name="environmentName"> The environment is typically set to one of Development, Staging, or Production. Optional. </param>
+        void Configure(string evolveConfigurationPath, IEvolveConfiguration configuration, string environmentName);
     }
 }

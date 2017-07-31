@@ -1,0 +1,9 @@
+﻿{
+  "Evolve.ConnectionString": "Server=srv1;Port=5432;Database=myDataBase;User Id=myUsername;Password=myPassword;",
+  "Evolve.Locations": "migration",
+  "Evolve.EraseDisabled": "true",
+  "Evolve.Command": "migrate",
+  "Evolve.EraseOnValidationError": "false",
+  "Evolve.TargetVersion": "2_1_0",
+  "Evolve.StartVersion": "1_1_0"
+}

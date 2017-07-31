@@ -12,7 +12,6 @@ namespace Evolve.Configuration
         private const string IncorrectEncodingValue = "Encoding does not support this value: {0}. See https://msdn.microsoft.com/en-us/library/system.text.encoding.getencodings(v=vs.110).aspx for all possible names.";
         private const string InvalidVersionPatternMatching = "{0}: Migration version {1} is invalid. Version must respect this regex: ^[0-9]+(?:.[0-9]+)*$";
 
-        protected string _filePath;
         protected IEvolveConfiguration _configuration;
 
         #region Configuration variables
@@ -38,14 +37,19 @@ namespace Evolve.Configuration
 
         #endregion
 
-        public void Configure(string evolveConfigurationPath, IEvolveConfiguration configuration)
+        public void Configure(string evolveConfigurationPath, IEvolveConfiguration configuration, string environmentName = null)
         {
-            _filePath = Check.FileExists(evolveConfigurationPath, nameof(evolveConfigurationPath));
+            ConfigFile = Check.FileExists(evolveConfigurationPath, nameof(evolveConfigurationPath));
             _configuration = Check.NotNull(configuration, nameof(configuration));
+            EnvironmentName = environmentName;
 
             Configure();
             Validate();
         }
+
+        public string ConfigFile { get; private set; }
+
+        public string EnvironmentName { get; private set; }
 
         protected abstract Dictionary<string, string> Datasource { get; }
 
@@ -211,12 +215,12 @@ namespace Evolve.Configuration
 
             if (_configuration.Locations == null || _configuration.Locations.Count() == 0)
             {
-                throw new EvolveConfigurationException(string.Format(ValueCannotBeNull, Locations, _filePath));
+                throw new EvolveConfigurationException(string.Format(ValueCannotBeNull, Locations, ConfigFile));
             }
 
             if (_configuration.Encoding == null)
             {
-                throw new EvolveConfigurationException(string.Format(ValueCannotBeNull, Encoding, _filePath));
+                throw new EvolveConfigurationException(string.Format(ValueCannotBeNull, Encoding, ConfigFile));
             }
         }
 
@@ -243,7 +247,7 @@ namespace Evolve.Configuration
         {
             if (value.IsNullOrWhiteSpace())
             {
-                throw new EvolveConfigurationException(string.Format(ValueCannotBeNull, name, _filePath));
+                throw new EvolveConfigurationException(string.Format(ValueCannotBeNull, name, ConfigFile));
             }
         }
     }

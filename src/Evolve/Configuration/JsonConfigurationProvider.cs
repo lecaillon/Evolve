@@ -15,33 +15,66 @@ namespace Evolve.Configuration
 
         private const string IncorrectFileFormat = "Incorrect Evolve configuration file format at: {0}.";
 
+        public string ConfigFile2
+        {
+            get
+            {
+                string fileName = Path.GetFileNameWithoutExtension(ConfigFile);
+                string dir = Path.GetDirectoryName(ConfigFile);
+                string ext = Path.GetExtension(ConfigFile);
+                string configFile2 = Path.Combine(dir, $"{fileName}.{EnvironmentName}{ext}");
+
+                return File.Exists(configFile2) ? configFile2 : null;
+            }
+        }
+
         protected override Dictionary<string, string> Datasource
         {
             get
             {
-                if (_datasource == null)
+                if (_datasource != null)
                 {
-                    try
+                    return _datasource;
+                }
+
+                try
+                {
+                    _datasource = LoadConfigurationFromFile(ConfigFile);
+                }
+                catch (Exception ex)
+                {
+                    throw new EvolveConfigurationException(string.Format(IncorrectFileFormat, ConfigFile), ex);
+                }
+
+                try
+                {
+                    if (ConfigFile2 != null)
                     {
-                        using (StreamReader file = File.OpenText(_filePath))
-                        {
-                            using (var reader = new JsonTextReader(file))
-                            {
-                                var jObject = (JObject)JToken.ReadFrom(reader);
-                                _datasource = jObject.Children<JProperty>()
-                                                     .Where(x => x.Name.StartsWith("Evolve.", StringComparison.OrdinalIgnoreCase))
-                                                     .Where(x => x.Value is JValue)
-                                                     .ToDictionary(x => x.Name, x => x.Value.ToString());
-                            }
-                        }
+                        var datasource = LoadConfigurationFromFile(ConfigFile2);
+                        datasource.ToList().ForEach(x => _datasource[x.Key] = x.Value);
                     }
-                    catch (Exception ex)
-                    {
-                        throw new EvolveConfigurationException(string.Format(IncorrectFileFormat, _filePath), ex);
-                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new EvolveConfigurationException(string.Format(IncorrectFileFormat, ConfigFile2), ex);
                 }
 
                 return _datasource;
+            }
+        }
+
+        private Dictionary<string, string> LoadConfigurationFromFile(string file)
+        {
+            using (StreamReader s = File.OpenText(file))
+            {
+                using (var r = new JsonTextReader(s))
+                {
+                    var jObject = (JObject)JToken.ReadFrom(r);
+                    return jObject.Children<JProperty>()
+                                  .Where(x => x.Name.StartsWith("Evolve.", StringComparison.OrdinalIgnoreCase))
+                                  .Where(x => x.Value is JValue)
+                                  .ToDictionary(x => x.Name, x => x.Value.ToString(), StringComparer.OrdinalIgnoreCase);
+                }
             }
         }
     }

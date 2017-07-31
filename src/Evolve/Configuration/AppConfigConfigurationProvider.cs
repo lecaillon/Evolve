@@ -22,7 +22,7 @@ namespace Evolve.Configuration
                 {
                     var configMap = new ExeConfigurationFileMap()
                     {
-                        ExeConfigFilename = _filePath
+                        ExeConfigFilename = ConfigFile
                     };
 
                     try
@@ -31,11 +31,11 @@ namespace Evolve.Configuration
                     }
                     catch (Exception ex)
                     {
-                        throw new EvolveConfigurationException(string.Format(IncorrectFileFormat, _filePath), ex);
+                        throw new EvolveConfigurationException(string.Format(IncorrectFileFormat, ConfigFile), ex);
                     }
 
                     var settings = _config.AppSettings.Settings;
-                    _datasource = settings.AllKeys.ToDictionary(key => key, key => settings[key].Value);
+                    _datasource = settings.AllKeys.ToDictionary(key => key, key => settings[key].Value, StringComparer.OrdinalIgnoreCase);
                 }
 
                 return _datasource;

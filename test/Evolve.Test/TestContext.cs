@@ -19,6 +19,7 @@ namespace Evolve.Test
             AppConfigPath = Path.Combine(ResourcesFolder, "App.config");
             WebConfigPath = Path.Combine(ResourcesFolder, "Web.config");
             JsonConfigPath = Path.Combine(ResourcesFolder, "evolve.json");
+            Json2ConfigPath = Path.Combine(ResourcesFolder, "evolve2.json");
         }
 
         public static string ProjectFolder { get; }
@@ -32,5 +33,6 @@ namespace Evolve.Test
         public static string AppConfigPath { get; }
         public static string WebConfigPath { get; }
         public static string JsonConfigPath { get; }
+        public static string Json2ConfigPath { get; }
     }
 }

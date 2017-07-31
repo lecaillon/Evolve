@@ -29,7 +29,7 @@ namespace Evolve.MsBuild
     {
         private const string MigrationFolderCopyError = "Evolve cannot copy the migration folders to the output directory.";
         private const string MigrationFolderCopy = "Migration folder {0} copied to {1}.";
-        private const string EvolveJsonConfigFileNotFound = "Evolve configuration file not found at {0}. Ensure you created and copied it to your application output build directory.";
+        private const string EvolveJsonConfigFileNotFound = "Evolve configuration file not found at {0}.";
 
         /// <summary>
         ///     The absolute path name of the primary output file for the build.
@@ -54,6 +54,12 @@ namespace Evolve.MsBuild
         /// </summary>
         [Required]
         public bool IsDotNetStandardProject { get; set; }
+
+        /// <summary>
+        ///     The configuration that you are building, either "Debug" or "Release" or "Staging"...
+        /// </summary>
+        [Required]
+        public string Configuration { get; set; }
 
         /// <summary>
         ///     The directory of the primary output file for the build.
@@ -112,17 +118,17 @@ namespace Evolve.MsBuild
                 Directory.SetCurrentDirectory(TargetDir);
                 Evolve evolve = null;
 #if NETCORE
-                evolve = new Evolve(EvolveConfigurationFile, AppDepsFile, NugetPackageDir, logInfoDelegate: msg => LogInfo(msg));
+                evolve = new Evolve(EvolveConfigurationFile, AppDepsFile, NugetPackageDir, logInfoDelegate: msg => LogInfo(msg), environmentName: Configuration);
 #else
     #if NET45
                 if (IsDotNetStandardProject)
                 {
-                    evolve = new Evolve(EvolveConfigurationFile, AppDepsFile, NugetPackageDir, logInfoDelegate: msg => LogInfo(msg));
+                    evolve = new Evolve(EvolveConfigurationFile, AppDepsFile, NugetPackageDir, logInfoDelegate: msg => LogInfo(msg), environmentName: Configuration);
                 }
     #endif
                 if (!IsDotNetStandardProject)
                 {
-                    evolve = new Evolve(EvolveConfigurationFile, logInfoDelegate: msg => LogInfo(msg));
+                    evolve = new Evolve(EvolveConfigurationFile, logInfoDelegate: msg => LogInfo(msg), environmentName: Configuration);
                 }
 #endif
                 CopyMigrationProjectDirToTargetDir(evolve.Locations);
