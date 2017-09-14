@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Evolve</id>
-    <version>1.5.0</version>
+    <version>1.5.1</version>
     <authors>Philippe Lécaillon</authors>
     <owners>Philippe Lécaillon</owners>
     <licenseUrl>https://github.com/lecaillon/Evolve/blob/master/LICENSE</licenseUrl>
