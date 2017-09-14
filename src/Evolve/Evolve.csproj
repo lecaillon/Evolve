@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
     <TargetFrameworks>netcoreapp1.0;net35;net452;</TargetFrameworks>
-    <Version>1.1.0</Version>
+    <Version>1.5.0</Version>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net35'">
     <DefineConstants>NET</DefineConstants>
@@ -45,7 +45,7 @@
   <!-- Add System.Data.Common.dll to the Evolve netcoreapp\MSBuildCore task -->
   <PropertyGroup>
     <EvolveHomePath Condition=" '$(EvolveHomePath)' == '' and '$(HOME)' != '' ">$(HOME)/</EvolveHomePath>
-      <EvolveHomePath Condition=" '$(EvolveHomePath)' == '' ">$(USERPROFILE)/</EvolveHomePath>
+    <EvolveHomePath Condition=" '$(EvolveHomePath)' == '' ">$(USERPROFILE)/</EvolveHomePath>
   </PropertyGroup>
 
   <Target Name="CopyEvolveTaskDependency" AfterTargets="Build">
