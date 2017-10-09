@@ -74,6 +74,14 @@ namespace Evolve
             });
         }
 
+        public static bool QueryForBool(this WrappedConnection wrappedConnection, string sql)
+        {
+            return Execute(wrappedConnection, sql, (cmd) =>
+            {
+                return (bool)cmd.ExecuteScalar();
+            });
+        }
+
         public static IEnumerable<string> QueryForListOfString(this WrappedConnection wrappedConnection, string sql)
         {
             return Execute(wrappedConnection, sql, (cmd) =>
@@ -116,7 +124,17 @@ namespace Evolve
             });
         }
 
-        private static T Execute<T>(WrappedConnection wrappedConnection, string sql, Func<IDbCommand, T> query)
+        public static T ExecuteDbCommand<T>(this WrappedConnection wrappedConnection, string sql, Action<IDbCommand> setupDbCommand, Func<IDbCommand, T> query)
+        {
+            Check.NotNull(wrappedConnection, nameof(wrappedConnection));
+            Check.NotNullOrEmpty(sql, nameof(sql));
+            Check.NotNull(query, nameof(query));
+            Check.NotNull(setupDbCommand, nameof(setupDbCommand));
+
+            return Execute(wrappedConnection, sql, query, setupDbCommand);
+        }
+
+        private static T Execute<T>(WrappedConnection wrappedConnection, string sql, Func<IDbCommand, T> query, Action<IDbCommand> setupDbCommand = null)
         {
             Check.NotNull(wrappedConnection, nameof(wrappedConnection));
             Check.NotNullOrEmpty(sql, nameof(sql));
@@ -135,6 +153,7 @@ namespace Evolve
                 {
                     cmd.CommandText = sql;
                     cmd.Transaction = wrappedConnection.CurrentTx;
+                    setupDbCommand?.Invoke(cmd);
 
                     return query(cmd);
                 }

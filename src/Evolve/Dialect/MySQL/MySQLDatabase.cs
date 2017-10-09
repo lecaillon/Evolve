@@ -22,6 +22,8 @@ namespace Evolve.Dialect.MySQL
 
         public override Schema GetSchema(string schemaName) => new MySQLSchema(schemaName, WrappedConnection);
 
+        public override bool TryAcquireApplicationLock() => WrappedConnection.QueryForLong("SELECT GET_LOCK('Evolve', 0);") == 1;
+
         protected override void InternalChangeSchema(string toSchemaName)
         {
             if (toSchemaName.IsNullOrWhiteSpace())

@@ -4,6 +4,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using Evolve.Configuration;
 using Evolve.Connection;
 using Evolve.Dialect;
@@ -21,6 +22,7 @@ namespace Evolve
         private const string InvalidConfigurationLocation = "Evolve configuration file not found at: {0}.";
         private const string EvolveInitialized = "Evolve initialized.";
         private const string NoCommandSpecified = "Evolve.Command parameter is not set. No migration applied. See: https://github.com/lecaillon/Evolve/wiki/Configuration for more information.";
+        private const string CannotAcquireApplicationLock = "Cannot acquire Evolve application lock. Another migration is running.";
 
         // Validate
         private const string IncorrectMigrationChecksum = "Validate failed: invalid checksum for migration: {0}.";
@@ -232,22 +234,22 @@ namespace Evolve
             }
         }
 
-        public string GenerateScript(string fromMigration = null, string toMigration = null)
-        {
-            throw new NotImplementedException();
-        }
-
         public void Migrate()
         {
+            Command = CommandOptions.Migrate;
             _logInfoDelegate(ExecutingMigrate);
 
-            Command = CommandOptions.Migrate;
+            Execute(db =>
+            {
+                InternalMigrate(db);
+            });
+        }
 
-            var db = Initialize();
-
+        private void InternalMigrate(DatabaseHelper db)
+        {
             try
             {
-                Validate(db);
+                ValidateAndRepairMetadata(db);
             }
             catch (EvolveValidationException ex)
             {
@@ -255,8 +257,8 @@ namespace Evolve
                 {
                     _logInfoDelegate(string.Format(MigrationErrorEraseOnValidationError, ex.Message));
 
-                    Erase(recreateSchema: true);
-                    Command = CommandOptions.Migrate; // overridden by the call to Erase()
+                    InternalErase(db);
+                    ManageSchemas(db);
                 }
                 else
                 {
@@ -266,9 +268,9 @@ namespace Evolve
 
             var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
             var lastAppliedVersion = metadata.GetAllMigrationMetadata().LastOrDefault()?.Version ?? MigrationVersion.MinVersion;
-            var startVersion = metadata.FindStartVersion();                                                                 // Load start version from metadata
+            var startVersion = metadata.FindStartVersion(); // Load start version from metadata
             var scripts = _loader.GetMigrations(Locations, SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix)
-                                 .SkipWhile(x => x.Version < startVersion)                                         
+                                 .SkipWhile(x => x.Version < startVersion)
                                  .SkipWhile(x => x.Version <= lastAppliedVersion)
                                  .TakeWhile(x => x.Version <= TargetVersion);
 
@@ -287,7 +289,7 @@ namespace Evolve
 
                     _logInfoDelegate(string.Format(MigrationSuccessfull, script.Name));
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     db.WrappedConnection.Rollback();
                     metadata.SaveMigration(script, false);
@@ -295,7 +297,7 @@ namespace Evolve
                 }
             }
 
-            if(NbMigration == 0)
+            if (NbMigration == 0)
             {
                 _logInfoDelegate(NothingToMigrate);
             }
@@ -305,7 +307,37 @@ namespace Evolve
             }
         }
 
-        public void Erase(bool recreateSchema = false)
+        public void Repair()
+        {
+            Command = CommandOptions.Repair;
+            _logInfoDelegate(ExecutingRepair);
+
+            Execute(db =>
+            {
+                ValidateAndRepairMetadata(db);
+
+                if (NbReparation == 0)
+                {
+                    _logInfoDelegate(RepairCancelled);
+                }
+                else
+                {
+                    _logInfoDelegate(string.Format(RepairSuccessfull, NbReparation));
+                }
+            });
+        }
+
+        public void Erase()
+        {
+            Command = CommandOptions.Erase;
+
+            Execute(db =>
+            {
+                InternalErase(db);
+            });
+        }
+
+        private void InternalErase(DatabaseHelper db)
         {
             _logInfoDelegate(ExecutingErase);
 
@@ -314,10 +346,9 @@ namespace Evolve
                 throw new EvolveConfigurationException(EraseDisabled);
             }
 
-            var db = Initialize();
             var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
 
-            if(!metadata.IsExists())
+            if (!metadata.IsExists())
             {
                 _logInfoDelegate(EraseCancelled);
                 return;
@@ -363,109 +394,96 @@ namespace Evolve
             db.WrappedConnection.Commit();
 
             _logInfoDelegate(string.Format(EraseCompleted, NbSchemaErased, NbSchemaToEraseSkipped));
-
-            if(recreateSchema)
-            {
-                ManageSchemas(db);
-            }
-        }
-
-        public void Repair()
-        {
-            _logInfoDelegate(ExecutingRepair);
-
-            Command = CommandOptions.Repair;
-            var db = Initialize();
-            Validate(db);
-
-            if (NbReparation == 0)
-            {
-                _logInfoDelegate(RepairCancelled);
-            }
-            else
-            {
-                _logInfoDelegate(string.Format(RepairSuccessfull, NbReparation));
-            }
         }
 
         #endregion
 
-        private DatabaseHelper Initialize()
+        private string ResolveConfigurationFileLocation(string location)
+        {
+            Check.NotNullOrEmpty(location, nameof(location));
+
+            try
+            {
+                return new FileInfo(location).FullName;
+            }
+            catch (Exception ex)
+            {
+                throw new EvolveConfigurationException(string.Format(InvalidConfigurationLocation, location), ex);
+            }
+        }
+
+        private void Execute(Action<DatabaseHelper> commandAction)
         {
             NbMigration = 0;
             NbReparation = 0;
             NbSchemaErased = 0;
             NbSchemaToEraseSkipped = 0;
 
+            var db = InitiateDatabaseConnection();
+            WaitForApplicationLock(db);
+
+            try
+            {
+                ManageSchemas(db);
+                ManageStartVersion(db);
+
+                commandAction(db);
+            }
+            finally
+            {
+                db.ReleaseLockAndCloseConnection();
+            }
+        }
+
+        private DatabaseHelper InitiateDatabaseConnection()
+        {
             var connectionProvider = GetConnectionProvider();                               // Get a database connection provider
             var evolveConnection = connectionProvider.GetConnection();                      // Get a connection to the database
             evolveConnection.Validate();                                                    // Validate the reliabilty of the initiated connection
             var dbmsType = evolveConnection.GetDatabaseServerType();                        // Get the DBMS type
             var db = DatabaseHelperFactory.GetDatabaseHelper(dbmsType, evolveConnection);   // Get the DatabaseHelper
-            if(Schemas == null || Schemas.Count() == 0)
+            if (Schemas == null || Schemas.Count() == 0)
             {
                 Schemas = new List<string> { db.GetCurrentSchemaName() };                   // If no schema, get the one associated to the datasource connection
             }
 
             _logInfoDelegate(EvolveInitialized);
 
-            ManageSchemas(db);
-
-            ManageStartVersion(db);
-
             return db;
         }
 
-        private void Validate(DatabaseHelper db)
+        private IConnectionProvider GetConnectionProvider()
         {
-            Check.NotNull(db, nameof(db));
-
-            var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);                                       // Get the metadata table
-            if (!metadata.IsExists())
+            if (_userDbConnection != null)
             {
-                _logInfoDelegate(NoMetadataFound); // Nothing to validate
-                return;
+                return new ConnectionProvider(_userDbConnection);
             }
 
-            var appliedMigrations = metadata.GetAllMigrationMetadata();                                                     // Load all applied migrations metadata
-            if (appliedMigrations.Count() == 0)                                                                             
+#if NETCORE
+            return new CoreDriverConnectionProvider(Driver, ConnectionString, _depsFile, _nugetPackageDir);
+#else
+#if NET45
+            if(IsDotNetStandardProject)
             {
-                _logInfoDelegate(NoMetadataFound); // Nothing to validate
-                return;
+                return new CoreDriverConnectionProviderForNet(Driver, ConnectionString, _depsFile, _nugetPackageDir);
             }
+#endif
+            return new DriverConnectionProvider(Driver, ConnectionString);
+#endif
+        }
 
-            var lastAppliedVersion = appliedMigrations.Last().Version;                                                      // Get the last applied migration version
-            var startVersion = metadata.FindStartVersion();                                                                 // Load start version from metadata
-            var scripts = _loader.GetMigrations(Locations, SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix)
-                                 .SkipWhile(x => x.Version < startVersion)                                         
-                                 .TakeWhile(x => x.Version <= lastAppliedVersion);                                          // Keep scripts between first and last applied migration
-
-            foreach (var script in scripts)
+        private void WaitForApplicationLock(DatabaseHelper db)
+        {
+            while (true)
             {
-                var appliedMigration = appliedMigrations.SingleOrDefault(x => x.Version == script.Version);                 // Search script in the applied migrations
-                if (appliedMigration == null)
+                if (db.TryAcquireApplicationLock())
                 {
-                    throw new EvolveValidationException(string.Format(MigrationMetadataNotFound, script.Name));                       
+                    break;
                 }
 
-                string scriptChecksum = script.CalculateChecksum();
-                if (scriptChecksum != appliedMigration.Checksum)                                                            // Script found, verify checksum
-                {
-                    if (Command == CommandOptions.Repair)
-                    {
-                        metadata.UpdateChecksum(appliedMigration.Id, scriptChecksum);
-                        NbReparation++;
-
-                        _logInfoDelegate(string.Format(ChecksumFixed, script.Name));
-                    }
-                    else
-                    {
-                        throw new EvolveValidationException(string.Format(IncorrectMigrationChecksum, script.Name));
-                    }
-                }
+                _logInfoDelegate(CannotAcquireApplicationLock);
+                Thread.Sleep(TimeSpan.FromSeconds(3));
             }
-
-            _logInfoDelegate(ValidateSuccessfull);
         }
 
         private void ManageSchemas(DatabaseHelper db)
@@ -529,24 +547,56 @@ namespace Evolve
             metadata.Save(MetadataType.StartVersion, StartVersion.Label, string.Format(StartVersionMetadataDesc, StartVersion.Label), string.Format(StartVersionMetadataName, StartVersion.Label));
         }
 
-        private IConnectionProvider GetConnectionProvider()
+        private void ValidateAndRepairMetadata(DatabaseHelper db)
         {
-            if(_userDbConnection != null)
+            Check.NotNull(db, nameof(db));
+
+            var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);                                       // Get the metadata table
+            if (!metadata.IsExists())
             {
-                return new ConnectionProvider(_userDbConnection);
+                _logInfoDelegate(NoMetadataFound); // Nothing to validate
+                return;
             }
 
-#if NETCORE
-            return new CoreDriverConnectionProvider(Driver, ConnectionString, _depsFile, _nugetPackageDir);
-#else
-    #if NET45
-            if(IsDotNetStandardProject)
+            var appliedMigrations = metadata.GetAllMigrationMetadata();                                                     // Load all applied migrations metadata
+            if (appliedMigrations.Count() == 0)
             {
-                return new CoreDriverConnectionProviderForNet(Driver, ConnectionString, _depsFile, _nugetPackageDir);
+                _logInfoDelegate(NoMetadataFound); // Nothing to validate
+                return;
             }
-    #endif
-            return new DriverConnectionProvider(Driver, ConnectionString);
-#endif
+
+            var lastAppliedVersion = appliedMigrations.Last().Version;                                                      // Get the last applied migration version
+            var startVersion = metadata.FindStartVersion();                                                                 // Load start version from metadata
+            var scripts = _loader.GetMigrations(Locations, SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix)
+                                 .SkipWhile(x => x.Version < startVersion)
+                                 .TakeWhile(x => x.Version <= lastAppliedVersion);                                          // Keep scripts between first and last applied migration
+
+            foreach (var script in scripts)
+            {
+                var appliedMigration = appliedMigrations.SingleOrDefault(x => x.Version == script.Version);                 // Search script in the applied migrations
+                if (appliedMigration == null)
+                {
+                    throw new EvolveValidationException(string.Format(MigrationMetadataNotFound, script.Name));
+                }
+
+                string scriptChecksum = script.CalculateChecksum();
+                if (scriptChecksum != appliedMigration.Checksum)                                                            // Script found, verify checksum
+                {
+                    if (Command == CommandOptions.Repair)
+                    {
+                        metadata.UpdateChecksum(appliedMigration.Id, scriptChecksum);
+                        NbReparation++;
+
+                        _logInfoDelegate(string.Format(ChecksumFixed, script.Name));
+                    }
+                    else
+                    {
+                        throw new EvolveValidationException(string.Format(IncorrectMigrationChecksum, script.Name));
+                    }
+                }
+            }
+
+            _logInfoDelegate(ValidateSuccessfull);
         }
 
         private IEnumerable<string> FindSchemas()
@@ -555,20 +605,6 @@ namespace Evolve
                                      .Union(Schemas ?? new List<string>())
                                      .Where(s => !s.IsNullOrWhiteSpace())
                                      .Distinct(StringComparer.OrdinalIgnoreCase);
-        }
-
-        private string ResolveConfigurationFileLocation(string location)
-        {
-            Check.NotNullOrEmpty(location, nameof(location));
-
-            try
-            {
-                return new FileInfo(location).FullName;
-            }
-            catch (Exception ex)
-            {
-                throw new EvolveConfigurationException(string.Format(InvalidConfigurationLocation, location), ex);
-            }
         }
     }
 }

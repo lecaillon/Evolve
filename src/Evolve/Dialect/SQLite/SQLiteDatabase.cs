@@ -25,5 +25,11 @@ namespace Evolve.Dialect.SQLite
         protected override void InternalChangeSchema(string toSchemaName) { }
 
         public override IEvolveMetadata GetMetadataTable(string schema, string tableName) => new SQLiteMetadataTable(tableName, this);
+
+        /// <summary>
+        ///     Not supported in SQLite.
+        /// </summary>
+        /// <returns> Always true </returns>
+        public override bool TryAcquireApplicationLock() => true;
     }
 }

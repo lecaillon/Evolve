@@ -1,4 +1,5 @@
-﻿using Evolve.Connection;
+﻿using System.Data;
+using Evolve.Connection;
 using Evolve.Metadata;
 using Evolve.Utilities;
 
@@ -23,8 +24,6 @@ namespace Evolve.Dialect
 
         public abstract string BatchDelimiter { get; }
 
-        #region Schema helper
-
         public virtual Schema ChangeSchema(string toSchemaName)
         {
             var schema = GetSchema(toSchemaName);
@@ -43,12 +42,16 @@ namespace Evolve.Dialect
 
         protected abstract void InternalChangeSchema(string toSchemaName);
 
-        #endregion
-
-        #region MetadataTable helper
-
         public abstract IEvolveMetadata GetMetadataTable(string schema, string tableName);
 
-        #endregion
+        public abstract bool TryAcquireApplicationLock();
+
+        public virtual void ReleaseLockAndCloseConnection()
+        {
+            if (WrappedConnection.DbConnection.State != ConnectionState.Closed)
+            {
+                WrappedConnection.DbConnection.Close();
+            }
+        }
     }
 }

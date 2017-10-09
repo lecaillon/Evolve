@@ -21,6 +21,8 @@ namespace Evolve.Dialect.PostgreSQL
 
         public override Schema GetSchema(string schemaName) => new PostgreSQLSchema(schemaName, WrappedConnection);
 
+        public override bool TryAcquireApplicationLock() => WrappedConnection.QueryForBool($"SELECT pg_try_advisory_lock(12345)");
+
         protected override void InternalChangeSchema(string toSchemaName)
         {
             if(toSchemaName.IsNullOrWhiteSpace())

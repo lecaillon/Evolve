@@ -117,7 +117,8 @@ namespace Evolve.Connection
         }
 
         /// <summary>
-        ///     Closes the connection to the database.
+        ///     Never close the connection since it will release the database 
+        ///     lock used to prevent concurrent execution of Evolve.
         /// </summary>
         public void Close()
         {
@@ -125,7 +126,7 @@ namespace Evolve.Connection
             {
                 if (DbConnection.State != ConnectionState.Closed)
                 {
-                    DbConnection.Close();
+                    //DbConnection.Close();
                 }
                 _openedInternally = false;
             }
