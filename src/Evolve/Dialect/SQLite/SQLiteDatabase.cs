@@ -31,5 +31,11 @@ namespace Evolve.Dialect.SQLite
         /// </summary>
         /// <returns> Always true </returns>
         public override bool TryAcquireApplicationLock() => true;
+
+        /// <summary>
+        ///     Not supported in SQLite.
+        /// </summary>
+        /// <returns> Always true </returns>
+        public override bool ReleaseApplicationLock() => true;
     }
 }

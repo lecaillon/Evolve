@@ -1,10 +1,13 @@
-﻿using Evolve.Connection;
+﻿using System.Data;
+using Evolve.Connection;
 using Evolve.Metadata;
 
 namespace Evolve.Dialect.PostgreSQL
 {
     public class PostgreSQLDatabase : DatabaseHelper
     {
+        private const int LOCK_ID = 12345;
+
         public PostgreSQLDatabase(WrappedConnection wrappedConnection) : base(wrappedConnection)
         {
         }
@@ -21,7 +24,9 @@ namespace Evolve.Dialect.PostgreSQL
 
         public override Schema GetSchema(string schemaName) => new PostgreSQLSchema(schemaName, WrappedConnection);
 
-        public override bool TryAcquireApplicationLock() => WrappedConnection.QueryForBool($"SELECT pg_try_advisory_lock(12345)");
+        public override bool TryAcquireApplicationLock() => WrappedConnection.QueryForBool($"SELECT pg_try_advisory_lock({LOCK_ID})");
+
+        public override bool ReleaseApplicationLock() => WrappedConnection.QueryForBool($"SELECT pg_advisory_unlock({LOCK_ID})");
 
         protected override void InternalChangeSchema(string toSchemaName)
         {

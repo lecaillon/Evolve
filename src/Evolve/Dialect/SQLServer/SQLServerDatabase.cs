@@ -6,6 +6,8 @@ namespace Evolve.Dialect.SQLServer
 {
     public class SQLServerDatabase : DatabaseHelper
     {
+        private const string LOCK_ID = "Evolve";
+
         public SQLServerDatabase(WrappedConnection wrappedConnection) : base(wrappedConnection)
         {
         }
@@ -34,7 +36,7 @@ namespace Evolve.Dialect.SQLServer
 
                 var inParam1 = cmd.CreateParameter();
                 inParam1.ParameterName = "@Resource";
-                inParam1.Value = "Evolve";
+                inParam1.Value = LOCK_ID;
                 inParam1.DbType = DbType.String;
                 inParam1.Direction = ParameterDirection.Input;
                 cmd.Parameters.Add(inParam1);
@@ -59,6 +61,39 @@ namespace Evolve.Dialect.SQLServer
                 inParam4.DbType = DbType.Int32;
                 inParam4.Direction = ParameterDirection.Input;
                 cmd.Parameters.Add(inParam4);
+
+            }, cmd =>
+            {
+                cmd.ExecuteNonQuery();
+                return (int)(cmd.Parameters["@result"] as IDbDataParameter).Value;
+            }) >= 0;
+        }
+
+        public override bool ReleaseApplicationLock()
+        {
+            return WrappedConnection.ExecuteDbCommand("sp_releaseapplock", cmd =>
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                var outParam = cmd.CreateParameter();
+                outParam.ParameterName = "@result";
+                outParam.DbType = DbType.Int32;
+                outParam.Direction = ParameterDirection.ReturnValue;
+                cmd.Parameters.Add(outParam);
+
+                var inParam1 = cmd.CreateParameter();
+                inParam1.ParameterName = "@Resource";
+                inParam1.Value = LOCK_ID;
+                inParam1.DbType = DbType.String;
+                inParam1.Direction = ParameterDirection.Input;
+                cmd.Parameters.Add(inParam1);
+
+                var inParam2 = cmd.CreateParameter();
+                inParam2.ParameterName = "@LockOwner";
+                inParam2.Value = "Session";
+                inParam2.DbType = DbType.String;
+                inParam2.Direction = ParameterDirection.Input;
+                cmd.Parameters.Add(inParam2);
 
             }, cmd =>
             {

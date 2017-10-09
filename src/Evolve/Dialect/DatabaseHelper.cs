@@ -46,7 +46,9 @@ namespace Evolve.Dialect
 
         public abstract bool TryAcquireApplicationLock();
 
-        public virtual void ReleaseLockAndCloseConnection()
+        public abstract bool ReleaseApplicationLock();
+
+        public virtual void CloseConnection()
         {
             if (WrappedConnection.DbConnection.State != ConnectionState.Closed)
             {

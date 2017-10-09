@@ -23,6 +23,7 @@ namespace Evolve
         private const string EvolveInitialized = "Evolve initialized.";
         private const string NoCommandSpecified = "Evolve.Command parameter is not set. No migration applied. See: https://github.com/lecaillon/Evolve/wiki/Configuration for more information.";
         private const string CannotAcquireApplicationLock = "Cannot acquire Evolve application lock. Another migration is running.";
+        private const string CannotReleaseApplicationLock = "Error trying to release Evolve application lock.";
 
         // Validate
         private const string IncorrectMigrationChecksum = "Validate failed: invalid checksum for migration: {0}.";
@@ -431,7 +432,12 @@ namespace Evolve
             }
             finally
             {
-                db.ReleaseLockAndCloseConnection();
+                if(db.ReleaseApplicationLock() == false)
+                {
+                    _logInfoDelegate(CannotReleaseApplicationLock);
+                }
+
+                db.CloseConnection();
             }
         }
 
