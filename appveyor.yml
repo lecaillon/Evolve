@@ -18,7 +18,7 @@ init:
     
     SET PATH=C:\Program Files\MySQL\MySQL Server 5.7\bin\;%PATH%
     
-    SET PATH=C:\projects\evolve\packages\xunit.runner.console.2.2.0\tools\;%PATH%
+    SET PATH=C:\projects\evolve\packages\xunit.runner.console.2.3.0\tools\net452\;%PATH%
 before_build:
 - ps: >-
     dotnet restore
