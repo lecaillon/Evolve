@@ -1,25 +1,27 @@
-﻿using System.Data.SqlClient;
+﻿using System;
+using System.Data.SqlClient;
 using System.Management.Automation;
 using System.Threading;
+using Xunit;
 
 namespace Evolve.IntegrationTest.SQLServer
 {
-    public static class TestUtil
+    public class DatabaseFixture : IDisposable
     {
-        public static void RunContainer()
+        public DatabaseFixture()
         {
 #if DEBUG
             using (var ps = PowerShell.Create())
             {
-                ps.Commands.AddScript($"docker run --name {TestContext.ContainerName} -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD={TestContext.DbPwd}' --publish={TestContext.ContainerPort}:{TestContext.ContainerPort} -d {TestContext.ImageName}");
+                ps.Commands.AddScript($"docker run --name '{TestContext.ContainerName}' -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD={TestContext.DbPwd}' --publish={TestContext.ContainerPort}:{TestContext.ContainerPort} -d {TestContext.ImageName}");
                 ps.Invoke();
             }
 
-            Thread.Sleep(30000);
+            Thread.Sleep(20000);
 #endif
         }
 
-        public static void RemoveContainer()
+        public void Dispose()
         {
 #if DEBUG
             using (var ps = PowerShell.Create())
@@ -31,7 +33,7 @@ namespace Evolve.IntegrationTest.SQLServer
 #endif
         }
 
-        public static void CreateTestDatabase(string name)
+        public void CreateTestDatabase(string name)
         {
             var cnn = new SqlConnection($"Server=127.0.0.1;Database=master;User Id={TestContext.DbUser};Password={TestContext.DbPwd};");
             cnn.Open();
@@ -44,5 +46,13 @@ namespace Evolve.IntegrationTest.SQLServer
 
             cnn.Close();
         }
+    }
+
+    [CollectionDefinition("Database collection")]
+    public class DatabaseCollection : ICollectionFixture<DatabaseFixture>
+    {
+        // This class has no code, and is never created. Its purpose is simply
+        // to be the place to apply [CollectionDefinition] and all the
+        // ICollectionFixture<> interfaces.
     }
 }

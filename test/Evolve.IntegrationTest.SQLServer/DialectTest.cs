@@ -2,6 +2,7 @@
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Threading;
 using Evolve.Connection;
 using Evolve.Dialect;
 using Evolve.Dialect.SQLServer;
@@ -11,9 +12,15 @@ using Xunit;
 
 namespace Evolve.IntegrationTest.SQLServer
 {
-    public class DialectTest : IDisposable
+    [Collection("Database collection")]
+    public class DialectTest
     {
         public const string DbName = "my_database_1";
+
+        public DialectTest(DatabaseFixture fixture)
+        {
+            fixture.CreateTestDatabase(DbName);
+        }
 
         [Fact(DisplayName = "Run_all_SQLServer_integration_tests_work")]
         public void Run_all_SQLServer_integration_tests_work()
@@ -66,7 +73,7 @@ namespace Evolve.IntegrationTest.SQLServer
             Assert.True(migrationMetadata.Name == migrationScript.Name, "Metadata name is not the same.");
             Assert.True(migrationMetadata.Success == true, "Metadata success is not true.");
             Assert.True(migrationMetadata.Id > 0, "Metadata id is not set.");
-            // Assert.True(migrationMetadata.InstalledOn.Date == DateTime.Now.Date, "Installed date is not set.");
+            Assert.True(migrationMetadata.InstalledOn.Date == DateTime.Now.Date, "Installed date is not set.");
 
             // Update checksum
             metadata.UpdateChecksum(migrationMetadata.Id, "Hi !");
@@ -80,23 +87,29 @@ namespace Evolve.IntegrationTest.SQLServer
             metadataSchema.Erase();
             Assert.True(metadataSchema.IsEmpty(), $"The schema [{metadataSchemaName}] should be empty.");
             Assert.True(metadataSchema.IsExists(), $"The schema [{metadataSchemaName}] should exist.");
-        }
 
-        /// <summary>
-        ///     Start SQLServer server.
-        /// </summary>
-        public DialectTest()
-        {
-            TestUtil.RunContainer();
-            TestUtil.CreateTestDatabase(DbName);
-        }
+            // Acquisition du lock applicatif
+            while (true)
+            {
+                if (db.TryAcquireApplicationLock())
+                {
+                    break;
+                }
 
-        /// <summary>
-        ///     Stop SQLServer server and remove container.
-        /// </summary>
-        public void Dispose()
-        {
-            TestUtil.RemoveContainer();
+                Thread.Sleep(TimeSpan.FromSeconds(1));
+            }
+            Assert.True(db.TryAcquireApplicationLock(), "Cannot acquire application lock.");
+
+            // Can not acquire lock while it is taken by another connection
+            var cnn2 = new SqlConnection($"Server=127.0.0.1;Database={DbName};User Id={TestContext.DbUser};Password={TestContext.DbPwd};");
+            var wcnn2 = new WrappedConnection(cnn2);
+            var db2 = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLServer, wcnn2);
+            Assert.False(db2.TryAcquireApplicationLock(), "Application lock could not have been acquired.");
+
+            // Release the lock
+            db.ReleaseApplicationLock();
+            db.CloseConnection();
+            Assert.True(db.WrappedConnection.DbConnection.State == ConnectionState.Closed, "SQL connection should be closed.");
         }
     }
 }

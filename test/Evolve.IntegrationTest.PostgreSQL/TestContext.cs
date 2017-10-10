@@ -6,7 +6,7 @@ namespace Evolve.IntegrationTest.PostgreSQL
 {
     public static class TestContext
     {
-        public const string ImageName = "postgres:latest";
+        public const string ImageName = "postgres:alpine";
         public const string ContainerName = "postgres-evolve";
         public const string ContainerPort = "5432";
         public const string DbName = "my_database";

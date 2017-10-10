@@ -290,7 +290,7 @@ CREATE TABLE end_customer_view_message (
 DROP TABLE IF EXISTS envelope_instruction;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE envelope_instruction (
+/*CREATE TABLE envelope_instruction (
   id bigint(20) NOT NULL AUTO_INCREMENT,
   envelope_type varchar(20) DEFAULT NULL,
   ei_key varchar(255) DEFAULT NULL,
@@ -302,7 +302,7 @@ CREATE TABLE envelope_instruction (
   KEY env_instr_seal_idx (seal),
   KEY env_instr_window_idx (window),
   KEY env_instr_env_type_idx (envelope_type)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;*/
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -411,8 +411,7 @@ CREATE TABLE post_instruction (
   fk_env_instr bigint(20) NOT NULL,
   PRIMARY KEY (id),
   KEY FK1CD9F36FBA6F9F1A (fk_env_instr),
-  KEY post_instr_delivery_type_idx (delivery_type),
-  CONSTRAINT FK1CD9F36FBA6F9F1A FOREIGN KEY (fk_env_instr) REFERENCES envelope_instruction (id)
+  KEY post_instr_delivery_type_idx (delivery_type)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

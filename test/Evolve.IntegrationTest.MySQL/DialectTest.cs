@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Linq;
+using System.Threading;
 using Evolve.Connection;
 using Evolve.Dialect;
 using Evolve.Dialect.MySQL;
@@ -11,8 +12,13 @@ using Xunit;
 
 namespace Evolve.IntegrationTest.MySQL
 {
-    public class DialectTest : IDisposable
+    [Collection("Database collection")]
+    public class DialectTest
     {
+        public DialectTest(DatabaseFixture fixture)
+        {
+        }
+
         [Fact(DisplayName = "Run_all_MySQL_integration_tests_work")]
         public void Run_all_MySQL_integration_tests_work()
         {
@@ -88,22 +94,6 @@ namespace Evolve.IntegrationTest.MySQL
             // Drop schema
             metadataSchema.Drop();
             Assert.False(metadataSchema.IsExists(), $"The schema [{metadataSchemaName}] should not exist.");
-        }
-
-        /// <summary>
-        ///     Start MySQL server.
-        /// </summary>
-        public DialectTest()
-        {
-            TestUtil.RunContainer();
-        }
-
-        /// <summary>
-        ///     Stop MySQL server and remove container.
-        /// </summary>
-        public void Dispose()
-        {
-            TestUtil.RemoveContainer();
         }
     }
 }

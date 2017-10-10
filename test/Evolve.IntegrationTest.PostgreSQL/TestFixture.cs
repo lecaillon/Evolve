@@ -1,11 +1,13 @@
-﻿using System.Management.Automation;
+﻿using System;
+using System.Management.Automation;
 using System.Threading;
+using Xunit;
 
 namespace Evolve.IntegrationTest.PostgreSQL
 {
-    public static class TestUtil
+    public class DatabaseFixture : IDisposable
     {
-        public static void RunContainer()
+        public DatabaseFixture()
         {
 #if DEBUG
             using (var ps = PowerShell.Create())
@@ -18,7 +20,7 @@ namespace Evolve.IntegrationTest.PostgreSQL
 #endif
         }
 
-        public static void RemoveContainer()
+        public void Dispose()
         {
 #if DEBUG
             using (var ps = PowerShell.Create())
@@ -29,5 +31,13 @@ namespace Evolve.IntegrationTest.PostgreSQL
             }
 #endif
         }
+    }
+
+    [CollectionDefinition("Database collection")]
+    public class DatabaseCollection : ICollectionFixture<DatabaseFixture>
+    {
+        // This class has no code, and is never created. Its purpose is simply
+        // to be the place to apply [CollectionDefinition] and all the
+        // ICollectionFixture<> interfaces.
     }
 }

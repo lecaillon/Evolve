@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Linq;
+using System.Threading;
 using Evolve.Connection;
 using Evolve.Dialect;
 using Evolve.Dialect.PostgreSQL;
@@ -11,8 +12,13 @@ using Xunit;
 
 namespace Evolve.IntegrationTest.PostgreSQL
 {
-    public class DialectTest : IDisposable
+    [Collection("Database collection")]
+    public class DialectTest
     {
+        public DialectTest(DatabaseFixture fixture)
+        {
+        }
+
         [Fact(DisplayName = "Run_all_PostgreSQL_integration_tests_work")]
         public void Run_all_PostgreSQL_integration_tests_work()
         {
@@ -88,22 +94,29 @@ namespace Evolve.IntegrationTest.PostgreSQL
             // Drop schema
             metadataSchema.Drop();
             Assert.False(metadataSchema.IsExists(), $"The schema [{metadataSchemaName}] should not exist.");
-        }
 
-        /// <summary>
-        ///     Start PostgreSQL server.
-        /// </summary>
-        public DialectTest()
-        {
-            TestUtil.RunContainer();
-        }
+            // Acquisition du lock applicatif
+            while (true)
+            {
+                if (db.TryAcquireApplicationLock())
+                {
+                    break;
+                }
 
-        /// <summary>
-        ///     Stop PostgreSQL server and remove container.
-        /// </summary>
-        public void Dispose()
-        {
-            TestUtil.RemoveContainer();
+                Thread.Sleep(TimeSpan.FromSeconds(1));
+            }
+            Assert.True(db.TryAcquireApplicationLock(), "Cannot acquire application lock.");
+
+            // Can not acquire lock while it is taken by another connection
+            var cnn2 = new NpgsqlConnection($"Server=127.0.0.1;Port={TestContext.ContainerPort};Database={TestContext.DbName};User Id={TestContext.DbUser};Password={TestContext.DbPwd};");
+            var wcnn2 = new WrappedConnection(cnn2);
+            var db2 = DatabaseHelperFactory.GetDatabaseHelper(DBMS.PostgreSQL, wcnn2);
+            Assert.False(db2.TryAcquireApplicationLock(), "Application lock could not have been acquired.");
+
+            // Release the lock
+            db.ReleaseApplicationLock();
+            db.CloseConnection();
+            Assert.True(db.WrappedConnection.DbConnection.State == ConnectionState.Closed, "SQL connection should be closed.");
         }
     }
 }
