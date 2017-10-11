@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
@@ -12,14 +11,17 @@ namespace Evolve.IntegrationTest.PostgreSQL
     [Collection("Database collection")]
     public class MigrationTest
     {
+        private readonly DatabaseFixture _db;
+
         public MigrationTest(DatabaseFixture fixture)
         {
+            _db = fixture;
         }
 
         [Fact(DisplayName = "Run_all_PostgreSQL_migrations_work")]
         public void Run_all_PostgreSQL_migrations_work()
         {
-            var cnn = new NpgsqlConnection($"Server=127.0.0.1;Port={TestContext.ContainerPort};Database={TestContext.DbName};User Id={TestContext.DbUser};Password={TestContext.DbPwd};");
+            var cnn = new NpgsqlConnection($"Server=127.0.0.1;Port={_db.HostPort};Database={_db.DbName};User Id={_db.DbUser};Password={_db.DbPwd};");
             var evolve = new Evolve(cnn, msg => Debug.WriteLine(msg))
             {
                 Locations = new List<string> { TestContext.MigrationFolder },

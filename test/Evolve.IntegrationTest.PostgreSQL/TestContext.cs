@@ -6,13 +6,6 @@ namespace Evolve.IntegrationTest.PostgreSQL
 {
     public static class TestContext
     {
-        public const string ImageName = "postgres:alpine";
-        public const string ContainerName = "postgres-evolve";
-        public const string ContainerPort = "5432";
-        public const string DbName = "my_database";
-        public const string DbPwd = "Password12!"; // AppVeyor
-        public const string DbUser = "postgres";
-
         static TestContext()
         {
             ResourcesFolder = Path.Combine(Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).AbsolutePath), "Resources");
