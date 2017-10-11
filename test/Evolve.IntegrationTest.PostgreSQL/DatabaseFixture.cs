@@ -11,6 +11,7 @@ namespace Evolve.IntegrationTest.PostgreSQL
 
         public DatabaseFixture()
         {
+#if DEBUG
             _container = new DockerContainerBuilder(new DockerContainerBuilderOptions
             {
                 FromImage = "postgres",
@@ -24,6 +25,7 @@ namespace Evolve.IntegrationTest.PostgreSQL
             _container.Start();
 
             Thread.Sleep(5000);
+#endif
         }
         public string HostPort => "5431";
         public string DbName => "my_database";
@@ -32,7 +34,9 @@ namespace Evolve.IntegrationTest.PostgreSQL
 
         public void Dispose()
         {
+#if DEBUG
             _container.Dispose();
+#endif
         }
     }
 
