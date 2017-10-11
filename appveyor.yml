@@ -21,6 +21,8 @@ init:
     SET PATH=C:\projects\evolve\packages\xunit.runner.console.2.3.0\tools\net452\;%PATH%
 before_build:
 - ps: >-
+    & 'C:\Program Files\Docker\Docker\DockerCli.exe' -SwitchDaemon
+
     dotnet restore
     
     nuget restore
