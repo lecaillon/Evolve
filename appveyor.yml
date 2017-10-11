@@ -26,6 +26,8 @@ before_build:
     nuget restore
 build:
   verbosity: minimal
+build_script:
+- docker pull postgres:alpine
 before_test:
 - cmd: >-
     createdb my_database
