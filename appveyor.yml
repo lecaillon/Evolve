@@ -26,9 +26,8 @@ before_build:
     nuget restore
 build:
   verbosity: minimal
-install:
-- docker version
 build_script:
+- docker version
 - docker pull postgres
 before_test:
 - cmd: >-
