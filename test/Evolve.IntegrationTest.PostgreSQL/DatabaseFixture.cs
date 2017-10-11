@@ -18,7 +18,7 @@ namespace Evolve.IntegrationTest.PostgreSQL
                 Tag = "alpine",
                 Name = "postgres-evolve",
                 Env = new[] { $"POSTGRES_PASSWORD={DbPwd}", $"POSTGRES_DB={DbName}" },
-                ExposedPort = $"5432/tcp",
+                ExposedPort = $"{ExposedPort}/tcp",
                 HostPort = HostPort
             }).Build();
 
@@ -27,6 +27,7 @@ namespace Evolve.IntegrationTest.PostgreSQL
             Thread.Sleep(5000);
 #endif
         }
+        public string ExposedPort => "5432";
         public string HostPort => "5431";
         public string DbName => "my_database";
         public string DbPwd => "Password12!"; // AppVeyor
