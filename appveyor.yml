@@ -28,7 +28,8 @@ build:
   verbosity: minimal
 build_script:
 - docker version
-- docker pull postgres
+-'C:\Program Files\Docker\Docker\DockerCli.exe' -SwitchDaemon
+- docker pull postgres:alpine
 before_test:
 - cmd: >-
     createdb my_database
