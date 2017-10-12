@@ -5,8 +5,16 @@ using Xunit;
 
 namespace Evolve.Core.Test.Driver
 {
+    [Collection("Database collection")]
     public class CoreReflectionBasedDriverTest
     {
+        private readonly DatabaseFixture _fixture;
+
+        public CoreReflectionBasedDriverTest(DatabaseFixture fixture)
+        {
+            _fixture = fixture;
+        }
+
         [Fact(DisplayName = "MicrosoftDataSqliteDriver_works")]
         public void MicrosoftDataSqliteDriver_works()
         {
@@ -22,7 +30,7 @@ namespace Evolve.Core.Test.Driver
         {
             
             var driver = new CoreNpgsqlDriver(TestContext.DriverResourcesDepsFile, TestContext.NugetPackageFolder);
-            var cnn = driver.CreateConnection($"Server=127.0.0.1;Port=5432;Database=my_database;User Id=postgres;Password={TestContext.PgPassword};");
+            var cnn = driver.CreateConnection($"Server=127.0.0.1;Port={_fixture.Pg.HostPort};Database={_fixture.Pg.DbName};User Id={_fixture.Pg.DbUser};Password={_fixture.Pg.DbPwd};");
             cnn.Open();
 
             Assert.True(cnn.State == ConnectionState.Open);
@@ -33,7 +41,7 @@ namespace Evolve.Core.Test.Driver
         {
 
             var driver = new CoreMySqlDataDriver(TestContext.DriverResourcesDepsFile, TestContext.NugetPackageFolder);
-            var cnn = driver.CreateConnection($"Server=127.0.0.1;Port=3306;Database=my_database;Uid=root;Pwd={TestContext.MySqlPassword};");
+            var cnn = driver.CreateConnection($"Server=127.0.0.1;Port={_fixture.MySql.HostPort};Database={_fixture.MySql.DbName};Uid={_fixture.MySql.DbUser};Pwd={_fixture.MySql.DbPwd};");
             cnn.Open();
 
             Assert.True(cnn.State == ConnectionState.Open);
@@ -44,7 +52,7 @@ namespace Evolve.Core.Test.Driver
         {
             Thread.Sleep(60000);
             var driver = new CoreSqlClientDriver(TestContext.DriverResourcesDepsFile, TestContext.NugetPackageFolder);
-            var cnn = driver.CreateConnection("Server=127.0.0.1;Database=master;User Id=sa;Password=Password12!;");
+            var cnn = driver.CreateConnection($"Server=127.0.0.1;Database=master;User Id={_fixture.MsSql.DbUser};Password={_fixture.MsSql.DbPwd};");
             cnn.Open();
 
             Assert.True(cnn.State == ConnectionState.Open);

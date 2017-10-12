@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Docker.DotNet" Version="3.125.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
     <PackageReference Include="System.Data.Common" Version="4.3.0" />
     <PackageReference Include="xunit" Version="2.3.0" />
@@ -13,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Evolve\Evolve.csproj" />
+    <ProjectReference Include="..\Evolve.Test.Utilities\Evolve.Test.Utilities.csproj" />
   </ItemGroup>
 
   <ItemGroup>
