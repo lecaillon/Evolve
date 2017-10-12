@@ -9,14 +9,12 @@ namespace Evolve.Test
     {
         public DatabaseFixture()
         {
-#if DEBUG
             MySql = new MySqlDockerContainer();
-            MySql.Start();
-
             MsSql = new MsSqlDockerContainer();
-            MsSql.Start();
-
             Pg = new PostgreSqlDockerContainer();
+#if DEBUG
+            MySql.Start();
+            MsSql.Start();
             Pg.Start();
 
             Thread.Sleep(10000);
