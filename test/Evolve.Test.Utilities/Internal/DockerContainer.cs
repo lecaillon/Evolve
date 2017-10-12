@@ -14,7 +14,7 @@ namespace Evolve.Test.Utilities
             Id = id;
             _rm = rm;
 
-            _client = new DockerClientConfiguration(new Uri("npipe://./pipe/docker_engine")).CreateClient();
+            _client = new DockerClientConfiguration(new Uri("unix:///var/run/docker.sock")).CreateClient();
         }
 
         public string Id { get; }
