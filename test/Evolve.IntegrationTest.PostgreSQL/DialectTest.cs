@@ -15,18 +15,18 @@ namespace Evolve.IntegrationTest.PostgreSQL
     [Collection("Database collection")]
     public class DialectTest
     {
-        private readonly DatabaseFixture _db;
+        private readonly DatabaseFixture _fixture;
 
         public DialectTest(DatabaseFixture fixture)
         {
-            _db = fixture;
+            _fixture = fixture;
         }
 
         [Fact(DisplayName = "Run_all_PostgreSQL_integration_tests_work")]
         public void Run_all_PostgreSQL_integration_tests_work()
         {
             // Open a connection to the PostgreSQL database
-            var cnn = new NpgsqlConnection($"Server=127.0.0.1;Port={_db.HostPort};Database={_db.DbName};User Id={_db.DbUser};Password={_db.DbPwd};");
+            var cnn = new NpgsqlConnection($"Server=127.0.0.1;Port={_fixture.Pg.HostPort};Database={_fixture.Pg.DbName};User Id={_fixture.Pg.DbUser};Password={_fixture.Pg.DbPwd};");
             cnn.Open();
             Assert.True(cnn.State == ConnectionState.Open, "Cannot open a connection to the database.");
 
@@ -111,7 +111,7 @@ namespace Evolve.IntegrationTest.PostgreSQL
             Assert.True(db.TryAcquireApplicationLock(), "Cannot acquire application lock.");
 
             // Can not acquire lock while it is taken by another connection
-            var cnn2 = new NpgsqlConnection($"Server=127.0.0.1;Port={_db.HostPort};Database={_db.DbName};User Id={_db.DbUser};Password={_db.DbPwd};");
+            var cnn2 = new NpgsqlConnection($"Server=127.0.0.1;Port={_fixture.Pg.HostPort};Database={_fixture.Pg.DbName};User Id={_fixture.Pg.DbUser};Password={_fixture.Pg.DbPwd};");
             var wcnn2 = new WrappedConnection(cnn2);
             var db2 = DatabaseHelperFactory.GetDatabaseHelper(DBMS.PostgreSQL, wcnn2);
             Assert.False(db2.TryAcquireApplicationLock(), "Application lock could not have been acquired.");

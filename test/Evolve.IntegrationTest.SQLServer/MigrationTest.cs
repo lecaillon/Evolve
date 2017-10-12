@@ -14,18 +14,18 @@ namespace Evolve.IntegrationTest.SQLServer
     public class MigrationTest
     {
         public const string DbName = "my_database_2";
-        private readonly DatabaseFixture _db;
+        private readonly DatabaseFixture _fixture;
 
         public MigrationTest(DatabaseFixture fixture)
         {
-            _db = fixture;
-            _db.CreateTestDatabase(DbName);
+            _fixture = fixture;
+            _fixture.CreateTestDatabase(DbName);
         }
 
         [Fact(DisplayName = "Run_all_SQLServer_migrations_work")]
         public void Run_all_SQLServer_migrations_work()
         {
-            var cnn = new SqlConnection($"Server=127.0.0.1;Database={DbName};User Id={_db.DbUser};Password={_db.DbPwd};");
+            var cnn = new SqlConnection($"Server=127.0.0.1;Database={DbName};User Id={_fixture.MsSql.DbUser};Password={_fixture.MsSql.DbPwd};");
 
             var evolve = new Evolve(cnn, msg => Debug.WriteLine(msg))
             {

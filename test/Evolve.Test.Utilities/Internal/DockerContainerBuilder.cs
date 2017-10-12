@@ -5,7 +5,7 @@ using Docker.DotNet.Models;
 
 namespace Evolve.Test.Utilities
 {
-    public class DockerContainerBuilder
+    internal class DockerContainerBuilder
     {
         private readonly DockerClient _client;
 

@@ -11,17 +11,17 @@ namespace Evolve.IntegrationTest.PostgreSQL
     [Collection("Database collection")]
     public class MigrationTest
     {
-        private readonly DatabaseFixture _db;
+        private readonly DatabaseFixture _fixture;
 
         public MigrationTest(DatabaseFixture fixture)
         {
-            _db = fixture;
+            _fixture = fixture;
         }
 
         [Fact(DisplayName = "Run_all_PostgreSQL_migrations_work")]
         public void Run_all_PostgreSQL_migrations_work()
         {
-            var cnn = new NpgsqlConnection($"Server=127.0.0.1;Port={_db.HostPort};Database={_db.DbName};User Id={_db.DbUser};Password={_db.DbPwd};");
+            var cnn = new NpgsqlConnection($"Server=127.0.0.1;Port={_fixture.Pg.HostPort};Database={_fixture.Pg.DbName};User Id={_fixture.Pg.DbUser};Password={_fixture.Pg.DbPwd};");
             var evolve = new Evolve(cnn, msg => Debug.WriteLine(msg))
             {
                 Locations = new List<string> { TestContext.MigrationFolder },

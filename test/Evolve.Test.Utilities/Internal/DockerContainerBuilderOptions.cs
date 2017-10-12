@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Evolve.Test.Utilities
 {
-    public class DockerContainerBuilderOptions
+    internal class DockerContainerBuilderOptions
     {
         public string FromImage { get; set; }
         public string Tag { get; set; }

@@ -7,11 +7,11 @@ namespace Evolve.Test.Driver
     [Collection("Database collection")]
     public class NetDriverTest
     {
-        private readonly DatabaseFixture _db;
+        private readonly DatabaseFixture _fixture;
 
         public NetDriverTest(DatabaseFixture fixture)
         {
-            _db = fixture;
+            _fixture = fixture;
         }
 
         [Fact(DisplayName = "Load_ConnectionType_from_an_already_loaded_assembly")]
@@ -41,7 +41,7 @@ namespace Evolve.Test.Driver
         {
 
             var driver = new CoreNpgsqlDriverForNet(TestContext.DriverResourcesDepsFile, TestContext.NugetPackageFolder);
-            var cnn = driver.CreateConnection($"Server=127.0.0.1;Port={_db.PgHostPort};Database={_db.DbName};User Id={_db.PgDbUser};Password={_db.DbPwd};");
+            var cnn = driver.CreateConnection($"Server=127.0.0.1;Port={_fixture.Pg.HostPort};Database={_fixture.Pg.DbName};User Id={_fixture.Pg.DbUser};Password={_fixture.Pg.DbPwd};");
             cnn.Open();
 
             Assert.True(cnn.State == ConnectionState.Open);
@@ -52,7 +52,7 @@ namespace Evolve.Test.Driver
         {
 
             var driver = new CoreMySqlDataDriverForNet(TestContext.DriverResourcesDepsFile, TestContext.NugetPackageFolder);
-            var cnn = driver.CreateConnection($"Server=127.0.0.1;Port={_db.MySqlHostPort};Database={_db.DbName};Uid={_db.MySqlDbUser};Pwd={_db.DbPwd};");
+            var cnn = driver.CreateConnection($"Server=127.0.0.1;Port={_fixture.MySql.HostPort};Database={_fixture.MySql.DbName};Uid={_fixture.MySql.DbUser};Pwd={_fixture.MySql.DbPwd};");
             cnn.Open();
 
             Assert.True(cnn.State == ConnectionState.Open);
@@ -62,7 +62,7 @@ namespace Evolve.Test.Driver
         public void SqlClientDriver_works()
         {
             var driver = new SqlClientDriver();
-            var cnn = driver.CreateConnection($"Server=127.0.0.1;Database=master;User Id={_db.MsSqlDbUser};Password={_db.DbPwd};");
+            var cnn = driver.CreateConnection($"Server=127.0.0.1;Database=master;User Id={_fixture.MsSql.DbUser};Password={_fixture.MsSql.DbPwd};");
             cnn.Open();
 
             Assert.True(cnn.State == ConnectionState.Open);

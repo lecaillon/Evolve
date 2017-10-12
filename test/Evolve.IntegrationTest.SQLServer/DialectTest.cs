@@ -16,19 +16,19 @@ namespace Evolve.IntegrationTest.SQLServer
     public class DialectTest
     {
         public const string DbName = "my_database_1";
-        private readonly DatabaseFixture _db;
+        private readonly DatabaseFixture _fixture;
 
         public DialectTest(DatabaseFixture fixture)
         {
-            _db = fixture;
-            _db.CreateTestDatabase(DbName);
+            _fixture = fixture;
+            _fixture.CreateTestDatabase(DbName);
         }
 
         [Fact(DisplayName = "Run_all_SQLServer_integration_tests_work")]
         public void Run_all_SQLServer_integration_tests_work()
         {
             // Open a connection to the SQLServer database
-            var cnn = new SqlConnection($"Server=127.0.0.1;Database={DbName};User Id={_db.DbUser};Password={_db.DbPwd};");
+            var cnn = new SqlConnection($"Server=127.0.0.1;Database={DbName};User Id={_fixture.MsSql.DbUser};Password={_fixture.MsSql.DbPwd};");
             cnn.Open();
             Assert.True(cnn.State == ConnectionState.Open, "Cannot open a connection to the database.");
 
@@ -103,7 +103,7 @@ namespace Evolve.IntegrationTest.SQLServer
             Assert.True(db.TryAcquireApplicationLock(), "Cannot acquire application lock.");
 
             // Can not acquire lock while it is taken by another connection
-            var cnn2 = new SqlConnection($"Server=127.0.0.1;Database={DbName};User Id={_db.DbUser};Password={_db.DbPwd};");
+            var cnn2 = new SqlConnection($"Server=127.0.0.1;Database={DbName};User Id={_fixture.MsSql.DbUser};Password={_fixture.MsSql.DbPwd};");
             var wcnn2 = new WrappedConnection(cnn2);
             var db2 = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLServer, wcnn2);
             Assert.False(db2.TryAcquireApplicationLock(), "Application lock could not have been acquired.");
