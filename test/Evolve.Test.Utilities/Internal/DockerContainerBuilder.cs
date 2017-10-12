@@ -18,7 +18,7 @@ namespace Evolve.Test.Utilities
             ExposedPort = setupOptions.ExposedPort;
             HostPort = setupOptions.HostPort;
 
-            _client = new DockerClientConfiguration(new Uri("npipe://./pipe/docker_engine")).CreateClient();
+            _client = new DockerClientConfiguration(new Uri("unix:///var/run/docker.sock")).CreateClient();
         }
 
         public string FromImage { get; }

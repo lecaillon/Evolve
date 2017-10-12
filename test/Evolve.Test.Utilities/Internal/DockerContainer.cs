@@ -14,7 +14,7 @@ namespace Evolve.Test.Utilities
             Id = id;
             _rm = rm;
 
-            _client = new DockerClientConfiguration(new Uri("http://127.0.0.1:4243")).CreateClient();
+            _client = new DockerClientConfiguration(new Uri("unix:///var/run/docker.sock")).CreateClient();
         }
 
         public string Id { get; }
