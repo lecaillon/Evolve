@@ -60,14 +60,15 @@ test_script:
 - cmd: xunit.console.exe test\Evolve.IntegrationTest.SQLServer\bin\%CONFIGURATION%\Evolve.IntegrationTest.SQLServer.dll
 - cmd: xunit.console.exe test\Evolve.IntegrationTest.SQLite\bin\%CONFIGURATION%\Evolve.IntegrationTest.SQLite.dll
 
+#---------------------------------#
+#      artifacts configuration    #
+#---------------------------------#
+
 # scripts to run after tests
 after_test:
 - ps: cd src/Evolve
 - ps: nuget pack Evolve.nuspec
 - ps: cd ../..
 
-#---------------------------------#
-#      artifacts configuration    #
-#---------------------------------#
 artifacts:
 - path: '**\Evolve*.nupkg'
