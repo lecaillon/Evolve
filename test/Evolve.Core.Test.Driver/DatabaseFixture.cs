@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using System.Threading;
 using Evolve.Test.Utilities;
 using Xunit;
@@ -10,15 +11,17 @@ namespace Evolve.Core.Test
         public DatabaseFixture()
         {
             MsSql = new MsSqlDockerContainer();
-            MsSql.Start();
-
             MySql = new MySqlDockerContainer();
-            MySql.Start();
-
             Pg = new PostgreSqlDockerContainer();
-            Pg.Start();
 
-            Thread.Sleep(60000);
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) // AppVeyor and Windows 2016 does not support linux docker images
+            {
+                MsSql.Start();
+                MySql.Start();
+                Pg.Start();
+
+                Thread.Sleep(60000);
+            }
         }
 
         public MySqlDockerContainer MySql { get; }
@@ -27,9 +30,12 @@ namespace Evolve.Core.Test
 
         public void Dispose()
         {
-            MySql.Dispose();
-            MsSql.Dispose();
-            Pg.Dispose();
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) // AppVeyor and Windows 2016 does not support linux docker images
+            {
+                MySql.Dispose();
+                MsSql.Dispose();
+                Pg.Dispose();
+            }
         }
     }
 
