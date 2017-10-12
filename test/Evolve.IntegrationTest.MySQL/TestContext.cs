@@ -6,13 +6,6 @@ namespace Evolve.IntegrationTest.MySQL
 {
     public static class TestContext
     {
-        public const string ImageName = "mariadb:latest";
-        public const string ContainerName = "mariadb-evolve";
-        public const string ContainerPort = "3306";
-        public const string DbName = "my_database";
-        public const string DbPwd = "Password12!"; // AppVeyor
-        public const string DbUser = "root";
-
         static TestContext()
         {
             ResourcesFolder = Path.Combine(Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).AbsolutePath), "Resources");

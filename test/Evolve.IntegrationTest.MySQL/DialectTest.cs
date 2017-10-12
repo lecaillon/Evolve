@@ -15,15 +15,18 @@ namespace Evolve.IntegrationTest.MySQL
     [Collection("Database collection")]
     public class DialectTest
     {
+        private readonly DatabaseFixture _db;
+
         public DialectTest(DatabaseFixture fixture)
         {
+            _db = fixture;
         }
 
         [Fact(DisplayName = "Run_all_MySQL_integration_tests_work")]
         public void Run_all_MySQL_integration_tests_work()
         {
             // Open a connection to the PostgreSQL database
-            var cnn = new MySqlConnection($"Server=127.0.0.1;Port={TestContext.ContainerPort};Database={TestContext.DbName};Uid={TestContext.DbUser};Pwd={TestContext.DbPwd};");
+            var cnn = new MySqlConnection($"Server=127.0.0.1;Port={_db.HostPort};Database={_db.DbName};Uid={_db.DbUser};Pwd={_db.DbPwd};");
             cnn.Open();
             Assert.True(cnn.State == ConnectionState.Open, "Cannot open a connection to the database.");
 
@@ -37,7 +40,7 @@ namespace Evolve.IntegrationTest.MySQL
             DatabaseHelper db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.MySQL_MariaDB, wcnn);
 
             // Get default schema name
-            Assert.True(db.GetCurrentSchemaName() == TestContext.DbName, $"The default MySQL schema should be '{TestContext.DbName}'.");
+            Assert.True(db.GetCurrentSchemaName() == _db.DbName, $"The default MySQL schema should be '{_db.DbName}'.");
 
             // Create schema
             string metadataSchemaName = "My metadata schema";

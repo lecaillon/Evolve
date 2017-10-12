@@ -12,14 +12,17 @@ namespace Evolve.IntegrationTest.MySQL
     [Collection("Database collection")]
     public class MigrationTest
     {
+        private readonly DatabaseFixture _db;
+
         public MigrationTest(DatabaseFixture fixture)
         {
+            _db = fixture;
         }
 
         [Fact(DisplayName = "Run_all_MySQL_migrations_work")]
         public void Run_all_MySQL_migrations_work()
         {
-            var cnn = new MySqlConnection($"Server=127.0.0.1;Port={TestContext.ContainerPort};Database={TestContext.DbName};Uid={TestContext.DbUser};Pwd={TestContext.DbPwd};");
+            var cnn = new MySqlConnection($"Server=127.0.0.1;Port={_db.HostPort};Database={_db.DbName};Uid={_db.DbUser};Pwd={_db.DbPwd};");
             var evolve = new Evolve(cnn, msg => Debug.WriteLine(msg))
             {
                 Locations = new List<string> { TestContext.MigrationFolder },
