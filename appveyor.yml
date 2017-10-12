@@ -9,57 +9,40 @@ services:
 init:
 - cmd: >-
     SET PGUSER=postgres
-
     SET PGPASSWORD=Password12!
-    
     SET MYSQL_PWD=Password12!
-
     SET PATH=C:\Program Files\PostgreSQL\9.5\bin\;%PATH%
-    
     SET PATH=C:\Program Files\MySQL\MySQL Server 5.7\bin\;%PATH%
-    
     SET PATH=C:\projects\evolve\packages\xunit.runner.console.2.3.0\tools\net452\;%PATH%
 before_build:
 - ps: >-
     dotnet restore
-    
     nuget restore
 build:
   verbosity: minimal
 before_test:
 - cmd: >-
     createdb my_database
-    
     mysql -e "create database my_database;" --user=root
 test_script:
 - ps: >-
     cd test/Evolve.Core.Test/
-    
     dotnet test
-    
     cd ../..
 
     cd test/Evolve.Core.Test.Driver/
-    
     dotnet test
-    
     cd ../..
 - cmd: >-
     xunit.console.exe test\Evolve.Test\bin\%CONFIGURATION%\Evolve.Test.dll
-    
     xunit.console.exe test\Evolve.IntegrationTest.MySQL\bin\%CONFIGURATION%\Evolve.IntegrationTest.MySQL.dll
-    
     xunit.console.exe test\Evolve.IntegrationTest.PostgreSQL\bin\%CONFIGURATION%\Evolve.IntegrationTest.PostgreSQL.dll
-    
     xunit.console.exe test\Evolve.IntegrationTest.SQLServer\bin\%CONFIGURATION%\Evolve.IntegrationTest.SQLServer.dll
-    
     xunit.console.exe test\Evolve.IntegrationTest.SQLite\bin\%CONFIGURATION%\Evolve.IntegrationTest.SQLite.dll
 after_test:
 - ps: >-
     cd src/Evolve
-    
     nuget pack Evolve.nuspec
-    
     cd ../..
 artifacts:
 - path: '**\Evolve*.nupkg'
