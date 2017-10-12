@@ -10,8 +10,8 @@ namespace Evolve.IntegrationTest.SQLServer
     {
         public DatabaseFixture()
         {
-#if DEBUG
             MsSql = new MsSqlDockerContainer();
+#if DEBUG
             MsSql.Start();
 
             Thread.Sleep(10000);

@@ -9,8 +9,8 @@ namespace Evolve.IntegrationTest.MySQL
     {
         public DatabaseFixture()
         {
-#if DEBUG
             MySql = new MySqlDockerContainer();
+#if DEBUG
             MySql.Start();
 
             Thread.Sleep(10000);

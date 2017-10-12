@@ -9,8 +9,8 @@ namespace Evolve.IntegrationTest.PostgreSQL
     {
         public DatabaseFixture()
         {
-#if DEBUG
             Pg = new PostgreSqlDockerContainer();
+#if DEBUG
             Pg.Start();
 
             Thread.Sleep(5000);
