@@ -2,9 +2,16 @@
 {
     public class MsSqlDockerContainer : IDockerContainer
     {
-        private readonly DockerContainer _container;
+        private DockerContainer _container;
 
-        public MsSqlDockerContainer()
+        public string Id => _container.Id;
+        public string ExposedPort => "1433";
+        public string HostPort => "1433";
+        public string DbName => "my_database";
+        public string DbPwd => "Password12!"; // AppVeyor
+        public string DbUser => "sa";
+
+        public bool Start()
         {
             _container = new DockerContainerBuilder(new DockerContainerBuilderOptions
             {
@@ -15,16 +22,9 @@
                 ExposedPort = $"{ExposedPort}/tcp",
                 HostPort = HostPort
             }).Build();
+
+            return _container.Start();
         }
-
-        public string Id => _container.Id;
-        public string ExposedPort => "1433";
-        public string HostPort => "1433";
-        public string DbName => "my_database";
-        public string DbPwd => "Password12!"; // AppVeyor
-        public string DbUser => "sa";
-
-        public bool Start() => _container.Start();
         public void Remove() => _container.Remove();
         public bool Stop() => _container.Stop();
         public void Dispose() => _container.Dispose();
