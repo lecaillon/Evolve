@@ -37,7 +37,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Docker.DotNet, Version=2.124.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Docker.DotNet.3.125.0\lib\net46\Docker.DotNet.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Buffers.4.3.0\lib\netstandard1.1\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.SQLite, Version=1.0.104.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
@@ -60,6 +70,7 @@
   <ItemGroup>
     <Compile Include="Configuration\AppConfigConfigurationProviderTest.cs" />
     <Compile Include="Configuration\JsonConfigurationProviderTest.cs" />
+    <Compile Include="DatabaseFixture.cs" />
     <Compile Include="Driver\NetDriverTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestContext.cs" />
@@ -83,6 +94,10 @@
     <ProjectReference Include="..\..\src\Evolve\Evolve.csproj">
       <Project>{5dbecb3f-30c4-45d1-971e-92fdd2f24ec0}</Project>
       <Name>Evolve</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Evolve.Test.Utilities\Evolve.Test.Utilities.csproj">
+      <Project>{46273c60-0164-462f-843f-e6419fb51aca}</Project>
+      <Name>Evolve.Test.Utilities</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -26,8 +26,6 @@ namespace Evolve.Test
         public static string DriverResourcesProjectFolder { get; }
         public static string DriverResourcesDepsFile { get; }
         public static string NugetPackageFolder => $@"{EnvHome}/.nuget/packages";
-        public static string DbPassword => "Password12!";
-        public static string DbName => "my_database";
         public static string EnvHome => Environment.GetEnvironmentVariable("USERPROFILE") ?? Environment.GetEnvironmentVariable("HOME");
         public static string ResourcesFolder { get; }
         public static string AppConfigPath { get; }

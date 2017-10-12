@@ -4,8 +4,16 @@ using Xunit;
 
 namespace Evolve.Test.Driver
 {
+    [Collection("Database collection")]
     public class NetDriverTest
     {
+        private readonly DatabaseFixture _db;
+
+        public NetDriverTest(DatabaseFixture fixture)
+        {
+            _db = fixture;
+        }
+
         [Fact(DisplayName = "Load_ConnectionType_from_an_already_loaded_assembly")]
         public void Load_ConnectionType_from_an_already_loaded_assembly()
         {
@@ -33,7 +41,7 @@ namespace Evolve.Test.Driver
         {
 
             var driver = new CoreNpgsqlDriverForNet(TestContext.DriverResourcesDepsFile, TestContext.NugetPackageFolder);
-            var cnn = driver.CreateConnection($"Server=127.0.0.1;Port=5432;Database={TestContext.DbName};User Id=postgres;Password={TestContext.DbPassword};");
+            var cnn = driver.CreateConnection($"Server=127.0.0.1;Port={_db.PgHostPort};Database={_db.DbName};User Id={_db.PgDbUser};Password={_db.DbPwd};");
             cnn.Open();
 
             Assert.True(cnn.State == ConnectionState.Open);
@@ -44,7 +52,7 @@ namespace Evolve.Test.Driver
         {
 
             var driver = new CoreMySqlDataDriverForNet(TestContext.DriverResourcesDepsFile, TestContext.NugetPackageFolder);
-            var cnn = driver.CreateConnection($"Server=127.0.0.1;Port=3306;Database={TestContext.DbName};Uid=root;Pwd={TestContext.DbPassword};");
+            var cnn = driver.CreateConnection($"Server=127.0.0.1;Port={_db.MySqlHostPort};Database={_db.DbName};Uid={_db.MySqlDbUser};Pwd={_db.DbPwd};");
             cnn.Open();
 
             Assert.True(cnn.State == ConnectionState.Open);
@@ -54,7 +62,7 @@ namespace Evolve.Test.Driver
         public void SqlClientDriver_works()
         {
             var driver = new SqlClientDriver();
-            var cnn = driver.CreateConnection($"Server=127.0.0.1;Database=master;User Id=sa;Password={TestContext.DbPassword};");
+            var cnn = driver.CreateConnection($"Server=127.0.0.1;Database=master;User Id={_db.MsSqlDbUser};Password={_db.DbPwd};");
             cnn.Open();
 
             Assert.True(cnn.State == ConnectionState.Open);
