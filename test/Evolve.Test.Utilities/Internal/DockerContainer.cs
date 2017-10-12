@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using Docker.DotNet;
 using Docker.DotNet.Models;
 
@@ -14,7 +15,9 @@ namespace Evolve.Test.Utilities
             Id = id;
             _rm = rm;
 
-            _client = new DockerClientConfiguration(new Uri("unix:///var/run/docker.sock")).CreateClient();
+            _client = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                ? new DockerClientConfiguration(new Uri("npipe://./pipe/docker_engine")).CreateClient()
+                : new DockerClientConfiguration(new Uri("unix:///var/run/docker.sock")).CreateClient();
         }
 
         public string Id { get; }

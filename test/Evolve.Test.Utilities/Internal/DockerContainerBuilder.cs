@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using Docker.DotNet;
 using Docker.DotNet.Models;
 
@@ -18,7 +19,9 @@ namespace Evolve.Test.Utilities
             ExposedPort = setupOptions.ExposedPort;
             HostPort = setupOptions.HostPort;
 
-            _client = new DockerClientConfiguration(new Uri("unix:///var/run/docker.sock")).CreateClient();
+            _client = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                ? new DockerClientConfiguration(new Uri("npipe://./pipe/docker_engine")).CreateClient()
+                : new DockerClientConfiguration(new Uri("unix:///var/run/docker.sock")).CreateClient();
         }
 
         public string FromImage { get; }

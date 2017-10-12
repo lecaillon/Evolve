@@ -1,4 +1,6 @@
-﻿namespace Evolve.Test.Utilities
+﻿using System.Runtime.InteropServices;
+
+namespace Evolve.Test.Utilities
 {
     public class MySqlDockerContainer : IDockerContainer
     {
@@ -6,7 +8,7 @@
 
         public string Id => _container.Id;
         public string ExposedPort => "3306";
-        public string HostPort => "3307";
+        public string HostPort => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "3306" : "3307"; //  AppVeyor: 3306 Travis CI: 3307
         public string DbName => "my_database";
         public string DbPwd => "Password12!"; // AppVeyor
         public string DbUser => "root";
