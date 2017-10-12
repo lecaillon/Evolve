@@ -9,18 +9,16 @@ namespace Evolve.Core.Test
     {
         public DatabaseFixture()
         {
-#if DEBUG
-            MySql = new MySqlDockerContainer();
-            MySql.Start();
-
             MsSql = new MsSqlDockerContainer();
             MsSql.Start();
+
+            MySql = new MySqlDockerContainer();
+            MySql.Start();
 
             Pg = new PostgreSqlDockerContainer();
             Pg.Start();
 
-            Thread.Sleep(10000);
-#endif
+            Thread.Sleep(60000);
         }
 
         public MySqlDockerContainer MySql { get; }
@@ -29,11 +27,9 @@ namespace Evolve.Core.Test
 
         public void Dispose()
         {
-#if DEBUG
             MySql.Dispose();
             MsSql.Dispose();
             Pg.Dispose();
-#endif
         }
     }
 
