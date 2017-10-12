@@ -6,7 +6,7 @@
 
         public string Id => _container.Id;
         public string ExposedPort => "3306";
-        public string HostPort => "3306";
+        public string HostPort => "3307";
         public string DbName => "my_database";
         public string DbPwd => "Password12!"; // AppVeyor
         public string DbUser => "root";
