@@ -28,7 +28,7 @@ namespace Evolve.IntegrationTest.PostgreSQL
 #endif
         }
         public string ExposedPort => "5432";
-        public string HostPort => "5431";
+        public string HostPort => "5432";
         public string DbName => "my_database";
         public string DbPwd => "Password12!"; // AppVeyor
         public string DbUser => "postgres";
