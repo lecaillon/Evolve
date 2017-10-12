@@ -6,12 +6,6 @@ namespace Evolve.IntegrationTest.SQLServer
 {
     public static class TestContext
     {
-        public const string ImageName = "microsoft/mssql-server-linux";
-        public const string ContainerName = "mssql-evolve";
-        public const string ContainerPort = "1433";
-        public const string DbPwd = "Password12!"; // AppVeyor
-        public const string DbUser = "sa";
-
         static TestContext()
         {
             ResourcesFolder = Path.Combine(Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).AbsolutePath), "Resources");
