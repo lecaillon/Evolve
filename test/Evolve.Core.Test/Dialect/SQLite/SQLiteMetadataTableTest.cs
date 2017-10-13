@@ -57,7 +57,7 @@ namespace Evolve.Core.Test.Dialect.SQLite
                 var metadataTable = db.GetMetadataTable("", TestContext.DefaultMetadataTableName);
                 metadataTable.SaveMigration(migration, true);
 
-                Assert.NotNull(metadataTable.GetAllMigrationMetadata().First().Id > 0);
+                Assert.True(metadataTable.GetAllMigrationMetadata().First().Id > 0);
             }
         }
 
@@ -94,7 +94,7 @@ namespace Evolve.Core.Test.Dialect.SQLite
                 Assert.Equal(migrationScript.Name, migrationMetadata.Name);
                 Assert.Equal(migrationScript.CalculateChecksum(), migrationMetadata.Checksum);
                 Assert.Equal(migrationScript.Version, migrationMetadata.Version);
-                Assert.Equal(true, migrationMetadata.Success);
+                Assert.True(migrationMetadata.Success);
                 Assert.Equal(string.Empty, migrationMetadata.InstalledBy);
                 Assert.True(migrationMetadata.Id > 0);
                 Assert.True(migrationMetadata.InstalledOn.Date == DateTime.Now.Date);

@@ -26,8 +26,8 @@ namespace Evolve.Core.Test.Migration
                 ["${nothing}"] = "nil",
             };
             string sql = script.LoadSqlStatements(placeholders, Encoding.UTF8, null).First();
-            Assert.False(sql.Contains("${schema}"));
-            Assert.True(sql.Contains("my_schema"));
+            Assert.DoesNotContain("${schema}", sql);
+            Assert.Contains("my_schema", sql);
         }
     }
 }

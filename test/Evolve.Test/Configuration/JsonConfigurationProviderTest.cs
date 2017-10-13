@@ -31,7 +31,7 @@ namespace Evolve.Test.Configuration
             Assert.True(new List<string>() { "my_schema", "password" }.SequenceEqual(evolve.Placeholders.Values.OrderBy(x => x)));
             Assert.True(evolve.IsEraseDisabled);
             Assert.True(evolve.MustEraseOnValidationError);
-            Assert.Equal(evolve.Command, CommandOptions.Erase);
+            Assert.Equal(CommandOptions.Erase, evolve.Command);
         }
 
         [Fact(DisplayName = "Load_multiple_json_configuration_files_works")]
@@ -57,7 +57,7 @@ namespace Evolve.Test.Configuration
             Assert.True(new List<string>() { "my_schema", "password" }.SequenceEqual(evolve.Placeholders.Values.OrderBy(x => x)));
             Assert.True(evolve.IsEraseDisabled);
             Assert.False(evolve.MustEraseOnValidationError);
-            Assert.Equal(evolve.Command, CommandOptions.Migrate);
+            Assert.Equal(CommandOptions.Migrate, evolve.Command);
         }
     }
 }

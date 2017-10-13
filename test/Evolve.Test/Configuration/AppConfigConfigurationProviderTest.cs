@@ -32,7 +32,7 @@ namespace Evolve.Test.Configuration
             Assert.True(new List<string>() { "my_schema", "password" }.SequenceEqual(evolve.Placeholders.Values.OrderBy(x => x)));
             Assert.True(evolve.IsEraseDisabled);
             Assert.True(evolve.MustEraseOnValidationError);
-            Assert.Equal(evolve.Command, CommandOptions.Erase);
+            Assert.Equal(CommandOptions.Erase, evolve.Command);
         }
 
         [Fact(DisplayName = "Load_web_configuration_file_works")]
@@ -55,7 +55,7 @@ namespace Evolve.Test.Configuration
             Assert.Equal(new MigrationVersion(long.MaxValue.ToString()), evolve.TargetVersion);
             Assert.False(evolve.IsEraseDisabled);
             Assert.False(evolve.MustEraseOnValidationError);
-            Assert.Equal(evolve.Command, CommandOptions.DoNothing);
+            Assert.Equal(CommandOptions.DoNothing, evolve.Command);
         }
     }
 }
