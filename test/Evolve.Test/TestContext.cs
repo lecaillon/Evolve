@@ -32,5 +32,7 @@ namespace Evolve.Test
         public static string WebConfigPath { get; }
         public static string JsonConfigPath { get; }
         public static string Json2ConfigPath { get; }
+        public static bool AppVeyor => Environment.GetEnvironmentVariable("APPVEYOR") == "True";
+        public static bool Travis => Environment.GetEnvironmentVariable("TRAVIS") == "True";
     }
 }

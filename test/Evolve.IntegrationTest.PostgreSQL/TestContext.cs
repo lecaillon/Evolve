@@ -20,5 +20,7 @@ namespace Evolve.IntegrationTest.PostgreSQL
         public static string MigrationFolder { get; }
         public static string ChecksumMismatchFolder { get; }
         public static string EmptyMigrationScriptPath { get; }
+        public static bool AppVeyor => Environment.GetEnvironmentVariable("APPVEYOR") == "True";
+        public static bool Travis => Environment.GetEnvironmentVariable("TRAVIS") == "True";
     }
 }

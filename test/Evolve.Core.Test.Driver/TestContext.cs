@@ -22,5 +22,7 @@ namespace Evolve.Core.Test.Driver
         public static string DriverResourcesDepsFile { get; }
         public static string NugetPackageFolder => $@"{EnvHome}/.nuget/packages";
         public static string EnvHome => Environment.GetEnvironmentVariable("USERPROFILE") ?? Environment.GetEnvironmentVariable("HOME");
+        public static bool AppVeyor => Environment.GetEnvironmentVariable("APPVEYOR") == "True";
+        public static bool Travis => Environment.GetEnvironmentVariable("TRAVIS") == "True";
     }
 }

@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using System.Threading;
 using Evolve.Test.Utilities;
 using Xunit;
 
-namespace Evolve.Core.Test
+namespace Evolve.Core.Test.Driver
 {
     public class DatabaseFixture : IDisposable
     {
@@ -14,7 +13,7 @@ namespace Evolve.Core.Test
             MySql = new MySqlDockerContainer();
             Pg = new PostgreSqlDockerContainer();
 
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) // AppVeyor and Windows 2016 does not support linux docker images
+            if (!TestContext.AppVeyor) // AppVeyor and Windows 2016 does not support linux docker images
             {
                 MsSql.Start();
                 MySql.Start();
@@ -30,7 +29,7 @@ namespace Evolve.Core.Test
 
         public void Dispose()
         {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) // AppVeyor and Windows 2016 does not support linux docker images
+            if (!TestContext.AppVeyor) // AppVeyor and Windows 2016 does not support linux docker images
             {
                 MySql.Dispose();
                 MsSql.Dispose();

@@ -10,20 +10,21 @@ namespace Evolve.IntegrationTest.PostgreSQL
         public DatabaseFixture()
         {
             Pg = new PostgreSqlDockerContainer();
-#if DEBUG
-            Pg.Start();
-
-            Thread.Sleep(5000);
-#endif
+            if (!TestContext.Travis && !TestContext.AppVeyor) // AppVeyor and Windows 2016 does not support linux docker images
+            {
+                Pg.Start();
+                Thread.Sleep(5000);
+            }
         }
 
         public PostgreSqlDockerContainer Pg { get; }
 
         public void Dispose()
         {
-#if DEBUG
-            Pg.Dispose();
-#endif
+            if (!TestContext.Travis && !TestContext.AppVeyor)
+            {
+                Pg.Dispose();
+            }
         }
     }
 

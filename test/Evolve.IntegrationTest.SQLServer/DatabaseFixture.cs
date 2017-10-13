@@ -11,11 +11,12 @@ namespace Evolve.IntegrationTest.SQLServer
         public DatabaseFixture()
         {
             MsSql = new MsSqlDockerContainer();
-#if DEBUG
-            MsSql.Start();
 
-            Thread.Sleep(10000);
-#endif
+            if (!TestContext.Travis && !TestContext.AppVeyor) // AppVeyor and Windows 2016 does not support linux docker images
+            {
+                MsSql.Start();
+                Thread.Sleep(10000);
+            }
         }
 
         public MsSqlDockerContainer MsSql { get; set; }
@@ -36,9 +37,10 @@ namespace Evolve.IntegrationTest.SQLServer
 
         public void Dispose()
         {
-#if DEBUG
-            MsSql.Dispose();
-#endif
+            if (!TestContext.Travis && !TestContext.AppVeyor)
+            {
+                MsSql.Dispose();
+            }
         }
     }
 

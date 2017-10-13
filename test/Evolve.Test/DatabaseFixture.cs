@@ -12,13 +12,15 @@ namespace Evolve.Test
             MySql = new MySqlDockerContainer();
             MsSql = new MsSqlDockerContainer();
             Pg = new PostgreSqlDockerContainer();
-#if DEBUG
-            MySql.Start();
-            MsSql.Start();
-            Pg.Start();
 
-            Thread.Sleep(10000);
-#endif
+            if(!TestContext.Travis && !TestContext.AppVeyor) // AppVeyor does not support Docker Linux images, and Travis CI runs on Linux
+            {
+                MySql.Start();
+                MsSql.Start();
+                Pg.Start();
+
+                Thread.Sleep(10000);
+            }
         }
 
         public MySqlDockerContainer MySql { get; }
@@ -27,11 +29,12 @@ namespace Evolve.Test
 
         public void Dispose()
         {
-#if DEBUG
-            MySql.Dispose();
-            MsSql.Dispose();
-            Pg.Dispose();
-#endif
+            if (!TestContext.Travis && !TestContext.AppVeyor)
+            {
+                MySql.Dispose();
+                MsSql.Dispose();
+                Pg.Dispose();
+            }
         }
     }
 
