@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Evolve.Migration;
 using Evolve.Utilities;
 
@@ -11,6 +12,9 @@ namespace Evolve.Configuration
         private const string ValueCannotBeNull = "Configuration parameter [{0}] cannot be null or empty. Update your Evolve configuration file at: {1}.";
         private const string IncorrectEncodingValue = "Encoding does not support this value: {0}. See https://msdn.microsoft.com/en-us/library/system.text.encoding.getencodings(v=vs.110).aspx for all possible names.";
         private const string InvalidVersionPatternMatching = "{0}: Migration version {1} is invalid. Version must respect this regex: ^[0-9]+(?:.[0-9]+)*$";
+        private const string EnvVarPatternMatching = @"\$\{(\w+)\}|\$(\w+)";
+        private const string EnvVarPrefix = @"${";
+        private const string EnvVarSuffix = @"}";
 
         protected IEvolveConfiguration _configuration;
 
@@ -226,6 +230,7 @@ namespace Evolve.Configuration
 
         /// <summary>
         ///     Read the value of a variable from the configuration file.
+        ///     Replace environment variables by their values if needed.
         /// </summary>
         /// <param name="key"> The name of the variable. </param>
         /// <returns> The value of the variable. </returns>
@@ -235,6 +240,18 @@ namespace Evolve.Configuration
 
             if (Datasource.TryGetValue(key, out string value))
             {
+                foreach (Match match in Regex.Matches(value, EnvVarPatternMatching))
+                {
+                    string cleanEnvVar = match.Value.Replace(EnvVarPrefix, string.Empty)
+                                                    .Replace(EnvVarSuffix, string.Empty);
+
+                    string envVarValue = Environment.GetEnvironmentVariable(cleanEnvVar);
+                    if (envVarValue != null)
+                    {
+                        value = value.Replace(match.Value, envVarValue);
+                    }
+                }
+
                 return value;
             }
             else

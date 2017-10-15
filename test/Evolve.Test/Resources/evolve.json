@@ -1,5 +1,5 @@
 ﻿{
-  "Evolve.ConnectionString": "Server=127.0.0.1;Port=5432;Database=myDataBase;User Id=myUsername;Password=myPassword;",
+  "Evolve.ConnectionString": "Server=${EVOLVE_HOST};Port=5432;Database=myDataBase;User Id=${EVOLVE_DB_USER};Password=${EVOLVE_DB_PWD};",
   "Evolve.Driver": "npgsql",
   "Evolve.Locations": "migration;dataset;",
   "Evolve.EraseDisabled": "true",

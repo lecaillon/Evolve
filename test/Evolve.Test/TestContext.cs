@@ -20,6 +20,10 @@ namespace Evolve.Test
             WebConfigPath = Path.Combine(ResourcesFolder, "Web.config");
             JsonConfigPath = Path.Combine(ResourcesFolder, "evolve.json");
             Json2ConfigPath = Path.Combine(ResourcesFolder, "evolve2.json");
+
+            Environment.SetEnvironmentVariable("EVOLVE_HOST", "127.0.0.1");
+            Environment.SetEnvironmentVariable("EVOLVE_DB_USER", "myUsername");
+            Environment.SetEnvironmentVariable("EVOLVE_DB_PWD", "myPassword");
         }
 
         public static string ProjectFolder { get; }
