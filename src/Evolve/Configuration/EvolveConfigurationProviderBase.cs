@@ -38,6 +38,7 @@ namespace Evolve.Configuration
         protected const string TargetVersion = "Evolve.TargetVersion";
         protected const string StartVersion = "Evolve.StartVersion";
         protected const string Placeholder = "Evolve.Placeholder.";
+        protected const string EnableClusterMode = "Evolve.EnableClusterMode";
 
         #endregion
 
@@ -206,6 +207,16 @@ namespace Evolve.Configuration
             _configuration.Placeholders = new Dictionary<string, string>();
             _configuration.Placeholders = Datasource.Where(x => x.Key.StartsWith(Placeholder, StringComparison.OrdinalIgnoreCase))
                                                     .ToDictionary(x => x.Key.Replace(Placeholder, prefix) + suffix, x => x.Value);
+
+            // EnableClusterMode
+            if (!ReadValue(EnableClusterMode).IsNullOrWhiteSpace())
+            {
+                try
+                {
+                    _configuration.EnableClusterMode = Convert.ToBoolean(ReadValue(EnableClusterMode));
+                }
+                catch { }
+            }
         }
 
         protected virtual void Validate()

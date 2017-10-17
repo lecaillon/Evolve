@@ -198,7 +198,8 @@ namespace Evolve
         public string SqlMigrationSuffix { get; set; } = ".sql";
         public MigrationVersion TargetVersion { get; set; } = new MigrationVersion(long.MaxValue.ToString());
         public MigrationVersion StartVersion { get; set; } = MigrationVersion.MinVersion;
-
+        public bool EnableClusterMode { get; set; } = true;
+        
         #endregion
 
         #region Properties
@@ -421,7 +422,11 @@ namespace Evolve
             NbSchemaToEraseSkipped = 0;
 
             var db = InitiateDatabaseConnection();
-            WaitForApplicationLock(db);
+
+            if (EnableClusterMode)
+            {
+                WaitForApplicationLock(db);
+            }
 
             try
             {
@@ -432,7 +437,7 @@ namespace Evolve
             }
             finally
             {
-                if(db.ReleaseApplicationLock() == false)
+                if(EnableClusterMode && db.ReleaseApplicationLock() == false)
                 {
                     _logInfoDelegate(CannotReleaseApplicationLock);
                 }

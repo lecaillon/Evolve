@@ -156,5 +156,10 @@ namespace Evolve.Configuration
         ///     Returns the version used as a starting point for migrations. If null or empty it returns 0.
         /// </summary>
         MigrationVersion StartVersion { get; set; }
+
+        /// <summary>
+        ///     When true, Evolve will use a session level lock to coordinate the migrations on multiple nodes. (default: true;)
+        /// </summary>
+        bool EnableClusterMode { get; set; }
     }
 }
