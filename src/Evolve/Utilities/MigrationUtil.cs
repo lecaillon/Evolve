@@ -19,7 +19,8 @@ namespace Evolve.Utilities
             Check.NotNullOrEmpty(separator, nameof(separator)); // __
 
             // Check prefix
-            if (string.Concat(Path.GetFileNameWithoutExtension(script).Take(prefix.Length)) != prefix)
+            //Resolved issuer with .net 3.5
+            if (!Path.GetFileNameWithoutExtension(script).Substring(0, prefix.Length).Equals(prefix))
                 throw new EvolveConfigurationException(string.Format(MigrationNamePrefixNotFound, prefix, script));
 
             string migrationName = Path.GetFileNameWithoutExtension(script).Substring(prefix.Length); // 1_3_1__Migration_description
