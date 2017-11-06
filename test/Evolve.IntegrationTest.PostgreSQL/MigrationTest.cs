@@ -57,6 +57,17 @@ namespace Evolve.IntegrationTest.PostgreSQL
             Assert.True(evolve.NbMigration == 0, $"There should be no more migration after a successful one, not {evolve.NbMigration}.");
             Assert.True(cnn.State == ConnectionState.Closed);
 
+            // Migrate Sql_Scripts\OutOfOrder: validation should fail due to an unordered migration (OutOfOrder = false).
+            evolve.Locations = new List<string> { TestContext.OutOfOrderFolder };
+            Assert.Throws<EvolveValidationException>(() => evolve.Migrate());
+            Assert.True(cnn.State == ConnectionState.Closed);
+
+            // Migrate sucessfull: (OutOfOrder = true).
+            evolve.OutOfOrder = true;
+            evolve.Migrate();
+            Assert.True(evolve.NbMigration == 1, $"1 migration should have been applied, not {evolve.NbMigration}.");
+            Assert.True(cnn.State == ConnectionState.Closed);
+
             // Erase cancelled (EraseDisabled = true)
             evolve.IsEraseDisabled = true;
             Assert.Throws<EvolveConfigurationException>(() => evolve.Erase());

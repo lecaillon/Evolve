@@ -34,6 +34,7 @@ namespace Evolve.Test.Configuration
             Assert.True(evolve.MustEraseOnValidationError);
             Assert.Equal(CommandOptions.Erase, evolve.Command);
             Assert.False(evolve.EnableClusterMode);
+            Assert.False(evolve.OutOfOrder);
         }
 
         [Fact(DisplayName = "Load_web_configuration_file_works")]
@@ -58,6 +59,7 @@ namespace Evolve.Test.Configuration
             Assert.False(evolve.MustEraseOnValidationError);
             Assert.Equal(CommandOptions.DoNothing, evolve.Command);
             Assert.True(evolve.EnableClusterMode);
+            Assert.True(evolve.OutOfOrder);
         }
     }
 }

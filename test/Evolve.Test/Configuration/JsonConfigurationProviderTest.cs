@@ -33,6 +33,7 @@ namespace Evolve.Test.Configuration
             Assert.True(evolve.MustEraseOnValidationError);
             Assert.Equal(CommandOptions.Erase, evolve.Command);
             Assert.True(evolve.EnableClusterMode);
+            Assert.True(evolve.OutOfOrder);
         }
 
         [Fact(DisplayName = "Load_multiple_json_configuration_files_works")]
@@ -60,6 +61,7 @@ namespace Evolve.Test.Configuration
             Assert.False(evolve.MustEraseOnValidationError);
             Assert.Equal(CommandOptions.Migrate, evolve.Command);
             Assert.False(evolve.EnableClusterMode);
+            Assert.False(evolve.OutOfOrder);
         }
     }
 }

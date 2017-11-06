@@ -161,5 +161,12 @@ namespace Evolve.Configuration
         ///     When true, Evolve will use a session level lock to coordinate the migrations on multiple nodes. (default: true;)
         /// </summary>
         bool EnableClusterMode { get; set; }
+
+        /// <summary>
+        ///     When true, allows migrations to be run "out of order".
+        ///     If you already have versions 1 and 3 applied, and now a version 2 is found,
+        ///     it will be applied too instead of being ignored. (default: false;)
+        /// </summary>
+        bool OutOfOrder { get; set; }
     }
 }

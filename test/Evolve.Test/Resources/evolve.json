@@ -16,6 +16,7 @@
   "Evolve.PlaceholderSuffix": "@}",
   "Evolve.TargetVersion": "2_1_0",
   "Evolve.StartVersion": "1_1_0",
+  "Evolve.OutOfOrder": "true",
 
   "Evolve.Placeholder.Schema": "my_schema",
   "Evolve.Placeholder.Pwd": "password"

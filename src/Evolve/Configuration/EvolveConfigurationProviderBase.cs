@@ -39,6 +39,7 @@ namespace Evolve.Configuration
         protected const string StartVersion = "Evolve.StartVersion";
         protected const string Placeholder = "Evolve.Placeholder.";
         protected const string EnableClusterMode = "Evolve.EnableClusterMode";
+        protected const string OutOfOrder = "Evolve.OutOfOrder";
 
         #endregion
 
@@ -214,6 +215,16 @@ namespace Evolve.Configuration
                 try
                 {
                     _configuration.EnableClusterMode = Convert.ToBoolean(ReadValue(EnableClusterMode));
+                }
+                catch { }
+            }
+
+            // OutOfOrder
+            if (!ReadValue(OutOfOrder).IsNullOrWhiteSpace())
+            {
+                try
+                {
+                    _configuration.OutOfOrder = Convert.ToBoolean(ReadValue(OutOfOrder));
                 }
                 catch { }
             }

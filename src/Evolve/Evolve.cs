@@ -199,6 +199,7 @@ namespace Evolve
         public MigrationVersion TargetVersion { get; set; } = new MigrationVersion(long.MaxValue.ToString());
         public MigrationVersion StartVersion { get; set; } = MigrationVersion.MinVersion;
         public bool EnableClusterMode { get; set; } = true;
+        public bool OutOfOrder { get; set; } = false;
         
         #endregion
 
@@ -241,7 +242,7 @@ namespace Evolve
             Command = CommandOptions.Migrate;
             _logInfoDelegate(ExecutingMigrate);
 
-            Execute(db =>
+            InternalExecuteCommand(db =>
             {
                 InternalMigrate(db);
             });
@@ -278,25 +279,7 @@ namespace Evolve
 
             foreach (var script in scripts)
             {
-                try
-                {
-                    db.WrappedConnection.BeginTransaction();
-                    foreach (string sql in script.LoadSqlStatements(Placeholders, Encoding, db.BatchDelimiter))
-                    {
-                        db.WrappedConnection.ExecuteNonQuery(sql);
-                    }
-                    metadata.SaveMigration(script, true);
-                    db.WrappedConnection.Commit();
-                    NbMigration++;
-
-                    _logInfoDelegate(string.Format(MigrationSuccessfull, script.Name));
-                }
-                catch (Exception ex)
-                {
-                    db.WrappedConnection.Rollback();
-                    metadata.SaveMigration(script, false);
-                    throw new EvolveException(string.Format(MigrationError, script.Name), ex);
-                }
+                ExecuteMigrationScript(script, db);
             }
 
             if (NbMigration == 0)
@@ -314,7 +297,7 @@ namespace Evolve
             Command = CommandOptions.Repair;
             _logInfoDelegate(ExecutingRepair);
 
-            Execute(db =>
+            InternalExecuteCommand(db =>
             {
                 ValidateAndRepairMetadata(db);
 
@@ -333,7 +316,7 @@ namespace Evolve
         {
             Command = CommandOptions.Erase;
 
-            Execute(db =>
+            InternalExecuteCommand(db =>
             {
                 InternalErase(db);
             });
@@ -414,7 +397,7 @@ namespace Evolve
             }
         }
 
-        private void Execute(Action<DatabaseHelper> commandAction)
+        private void InternalExecuteCommand(Action<DatabaseHelper> commandAction)
         {
             NbMigration = 0;
             NbReparation = 0;
@@ -443,6 +426,34 @@ namespace Evolve
                 }
 
                 db.CloseConnection();
+            }
+        }
+
+        private void ExecuteMigrationScript(MigrationScript script, DatabaseHelper db)
+        {
+            Check.NotNull(script, nameof(script));
+            Check.NotNull(db, nameof(db));
+
+            var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
+
+            try
+            {
+                db.WrappedConnection.BeginTransaction();
+                foreach (string sql in script.LoadSqlStatements(Placeholders, Encoding, db.BatchDelimiter))
+                {
+                    db.WrappedConnection.ExecuteNonQuery(sql);
+                }
+                metadata.SaveMigration(script, true);
+                db.WrappedConnection.Commit();
+                NbMigration++;
+
+                _logInfoDelegate(string.Format(MigrationSuccessfull, script.Name));
+            }
+            catch (Exception ex)
+            {
+                db.WrappedConnection.Rollback();
+                metadata.SaveMigration(script, false);
+                throw new EvolveException(string.Format(MigrationError, script.Name), ex);
             }
         }
 
@@ -587,7 +598,14 @@ namespace Evolve
                 var appliedMigration = appliedMigrations.SingleOrDefault(x => x.Version == script.Version);                 // Search script in the applied migrations
                 if (appliedMigration == null)
                 {
-                    throw new EvolveValidationException(string.Format(MigrationMetadataNotFound, script.Name));
+                    if (OutOfOrder == false)
+                    {
+                        throw new EvolveValidationException(string.Format(MigrationMetadataNotFound, script.Name));
+                    }
+                    else
+                    {
+                        ExecuteMigrationScript(script, db);
+                    }
                 }
 
                 string scriptChecksum = script.CalculateChecksum();

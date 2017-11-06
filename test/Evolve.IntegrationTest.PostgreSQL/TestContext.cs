@@ -12,6 +12,7 @@ namespace Evolve.IntegrationTest.PostgreSQL
             SqlScriptsFolder = Path.Combine(ResourcesFolder, "Sql_Scripts");
             MigrationFolder = Path.Combine(SqlScriptsFolder, "Migration");
             ChecksumMismatchFolder = Path.Combine(SqlScriptsFolder, "Checksum_mismatch");
+            OutOfOrderFolder = Path.Combine(SqlScriptsFolder, "OutOfOrderFolder");
             EmptyMigrationScriptPath = Path.Combine(ResourcesFolder, "V1_3_2__Migration_description.sql");
         }
 
@@ -19,6 +20,7 @@ namespace Evolve.IntegrationTest.PostgreSQL
         public static string SqlScriptsFolder { get; }
         public static string MigrationFolder { get; }
         public static string ChecksumMismatchFolder { get; }
+        public static string OutOfOrderFolder { get; }
         public static string EmptyMigrationScriptPath { get; }
         public static bool AppVeyor => Environment.GetEnvironmentVariable("APPVEYOR") == "True";
         public static bool Travis => Environment.GetEnvironmentVariable("TRAVIS") == "True";
