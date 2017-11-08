@@ -289,7 +289,7 @@ namespace Evolve
             }
             else
             {
-                if (scripts == null)
+                if (scripts.Count() == 0)
                 {
                     _logInfoDelegate(string.Format(MigrateOutOfOrderSuccessfull, NbMigration));
                 }
