@@ -52,6 +52,7 @@ namespace Evolve
         private const string MigrationSuccessfull = "Successfully applied migration {0}.";
         private const string NothingToMigrate = "Database is up to date. No migration needed.";
         private const string MigrateSuccessfull = "Database migrated to version {0}. {1} migration(s) applied.";
+        private const string MigrateOutOfOrderSuccessfull = "{0} out of order migration(s) applied.";
 
         // Erase
         private const string ExecutingErase = "Executing Erase...";
@@ -288,7 +289,14 @@ namespace Evolve
             }
             else
             {
-                _logInfoDelegate(string.Format(MigrateSuccessfull, scripts.Last().Version, NbMigration));
+                if (scripts == null)
+                {
+                    _logInfoDelegate(string.Format(MigrateOutOfOrderSuccessfull, NbMigration));
+                }
+                else
+                {
+                    _logInfoDelegate(string.Format(MigrateSuccessfull, scripts.Last().Version, NbMigration));
+                }
             }
         }
 
@@ -598,13 +606,14 @@ namespace Evolve
                 var appliedMigration = appliedMigrations.SingleOrDefault(x => x.Version == script.Version);                 // Search script in the applied migrations
                 if (appliedMigration == null)
                 {
-                    if (OutOfOrder == false)
+                    if(Command == CommandOptions.Migrate && OutOfOrder)
                     {
-                        throw new EvolveValidationException(string.Format(MigrationMetadataNotFound, script.Name));
+                        ExecuteMigrationScript(script, db);
+                        continue;
                     }
                     else
                     {
-                        ExecuteMigrationScript(script, db);
+                        throw new EvolveValidationException(string.Format(MigrationMetadataNotFound, script.Name));
                     }
                 }
 
