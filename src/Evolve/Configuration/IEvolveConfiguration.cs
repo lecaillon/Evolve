@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using Evolve.Migration;
 
@@ -39,6 +40,8 @@ namespace Evolve.Configuration
         /// </summary>
         IEnumerable<string> Locations { get; set; }
 
+        Assembly EmbeddedResourceContext { get; set; }
+
         /// <summary>
         ///     <para>
         ///         The base command for Evolve. (default: doNothing)
@@ -64,7 +67,7 @@ namespace Evolve.Configuration
 
         /// <summary>
         ///     <para>
-        ///         When true, ensures that Evolve will never erase schemas. (default: false;)
+        ///         When true, ensures that Evolve will never erase schemas.
         ///     </para>
         ///     <para>
         ///         Highly recommended in production !

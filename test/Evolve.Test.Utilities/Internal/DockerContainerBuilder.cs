@@ -19,9 +19,12 @@ namespace Evolve.Test.Utilities
             ExposedPort = setupOptions.ExposedPort;
             HostPort = setupOptions.HostPort;
 
-            _client = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-                ? new DockerClientConfiguration(new Uri("npipe://./pipe/docker_engine")).CreateClient()
-                : new DockerClientConfiguration(new Uri("unix:///var/run/docker.sock")).CreateClient();
+            _client = new DockerClientConfiguration(
+                    new Uri(
+                        RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                            ? "npipe://./pipe/docker_engine"
+                            : "unix:///var/run/docker.sock"))
+                .CreateClient();
         }
 
         public string FromImage { get; }

@@ -17,10 +17,10 @@ namespace Evolve.Core.Test.Migration
                 new MigrationMetadata("3.12.1", "desc", "name", MetadataType.Migration), // 8
                 new MigrationMetadata("1", "desc", "name", MetadataType.Migration),      // 0
                 new MigrationMetadata("1.1.0", "desc", "name", MetadataType.Migration),  // 2
-                new MigrationScript(TestContext.ValidMigrationScriptPath, "2.1.0", "desc"),  // 4
-                new MigrationScript(TestContext.ValidMigrationScriptPath, "3.11.2", "desc"), // 7
-                new MigrationScript(TestContext.ValidMigrationScriptPath, "2.1.1", "desc"),  // 5
-                new MigrationScript(TestContext.ValidMigrationScriptPath, "3.0", "desc"),    // 6
+                new FileMigrationScript(TestContext.ValidMigrationScriptPath, "2.1.0", "desc"),  // 4
+                new FileMigrationScript(TestContext.ValidMigrationScriptPath, "3.11.2", "desc"), // 7
+                new FileMigrationScript(TestContext.ValidMigrationScriptPath, "2.1.1", "desc"),  // 5
+                new FileMigrationScript(TestContext.ValidMigrationScriptPath, "3.0", "desc"),    // 6
             };
 
             list.Sort();
@@ -39,19 +39,19 @@ namespace Evolve.Core.Test.Migration
         [Fact(DisplayName = "Migration_comparaison_should_be_logical")]
         public void Migration_comparaison_should_be_logical()
         {
-            Assert.True(new MigrationMetadata("1", "desc", "name", MetadataType.Migration) == new MigrationScript(TestContext.ValidMigrationScriptPath, "1", "desc"));
-            Assert.True(new MigrationMetadata("1.1.1.12", "desc", "name", MetadataType.Migration) == new MigrationScript(TestContext.ValidMigrationScriptPath, "1.1.1.12", "desc"));
+            Assert.True(new MigrationMetadata("1", "desc", "name", MetadataType.Migration) == new FileMigrationScript(TestContext.ValidMigrationScriptPath, "1", "desc"));
+            Assert.True(new MigrationMetadata("1.1.1.12", "desc", "name", MetadataType.Migration) == new FileMigrationScript(TestContext.ValidMigrationScriptPath, "1.1.1.12", "desc"));
 
             Assert.True(new MigrationMetadata("1", "desc", "name", MetadataType.Migration) != new MigrationMetadata("1.0", "desc", "name", MetadataType.Migration));
-            Assert.True(new MigrationScript(TestContext.ValidMigrationScriptPath, "1.1", "desc") != new MigrationScript(TestContext.ValidMigrationScriptPath, "1.10", "desc"));
+            Assert.True(new FileMigrationScript(TestContext.ValidMigrationScriptPath, "1.1", "desc") != new FileMigrationScript(TestContext.ValidMigrationScriptPath, "1.10", "desc"));
 
             Assert.True(new MigrationMetadata("1", "desc", "name", MetadataType.Migration) < new MigrationMetadata("2", "desc", "name", MetadataType.Migration));
-            Assert.True(new MigrationMetadata("1", "desc", "name", MetadataType.Migration) < new MigrationScript(TestContext.ValidMigrationScriptPath, "1.0", "desc"));
-            Assert.True(new MigrationScript(TestContext.ValidMigrationScriptPath, "1.1.1", "desc") < new MigrationScript(TestContext.ValidMigrationScriptPath, "1.1.2.0", "desc"));
+            Assert.True(new MigrationMetadata("1", "desc", "name", MetadataType.Migration) < new FileMigrationScript(TestContext.ValidMigrationScriptPath, "1.0", "desc"));
+            Assert.True(new FileMigrationScript(TestContext.ValidMigrationScriptPath, "1.1.1", "desc") < new FileMigrationScript(TestContext.ValidMigrationScriptPath, "1.1.2.0", "desc"));
 
             Assert.True(new MigrationMetadata("2", "desc", "name", MetadataType.Migration) > new MigrationMetadata("1", "desc", "name", MetadataType.Migration));
-            Assert.True(new MigrationMetadata("1", "desc", "name", MetadataType.Migration) > new MigrationScript(TestContext.ValidMigrationScriptPath, "0.5", "desc"));
-            Assert.True(new MigrationScript(TestContext.ValidMigrationScriptPath, "1.1.1", "desc") > new MigrationScript(TestContext.ValidMigrationScriptPath, "1.0.9", "desc"));
+            Assert.True(new MigrationMetadata("1", "desc", "name", MetadataType.Migration) > new FileMigrationScript(TestContext.ValidMigrationScriptPath, "0.5", "desc"));
+            Assert.True(new FileMigrationScript(TestContext.ValidMigrationScriptPath, "1.1.1", "desc") > new FileMigrationScript(TestContext.ValidMigrationScriptPath, "1.0.9", "desc"));
         }
     }
 }

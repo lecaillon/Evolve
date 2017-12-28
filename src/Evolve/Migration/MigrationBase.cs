@@ -8,7 +8,7 @@ namespace Evolve.Migration
     {
         private const string InvalidObjectType = "Object must be of type MigrationBase.";
 
-        public MigrationBase(string version, string description, string name, MetadataType type)
+        protected MigrationBase(string version, string description, string name, MetadataType type)
         {
             Description = Check.NotNullOrEmpty(description, nameof(description));
             Name = Check.NotNull(name, nameof(name));
@@ -33,10 +33,16 @@ namespace Evolve.Migration
 
         public int CompareTo(object obj)
         {
-            if (obj != null && !(obj is MigrationBase))
+            if (obj == null)
+            {
+                throw new NullReferenceException();
+            }
+            if (!(obj is MigrationBase))
+            {
                 throw new ArgumentException(InvalidObjectType);
+            }
 
-            return Version.CompareTo((obj as MigrationBase).Version);
+            return Version.CompareTo(((MigrationBase) obj).Version);
         }
 
         public override bool Equals(object obj) => (CompareTo(obj as MigrationBase) == 0);

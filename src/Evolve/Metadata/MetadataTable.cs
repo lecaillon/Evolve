@@ -31,10 +31,10 @@ namespace Evolve.Metadata
 
         public bool CreateIfNotExists()
         {
-            return Execute(() => InternalCreateIfNotExists(), false);
+            return Execute(InternalCreateIfNotExists, false);
         }
 
-        public void SaveMigration(MigrationScript migration, bool success)
+        public void SaveMigration(IMigrationScript migration, bool success)
         {
             Check.NotNull(migration, nameof(migration));
 
@@ -42,7 +42,7 @@ namespace Evolve.Metadata
             {
                 InternalSave(new MigrationMetadata(migration.Version.Label, migration.Description, migration.Name, MetadataType.Migration)
                 {
-                    Checksum = migration.CalculateChecksum(),
+                    Checksum = migration.CheckSum,
                     Success = success
                 });
             });

@@ -13,6 +13,6 @@ namespace Evolve.Migration
         /// <param name="suffix"> File name suffix for sql migrations. </param>
         /// <returns> A list of migration script. </returns>
         /// <exception cref="EvolveException"> Throws EvolveException when duplicate version found. </exception>
-        IEnumerable<MigrationScript> GetMigrations(IEnumerable<string> locations, string prefix, string separator, string suffix);
+        IEnumerable<IMigrationScript> GetMigrations(IEnumerable<string> locations, string prefix, string separator, string suffix);
     }
 }

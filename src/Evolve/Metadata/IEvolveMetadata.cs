@@ -28,7 +28,7 @@ namespace Evolve.Metadata
         /// </summary>
         /// <param name="migration"> The migration script metadata. </param>
         /// <param name="success"> True if the migration succeeded, false otherwise. </param>
-        void SaveMigration(MigrationScript migration, bool success);
+        void SaveMigration(IMigrationScript migration, bool success);
 
         /// <summary>
         ///     <para>

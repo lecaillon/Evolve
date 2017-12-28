@@ -8,40 +8,94 @@ using Evolve.Utilities;
 
 namespace Evolve.Migration
 {
-    public class MigrationScript : MigrationBase
+     public abstract class MigrationScript : MigrationBase, IMigrationScript
     {
-        public MigrationScript(string path, string version, string description) 
-            : base(version, description, System.IO.Path.GetFileName(Check.FileExists(path, nameof(path))), MetadataType.Migration)
+        private readonly Func<TextReader> _migrationStream;
+
+#if NET35
+        private string _checkSum;
+#else
+        private readonly Lazy<string> _checkSum;
+#endif
+
+        protected MigrationScript(string version, string name, string description, Func<TextReader> migrationStream)
+            : base(
+                version,
+                description,
+                name,
+                MetadataType.Migration)
         {
-            Path = path;
+            _migrationStream = migrationStream;
+#if !NET35
+            _checkSum = new Lazy<string>(CalculateChecksum);
+#endif
         }
 
-        public string Path { get; set; }
+#if NET35
+        private readonly object _csLock = new object();
 
-        public string CalculateChecksum()
+        public string CheckSum
+        {
+            get
+            {
+                if (_checkSum == null)
+                {
+                    lock (_csLock)
+                    {
+                        if (_checkSum == null)
+                        {
+                            _checkSum = CalculateChecksum();
+                        }
+                    }
+
+                }
+                return _checkSum;
+            }
+        }
+#else
+        public string CheckSum => _checkSum.Value;
+#endif
+
+        private string CalculateChecksum()
         {
             using (var md5 = MD5.Create())
             {
-                using (FileStream stream = File.OpenRead(Path))
-                {
-                    byte[] checksum = md5.ComputeHash(stream);
-                    return BitConverter.ToString(checksum).Replace("-", string.Empty);
-                }
+                byte[] checksum = md5.ComputeHash(
+                    Encoding.UTF8.GetBytes(WithNormalizedLineEndings(StreamToString()))
+                    );
+                return BitConverter.ToString(checksum).Replace("-", string.Empty);
             }
         }
 
-        public IEnumerable<string> LoadSqlStatements(Dictionary<string, string> placeholders, Encoding encoding, string delimiter)
+        private static string WithNormalizedLineEndings(string str)
         {
-            Check.NotNull(placeholders, nameof(placeholders));
-            Check.NotNull(encoding, nameof(encoding));
+            return str.Replace("\r\n", "\n");
+        }
 
-            string sql = File.ReadAllText(Path, encoding);
+        private string StreamToString()
+        {
+            using (var sqlStream = _migrationStream())
+            {
+                return sqlStream.ReadToEnd();
+            }
+        }
+
+        public IEnumerable<string> LoadSqlStatements(IDictionary<string, string> placeholders, string delimiter)
+        {
+            if (placeholders == null || placeholders.Count == 0)
+            {
+                return MigrationUtil.SplitSqlStatements(StreamToString(), delimiter);
+            }
+
+            StringBuilder sql = new StringBuilder(StreamToString());
             foreach (var entry in placeholders)
             {
-                sql = sql.Replace(entry.Key, entry.Value);
+                sql.Replace(entry.Key, entry.Value);
             }
-
-            return MigrationUtil.SplitSqlStatements(sql, delimiter);
+            return MigrationUtil.SplitSqlStatements(sql.ToString(), delimiter);
         }
+
+
     }
+
 }

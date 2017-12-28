@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using Evolve.Configuration;
@@ -76,7 +77,7 @@ namespace Evolve
 
         private string _configurationPath;
         private IDbConnection _userDbConnection;
-        private IMigrationLoader _loader = new FileMigrationLoader();
+        //private IMigrationLoader _loader = new FileMigrationLoader();
         private Action<string> _logInfoDelegate;
         private string _environmentName;
         private readonly string _depsFile = "";
@@ -178,10 +179,11 @@ namespace Evolve
         public IEnumerable<string> Schemas { get; set; } = new List<string>();
         public string Driver { get; set; }
         public CommandOptions Command { get; set; } = CommandOptions.DoNothing;
-        public bool IsEraseDisabled { get; set; }
+        public bool IsEraseDisabled { get; set; } = true;
         public bool MustEraseOnValidationError { get; set; }
         public Encoding Encoding { get; set; } = Encoding.UTF8;
         public IEnumerable<string> Locations { get; set; } = new List<string> { "Sql_Scripts" };
+        public Assembly EmbeddedResourceContext { get; set; }
         public string MetadataTableName { get; set; } = "changelog";
 
         private string _metadaTableSchema;
@@ -273,7 +275,7 @@ namespace Evolve
             var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
             var lastAppliedVersion = metadata.GetAllMigrationMetadata().LastOrDefault()?.Version ?? MigrationVersion.MinVersion;
             var startVersion = metadata.FindStartVersion(); // Load start version from metadata
-            var scripts = _loader.GetMigrations(Locations, SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix)
+            var scripts = LoaderFactory.GetLoader(this).GetMigrations(Locations, SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix)
                                  .SkipWhile(x => x.Version < startVersion)
                                  .SkipWhile(x => x.Version <= lastAppliedVersion)
                                  .TakeWhile(x => x.Version <= TargetVersion);
@@ -437,7 +439,7 @@ namespace Evolve
             }
         }
 
-        private void ExecuteMigrationScript(MigrationScript script, DatabaseHelper db)
+        private void ExecuteMigrationScript(IMigrationScript script, DatabaseHelper db)
         {
             Check.NotNull(script, nameof(script));
             Check.NotNull(db, nameof(db));
@@ -447,7 +449,7 @@ namespace Evolve
             try
             {
                 db.WrappedConnection.BeginTransaction();
-                foreach (string sql in script.LoadSqlStatements(Placeholders, Encoding, db.BatchDelimiter))
+                foreach (string sql in script.LoadSqlStatements(Placeholders, db.BatchDelimiter))
                 {
                     db.WrappedConnection.ExecuteNonQuery(sql);
                 }
@@ -589,7 +591,7 @@ namespace Evolve
             }
 
             var appliedMigrations = metadata.GetAllMigrationMetadata();                                                     // Load all applied migrations metadata
-            if (appliedMigrations.Count() == 0)
+            if (!appliedMigrations.Any())
             {
                 _logInfoDelegate(NoMetadataFound); // Nothing to validate
                 return;
@@ -597,7 +599,7 @@ namespace Evolve
 
             var lastAppliedVersion = appliedMigrations.Last().Version;                                                      // Get the last applied migration version
             var startVersion = metadata.FindStartVersion();                                                                 // Load start version from metadata
-            var scripts = _loader.GetMigrations(Locations, SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix)
+            var scripts = LoaderFactory.GetLoader(this).GetMigrations(Locations, SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix)
                                  .SkipWhile(x => x.Version < startVersion)
                                  .TakeWhile(x => x.Version <= lastAppliedVersion);                                          // Keep scripts between first and last applied migration
 
@@ -617,7 +619,7 @@ namespace Evolve
                     }
                 }
 
-                string scriptChecksum = script.CalculateChecksum();
+                string scriptChecksum = script.CheckSum;
                 if (scriptChecksum != appliedMigration.Checksum)                                                            // Script found, verify checksum
                 {
                     if (Command == CommandOptions.Repair)

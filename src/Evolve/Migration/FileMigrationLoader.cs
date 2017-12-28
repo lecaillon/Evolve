@@ -6,54 +6,44 @@ using Evolve.Utilities;
 
 namespace Evolve.Migration
 {
-    public class FileMigrationLoader : IMigrationLoader
+    public class FileMigrationLoader : BaseMigrationLoader
     {
         private const string InvalidMigrationScriptLocation = "Invalid migration script location: {0}.";
-        private const string DuplicateMigrationScriptVersion = "Found multiple sql migration files with the same version: {0}.";
 
-        public IEnumerable<MigrationScript> GetMigrations(IEnumerable<string> locations, string prefix, string separator, string suffix)
+        public override IEnumerable<IMigrationScript> GetMigrations(IEnumerable<string> locations, string prefix, string separator, string suffix)
         {
-            Check.HasNoNulls(locations, nameof(locations));
+            var locationsList = locations.ToList();
+            Check.HasNoNulls(locationsList, nameof(locations));
             Check.NotNullOrEmpty(prefix, nameof(prefix)); // V
             Check.NotNullOrEmpty(separator, nameof(separator)); // __
             Check.NotNullOrEmpty(suffix, nameof(suffix)); // .sql
 
-            var migrations = new List<MigrationScript>();
-
             string searchPattern = $"{prefix}*{suffix}"; // "V*.sql"
 
-            foreach (string location in locations.Distinct(StringComparer.OrdinalIgnoreCase)) // Remove duplicate locations if any
-            {
-                DirectoryInfo dirToScan = ResolveDirectory(location);
-                if(!dirToScan.Exists) continue;
+            var migrations = locationsList.Distinct(StringComparer.OrdinalIgnoreCase)
+                .Select(ResolveDirectory)
+                .Where(directory => directory.Exists)
+                .SelectMany(directory => directory.GetFiles(searchPattern, SearchOption.AllDirectories))
+                .Distinct()
+                .Select(file => LoadMigrationFromFile(file.FullName, prefix, separator))
+                .OrderBy(migration => migration.Version)
+                .ToList();
 
-                dirToScan.GetFiles(searchPattern, SearchOption.AllDirectories)   // Get scripts recursively
-                         .Where(f => !migrations.Any(m => m.Path == f.FullName)) // Scripts not already loaded
-                         .ToList()
-                         .ForEach(f => migrations.Add(LoadMigrationFromFile(f.FullName, prefix, separator)));
-            }
+            CheckForDuplicates(migrations);
 
-            var duplicates = migrations.GroupBy(x => x.Version)
-                                       .Where(grp => grp.Count() > 1)
-                                       .Select(grp => grp.Key.Label)
-                                       .ToArray();
-
-            if(duplicates.Count() > 0)
-            {
-                throw new EvolveConfigurationException(string.Format(DuplicateMigrationScriptVersion, string.Join(", ", duplicates)));
-            }
-
-            return migrations.OrderBy(x => x.Version).ToList();
+            return migrations;
         }
 
-        private MigrationScript LoadMigrationFromFile(string script, string prefix, string separator)
+
+
+        private IMigrationScript LoadMigrationFromFile(string script, string prefix, string separator)
         {
             Check.FileExists(script, nameof(script)); // V1_3_1__Migration_description.sql
             Check.NotNullOrEmpty(prefix, nameof(prefix)); // V
             Check.NotNullOrEmpty(separator, nameof(separator)); // __
 
             MigrationUtil.ExtractVersionAndDescription(script, prefix, separator, out string version, out string description);
-            return new MigrationScript(script, version, description);
+            return new FileMigrationScript(script, version, description);
         }
 
         private DirectoryInfo ResolveDirectory(string location)

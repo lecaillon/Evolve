@@ -70,12 +70,12 @@ namespace Evolve.IntegrationTest.PostgreSQL
             Assert.False(metadata.CanEraseSchema(metadataSchemaName), $"[{metadataSchemaName}] should not be erasable.");
 
             // Add metadata migration
-            var migrationScript = new MigrationScript(TestContext.EmptyMigrationScriptPath, "1_3_2", "Migration_description");
+            var migrationScript = new FileMigrationScript(TestContext.EmptyMigrationScriptPath, "1_3_2", "Migration_description");
             metadata.SaveMigration(migrationScript, true);
             var migrationMetadata = metadata.GetAllMigrationMetadata().FirstOrDefault();
             Assert.True(migrationMetadata != null, "One migration metadata should be found.");
             Assert.True(migrationMetadata.Version == migrationScript.Version, "Metadata version is not the same.");
-            Assert.True(migrationMetadata.Checksum == migrationScript.CalculateChecksum(), "Metadata checksum is not the same.");
+            Assert.True(migrationMetadata.Checksum == migrationScript.CheckSum, "Metadata checksum is not the same.");
             Assert.True(migrationMetadata.Description == migrationScript.Description, "Metadata descritpion is not the same.");
             Assert.True(migrationMetadata.Name == migrationScript.Name, "Metadata name is not the same.");
             Assert.True(migrationMetadata.Success == true, "Metadata success is not true.");
