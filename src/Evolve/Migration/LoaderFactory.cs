@@ -7,8 +7,8 @@ namespace Evolve.Migration
         public static IMigrationLoader GetLoader(IEvolveConfiguration config)
         {
             return config.EmbeddedResourceContext != null
-                ? (IMigrationLoader) new EmbeddedResourceMigrationLoader(config.EmbeddedResourceContext)
-                : new FileMigrationLoader();
+                ? (IMigrationLoader) new EmbeddedResourceMigrationLoader(config)
+                : new FileMigrationLoader(config);
         }
     }
 }

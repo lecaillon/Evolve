@@ -8,12 +8,15 @@ namespace Evolve.Migration
 {
     public class FileMigrationScript : MigrationScript
     {
-        public FileMigrationScript(string path, string version, string description, Encoding encoding = null) :
+        public FileMigrationScript(string path, string version, string description, Encoding encoding = null, bool normalizeLineEndings = false) :
             base(
                 version,
-                description,
                 System.IO.Path.GetFileName(Check.FileExists(path, nameof(path))),
-                () => new StreamReader(File.OpenRead(path), encoding ?? Encoding.UTF8))
+                description,
+                () => File.OpenRead(path),
+                encoding,
+                normalizeLineEndings
+                )
         {
             Path = path;
         }

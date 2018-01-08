@@ -5,13 +5,13 @@ using Xunit;
 
 namespace Evolve.Test.Migration
 {
-    [Collection("Embedded resource migrations")]
-    public class EmbeddedResourceMigrationLoaderTest
+    [Collection("File migrations")]
+    public class FileMigrationLoaderTests
     {
         [Fact]
-        public void LoadEmbeddedResources()
+        public void LoadFiles()
         {
-            IList<IMigrationScript> scripts = new EmbeddedResourceMigrationLoader(GetType().Assembly).GetMigrations(new List<string> { "Evolve.Test.Resources.scripts." }, "V",
+            IList<IMigrationScript> scripts = new FileMigrationLoader().GetMigrations(new List<string> { "Resources/scripts." }, "V",
                 "__", ".sql").ToList();
             Assert.Equal(2,scripts.Count);
             var script = scripts.First();

@@ -184,6 +184,7 @@ namespace Evolve
         public Encoding Encoding { get; set; } = Encoding.UTF8;
         public IEnumerable<string> Locations { get; set; } = new List<string> { "Sql_Scripts" };
         public Assembly EmbeddedResourceContext { get; set; }
+        public bool NormalizeLineEndingsForChecksum { get; set; }
         public string MetadataTableName { get; set; } = "changelog";
 
         private string _metadaTableSchema;

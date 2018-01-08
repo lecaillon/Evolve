@@ -2,13 +2,23 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Evolve.Configuration;
 using Evolve.Utilities;
 
 namespace Evolve.Migration
 {
     public class FileMigrationLoader : BaseMigrationLoader
     {
+        private readonly bool _normalizeLineEndingsForChecksum;
         private const string InvalidMigrationScriptLocation = "Invalid migration script location: {0}.";
+
+        public FileMigrationLoader(bool normalizeLineEndingsForChecksum = false)
+        {
+            _normalizeLineEndingsForChecksum = normalizeLineEndingsForChecksum;
+        }
+        
+        public FileMigrationLoader(IEvolveConfiguration config): this(config.NormalizeLineEndingsForChecksum)
+        {}
 
         public override IEnumerable<IMigrationScript> GetMigrations(IEnumerable<string> locations, string prefix, string separator, string suffix)
         {
@@ -43,7 +53,7 @@ namespace Evolve.Migration
             Check.NotNullOrEmpty(separator, nameof(separator)); // __
 
             MigrationUtil.ExtractVersionAndDescription(script, prefix, separator, out string version, out string description);
-            return new FileMigrationScript(script, version, description);
+            return new FileMigrationScript(script, version, description, normalizeLineEndings:_normalizeLineEndingsForChecksum);
         }
 
         private DirectoryInfo ResolveDirectory(string location)

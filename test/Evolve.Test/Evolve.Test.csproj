@@ -73,6 +73,8 @@
     <Compile Include="DatabaseFixture.cs" />
     <Compile Include="Driver\NetDriverTest.cs" />
     <Compile Include="Migration\EmbeddedResourceMigrationLoaderTest.cs" />
+    <Compile Include="Migration\FileAndResourceIntegrationTest.cs" />
+    <Compile Include="Migration\FileMigrationLoaderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestContext.cs" />
   </ItemGroup>
@@ -117,6 +119,9 @@
     <Content Include="Resources\Web.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <EmbeddedResource Include="Resources\scripts\V1_0_1__Test-Migration2.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

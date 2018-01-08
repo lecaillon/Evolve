@@ -8,9 +8,11 @@ using Evolve.Utilities;
 
 namespace Evolve.Migration
 {
-     public abstract class MigrationScript : MigrationBase, IMigrationScript
+    public abstract class MigrationScript : MigrationBase, IMigrationScript
     {
-        private readonly Func<TextReader> _migrationStream;
+        private readonly Func<Stream> _migrationStream;
+        private readonly bool _normalizeChecksum;
+        private readonly Encoding _encoding;
 
 #if NET35
         private string _checkSum;
@@ -18,14 +20,16 @@ namespace Evolve.Migration
         private readonly Lazy<string> _checkSum;
 #endif
 
-        protected MigrationScript(string version, string name, string description, Func<TextReader> migrationStream)
+        protected MigrationScript(string version, string name, string description, Func<Stream> migrationStream,Encoding textEncoding = null, bool normalizeChecksum = false)
             : base(
                 version,
                 description,
                 name,
                 MetadataType.Migration)
         {
+            _encoding = textEncoding ?? Encoding.UTF8;
             _migrationStream = migrationStream;
+            _normalizeChecksum = normalizeChecksum;
 #if !NET35
             _checkSum = new Lazy<string>(CalculateChecksum);
 #endif
@@ -60,12 +64,21 @@ namespace Evolve.Migration
         {
             using (var md5 = MD5.Create())
             {
-                byte[] checksum = md5.ComputeHash(
-                    Encoding.UTF8.GetBytes(WithNormalizedLineEndings(StreamToString()))
-                    );
+                byte[] checksum;
+                if (_normalizeChecksum)
+                {
+                    checksum = md5.ComputeHash(Encoding.UTF8.GetBytes(WithNormalizedLineEndings(StreamToString())));
+                }
+                else using (var byteStream = _migrationStream())
+                {
+                    checksum = md5.ComputeHash(byteStream);
+                }
+
                 return BitConverter.ToString(checksum).Replace("-", string.Empty);
             }
         }
+        
+        
 
         private static string WithNormalizedLineEndings(string str)
         {
@@ -74,7 +87,8 @@ namespace Evolve.Migration
 
         private string StreamToString()
         {
-            using (var sqlStream = _migrationStream())
+            using (var byteStream = _migrationStream())        
+            using (var sqlStream = new StreamReader(byteStream,_encoding))
             {
                 return sqlStream.ReadToEnd();
             }
@@ -87,7 +101,7 @@ namespace Evolve.Migration
                 return MigrationUtil.SplitSqlStatements(StreamToString(), delimiter);
             }
 
-            StringBuilder sql = new StringBuilder(StreamToString());
+            var sql = new StringBuilder(StreamToString());
             foreach (var entry in placeholders)
             {
                 sql.Replace(entry.Key, entry.Value);

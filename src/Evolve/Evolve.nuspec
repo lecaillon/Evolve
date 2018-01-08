@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>Evolve</id>
-    <version>1.7.0</version>
+    <id>EvolveFork</id>
+    <version>1.8.2</version>
     <authors>Philippe Lécaillon</authors>
     <owners>Philippe Lécaillon</owners>
     <licenseUrl>https://github.com/lecaillon/Evolve/blob/master/LICENSE</licenseUrl>
@@ -37,8 +37,8 @@ Resolve an issue related to .NET 3.5.</releaseNotes>
     <file src="bin\Release\net452\*.dll"            target="lib\net451" /> <!-- Voir si on prend toutes les dlls ou si on fait juste reference au packages... -->
     <file src="bin\Release\netcoreapp1.0\*.dll"     target="lib\netcoreapp1.0" />
     
-    <file src="build\**"                            target="build" />
-    <file src="bin\Release\net452\*.dll"            target="build\netcoreapp1.0\MSBuildFull" /> <!--Voir si toutes les dlls copiées sont nécessaires-->
-    <file src="bin\Release\netcoreapp1.0\*.dll"     target="build\netcoreapp1.0\MSBuildCore" />
+    <!--<file src="build\**"                            target="build" />
+    <file src="bin\Release\net452\*.dll"            target="build\netcoreapp1.0\MSBuildFull" /> Voir si toutes les dlls copiées sont nécessaires
+    <file src="bin\Release\netcoreapp1.0\*.dll"     target="build\netcoreapp1.0\MSBuildCore" />-->
   </files>
 </package>

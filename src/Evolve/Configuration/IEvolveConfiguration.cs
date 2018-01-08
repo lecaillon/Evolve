@@ -40,8 +40,16 @@ namespace Evolve.Configuration
         /// </summary>
         IEnumerable<string> Locations { get; set; }
 
+        /// <summary>
+        ///     When set, Evolve will use embedded resources instead of files. Will include all resources matching a location. 
+        /// </summary>
         Assembly EmbeddedResourceContext { get; set; }
 
+        /// <summary>
+        ///     When enabled <code>crlf</code> and <code>lf</code> line endings will be normalized to <code>lf</code> when calculating checksum.
+        /// </summary>
+        bool NormalizeLineEndingsForChecksum { get; set; }
+        
         /// <summary>
         ///     <para>
         ///         The base command for Evolve. (default: doNothing)
