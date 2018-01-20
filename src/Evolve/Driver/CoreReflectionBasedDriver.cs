@@ -42,8 +42,8 @@ namespace Evolve.Driver
         private const string RuntimeLibraryLoadingError = "Failed to load assembly {0} from deps file at {1}.";
         private const string DependencyContextLoadingError = "Failed to load dependency context from {0}.";
         private const string NoRuntimeTargetsFound = "No <runtimeTargets> found in the deps file for the assembly: {0}.";
-        private const string NoRuntimeTargetsFoundForOS = "None of the <runtimeTargets> matches the corresponding os: {0} for the assembly: {1}.";
-        private const string NoRuntimeTargetsFoundForOSArchitecture = "None of the <runtimeTargets> matches the corresponding os: {0} and os architecture: {1} for the assembly: {2}.";
+        private const string NoRuntimeTargetsFoundForOS = "None of the <runtimeTargets> matches the corresponding os: {0}, for the assembly: {1}.";
+        private const string NoRuntimeTargetsFoundForOSArchitecture = "None of the <runtimeTargets> matches the corresponding os: {0} and os architecture: {1}, for the assembly: {2}.";
         private const string MultipleRuntimeTargetsFound = "Evolve can not define the correct assembly for your system: {0}";
 
         private readonly string _depsFile;

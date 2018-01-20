@@ -12,7 +12,7 @@ namespace Evolve.Connection
     /// </summary>
     public abstract class CoreDriverConnectionProviderBase : IConnectionProvider
     {
-        private const string UnknownDriver = "Driver name {0} is unknown. Try one of the following: Microsoft.Sqlite, SQLite, MySQL.Data, MariaDB, Npgsql, SqlClient.";
+        private const string UnknownDriver = "Driver name {0} is unknown. Try one of the following: Microsoft.Sqlite, SQLite (.NET only), MySQL.Data, MariaDB, Npgsql, SqlClient.";
         private const string DriverCreationError = "Database driver creation error.";
 
         private readonly string _driverName;
