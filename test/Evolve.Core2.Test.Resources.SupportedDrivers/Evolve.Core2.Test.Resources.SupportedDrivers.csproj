@@ -6,7 +6,10 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.SQLite" Version="2.0.0" />
+    <PackageReference Include="MySql.Data" Version="8.0.9-dmr" />
+    <PackageReference Include="Npgsql" Version="3.2.6" />
     <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="1.1.9" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.4.2" />
   </ItemGroup>
 
 </Project>
