@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using Evolve.Utilities;
 using Microsoft.Extensions.DependencyModel;
+using System.Diagnostics;
 
 #if NETCORE
 using System.Reflection;
@@ -99,6 +100,11 @@ namespace Evolve.Driver
             StoreDriverNativeDependencies(lib);
 
             string driverPath = GetAssemblyPath(lib);
+            if (driverPath == null && lib.Name == "Microsoft.Data.Sqlite" && lib.Version[0] == '2')
+            {
+                // Hack, since the .deps file indicate an unknown: microsoft.data.sqlite/2.0.0/lib/netstandard2.0/Microsoft.Data.Sqlite.dll
+                driverPath = Path.Combine(NugetPackageDir, @"microsoft.data.sqlite/1.1.0/lib/netstandard1.3/Microsoft.Data.Sqlite.dll");
+            }
             var driverAssembly = _assemblyLoader.LoadFromAssemblyPath(driverPath);
             return driverAssembly.GetType(DriverTypeName.Type);
         }
@@ -120,7 +126,11 @@ namespace Evolve.Driver
 
                 if (IsLibraryNative(depLib) && !NativeDependencies.Contains(dependency.Name))
                 {
-                    NativeDependencies.Add(GetNativeLibraryPath(depLib));
+                    string path = GetNativeLibraryPath(depLib);
+                    if (path != null)
+                    {
+                        NativeDependencies.Add(path);
+                    }
                 }
 
                 StoreDriverNativeDependencies(depLib); // rec
@@ -131,21 +141,29 @@ namespace Evolve.Driver
         ///     Define the path of a managed assembly given the os and the process architecture the application is running.
         /// </summary>
         /// <param name="lib"> A resource assembly in the <see cref="_depsFile"/> </param>
-        /// <returns> The assembly full path. </returns>
-        protected virtual string GetAssemblyPath(RuntimeLibrary lib) => Path.Combine(GetLibraryPackagePath(lib), GetAssemblyRelativePath(lib));
+        /// <returns> The assembly full path, or null if not found. </returns>
+        protected virtual string GetAssemblyPath(RuntimeLibrary lib)
+        {
+            string path = GetAssemblyRelativePath(lib);
+            return path == null ? null : Path.Combine(GetLibraryPackagePath(lib), path);
+        }
 
         /// <summary>
         ///     Define the path of a native library given the os and the process architecture the application is running.
         /// </summary>
         /// <param name="lib"> A resource library in the <see cref="_depsFile"/> </param>
-        /// <returns> The library full path. </returns>
-        private string GetNativeLibraryPath(RuntimeLibrary lib) => Path.Combine(GetLibraryPackagePath(lib), GetNativeAssemblyRelativePath(lib));
+        /// <returns> The library full path, or null if not found. </returns>
+        private string GetNativeLibraryPath(RuntimeLibrary lib)
+        {
+            string path = GetNativeAssemblyRelativePath(lib);
+            return path == null ? null : Path.Combine(GetLibraryPackagePath(lib), path);
+        }
 
         private string GetLibraryPackagePath(RuntimeLibrary lib) => Path.Combine(NugetPackageDir, lib.Path);
 
-        private string GetAssemblyRelativePath(RuntimeLibrary lib) => GetRuntimeAssemblyAssetGroup(lib.Name, lib.RuntimeAssemblyGroups).AssetPaths[0];
+        private string GetAssemblyRelativePath(RuntimeLibrary lib) => GetRuntimeAssemblyAssetGroup(lib.Name, lib.RuntimeAssemblyGroups)?.AssetPaths[0];
 
-        private string GetNativeAssemblyRelativePath(RuntimeLibrary lib) => GetRuntimeAssemblyAssetGroup(lib.Name, lib.NativeLibraryGroups).AssetPaths[0];
+        private string GetNativeAssemblyRelativePath(RuntimeLibrary lib) => GetRuntimeAssemblyAssetGroup(lib.Name, lib.NativeLibraryGroups)?.AssetPaths[0];
 
         private bool IsLibraryNative(RuntimeLibrary lib) => lib?.NativeLibraryGroups.Count > 0;
 
@@ -159,7 +177,7 @@ namespace Evolve.Driver
         /// </summary>
         /// <param name="assemblyName"> Name of the assembly. </param>
         /// <param name="runtimeAssetGroups"> A list of assembly and their RID. </param>
-        /// <returns> The relative path to the selected assembly. </returns>
+        /// <returns> The relative path to the selected assembly, or null if none found. </returns>
         private RuntimeAssetGroup GetRuntimeAssemblyAssetGroup(string assemblyName, IReadOnlyList<RuntimeAssetGroup> runtimeAssetGroups)
         {
             Check.NotNullOrEmpty(assemblyName, nameof(assemblyName));
@@ -167,11 +185,12 @@ namespace Evolve.Driver
 
             if (runtimeAssetGroups.Count == 0)
             {
-                throw new EvolveException(string.Format(NoRuntimeTargetsFound, assemblyName));
+                Debug.WriteLine(string.Format(NoRuntimeTargetsFound, assemblyName));
+                return null;
             }
 
-            // Only one path, choice is made !
-            if (runtimeAssetGroups.Count == 1)
+            // Only one path to a managed assembly, choice is made !
+            if (runtimeAssetGroups.Count == 1 && Path.GetExtension(runtimeAssetGroups[0].AssetPaths[0]) == ".dll")
             {
                 return runtimeAssetGroups[0];
             }
@@ -180,7 +199,8 @@ namespace Evolve.Driver
             var osAssetGroups = runtimeAssetGroups.Where(x => GetOSPlatform().Any(s => x.Runtime.Contains(s, StringComparison.OrdinalIgnoreCase))).ToList();
             if (osAssetGroups.Count == 0)
             {
-                throw new EvolveException(string.Format(NoRuntimeTargetsFoundForOS, String.Join(", ", GetOSPlatform()), assemblyName));
+                Debug.WriteLine(string.Format(NoRuntimeTargetsFoundForOS, String.Join(", ", GetOSPlatform()), assemblyName));
+                return null;
             }
             if (osAssetGroups.Count == 1)
             {
@@ -191,9 +211,10 @@ namespace Evolve.Driver
             var osArchitectureAssetGroups = osAssetGroups.Where(x => x.Runtime.Contains($"-{GetProcessArchitecture()}", StringComparison.OrdinalIgnoreCase)).ToList();
             if (osArchitectureAssetGroups.Count == 0)
             {
-                throw new EvolveException(string.Format(NoRuntimeTargetsFoundForOSArchitecture, String.Join(", ", GetOSPlatform()),
-                                                                                                GetProcessArchitecture(),
-                                                                                                assemblyName));
+                Debug.WriteLine(string.Format(NoRuntimeTargetsFoundForOSArchitecture, String.Join(", ", GetOSPlatform()),
+                                                                                      GetProcessArchitecture(),
+                                                                                      assemblyName));
+                return null;
             }
             if (osArchitectureAssetGroups.Count == 1)
             {
