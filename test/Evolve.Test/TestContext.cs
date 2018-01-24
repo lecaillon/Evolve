@@ -9,11 +9,14 @@ namespace Evolve.Test
         static TestContext()
         {
             ProjectFolder = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(new Uri(typeof(TestContext).GetTypeInfo().Assembly.CodeBase).AbsolutePath), @"../../"));
-            DriverResourcesProjectFolder = Path.GetFullPath(Path.Combine(ProjectFolder, @"../Evolve.Core.Test.Resources.SupportedDrivers"));
+            NetCore11DriverResourcesProjectFolder = Path.GetFullPath(Path.Combine(ProjectFolder, @"../Evolve.Core.Test.Resources.SupportedDrivers"));
+            NetCore20DriverResourcesProjectFolder = Path.GetFullPath(Path.Combine(ProjectFolder, @"../Evolve.Core2.Test.Resources.SupportedDrivers"));
 #if DEBUG
-            DriverResourcesDepsFile = Path.Combine(DriverResourcesProjectFolder, @"bin/Debug/netcoreapp1.0/Evolve.Core.Test.Resources.SupportedDrivers.deps.json");
+            NetCore11DepsFile = Path.Combine(NetCore11DriverResourcesProjectFolder, @"bin/Debug/netcoreapp1.1/Evolve.Core.Test.Resources.SupportedDrivers.deps.json");
+            NetCore20DepsFile = Path.Combine(NetCore20DriverResourcesProjectFolder, @"bin/Debug/netcoreapp2.0/Evolve.Core2.Test.Resources.SupportedDrivers.deps.json");
 #else
-            DriverResourcesDepsFile = Path.Combine(DriverResourcesProjectFolder, @"bin/Release/netcoreapp1.0/Evolve.Core.Test.Resources.SupportedDrivers.deps.json");
+            NetCore11DepsFile = Path.Combine(NetCore11DriverResourcesProjectFolder, @"bin/Release/netcoreapp1.1/Evolve.Core.Test.Resources.SupportedDrivers.deps.json");
+            NetCore20DepsFile = Path.Combine(NetCore20DriverResourcesProjectFolder, @"bin/Release/netcoreapp2.0/Evolve.Core2.Test.Resources.SupportedDrivers.deps.json");
 #endif
             ResourcesFolder = Path.Combine(Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).AbsolutePath), "Resources");
             AppConfigPath = Path.Combine(ResourcesFolder, "App.config");
@@ -27,8 +30,10 @@ namespace Evolve.Test
         }
 
         public static string ProjectFolder { get; }
-        public static string DriverResourcesProjectFolder { get; }
-        public static string DriverResourcesDepsFile { get; }
+        public static string NetCore11DriverResourcesProjectFolder { get; }
+        public static string NetCore11DepsFile { get; }
+        public static string NetCore20DriverResourcesProjectFolder { get; }
+        public static string NetCore20DepsFile { get; }
         public static string NugetPackageFolder => $@"{EnvHome}/.nuget/packages";
         public static string EnvHome => Environment.GetEnvironmentVariable("USERPROFILE") ?? Environment.GetEnvironmentVariable("HOME");
         public static string ResourcesFolder { get; }

@@ -61,7 +61,7 @@ namespace Evolve.Driver
             ProjectDependencyContext = LoadDependencyContext(depsFile);
             try
             {
-                NuGetFallbackDir = Path.Combine(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(typeof(GC).GetTypeInfo().Assembly.Location), @"../../..")), "sdk/NuGetFallbackFolder");
+                NuGetFallbackDir = GetNuGetFallbackFolder();
             }
             catch(Exception ex)
             {
@@ -91,12 +91,12 @@ namespace Evolve.Driver
         /// <summary>
         ///     List of native libraries the driver assembly depends on.
         /// </summary>
-        protected List<string> NativeDependencies { get; private set; } = new List<string>();
+        protected List<string> NativeDependencies { get; set; } = new List<string>();
 
         /// <summary>
         ///     List of managed libraries the driver assembly depends on.
         /// </summary>
-        protected List<string> ManagedDependencies { get; private set; } = new List<string>();
+        protected List<string> ManagedDependencies { get; set; } = new List<string>();
 
         /// <summary>
         ///     Returns whether the application is a x64 or x86 or arm or arm64 process.
@@ -220,6 +220,36 @@ namespace Evolve.Driver
         }
 
         /// <summary>
+        ///     Traverse all the dependency tree of the given <paramref name="lib"/>,
+        ///     searching for managed and native assembly files paths.
+        /// </summary>
+        protected void FindDependencies(RuntimeLibrary lib)
+        {
+            if (lib == null)
+            {
+                return;
+            }
+
+            ManagedDependencies.AddRange(GetManagedAssembliesFullPath(lib));
+            NativeDependencies.AddRange(GetNativeAssembliesFullPath(lib));
+
+            foreach (var dependency in lib.Dependencies)
+            {
+                RuntimeLibrary depLib = GetRuntimeLibrary(dependency.Name);
+                if (depLib == null)
+                {
+                    continue; // it's a "compileOnly" assembly
+                }
+
+                if (!ManagedDependencies.Any(x => Path.GetFileNameWithoutExtension(x).Equals(dependency.Name, StringComparison.OrdinalIgnoreCase)) &&
+                    !NativeDependencies.Any(x => Path.GetFileNameWithoutExtension(x).Equals(dependency.Name, StringComparison.OrdinalIgnoreCase)))
+                {
+                    FindDependencies(depLib); // rec
+                }
+            }
+        }
+
+        /// <summary>
         ///     Returns true if the RID is compatible with this os plateform, false otherwise.
         /// </summary>
         private bool IsRuntimeCompatible(string runtime)
@@ -243,35 +273,6 @@ namespace Evolve.Driver
                 else
                 {
                     return false; // "The package is not meant for this architecture
-                }
-            }
-        }
-
-        /// <summary>
-        ///     Traverse all the dependency tree of the given <paramref name="lib"/>.
-        /// </summary>
-        private void FindDependencies(RuntimeLibrary lib)
-        {
-            if (lib == null)
-            {
-                return;
-            }
-
-            ManagedDependencies.AddRange(GetManagedAssembliesFullPath(lib));
-            NativeDependencies.AddRange(GetNativeAssembliesFullPath(lib));
-
-            foreach (var dependency in lib.Dependencies)
-            {
-                RuntimeLibrary depLib = GetRuntimeLibrary(dependency.Name);
-                if (depLib == null)
-                {
-                    continue; // it's a "compileOnly" assembly
-                }
-
-                if (!ManagedDependencies.Any(x => Path.GetFileNameWithoutExtension(x).Equals(dependency.Name, StringComparison.OrdinalIgnoreCase)) &&
-                    !NativeDependencies.Any(x => Path.GetFileNameWithoutExtension(x).Equals(dependency.Name, StringComparison.OrdinalIgnoreCase)))
-                {
-                    FindDependencies(depLib); // rec
                 }
             }
         }
@@ -350,6 +351,51 @@ namespace Evolve.Driver
             {
                 throw new EvolveException($"Failed to load dependency context from {depsFile}.", ex);
             }
+        }
+
+        /// <summary>
+        ///     Returns the NuGetFallbackFolder path whereas the process is .NET or .NET Core
+        /// </summary>
+        /// <exception cref="EvolveException"> NuGetFallbackFolder not found. </exception>
+        private static string GetNuGetFallbackFolder()
+        {
+            string fallbackDir = "";
+
+#if NETCORE
+            fallbackDir = Path.Combine(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(typeof(GC).GetTypeInfo().Assembly.Location), @"../../..")), "sdk/NuGetFallbackFolder");
+            if (Directory.Exists(fallbackDir))
+            {
+                return fallbackDir;
+            }
+#endif
+            var proc = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "dotnet",
+                    Arguments = "--info",
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    CreateNoWindow = true
+                }
+            };
+
+            proc.Start();
+            while (!proc.StandardOutput.EndOfStream)
+            {
+                string line = proc.StandardOutput.ReadLine();
+                if (line.Contains("Base Path:", StringComparison.OrdinalIgnoreCase)) //  Base Path:   C:\Program Files\dotnet\sdk\2.1.4\
+                {
+                    fallbackDir = Path.Combine(Path.GetFullPath(Path.Combine(line.Replace("Base Path:", "").Trim(), @"..")), "NuGetFallbackFolder");
+                }
+            }
+
+            if (Directory.Exists(fallbackDir))
+            {
+                return fallbackDir;
+            }
+
+            throw new EvolveException("NuGetFallbackFolder not found.");
         }
 
 #if NETCORE

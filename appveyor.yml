@@ -54,6 +54,14 @@ test_script:
 - ps: dotnet test
 - ps: cd ../..
 
+- ps: cd test/Evolve.Core2.Test/
+- ps: dotnet test
+- ps: cd ../..
+
+- ps: cd test/Evolve.Core2.Test.Driver/
+- ps: dotnet test
+- ps: cd ../..
+
 - cmd: xunit.console.exe test\Evolve.Test\bin\%CONFIGURATION%\Evolve.Test.dll
 - cmd: xunit.console.exe test\Evolve.IntegrationTest.MySQL\bin\%CONFIGURATION%\Evolve.IntegrationTest.MySQL.dll
 - cmd: xunit.console.exe test\Evolve.IntegrationTest.PostgreSQL\bin\%CONFIGURATION%\Evolve.IntegrationTest.PostgreSQL.dll

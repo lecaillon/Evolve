@@ -39,7 +39,7 @@ namespace Evolve.Driver
     /// <summary>
     ///     Microsoft.Data.SQlite driver for projects targeting the .NET Standard/Core and build with MSBuild.
     /// </summary>
-    public class CoreMicrosoftDataSqliteDriverForNet : CoreReflectionBasedDriverForNet
+    public class CoreMicrosoftDataSqliteDriverForNet : CoreReflectionBasedDriverForNetEx
     {
         public const string DriverAssemblyName = "Microsoft.Data.Sqlite";
         public const string ConnectionTypeName = "Microsoft.Data.Sqlite.SqliteConnection";

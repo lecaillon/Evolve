@@ -18,7 +18,7 @@ namespace Evolve.Core.Test.Driver
         [Fact(DisplayName = "MicrosoftDataSqliteDriver_NET_Core_1_1_works")]
         public void MicrosoftDataSqliteDriver_NET_Core_1_1_works()
         {
-            var driver = new CoreMicrosoftDataSqliteDriver(TestContext.NetCore10DepsFile, TestContext.NugetPackageFolder);
+            var driver = new CoreMicrosoftDataSqliteDriver(TestContext.NetCore11DepsFile, TestContext.NugetPackageFolder);
             var cnn = driver.CreateConnection("Data Source=:memory:");
             cnn.Open();
 
@@ -29,7 +29,7 @@ namespace Evolve.Core.Test.Driver
         public void NpgsqlDriver_NET_Core_1_1_works()
         {
             
-            var driver = new CoreNpgsqlDriver(TestContext.NetCore10DepsFile, TestContext.NugetPackageFolder);
+            var driver = new CoreNpgsqlDriver(TestContext.NetCore11DepsFile, TestContext.NugetPackageFolder);
             var cnn = driver.CreateConnection($"Server=127.0.0.1;Port={_fixture.Pg.HostPort};Database={_fixture.Pg.DbName};User Id={_fixture.Pg.DbUser};Password={_fixture.Pg.DbPwd};");
             cnn.Open();
 
@@ -40,7 +40,7 @@ namespace Evolve.Core.Test.Driver
         public void MySqlDriver_NET_Core_1_1_works()
         {
 
-            var driver = new CoreMySqlDataDriver(TestContext.NetCore10DepsFile, TestContext.NugetPackageFolder);
+            var driver = new CoreMySqlDataDriver(TestContext.NetCore11DepsFile, TestContext.NugetPackageFolder);
             var cnn = driver.CreateConnection($"Server=127.0.0.1;Port={_fixture.MySql.HostPort};Database={_fixture.MySql.DbName};Uid={_fixture.MySql.DbUser};Pwd={_fixture.MySql.DbPwd};");
             cnn.Open();
 
@@ -51,7 +51,7 @@ namespace Evolve.Core.Test.Driver
         public void SqlClientDriver_NET_Core_1_1_works()
         {
             Thread.Sleep(60000);
-            var driver = new CoreSqlClientDriver(TestContext.NetCore10DepsFile, TestContext.NugetPackageFolder);
+            var driver = new CoreSqlClientDriver(TestContext.NetCore11DepsFile, TestContext.NugetPackageFolder);
             var cnn = driver.CreateConnection($"Server=127.0.0.1;Database=master;User Id={_fixture.MsSql.DbUser};Password={_fixture.MsSql.DbPwd};");
             cnn.Open();
 

@@ -39,7 +39,7 @@ namespace Evolve.Driver
     /// <summary>
     ///     MySQL driver for projects targeting the .NET Standard/Core and build with MSBuild.
     /// </summary>
-    public class CoreMySqlDataDriverForNet : CoreReflectionBasedDriverForNet
+    public class CoreMySqlDataDriverForNet : CoreReflectionBasedDriverForNetEx
     {
         public const string DriverAssemblyName = "MySql.Data";
         public const string ConnectionTypeName = "MySql.Data.MySqlClient.MySqlConnection";

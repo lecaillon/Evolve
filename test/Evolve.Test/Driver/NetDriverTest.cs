@@ -5,7 +5,7 @@ using Xunit;
 namespace Evolve.Test.Driver
 {
     [Collection("Database collection")]
-    public class NetDriverTest
+    public partial class NetDriverTest
     {
         private readonly DatabaseFixture _fixture;
 
@@ -24,40 +24,6 @@ namespace Evolve.Test.Driver
             Assert.True(cnn.State == ConnectionState.Open);
         }
 
-        #region CoreDriverConnectionProviderForNet
-
-        [Fact(DisplayName = "CoreMicrosoftDataSqliteDriverForNet_works")]
-        public void CoreMicrosoftDataSqliteDriverForNet_works()
-        {
-            var driver = new CoreMicrosoftDataSqliteDriverForNet(TestContext.DriverResourcesDepsFile, TestContext.NugetPackageFolder);
-            var cnn = driver.CreateConnection("Data Source=:memory:");
-            cnn.Open();
-
-            Assert.True(cnn.State == ConnectionState.Open);
-        }
-
-        [Fact(DisplayName = "CoreNpgsqlDriverForNet_works")]
-        public void CoreNpgsqlDriverForNet_works()
-        {
-
-            var driver = new CoreNpgsqlDriverForNet(TestContext.DriverResourcesDepsFile, TestContext.NugetPackageFolder);
-            var cnn = driver.CreateConnection($"Server=127.0.0.1;Port={_fixture.Pg.HostPort};Database={_fixture.Pg.DbName};User Id={_fixture.Pg.DbUser};Password={_fixture.Pg.DbPwd};");
-            cnn.Open();
-
-            Assert.True(cnn.State == ConnectionState.Open);
-        }
-
-        [Fact(DisplayName = "CoreMySqlDriverForNet_works")]
-        public void CoreMySqlDriverForNet_works()
-        {
-
-            var driver = new CoreMySqlDataDriverForNet(TestContext.DriverResourcesDepsFile, TestContext.NugetPackageFolder);
-            var cnn = driver.CreateConnection($"Server=127.0.0.1;Port={_fixture.MySql.HostPort};Database={_fixture.MySql.DbName};Uid={_fixture.MySql.DbUser};Pwd={_fixture.MySql.DbPwd};");
-            cnn.Open();
-
-            Assert.True(cnn.State == ConnectionState.Open);
-        }
-
         [Fact(DisplayName = "SqlClientDriver_works")]
         public void SqlClientDriver_works()
         {
@@ -67,7 +33,5 @@ namespace Evolve.Test.Driver
 
             Assert.True(cnn.State == ConnectionState.Open);
         }
-
-        #endregion
     }
 }
