@@ -13,6 +13,12 @@ dotnet: 1.1.7
 dotnet: 2.1.4
 os:
   - linux
+before_script:
+  - sudo sh -c 'echo "deb [arch=amd64] https://apt-mo.trafficmanager.net/repos/dotnet-release/ trusty main" > /etc/apt/sources.list.d/dotnetdev.list'
+  - sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys B02C46DF417A0893
+  - sudo apt-get update
+  - sudo apt-get install dotnet-dev-1.0.5
+  - sudo apt-get install dotnet-dev-1.1.7
 script:
   - dotnet restore
   - dotnet build ./src/Evolve/Evolve.csproj -c Release -f netcoreapp1.0
