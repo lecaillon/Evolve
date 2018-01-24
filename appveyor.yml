@@ -54,10 +54,6 @@ test_script:
 - ps: dotnet test
 - ps: cd ../..
 
-- ps: cd test/Evolve.Core2.Test/
-- ps: dotnet test
-- ps: cd ../..
-
 - ps: cd test/Evolve.Core2.Test.Driver/
 - ps: dotnet test
 - ps: cd ../..
