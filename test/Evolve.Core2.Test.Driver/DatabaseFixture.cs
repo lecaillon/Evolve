@@ -3,7 +3,7 @@ using System.Threading;
 using Evolve.Test.Utilities;
 using Xunit;
 
-namespace Evolve.Core.Test.Driver
+namespace Evolve.Core2.Test.Driver
 {
     public class DatabaseFixture : IDisposable
     {

@@ -2,16 +2,16 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using Evolve.Utilities;
+using System.Reflection;
 using Microsoft.Extensions.DependencyModel;
-using System.Diagnostics;
+using Evolve.Utilities;
 
 #if NETCORE
-using System.Reflection;
-using System.Runtime.Loader;
 using System.Runtime.InteropServices;
+using System.Runtime.Loader;
 #endif
 
 namespace Evolve.Driver
@@ -46,6 +46,8 @@ namespace Evolve.Driver
         private const string NoRuntimeTargetsFoundForOS = "None of the <runtimeTargets> matches the corresponding os: {0}, for the assembly: {1}.";
         private const string NoRuntimeTargetsFoundForOSArchitecture = "None of the <runtimeTargets> matches the corresponding os: {0} and os architecture: {1}, for the assembly: {2}.";
         private const string MultipleRuntimeTargetsFound = "Evolve can not define the correct assembly for your system: {0}";
+        private const string NuGetFallbackDirNotFound = "NuGetFallbackFolder not found. {0}";
+        private const string PackageNotFound = "Package {0} not found. Searched location 1: {1} - Searched location 2: {2}";
 
         private readonly string _depsFile;
 
@@ -67,6 +69,15 @@ namespace Evolve.Driver
             NugetPackageDir = Check.DirectoryExists(nugetPackageDir, nameof(nugetPackageDir));
             ProjectDependencyContext = LoadDependencyContext(_depsFile);
             NativeDependencies = new List<string>();
+            try
+            {
+                NuGetFallbackDir = Path.Combine(Path.GetFullPath(Path.Combine(Path.GetDirectoryName(
+                    typeof(GC).GetTypeInfo().Assembly.Location), @"../../..")), "sdk/NuGetFallbackFolder");
+            }
+            catch(Exception ex)
+            {
+                Debug.WriteLine(string.Format(NuGetFallbackDirNotFound, ex.Message));
+            }
 
 #if NETCORE
             _assemblyLoader = new CustomAssemblyLoader(this);
@@ -79,9 +90,14 @@ namespace Evolve.Driver
         protected DependencyContext ProjectDependencyContext { get; }
 
         /// <summary>
-        ///     The application package folder path.
+        ///     NuGet package cache folder
         /// </summary>
         protected string NugetPackageDir { get; }
+
+        /// <summary>
+        ///     NuGet package fallback folder
+        /// </summary>
+        protected string NuGetFallbackDir { get; }
 
         /// <summary>
         ///     List of native libraries the driver assembly depends on.
@@ -99,12 +115,17 @@ namespace Evolve.Driver
 
             StoreDriverNativeDependencies(lib);
 
-            string driverPath = GetAssemblyPath(lib);
-            if (driverPath == null && lib.Name == "Microsoft.Data.Sqlite" && lib.Version[0] == '2')
+            if (lib.Name == "Microsoft.Data.Sqlite" && lib.Version[0] == '2')
             {
-                // Hack, since the .deps file indicate an unknown: microsoft.data.sqlite/2.0.0/lib/netstandard2.0/Microsoft.Data.Sqlite.dll
-                driverPath = Path.Combine(NugetPackageDir, @"microsoft.data.sqlite/1.1.0/lib/netstandard1.3/Microsoft.Data.Sqlite.dll");
+                string extraPath2 = GetAssemblyPath(GetRuntimeLibrary("SQLitePCLRaw.provider.e_sqlite3.netstandard11"));
+                _assemblyLoader.LoadFromAssemblyPath(extraPath2);
+
+                _assemblyLoader.LoadFromAssemblyPath(@"C:/Program Files/dotnet/sdk/NuGetFallbackFolder/SQLitePCLRaw.bundle_green/1.1.7/lib/netcoreapp/SQLitePCLRaw.batteries_green.dll");
+                _assemblyLoader.LoadFromAssemblyPath(@"C:/Program Files/dotnet/sdk/NuGetFallbackFolder/SQLitePCLRaw.bundle_green/1.1.7/lib/netcoreapp/SQLitePCLRaw.batteries_v2.dll");
+
+                lib = GetRuntimeLibrary("Microsoft.Data.Sqlite.Core");
             }
+            string driverPath = GetAssemblyPath(lib);
             var driverAssembly = _assemblyLoader.LoadFromAssemblyPath(driverPath);
             return driverAssembly.GetType(DriverTypeName.Type);
         }
@@ -145,7 +166,7 @@ namespace Evolve.Driver
         protected virtual string GetAssemblyPath(RuntimeLibrary lib)
         {
             string path = GetAssemblyRelativePath(lib);
-            return path == null ? null : Path.Combine(GetLibraryPackagePath(lib), path);
+            return path == null ? null : Path.Combine(GetLibraryPackageFolderPath(lib), path);
         }
 
         /// <summary>
@@ -156,10 +177,30 @@ namespace Evolve.Driver
         private string GetNativeLibraryPath(RuntimeLibrary lib)
         {
             string path = GetNativeAssemblyRelativePath(lib);
-            return path == null ? null : Path.Combine(GetLibraryPackagePath(lib), path);
+            return path == null ? null : Path.Combine(GetLibraryPackageFolderPath(lib), path);
         }
 
-        private string GetLibraryPackagePath(RuntimeLibrary lib) => Path.Combine(NugetPackageDir, lib.Path);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="lib"></param>
+        /// <returns></returns>
+        private string GetLibraryPackageFolderPath(RuntimeLibrary lib)
+        {
+            if (Directory.Exists(Path.Combine(NugetPackageDir, lib.Path)))
+            {
+                return Path.Combine(NugetPackageDir, lib.Path);
+            }
+
+            if (Directory.Exists(Path.Combine(NuGetFallbackDir, lib.Path)))
+            {
+                return Path.Combine(NuGetFallbackDir, lib.Path);
+            }
+
+            throw new EvolveException(string.Format(PackageNotFound, lib.Name, 
+                                                                     Path.Combine(NugetPackageDir, lib.Path), 
+                                                                     Path.Combine(NuGetFallbackDir, lib.Path)));
+        }
 
         private string GetAssemblyRelativePath(RuntimeLibrary lib) => GetRuntimeAssemblyAssetGroup(lib.Name, lib.RuntimeAssemblyGroups)?.AssetPaths[0];
 
@@ -189,8 +230,8 @@ namespace Evolve.Driver
                 return null;
             }
 
-            // Only one path to a managed assembly, choice is made !
-            if (runtimeAssetGroups.Count == 1 && Path.GetExtension(runtimeAssetGroups[0].AssetPaths[0]) == ".dll")
+            // Only one path to a cross platform assembly, choice is made !
+            if (runtimeAssetGroups.Count == 1 && runtimeAssetGroups[0].Runtime == "")
             {
                 return runtimeAssetGroups[0];
             }
@@ -353,6 +394,10 @@ namespace Evolve.Driver
             {
                 // hack for the SQLClient driver: remove all native dependencies that do not target the current ProcessArchitecture
                 _driverLoader.NativeDependencies.RemoveAll(x => x.Contains(RuntimeInformation.ProcessArchitecture == Architecture.X64 ? "x86" : "x64"));
+                if (RuntimeInformation.ProcessArchitecture.ToString().StartsWith("X"))
+                {
+                    _driverLoader.NativeDependencies.RemoveAll(x => x.Contains("arm", StringComparison.OrdinalIgnoreCase));
+                }
 
                 string unmanagedDllNameWithoutExt = Path.GetFileNameWithoutExtension(unmanagedDllName); // clean the name
                 string unmanagedDllPath = _driverLoader.NativeDependencies.Single(x => Path.GetFileNameWithoutExtension(x).Contains(unmanagedDllNameWithoutExt, StringComparison.OrdinalIgnoreCase));

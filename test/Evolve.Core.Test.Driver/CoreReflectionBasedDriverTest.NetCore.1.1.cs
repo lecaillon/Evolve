@@ -6,7 +6,7 @@ using Xunit;
 namespace Evolve.Core.Test.Driver
 {
     [Collection("Database collection")]
-    public partial class CoreReflectionBasedDriverTest
+    public class CoreReflectionBasedDriverTest
     {
         private readonly DatabaseFixture _fixture;
 
@@ -15,8 +15,8 @@ namespace Evolve.Core.Test.Driver
             _fixture = fixture;
         }
 
-        [Fact(DisplayName = "MicrosoftDataSqliteDriver_NET_Core_1_0_works")]
-        public void MicrosoftDataSqliteDriver_NET_Core_1_0_works()
+        [Fact(DisplayName = "MicrosoftDataSqliteDriver_NET_Core_1_1_works")]
+        public void MicrosoftDataSqliteDriver_NET_Core_1_1_works()
         {
             var driver = new CoreMicrosoftDataSqliteDriver(TestContext.NetCore10DepsFile, TestContext.NugetPackageFolder);
             var cnn = driver.CreateConnection("Data Source=:memory:");
@@ -25,8 +25,8 @@ namespace Evolve.Core.Test.Driver
             Assert.True(cnn.State == ConnectionState.Open);
         }
 
-        [Fact(DisplayName = "NpgsqlDriver_NET_Core_1_0_works")]
-        public void NpgsqlDriver_NET_Core_1_0_works()
+        [Fact(DisplayName = "NpgsqlDriver_NET_Core_1_1_works")]
+        public void NpgsqlDriver_NET_Core_1_1_works()
         {
             
             var driver = new CoreNpgsqlDriver(TestContext.NetCore10DepsFile, TestContext.NugetPackageFolder);
@@ -36,8 +36,8 @@ namespace Evolve.Core.Test.Driver
             Assert.True(cnn.State == ConnectionState.Open);
         }
 
-        [Fact(DisplayName = "MySqlDriver_NET_Core_1_0_works")]
-        public void MySqlDriver_NET_Core_1_0_works()
+        [Fact(DisplayName = "MySqlDriver_NET_Core_1_1_works")]
+        public void MySqlDriver_NET_Core_1_1_works()
         {
 
             var driver = new CoreMySqlDataDriver(TestContext.NetCore10DepsFile, TestContext.NugetPackageFolder);
@@ -47,8 +47,8 @@ namespace Evolve.Core.Test.Driver
             Assert.True(cnn.State == ConnectionState.Open);
         }
 
-        [Fact(DisplayName = "SqlClientDriver_NET_Core_1_0_works")]
-        public void SqlClientDriver_NET_Core_1_0_works()
+        [Fact(DisplayName = "SqlClientDriver_NET_Core_1_1_works")]
+        public void SqlClientDriver_NET_Core_1_1_works()
         {
             Thread.Sleep(60000);
             var driver = new CoreSqlClientDriver(TestContext.NetCore10DepsFile, TestContext.NugetPackageFolder);

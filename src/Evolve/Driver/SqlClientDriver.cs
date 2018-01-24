@@ -5,7 +5,7 @@ namespace Evolve.Driver
     /// <summary>
     ///     SqlClient driver for projects targeting the .NET Standard/Core and build with a dotnet-build command.
     /// </summary>
-    public class CoreSqlClientDriver : CoreReflectionBasedDriver
+    public class CoreSqlClientDriver : CoreReflectionBasedDriverEx
     {
         public const string DriverAssemblyName = "System.Data.SqlClient";
         public const string ConnectionTypeName = "System.Data.SqlClient.SqlConnection";

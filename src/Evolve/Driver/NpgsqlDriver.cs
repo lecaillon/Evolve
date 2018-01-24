@@ -5,7 +5,7 @@ namespace Evolve.Driver
     /// <summary>
     ///     Npgsql (PostgreSQL) driver for projects targeting the .NET Standard/Core and build with a dotnet-build command.
     /// </summary>
-    public class CoreNpgsqlDriver : CoreReflectionBasedDriver
+    public class CoreNpgsqlDriver : CoreReflectionBasedDriverEx
     {
         public const string DriverAssemblyName = "Npgsql";
         public const string ConnectionTypeName = "Npgsql.NpgsqlConnection";

@@ -41,7 +41,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{67A3
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCoreSample", "samples\AspNetCoreSample\AspNetCoreSample.csproj", "{E15C039D-9900-4493-864E-CF334F6C38D1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.Core2.Test.Resources.SupportedDrivers", "test\Evolve.Core2.Test.Resources.SupportedDrivers\Evolve.Core2.Test.Resources.SupportedDrivers.csproj", "{05FBC751-4AA2-4580-A1F0-0F8C39A4670A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evolve.Core2.Test.Resources.SupportedDrivers", "test\Evolve.Core2.Test.Resources.SupportedDrivers\Evolve.Core2.Test.Resources.SupportedDrivers.csproj", "{05FBC751-4AA2-4580-A1F0-0F8C39A4670A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evolve.Core2.Test.Driver", "test\Evolve.Core2.Test.Driver\Evolve.Core2.Test.Driver.csproj", "{FFD85E72-3130-47CA-9FE0-D65546721DD1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "netcore2", "netcore2", "{CD98E896-B15B-433A-ABA6-B1EDC4594C92}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -197,6 +201,18 @@ Global
 		{05FBC751-4AA2-4580-A1F0-0F8C39A4670A}.Release|x64.Build.0 = Release|Any CPU
 		{05FBC751-4AA2-4580-A1F0-0F8C39A4670A}.Release|x86.ActiveCfg = Release|Any CPU
 		{05FBC751-4AA2-4580-A1F0-0F8C39A4670A}.Release|x86.Build.0 = Release|Any CPU
+		{FFD85E72-3130-47CA-9FE0-D65546721DD1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FFD85E72-3130-47CA-9FE0-D65546721DD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FFD85E72-3130-47CA-9FE0-D65546721DD1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FFD85E72-3130-47CA-9FE0-D65546721DD1}.Debug|x64.Build.0 = Debug|Any CPU
+		{FFD85E72-3130-47CA-9FE0-D65546721DD1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FFD85E72-3130-47CA-9FE0-D65546721DD1}.Debug|x86.Build.0 = Debug|Any CPU
+		{FFD85E72-3130-47CA-9FE0-D65546721DD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FFD85E72-3130-47CA-9FE0-D65546721DD1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FFD85E72-3130-47CA-9FE0-D65546721DD1}.Release|x64.ActiveCfg = Release|Any CPU
+		{FFD85E72-3130-47CA-9FE0-D65546721DD1}.Release|x64.Build.0 = Release|Any CPU
+		{FFD85E72-3130-47CA-9FE0-D65546721DD1}.Release|x86.ActiveCfg = Release|Any CPU
+		{FFD85E72-3130-47CA-9FE0-D65546721DD1}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -215,7 +231,9 @@ Global
 		{F0B5D520-715F-480D-A3FB-A369A2D99971} = {7FA35BAF-800D-4435-9E01-58CBBDDF9C69}
 		{DA652844-26F0-4FFF-95E4-5882CEAA6B12} = {7FA35BAF-800D-4435-9E01-58CBBDDF9C69}
 		{E15C039D-9900-4493-864E-CF334F6C38D1} = {67A383AB-AAC2-4A1F-88A0-081609E432C9}
-		{05FBC751-4AA2-4580-A1F0-0F8C39A4670A} = {F0B5D520-715F-480D-A3FB-A369A2D99971}
+		{05FBC751-4AA2-4580-A1F0-0F8C39A4670A} = {CD98E896-B15B-433A-ABA6-B1EDC4594C92}
+		{FFD85E72-3130-47CA-9FE0-D65546721DD1} = {CD98E896-B15B-433A-ABA6-B1EDC4594C92}
+		{CD98E896-B15B-433A-ABA6-B1EDC4594C92} = {7FA35BAF-800D-4435-9E01-58CBBDDF9C69}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {220554C7-B098-4FF6-8B7A-96E72B90D7B4}

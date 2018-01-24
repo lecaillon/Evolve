@@ -27,7 +27,7 @@ namespace Evolve.Driver
     /// </summary>
     public abstract class CoreReflectionBasedDriverForNet : CoreReflectionBasedDriver
     {
-        private const string SupportedNetFrameworkVersion = @"net4[5-6](\d)*"; // .NET 4.5.x .NET 4.6.x
+        private const string SupportedNetFrameworkVersion = @"net4[5-7](\d)*"; // .NET 4.5.x .NET 4.6.x .NET 4.7.x
 
         private const string WorkingDirectoryCreationError = "Failed to create the driver temp working folder at {0}.";
 
