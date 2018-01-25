@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -58,21 +59,32 @@ namespace Evolve.Driver
         /// </summary>
         /// <param name="connectionString"> The connection string used to initialize the IDbConnection. </param>
         /// <returns> An initialized database connection. </returns>
+        /// <exception cref="EvolveException"></exception>
         public override IDbConnection CreateConnection(string connectionString)
         {
             Check.NotNullOrEmpty(connectionString, nameof(connectionString));
 
-            var cnn = (IDbConnection)Activator.CreateInstance(DbConnectionType);
-            cnn.ConnectionString = connectionString;
+            IDbConnection cnn = null;
+            Type cnxType = DbConnectionType;
+
             if (NativeDependencies.Count == 0)
             {
-                return cnn;
+                try
+                {
+                    cnn = (IDbConnection)Activator.CreateInstance(cnxType);
+                    cnn.ConnectionString = connectionString;
+                    return cnn;
+                }
+                catch (Exception ex)
+                {
+                    throw new EvolveException($"Error creating an instance of the type {cnxType}", ex);
+                }
             }
 
             string originalCurrentDirectory = Directory.GetCurrentDirectory();
+            string tempDir = CreateTempDir();
             try
             {
-                string tempDir = CreateTempDir();
                 Directory.SetCurrentDirectory(tempDir);
                 foreach (var source in NativeDependencies)
                 {
@@ -83,22 +95,39 @@ namespace Evolve.Driver
                     }
                 }
 
-                cnn.Open(); // force the load of the native dependencies
-                cnn.Close();
+                try
+                {
+                    cnn = (IDbConnection)Activator.CreateInstance(cnxType);
+                }
+                catch (Exception ex)
+                {
+                    throw new EvolveException($"Error creating an instance of the type {cnxType}", ex);
+                }
+
+                try
+                {
+                    cnn.ConnectionString = connectionString;
+                    cnn.Open(); // force the load of the native dependencies
+                    cnn.Close();
+                }
+                catch (Exception ex)
+                {
+                    throw new EvolveException($"Error openning a connection to the database with the previously created {cnxType.Name}.", ex);
+                }
+
+                return cnn;
             }
-            catch { }
             finally
             {
                 Directory.SetCurrentDirectory(originalCurrentDirectory); // restore applicaiton current directory
             }
-
-            return cnn;
         }
 
         /// <summary>
         ///     Load the driver <see cref="Type"/> from a .deps file definition.
         /// </summary>
         /// <returns> The driver type. </returns>
+        /// <exception cref="EvolveException"></exception>
         protected override Type TypeFromAssembly()
         {
             ManagedDependencies = new List<string>();
@@ -118,15 +147,16 @@ namespace Evolve.Driver
 
         /// <summary>
         ///     <para>
-        ///         Returns the path of the .NET version of the driver assembly.
+        ///         Returns if exists, the path of the .NET version of the driver assembly,
+        ///         otherwise returns the path of the .NET Core version.
         ///     </para>
         ///     <para>
         ///         From the .NET Standard/Core driver assembly, navigate to the parent directory and search all folders 
-        ///         containing "*net45*" or "*net46*" or "*net47*" (<see cref="SupportedNetFrameworkVersion"/>). Take the higher.
+        ///         containing "*net45*" or "*net46*" or "*net47*". Take the higher.
         ///     </para>
         /// </summary>
         /// <param name="driverPath"> The netcore driver runtime library path. </param>
-        /// <returns> The path to the .NET version of the driver assembly. </returns>
+        /// <returns> The path to the .NET or .NET Core version of the driver assembly. </returns>
         /// <exception cref="EvolveException"></exception>
         private string GetNetVersion(string driverPath)
         {
@@ -136,7 +166,9 @@ namespace Evolve.Driver
                                                     .Where(x => Regex.Match(x.Name, SupportedNetFrameworkVersion).Success)
                                                     .Max(x => x.FullName);
 
-            return Path.Combine(netAssemblyFolder, driverFileName);
+            return netAssemblyFolder == null 
+                ? driverPath
+                : Path.Combine(netAssemblyFolder, driverFileName);
         }
 
         /// <summary>
@@ -150,35 +182,82 @@ namespace Evolve.Driver
         ///         From there, given the version of the dependency, find the folder which matches best: 
         ///         take the equal or higher closest version available.
         ///         
-        ///         Finally, find the .NET 4.5.* or .NET 4.6.* version of the dependency (take the higher).
+        ///         Finally, find the .NET 4.5.* or .NET 4.6.* or .NET 4.7.* version of the dependency (take the higher).
         ///     </para>
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
-        /// <returns> The driver dependency assembly to resolve. </returns>
+        /// <returns> The resolved assembly. </returns>
+        /// <exception cref="EvolveException"></exception>
         private Assembly CurrentAppDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
-            // temp hack mysql does not find fr-FR resources
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
-            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-US");
+            string assemblyName = "";
+            AssemblyVersion assemblyVersion = null;
 
-            string assemblyName = args.Name.Split(',')[0].Trim();
-            var assemblyVersion = new AssemblyVersion(args.Name.Split(',')[1].Trim().Replace("Version=", string.Empty));
-            string packageFolder = Path.Combine(NugetPackageDir, assemblyName);
-            string assemblyFolder = Directory.GetDirectories(packageFolder, "*", SearchOption.TopDirectoryOnly)
-                                             .Select(x => new DirectoryInfo(x))
-                                             .ToLookup(x => new AssemblyVersion(Regex.Match(x.Name, "^[0-9]+(?:.[0-9]+)*").Value), x => x) // extract the version of the available packages
-                                             .Where(x => x.Key >= assemblyVersion) // keep only versions equal or higher than the requested
-                                             .OrderBy(x => x.Key).First().ToList().First() // take the closest
-                                             .FullName;
+            try
+            {
+                assemblyName = args.Name.Split(',')[0].Trim();
+                assemblyVersion = new AssemblyVersion(args.Name.Split(',')[1].Trim().Replace("Version=", string.Empty));
+            }
+            catch
+            {
+                throw new EvolveException($"Assembly {args.Name} has no versioning information in its name.");
+            }
 
-            assemblyFolder = Path.Combine(assemblyFolder, "lib");
-            string netAssemblyFolder = Directory.GetDirectories(assemblyFolder, "*net4*", SearchOption.TopDirectoryOnly)
-                                                .Select(x => new DirectoryInfo(x))
-                                                .Where(x => Regex.Match(x.Name, SupportedNetFrameworkVersion).Success)
-                                                .Max(x => x.FullName);
+            string packageFolder = "";
+            string versionedPackageFolder = "";
+            string netCorePath = ManagedDependencies.FirstOrDefault(x => x.Contains(assemblyName + ".dll"));
+            if (netCorePath == null)
+            {
+                // The requested dll is not in the ManagedDependencies list.
+                // Try to find the .NET version of it in the Nuget cache folder.
+                packageFolder = Path.Combine(NugetPackageDir, assemblyName);
+                if (!Directory.Exists(packageFolder))
+                {
+                    throw new EvolveException($"Can't resolve {args.Name}. Folder {packageFolder} not found.");
+                }
 
-            return Assembly.LoadFile(Path.Combine(netAssemblyFolder, assemblyName + ".dll"));
+                versionedPackageFolder = Directory.GetDirectories(packageFolder, "*", SearchOption.TopDirectoryOnly)
+                                                  .Select(x => new DirectoryInfo(x))
+                                                  .Where(x => Regex.IsMatch(x.Name, "^[0-9]+(?:.[0-9]+)*")) // guard
+                                                  .ToLookup(x => new AssemblyVersion(Regex.Match(x.Name, "^[0-9]+(?:.[0-9]+)*").Value), x => x) // extract the version of the available packages
+                                                  .Where(x => x.Key >= assemblyVersion) // keep only versions equal or higher than the requested
+                                                  .OrderBy(x => x.Key).First().ToList().First() // take the closest
+                                                  .FullName;
+
+                if (string.IsNullOrEmpty(versionedPackageFolder))
+                {
+                    throw new EvolveException($"Can't resolve {args.Name}. No folder named with a version found in {versionedPackageFolder}");
+                }
+
+                // Try to find the *net4* folder in the /lib folder
+                versionedPackageFolder = Path.Combine(versionedPackageFolder, "lib");
+                string netAssemblyFolder = Directory.GetDirectories(versionedPackageFolder, "*net4*", SearchOption.TopDirectoryOnly)
+                                                    .Select(x => new DirectoryInfo(x))
+                                                    .Where(x => Regex.Match(x.Name, SupportedNetFrameworkVersion).Success)
+                                                    .Max(x => x.FullName);
+                if (netAssemblyFolder == null)
+                {
+                    throw new EvolveException($"Can't resolve {args.Name}. No *net4* folder found in {versionedPackageFolder}");
+                }
+
+                return Assembly.LoadFile(Path.Combine(netAssemblyFolder, assemblyName + ".dll"));
+            }
+            else
+            {
+                // Try to find the equivalent .NET dll of the .NET Core ManagedDependencies
+                packageFolder = new DirectoryInfo(Path.GetDirectoryName(netCorePath)).Parent.FullName;
+                versionedPackageFolder = Directory.GetDirectories(packageFolder, "*net4*", SearchOption.TopDirectoryOnly)
+                                                  .Select(x => new DirectoryInfo(x))
+                                                  .Where(x => Regex.Match(x.Name, SupportedNetFrameworkVersion).Success)
+                                                  .Max(x => x.FullName);
+
+                if (versionedPackageFolder == null)
+                {
+                    // Can't find the .NET assembly, so load the .NET Core one
+                    return Assembly.LoadFile(netCorePath);
+                }
+
+                return Assembly.LoadFile(Path.Combine(versionedPackageFolder, assemblyName + ".dll"));
+            }
         }
 
         /// <summary>
@@ -215,6 +294,10 @@ namespace Evolve.Driver
             private const string InvalidVersionPatternMatching = "version {0} is invalid. Version must respect this regex: ^[0-9]+(?:.[0-9]+)*$";
             private const string InvalidObjectType = "Object must be of type AssemblyVersion.";
 
+            /// <summary>
+            ///     Initializes a new instance of the <see cref="AssemblyVersion"/> class.
+            /// </summary>
+            /// <exception cref="EvolveException"></exception>
             public AssemblyVersion(string version)
             {
                 Version = Check.NotNullOrEmpty(version, nameof(version));
