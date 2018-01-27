@@ -46,6 +46,8 @@ before_test:
 
 # tests
 test_script:
+- cmd: xunit.console.exe test\Evolve.Test\bin\%CONFIGURATION%\Evolve.Test.dll
+
 - ps: cd test/Evolve.Core.Test/
 - ps: dotnet test
 - ps: cd ../..

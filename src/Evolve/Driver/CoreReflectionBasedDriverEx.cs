@@ -40,7 +40,7 @@ namespace Evolve.Driver
     /// </remarks>
     public abstract class CoreReflectionBasedDriverEx : ReflectionBasedDriver
     {
-        private readonly string _depsFile;
+        protected readonly string _depsFile;
 
 #if NETCORE
         private readonly CustomAssemblyLoader _assemblyLoader;
