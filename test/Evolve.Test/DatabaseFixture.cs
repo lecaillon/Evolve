@@ -15,11 +15,11 @@ namespace Evolve.Test
 
             if(!TestContext.Travis && !TestContext.AppVeyor) // AppVeyor does not support Docker Linux images, and Travis CI runs on Linux
             {
-                MySql.Start();
-                MsSql.Start();
-                Pg.Start();
+                //MySql.Start();
+                //MsSql.Start();
+                //Pg.Start();
 
-                Thread.Sleep(10000);
+                //Thread.Sleep(10000);
             }
         }
 
@@ -31,9 +31,9 @@ namespace Evolve.Test
         {
             if (!TestContext.Travis && !TestContext.AppVeyor)
             {
-                MySql.Dispose();
-                MsSql.Dispose();
-                Pg.Dispose();
+                //MySql.Dispose();
+                //MsSql.Dispose();
+                //Pg.Dispose();
             }
         }
     }

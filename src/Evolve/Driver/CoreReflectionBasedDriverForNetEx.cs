@@ -211,7 +211,7 @@ namespace Evolve.Driver
                 packageFolder = Path.Combine(NugetPackageDir, assemblyName);
                 if (!Directory.Exists(packageFolder))
                 {
-                    throw new EvolveException($"Can't resolve {args.Name}. Folder {packageFolder} not found.");
+                    throw new EvolveException($"Can't resolve {args.Name}. Folder {packageFolder} not found. Deps files managed assemblies: \r\n{String.Join(", ", ManagedDependencies.ToArray())}");
                 }
 
                 versionedPackageFolder = Directory.GetDirectories(packageFolder, "*", SearchOption.TopDirectoryOnly)
