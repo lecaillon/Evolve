@@ -16,7 +16,7 @@ namespace Evolve.Test.Driver
             Assert.True(cnn.State == ConnectionState.Open);
         }
 
-        [Fact(DisplayName = "CoreNpgsqlDriverForNet_NET_Core_2_0_works")]
+        [Fact(DisplayName = "CoreNpgsqlDriverForNet_NET_Core_2_0_works", Skip = "")]
         public void CoreNpgsqlDriverForNet_NET_Core_2_0_works()
         {
             var driver = new CoreNpgsqlDriverForNet(TestContext.NetCore20DepsFile, TestContext.NugetPackageFolder);
@@ -26,7 +26,7 @@ namespace Evolve.Test.Driver
             Assert.True(cnn.State == ConnectionState.Open);
         }
 
-        [Fact(DisplayName = "CoreMySqlDriverForNet_NET_Core_2_0_works")]
+        [Fact(DisplayName = "CoreMySqlDriverForNet_NET_Core_2_0_works", Skip = "")]
         public void CoreMySqlDriverForNet_NET_Core_2_0_works()
         {
             var driver = new CoreMySqlDataDriverForNet(TestContext.NetCore20DepsFile, TestContext.NugetPackageFolder);

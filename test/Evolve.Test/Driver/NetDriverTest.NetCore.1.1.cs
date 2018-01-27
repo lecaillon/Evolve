@@ -6,7 +6,7 @@ namespace Evolve.Test.Driver
 {
     public partial class NetDriverTest
     {
-        [Fact(DisplayName = "CoreMicrosoftDataSqliteDriverForNet_NET_Core_1_1_works")]
+        [Fact(DisplayName = "CoreMicrosoftDataSqliteDriverForNet_NET_Core_1_1_works", Skip = "")]
         public void CoreMicrosoftDataSqliteDriverForNet_NET_Core_1_1_works()
         {
             var driver = new CoreMicrosoftDataSqliteDriverForNet(TestContext.NetCore11DepsFile, TestContext.NugetPackageFolder);
@@ -16,7 +16,7 @@ namespace Evolve.Test.Driver
             Assert.True(cnn.State == ConnectionState.Open);
         }
 
-        [Fact(DisplayName = "CoreNpgsqlDriverForNet_NET_Core_1_1_works")]
+        [Fact(DisplayName = "CoreNpgsqlDriverForNet_NET_Core_1_1_works", Skip = "")]
         public void CoreNpgsqlDriverForNet_NET_Core_1_1_works()
         {
 
@@ -27,7 +27,7 @@ namespace Evolve.Test.Driver
             Assert.True(cnn.State == ConnectionState.Open);
         }
 
-        [Fact(DisplayName = "CoreMySqlDriverForNet_NET_Core_1_1_works")]
+        [Fact(DisplayName = "CoreMySqlDriverForNet_NET_Core_1_1_works", Skip = "")]
         public void CoreMySqlDriverForNet_NET_Core_1_1_works()
         {
 

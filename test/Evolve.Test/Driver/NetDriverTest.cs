@@ -14,7 +14,7 @@ namespace Evolve.Test.Driver
             _fixture = fixture;
         }
 
-        [Fact(DisplayName = "Load_ConnectionType_from_an_already_loaded_assembly")]
+        [Fact(DisplayName = "Load_ConnectionType_from_an_already_loaded_assembly", Skip = "")]
         public void Load_ConnectionType_from_an_already_loaded_assembly()
         {
             var driver = new SystemDataSQLiteDriver();
@@ -24,7 +24,7 @@ namespace Evolve.Test.Driver
             Assert.True(cnn.State == ConnectionState.Open);
         }
 
-        [Fact(DisplayName = "SqlClientDriver_works")]
+        [Fact(DisplayName = "SqlClientDriver_works", Skip = "")]
         public void SqlClientDriver_works()
         {
             var driver = new SqlClientDriver();
