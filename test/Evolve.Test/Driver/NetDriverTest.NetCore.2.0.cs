@@ -6,7 +6,7 @@ namespace Evolve.Test.Driver
 {
     public partial class NetDriverTest
     {
-        [Fact(DisplayName = "CoreMicrosoftDataSqliteDriverForNet_NET_Core_2_0_works", Skip = "Currently fails.")]
+        [Fact(DisplayName = "CoreMicrosoftDataSqliteDriverForNet_NET_Core_2_0_works")]
         public void CoreMicrosoftDataSqliteDriverForNet_NET_Core_2_0_works()
         {
             var driver = new CoreMicrosoftDataSqliteDriverForNet(TestContext.NetCore20DepsFile, TestContext.NugetPackageFolder);
@@ -16,7 +16,7 @@ namespace Evolve.Test.Driver
             Assert.True(cnn.State == ConnectionState.Open);
         }
 
-        [Fact(DisplayName = "CoreNpgsqlDriverForNet_NET_Core_2_0_works", Skip = "Currently fails.")]
+        [Fact(DisplayName = "CoreNpgsqlDriverForNet_NET_Core_2_0_works")]
         public void CoreNpgsqlDriverForNet_NET_Core_2_0_works()
         {
             var driver = new CoreNpgsqlDriverForNet(TestContext.NetCore20DepsFile, TestContext.NugetPackageFolder);

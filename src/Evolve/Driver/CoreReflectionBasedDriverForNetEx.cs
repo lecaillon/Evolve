@@ -3,13 +3,10 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using System.Threading;
 using Evolve.Utilities;
 using Microsoft.Extensions.DependencyModel;
 
@@ -17,7 +14,7 @@ namespace Evolve.Driver
 {
     /// <summary>
     ///     <para>
-    ///         Base class for drivers loaded by reflection from a .NET Standard/Core project via MSBuild.
+    ///         Base class for .NET Standard/Core drivers loaded by reflection by MSBuild.
     ///     </para>
     ///     <para>
     ///         Because MSBuild does not support the .NET Core class <see cref="AssemblyLoadContext"/> (see https://github.com/Microsoft/msbuild/issues/1940)
@@ -25,15 +22,10 @@ namespace Evolve.Driver
     ///         We have to implement a .NET class for that.
     ///         
     ///         The idea is to locate the .NET Core driver assembly with the .deps.json file and then find its equivalent .NET version from it.
-    ///         <see cref="CoreReflectionBasedDriverForNet.GetAssemblyPath(RuntimeLibrary)"/>
     ///     </para>
     /// </summary>
     public abstract class CoreReflectionBasedDriverForNetEx : CoreReflectionBasedDriverEx
     {
-        private const string SupportedNetFrameworkVersion = @"net4[5-7](\d)*"; // .NET 4.5.x .NET 4.6.x .NET 4.7.x
-
-        private const string WorkingDirectoryCreationError = "Failed to create the driver temp working folder at {0}.";
-
         /// <summary>
         ///     Initializes a new instance of <see cref="CoreReflectionBasedDriverForNet" /> with
         ///     the connection type name loaded from the specified assembly.
@@ -124,7 +116,13 @@ namespace Evolve.Driver
         }
 
         /// <summary>
-        ///     Load the driver <see cref="Type"/> from a .deps file definition.
+        ///     <para>
+        ///         Find and load the driver <see cref="Type"/> from a .deps file definition.
+        ///     </para>
+        ///     <para>
+        ///         For .NET drivers, we only load the main assembly,
+        ///         and not all the managed ones found in <see cref="CoreReflectionBasedDriverEx.ManagedDependencies"/>.
+        ///     </para>
         /// </summary>
         /// <returns> The driver type. </returns>
         /// <exception cref="EvolveException"></exception>
@@ -151,8 +149,8 @@ namespace Evolve.Driver
         ///         otherwise returns the path of the .NET Core version.
         ///     </para>
         ///     <para>
-        ///         From the .NET Standard/Core driver assembly, navigate to the parent directory and search all folders 
-        ///         containing "*net45*" or "*net46*" or "*net47*". Take the higher.
+        ///         From the .NET Standard/Core driver assembly, navigate to the parent directory 
+        ///         and search the best compatible .NET version. <see cref="GetClosestCompatibleNetFolder"/>
         ///     </para>
         /// </summary>
         /// <param name="driverPath"> The netcore driver runtime library path. </param>
@@ -161,10 +159,8 @@ namespace Evolve.Driver
         private string GetNetVersion(string driverPath)
         {
             string driverFileName = Path.GetFileName(driverPath);
-            DirectoryInfo packageFolder = Directory.GetParent(Path.GetDirectoryName(driverPath));
-            string netAssemblyFolder = packageFolder.GetDirectories("*net4*", SearchOption.TopDirectoryOnly)
-                                                    .Where(x => Regex.Match(x.Name, SupportedNetFrameworkVersion).Success)
-                                                    .Max(x => x.FullName);
+            string parentFolder = new DirectoryInfo(Path.GetDirectoryName(driverPath)).Parent.FullName;
+            string netAssemblyFolder = GetClosestCompatibleNetFolder(parentFolder);
 
             return netAssemblyFolder == null 
                 ? driverPath
@@ -176,13 +172,16 @@ namespace Evolve.Driver
         ///         Occurs when loading the driver requires a dependency the current AppDomain does not know.
         ///     </para>
         ///     <para>
-        ///         Given the path of the NuGet package cache and the name of the dependency, 
-        ///         inferred the root folder path of the package assembly to resolve.
+        ///         We try to find the required assembly from the <see cref="CoreReflectionBasedDriverEx.ManagedDependencies"/>.
         ///         
+        ///         If found, we search for the .NET equivalent and returns it, or returns the .NET Core version if it fails.
+        ///         
+        ///         If not found, given the path of the NuGet package cache and the name of the dependency, 
+        ///         inferred the root folder path of the package assembly to resolve.
         ///         From there, given the version of the dependency, find the folder which matches best: 
         ///         take the equal or higher closest version available.
-        ///         
-        ///         Finally, find the .NET 4.5.* or .NET 4.6.* or .NET 4.7.* version of the dependency (take the higher).
+        ///         Finally, find the the best compatible .NET version with <see cref="GetClosestCompatibleNetFolder"/> or throws 
+        ///         an <see cref="EvolveException"/> if it fails.
         ///     </para>
         /// </summary>
         /// <returns> The resolved assembly. </returns>
@@ -228,15 +227,11 @@ namespace Evolve.Driver
                     throw new EvolveException($"Can't resolve {args.Name}. No folder named with a version found in {versionedPackageFolder}");
                 }
 
-                // Try to find the *net4* folder in the /lib folder
-                versionedPackageFolder = Path.Combine(versionedPackageFolder, "lib");
-                string netAssemblyFolder = Directory.GetDirectories(versionedPackageFolder, "*net4*", SearchOption.TopDirectoryOnly)
-                                                    .Select(x => new DirectoryInfo(x))
-                                                    .Where(x => Regex.Match(x.Name, SupportedNetFrameworkVersion).Success)
-                                                    .Max(x => x.FullName);
+                // Try to find the net4* folder in the /lib folder
+                string netAssemblyFolder = GetClosestCompatibleNetFolder(Path.Combine(versionedPackageFolder, "lib"));
                 if (netAssemblyFolder == null)
                 {
-                    throw new EvolveException($"Can't resolve {args.Name}. No *net4* folder found in {versionedPackageFolder}");
+                    throw new EvolveException($"Can't resolve {args.Name}. No net4* compatible folder found in {versionedPackageFolder}");
                 }
 
                 return Assembly.LoadFile(Path.Combine(netAssemblyFolder, assemblyName + ".dll"));
@@ -245,19 +240,41 @@ namespace Evolve.Driver
             {
                 // Try to find the equivalent .NET dll of the .NET Core ManagedDependencies
                 packageFolder = new DirectoryInfo(Path.GetDirectoryName(netCorePath)).Parent.FullName;
-                versionedPackageFolder = Directory.GetDirectories(packageFolder, "*net4*", SearchOption.TopDirectoryOnly)
-                                                  .Select(x => new DirectoryInfo(x))
-                                                  .Where(x => Regex.Match(x.Name, SupportedNetFrameworkVersion).Success)
-                                                  .Max(x => x.FullName);
+                string netAssemblyFolder = GetClosestCompatibleNetFolder(packageFolder);
 
-                if (versionedPackageFolder == null)
-                {
-                    // Can't find the .NET assembly, so load the .NET Core one
-                    return Assembly.LoadFile(netCorePath);
-                }
-
-                return Assembly.LoadFile(Path.Combine(versionedPackageFolder, assemblyName + ".dll"));
+                return netAssemblyFolder == null
+                    ? Assembly.LoadFile(netCorePath) // Can't find the .NET assembly, so load the .NET Core one
+                    : Assembly.LoadFile(Path.Combine(netAssemblyFolder, assemblyName + ".dll"));
             }
+        }
+
+        /// <summary>
+        ///     Returns the compatible .NET folder from the given <paramref name="rootDir"/>.
+        /// </summary>
+        /// <param name="rootDir"> The root search directory. </param>
+        /// <returns> The full path of the compatible folder, or null if not found. </returns>
+        private string GetClosestCompatibleNetFolder(string rootDir)
+        {
+            List<DirectoryInfo> candidates = Directory.GetDirectories(rootDir).Select(x => new DirectoryInfo(x)).ToList();
+            string compatibleFolder = candidates.Where(x => Regex.IsMatch(x.Name, @"^net4[5-7](\d)*")).Max(x => x.FullName);
+            if (!string.IsNullOrEmpty(compatibleFolder))
+            {
+                return compatibleFolder;
+            }
+
+            compatibleFolder = candidates.Where(x => Regex.IsMatch(x.Name, @"portable-net4[5-7](\d)*")).Max(x => x.FullName);
+            if (!string.IsNullOrEmpty(compatibleFolder))
+            {
+                return compatibleFolder;
+            }
+
+            compatibleFolder = candidates.Where(x => Regex.IsMatch(x.Name, @"^netstandard(\d)*")).Min(x => x.FullName);
+            if (!string.IsNullOrEmpty(compatibleFolder))
+            {
+                return compatibleFolder;
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -282,7 +299,7 @@ namespace Evolve.Driver
             }
             catch (Exception ex)
             {
-                throw new EvolveException(string.Format(WorkingDirectoryCreationError, tempDir), ex);
+                throw new EvolveException($"Failed to create the driver temp working folder at {tempDir}.", ex);
             }
         }
 
