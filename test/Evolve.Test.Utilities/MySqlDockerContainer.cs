@@ -33,6 +33,6 @@ namespace Evolve.Test.Utilities
         }
         public void Remove() => _container.Remove();
         public bool Stop() => _container.Stop();
-        public void Dispose() => _container.Dispose();
+        public void Dispose() => _container?.Dispose();
     }
 }
