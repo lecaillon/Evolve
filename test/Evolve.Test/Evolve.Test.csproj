@@ -37,9 +37,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Docker.DotNet, Version=2.124.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Docker.DotNet.3.125.0\lib\net46\Docker.DotNet.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -70,7 +67,6 @@
   <ItemGroup>
     <Compile Include="Configuration\AppConfigConfigurationProviderTest.cs" />
     <Compile Include="Configuration\JsonConfigurationProviderTest.cs" />
-    <Compile Include="DatabaseFixture.cs" />
     <Compile Include="Driver\NetDriverTest.cs" />
     <Compile Include="Driver\NetDriverTest.NetCore.2.0.cs" />
     <Compile Include="Driver\NetDriverTest.NetCore.1.1.cs" />

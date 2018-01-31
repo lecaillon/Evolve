@@ -1,8 +1,9 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 
 namespace Evolve.Test.Utilities
 {
-    public class MySqlDockerContainer : IDockerContainer
+    public class MySQLDockerContainer
     {
         private DockerContainer _container;
 
@@ -12,8 +13,9 @@ namespace Evolve.Test.Utilities
         public string DbName => "my_database";
         public string DbPwd => "Password12!"; // AppVeyor
         public string DbUser => "root";
+        public TimeSpan DelayAfterStartup => TimeSpan.FromSeconds(10);
 
-        public bool Start()
+        public bool Start(bool fromScratch = false)
         {
             _container = new DockerContainerBuilder(new DockerContainerBuilderOptions
             {
@@ -22,7 +24,9 @@ namespace Evolve.Test.Utilities
                 Name = "mariadb-evolve",
                 Env = new[] { $"MYSQL_ROOT_PASSWORD={DbPwd}", $"MYSQL_DATABASE={DbName}" },
                 ExposedPort = $"{ExposedPort}/tcp",
-                HostPort = HostPort
+                HostPort = HostPort,
+                DelayAfterStartup = DelayAfterStartup,
+                RemovePreviousContainer = fromScratch
             }).Build();
 
             return _container.Start();

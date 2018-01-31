@@ -8,6 +8,7 @@ using Evolve.Dialect;
 using Evolve.Dialect.SQLServer;
 using Evolve.Metadata;
 using Evolve.Migration;
+using Evolve.Test.Utilities;
 using Xunit;
 
 namespace Evolve.IntegrationTest.SQLServer
@@ -16,19 +17,24 @@ namespace Evolve.IntegrationTest.SQLServer
     public class DialectTest
     {
         public const string DbName = "my_database_1";
-        private readonly DatabaseFixture _fixture;
+        private readonly SQLServerFixture _sqlServerFixture;
 
-        public DialectTest(DatabaseFixture fixture)
+        public DialectTest(SQLServerFixture sqlServerFixture)
         {
-            _fixture = fixture;
-            _fixture.CreateTestDatabase(DbName);
+            _sqlServerFixture = sqlServerFixture;
+            if (!TestContext.Travis && !TestContext.AppVeyor)
+            { // AppVeyor and Windows 2016 does not support linux docker images
+                sqlServerFixture.Start(fromScratch: true);
+            }
+
+            TestUtil.CreateTestDatabase(DbName, sqlServerFixture.DbUser, sqlServerFixture.DbPwd);
         }
 
         [Fact(DisplayName = "Run_all_SQLServer_integration_tests_work")]
         public void Run_all_SQLServer_integration_tests_work()
         {
             // Open a connection to the SQLServer database
-            var cnn = new SqlConnection($"Server=127.0.0.1;Database={DbName};User Id={_fixture.MsSql.DbUser};Password={_fixture.MsSql.DbPwd};");
+            var cnn = new SqlConnection($"Server=127.0.0.1;Database={DbName};User Id={_sqlServerFixture.DbUser};Password={_sqlServerFixture.DbPwd};");
             cnn.Open();
             Assert.True(cnn.State == ConnectionState.Open, "Cannot open a connection to the database.");
 
@@ -103,7 +109,7 @@ namespace Evolve.IntegrationTest.SQLServer
             Assert.True(db.TryAcquireApplicationLock(), "Cannot acquire application lock.");
 
             // Can not acquire lock while it is taken by another connection
-            var cnn2 = new SqlConnection($"Server=127.0.0.1;Database={DbName};User Id={_fixture.MsSql.DbUser};Password={_fixture.MsSql.DbPwd};");
+            var cnn2 = new SqlConnection($"Server=127.0.0.1;Database={DbName};User Id={_sqlServerFixture.DbUser};Password={_sqlServerFixture.DbPwd};");
             var wcnn2 = new WrappedConnection(cnn2);
             var db2 = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLServer, wcnn2);
             Assert.False(db2.TryAcquireApplicationLock(), "Application lock could not have been acquired.");

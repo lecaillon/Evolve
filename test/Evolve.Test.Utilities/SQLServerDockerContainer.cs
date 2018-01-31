@@ -1,6 +1,8 @@
-﻿namespace Evolve.Test.Utilities
+﻿using System;
+
+namespace Evolve.Test.Utilities
 {
-    public class MsSqlDockerContainer : IDockerContainer
+    public class SQLServerDockerContainer
     {
         private DockerContainer _container;
 
@@ -10,8 +12,9 @@
         public string DbName => "my_database";
         public string DbPwd => "Password12!"; // AppVeyor
         public string DbUser => "sa";
+        public TimeSpan DelayAfterStartup => TimeSpan.FromMinutes(1);
 
-        public bool Start()
+        public bool Start(bool fromScratch = false)
         {
             _container = new DockerContainerBuilder(new DockerContainerBuilderOptions
             {
@@ -20,7 +23,9 @@
                 Name = "mssql-evolve",
                 Env = new[] { $"ACCEPT_EULA=Y", $"SA_PASSWORD={DbPwd}" },
                 ExposedPort = $"{ExposedPort}/tcp",
-                HostPort = HostPort
+                HostPort = HostPort,
+                DelayAfterStartup = DelayAfterStartup,
+                RemovePreviousContainer = fromScratch
             }).Build();
 
             return _container.Start();

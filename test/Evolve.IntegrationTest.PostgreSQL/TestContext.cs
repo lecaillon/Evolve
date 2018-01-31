@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using Evolve.Test.Utilities;
+using Xunit;
 
 namespace Evolve.IntegrationTest.PostgreSQL
 {
@@ -24,5 +26,8 @@ namespace Evolve.IntegrationTest.PostgreSQL
         public static string EmptyMigrationScriptPath { get; }
         public static bool AppVeyor => Environment.GetEnvironmentVariable("APPVEYOR") == "True";
         public static bool Travis => Environment.GetEnvironmentVariable("TRAVIS") == "True";
+
+        [CollectionDefinition("Database collection")]
+        public class DatabaseCollection : ICollectionFixture<PostgreSqlFixture> { }
     }
 }

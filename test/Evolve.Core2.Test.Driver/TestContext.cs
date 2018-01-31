@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using Evolve.Test.Utilities;
+using Xunit;
 
 namespace Evolve.Core2.Test.Driver
 {
@@ -25,4 +27,9 @@ namespace Evolve.Core2.Test.Driver
         public static bool AppVeyor => Environment.GetEnvironmentVariable("APPVEYOR") == "True";
         public static bool Travis => Environment.GetEnvironmentVariable("TRAVIS") == "True";
     }
+
+    [CollectionDefinition("Database collection")]
+    public class DatabaseCollection : ICollectionFixture<MySQLFixture>,
+                                      ICollectionFixture<PostgreSqlFixture>,
+                                      ICollectionFixture<SQLServerFixture> { }
 }

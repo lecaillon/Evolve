@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using Docker.DotNet;
 using Docker.DotNet.Models;
@@ -18,6 +19,8 @@ namespace Evolve.Test.Utilities
             Env = setupOptions.Env;
             ExposedPort = setupOptions.ExposedPort;
             HostPort = setupOptions.HostPort;
+            DelayAfterStartup = setupOptions.DelayAfterStartup;
+            RemovePreviousContainer = setupOptions.RemovePreviousContainer;
 
             _client = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
                 ? new DockerClientConfiguration(new Uri("npipe://./pipe/docker_engine")).CreateClient()
@@ -30,12 +33,28 @@ namespace Evolve.Test.Utilities
         public IList<string> Env { get; }
         public string ExposedPort { get; }
         public string HostPort { get; }
+        public TimeSpan? DelayAfterStartup { get; }
+        public bool RemovePreviousContainer { get; }
 
         public DockerContainer Build()
         {
-            _client.Images.CreateImageAsync(new ImagesCreateParameters { FromImage = FromImage, Tag = Tag }, null, new Progress<JSONMessage>()).Wait();
+            var container = _client.Containers.ListContainersAsync(new ContainersListParameters { All = true }).ConfigureAwait(false).GetAwaiter().GetResult()
+                                              .FirstOrDefault(x => x.Names.Any(n => n.Equals("/" + Name, StringComparison.OrdinalIgnoreCase)));
+            if (container != null && !RemovePreviousContainer)
+            {
+                return new DockerContainer(container.ID, DelayAfterStartup);
+            }
 
-            var container = _client.Containers.CreateContainerAsync(new CreateContainerParameters
+            if (RemovePreviousContainer)
+            {
+                var oldContainer = new DockerContainer(container.ID, DelayAfterStartup);
+                oldContainer.Stop();
+                oldContainer.Remove();
+            }
+
+            _client.Images.CreateImageAsync(new ImagesCreateParameters { FromImage = FromImage, Tag = Tag }, null, new Progress<JSONMessage>()).ConfigureAwait(false).GetAwaiter().GetResult();
+
+            var newContainer = _client.Containers.CreateContainerAsync(new CreateContainerParameters
             {
                 Image = $"{FromImage}:{Tag ?? "latest"}",
                 Name = Name,
@@ -48,9 +67,9 @@ namespace Evolve.Test.Utilities
                         { ExposedPort, new List<PortBinding> { new PortBinding { HostIP = "localhost", HostPort = HostPort } } }
                     }
                 }
-            }).Result;
+            }).ConfigureAwait(false).GetAwaiter().GetResult();
 
-            return new DockerContainer(container.ID);
+            return new DockerContainer(newContainer.ID, DelayAfterStartup);
         }
     }
 }

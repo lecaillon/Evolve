@@ -51,7 +51,7 @@ namespace Evolve.Driver
         /// </summary>
         /// <param name="connectionString"> The connection string used to initialize the IDbConnection. </param>
         /// <returns> An initialized database connection. </returns>
-        /// <exception cref="EvolveException"></exception>
+        /// <exception cref="EvolveCoreDriverException"></exception>
         public override IDbConnection CreateConnection(string connectionString)
         {
             Check.NotNullOrEmpty(connectionString, nameof(connectionString));
@@ -69,7 +69,7 @@ namespace Evolve.Driver
                 }
                 catch (Exception ex)
                 {
-                    throw new EvolveException($"Error creating an instance of the type {cnxType}", ex);
+                    throw new EvolveCoreDriverException($"Error creating an instance of the type {cnxType}", DumpDetails(), ex);
                 }
             }
 
@@ -93,7 +93,7 @@ namespace Evolve.Driver
                 }
                 catch (Exception ex)
                 {
-                    throw new EvolveException($"Error creating an instance of the type {cnxType}", ex);
+                    throw new EvolveCoreDriverException($"Error creating an instance of the type {cnxType}", DumpDetails(), ex);
                 }
 
                 try
@@ -104,7 +104,7 @@ namespace Evolve.Driver
                 }
                 catch (Exception ex)
                 {
-                    throw new EvolveException($"Error openning a connection to the database with the previously created {cnxType.Name}.", ex);
+                    throw new EvolveCoreDriverException($"Error openning a connection to the database with the previously created {cnxType.Name}", DumpDetails(), ex);
                 }
 
                 return cnn;
@@ -125,7 +125,7 @@ namespace Evolve.Driver
         ///     </para>
         /// </summary>
         /// <returns> The driver type. </returns>
-        /// <exception cref="EvolveException"></exception>
+        /// <exception cref="EvolveCoreDriverException"></exception>
         protected override Type TypeFromAssembly()
         {
             ManagedDependencies = new List<string>();
@@ -137,10 +137,18 @@ namespace Evolve.Driver
             string driverPath = ManagedDependencies.FirstOrDefault(x => x.Contains(DriverTypeName.Assembly));
             if (string.IsNullOrEmpty(driverPath))
             {
-                throw new EvolveException($"Assembly {DriverTypeName.Assembly} not found.");
+                throw new EvolveCoreDriverException($"Assembly {DriverTypeName.Assembly} not found.", DumpDetails());
             }
-            var driverAssembly = Assembly.LoadFile(GetNetVersion(driverPath));
-            return driverAssembly.GetType(DriverTypeName.Type);
+
+            try
+            {
+                var driverAssembly = Assembly.LoadFile(GetNetVersion(driverPath));
+                return driverAssembly.GetType(DriverTypeName.Type);
+            }
+            catch (Exception ex)
+            {
+                throw new EvolveCoreDriverException($"Error loading driver assembly {DriverTypeName.Type} from {driverPath}", DumpDetails(), ex);
+            }
         }
 
         /// <summary>
@@ -155,7 +163,6 @@ namespace Evolve.Driver
         /// </summary>
         /// <param name="driverPath"> The netcore driver runtime library path. </param>
         /// <returns> The path to the .NET or .NET Core version of the driver assembly. </returns>
-        /// <exception cref="EvolveException"></exception>
         private string GetNetVersion(string driverPath)
         {
             string driverFileName = Path.GetFileName(driverPath);
@@ -181,11 +188,11 @@ namespace Evolve.Driver
         ///         From there, given the version of the dependency, find the folder which matches best: 
         ///         take the equal or higher closest version available.
         ///         Finally, find the the best compatible .NET version with <see cref="GetClosestCompatibleNetFolder"/> or throws 
-        ///         an <see cref="EvolveException"/> if it fails.
+        ///         an EvolveCoreDriverException if it fails.
         ///     </para>
         /// </summary>
         /// <returns> The resolved assembly. </returns>
-        /// <exception cref="EvolveException"></exception>
+        /// <exception cref="EvolveCoreDriverException"></exception>
         private Assembly CurrentAppDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
             string assemblyName = "";
@@ -198,7 +205,7 @@ namespace Evolve.Driver
             }
             catch
             {
-                throw new EvolveException($"Assembly {args.Name} has no versioning information in its name.");
+                throw new EvolveCoreDriverException($"Assembly {args.Name} has no versioning information in its name.", DumpDetails());
             }
 
             string packageFolder = "";
@@ -211,7 +218,7 @@ namespace Evolve.Driver
                 packageFolder = Path.Combine(NugetPackageDir, assemblyName);
                 if (!Directory.Exists(packageFolder))
                 {
-                    throw new EvolveException($"Can't resolve {args.Name}.\r\n Folder {packageFolder} not found.\r\n {DriverTypeName.Type} \r\n{DriverTypeName.Assembly} \r\n{_depsFile} \r\n Deps files managed assemblies: \r\n{String.Join("\r\n", ManagedDependencies.ToArray())}");
+                    throw new EvolveCoreDriverException($"Can't resolve {args.Name}.\r\n Folder {packageFolder} not found.", DumpDetails());
                 }
 
                 versionedPackageFolder = Directory.GetDirectories(packageFolder, "*", SearchOption.TopDirectoryOnly)
@@ -224,14 +231,14 @@ namespace Evolve.Driver
 
                 if (string.IsNullOrEmpty(versionedPackageFolder))
                 {
-                    throw new EvolveException($"Can't resolve {args.Name}. No folder named with a version found in {versionedPackageFolder}");
+                    throw new EvolveCoreDriverException($"Can't resolve {args.Name}. No folder named with a version found in {versionedPackageFolder}", DumpDetails());
                 }
 
                 // Try to find the net4* folder in the /lib folder
                 string netAssemblyFolder = GetClosestCompatibleNetFolder(Path.Combine(versionedPackageFolder, "lib"));
                 if (netAssemblyFolder == null)
                 {
-                    throw new EvolveException($"Can't resolve {args.Name}. No net4* compatible folder found in {versionedPackageFolder}");
+                    throw new EvolveCoreDriverException($"Can't resolve {args.Name}. No net4* compatible folder found in {versionedPackageFolder}", DumpDetails());
                 }
 
                 return Assembly.LoadFile(Path.Combine(netAssemblyFolder, assemblyName + ".dll"));
@@ -287,7 +294,7 @@ namespace Evolve.Driver
         ///     </para>
         /// </summary>
         /// <returns> Path to the temp directory. </returns>
-        /// <exception cref="EvolveException"> Throws an EvolveException when the creation fails. </exception>
+        /// <exception cref="EvolveCoreDriverException"> Throws an EvolveCoreDriverException when the creation fails. </exception>
         private string CreateTempDir()
         {
             string tempDir = "";
@@ -299,7 +306,7 @@ namespace Evolve.Driver
             }
             catch (Exception ex)
             {
-                throw new EvolveException($"Failed to create the driver temp working folder at {tempDir}.", ex);
+                throw new EvolveCoreDriverException($"Failed to create the driver temp working folder at {tempDir}.", ex);
             }
         }
 
@@ -314,13 +321,15 @@ namespace Evolve.Driver
             /// <summary>
             ///     Initializes a new instance of the <see cref="AssemblyVersion"/> class.
             /// </summary>
-            /// <exception cref="EvolveException"></exception>
+            /// <exception cref="EvolveCoreDriverException"></exception>
             public AssemblyVersion(string version)
             {
                 Version = Check.NotNullOrEmpty(version, nameof(version));
 
                 if (!MatchPattern.IsMatch(Version))
-                    throw new EvolveException(string.Format(InvalidVersionPatternMatching, Version));
+                {
+                    throw new EvolveCoreDriverException(string.Format(InvalidVersionPatternMatching, Version));
+                }
 
                 VersionParts = Version.Split('.').Select(long.Parse).ToList();
             }

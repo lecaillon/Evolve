@@ -1,8 +1,9 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 
 namespace Evolve.Test.Utilities
 {
-    public class PostgreSqlDockerContainer : IDockerContainer
+    public class PostgreSqlDockerContainer
     {
         private DockerContainer _container;
 
@@ -12,8 +13,9 @@ namespace Evolve.Test.Utilities
         public string DbName => "my_database";
         public string DbPwd => "Password12!"; // AppVeyor
         public string DbUser => "postgres";
+        public TimeSpan DelayAfterStartup => TimeSpan.FromSeconds(5);
 
-        public bool Start()
+        public bool Start(bool fromScratch = false)
         {
             _container = new DockerContainerBuilder(new DockerContainerBuilderOptions
             {
@@ -22,7 +24,9 @@ namespace Evolve.Test.Utilities
                 Name = "postgres-evolve",
                 Env = new[] { $"POSTGRES_PASSWORD={DbPwd}", $"POSTGRES_DB={DbName}" },
                 ExposedPort = $"{ExposedPort}/tcp",
-                HostPort = HostPort
+                HostPort = HostPort,
+                DelayAfterStartup = DelayAfterStartup,
+                RemovePreviousContainer = fromScratch
             }).Build();
 
             return _container.Start();

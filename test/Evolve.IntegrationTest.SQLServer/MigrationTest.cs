@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Evolve.Migration;
+using Evolve.Test.Utilities;
 using Xunit;
 
 namespace Evolve.IntegrationTest.SQLServer
@@ -14,18 +14,23 @@ namespace Evolve.IntegrationTest.SQLServer
     public class MigrationTest
     {
         public const string DbName = "my_database_2";
-        private readonly DatabaseFixture _fixture;
+        private readonly SQLServerFixture _sqlServerFixture;
 
-        public MigrationTest(DatabaseFixture fixture)
+        public MigrationTest(SQLServerFixture sqlServerFixture)
         {
-            _fixture = fixture;
-            _fixture.CreateTestDatabase(DbName);
+            _sqlServerFixture = sqlServerFixture;
+            if (!TestContext.Travis && !TestContext.AppVeyor)
+            { // AppVeyor and Windows 2016 does not support linux docker images
+                sqlServerFixture.Start(fromScratch: true);
+            }
+
+            TestUtil.CreateTestDatabase(DbName, sqlServerFixture.DbUser, sqlServerFixture.DbPwd);
         }
 
         [Fact(DisplayName = "Run_all_SQLServer_migrations_work")]
         public void Run_all_SQLServer_migrations_work()
         {
-            var cnn = new SqlConnection($"Server=127.0.0.1;Database={DbName};User Id={_fixture.MsSql.DbUser};Password={_fixture.MsSql.DbPwd};");
+            var cnn = new SqlConnection($"Server=127.0.0.1;Database={DbName};User Id={_sqlServerFixture.DbUser};Password={_sqlServerFixture.DbPwd};");
 
             var evolve = new Evolve(cnn, msg => Debug.WriteLine(msg))
             {

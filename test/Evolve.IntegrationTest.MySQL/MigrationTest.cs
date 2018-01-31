@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using Evolve.Test.Utilities;
 using MySql.Data.MySqlClient;
 using Xunit;
 
@@ -12,17 +12,21 @@ namespace Evolve.IntegrationTest.MySQL
     [Collection("Database collection")]
     public class MigrationTest
     {
-        private readonly DatabaseFixture _fixture;
+        private readonly MySQLFixture _mySQLFixture;
 
-        public MigrationTest(DatabaseFixture fixture)
+        public MigrationTest(MySQLFixture mySQLFixture)
         {
-            _fixture = fixture;
+            _mySQLFixture = mySQLFixture;
+            if (!TestContext.Travis && !TestContext.AppVeyor)
+            { // AppVeyor and Windows 2016 does not support linux docker images
+                mySQLFixture.Start(fromScratch: true);
+            }
         }
 
         [Fact(DisplayName = "Run_all_MySQL_migrations_work")]
         public void Run_all_MySQL_migrations_work()
         {
-            var cnn = new MySqlConnection($"Server=127.0.0.1;Port={_fixture.MySql.HostPort};Database={_fixture.MySql.DbName};Uid={_fixture.MySql.DbUser};Pwd={_fixture.MySql.DbPwd};");
+            var cnn = new MySqlConnection($"Server=127.0.0.1;Port={_mySQLFixture.HostPort};Database={_mySQLFixture.DbName};Uid={_mySQLFixture.DbUser};Pwd={_mySQLFixture.DbPwd};");
             var evolve = new Evolve(cnn, msg => Debug.WriteLine(msg))
             {
                 Locations = new List<string> { TestContext.MigrationFolder },

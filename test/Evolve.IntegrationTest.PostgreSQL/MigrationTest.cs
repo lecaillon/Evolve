@@ -3,6 +3,7 @@ using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using Evolve.Test.Utilities;
 using Npgsql;
 using Xunit;
 
@@ -11,17 +12,21 @@ namespace Evolve.IntegrationTest.PostgreSQL
     [Collection("Database collection")]
     public class MigrationTest
     {
-        private readonly DatabaseFixture _fixture;
+        private readonly PostgreSqlFixture _pgFixture;
 
-        public MigrationTest(DatabaseFixture fixture)
+        public MigrationTest(PostgreSqlFixture pgFixture)
         {
-            _fixture = fixture;
+            _pgFixture = pgFixture;
+            if (!TestContext.Travis && !TestContext.AppVeyor)
+            { // AppVeyor and Windows 2016 does not support linux docker images
+                pgFixture.Start(fromScratch: true);
+            }
         }
 
         [Fact(DisplayName = "Run_all_PostgreSQL_migrations_work")]
         public void Run_all_PostgreSQL_migrations_work()
         {
-            var cnn = new NpgsqlConnection($"Server=127.0.0.1;Port={_fixture.Pg.HostPort};Database={_fixture.Pg.DbName};User Id={_fixture.Pg.DbUser};Password={_fixture.Pg.DbPwd};");
+            var cnn = new NpgsqlConnection($"Server=127.0.0.1;Port={_pgFixture.HostPort};Database={_pgFixture.DbName};User Id={_pgFixture.DbUser};Password={_pgFixture.DbPwd};");
             var evolve = new Evolve(cnn, msg => Debug.WriteLine(msg))
             {
                 Locations = new List<string> { TestContext.MigrationFolder },

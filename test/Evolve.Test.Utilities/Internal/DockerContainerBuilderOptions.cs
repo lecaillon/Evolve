@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Evolve.Test.Utilities
 {
@@ -12,5 +11,7 @@ namespace Evolve.Test.Utilities
         public IList<string> Env { get; set; }
         public string ExposedPort { get; set; }
         public string HostPort { get; set; }
+        public TimeSpan? DelayAfterStartup { get; set; }
+        public bool RemovePreviousContainer { get; set; }
     }
 }

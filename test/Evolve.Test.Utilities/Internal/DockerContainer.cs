@@ -1,19 +1,20 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Docker.DotNet;
 using Docker.DotNet.Models;
 
 namespace Evolve.Test.Utilities
 {
-    internal class DockerContainer : IDockerContainer
+    internal class DockerContainer
     {
         private readonly DockerClient _client;
-        private readonly bool _rm;
+        private readonly TimeSpan? _delayAfterStartup;
 
-        public DockerContainer(string id, bool rm = true)
+        public DockerContainer(string id, TimeSpan? delayAfterStartup)
         {
             Id = id;
-            _rm = rm;
+            _delayAfterStartup = delayAfterStartup;
 
             _client = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
                 ? new DockerClientConfiguration(new Uri("npipe://./pipe/docker_engine")).CreateClient()
@@ -22,19 +23,23 @@ namespace Evolve.Test.Utilities
 
         public string Id { get; }
 
-        public bool Start() => _client.Containers.StartContainerAsync(Id, null).Result;
-        public bool Stop() => _client.Containers.StopContainerAsync(Id, new ContainerStopParameters()).Result;
-        public void Remove() => _client.Containers.RemoveContainerAsync(Id, new ContainerRemoveParameters()).Wait();
+        public bool Start()
+        {
+            bool hasBeenStarted = _client.Containers.StartContainerAsync(Id, null).ConfigureAwait(false).GetAwaiter().GetResult();
+            if (hasBeenStarted && _delayAfterStartup.HasValue)
+            {
+                Task.Delay(_delayAfterStartup.Value).ConfigureAwait(false).GetAwaiter().GetResult();
+            }
+
+            return hasBeenStarted;
+        }
+
+        public bool Stop() => _client.Containers.StopContainerAsync(Id, new ContainerStopParameters()).ConfigureAwait(false).GetAwaiter().GetResult();
+
+        public void Remove() => _client.Containers.RemoveContainerAsync(Id, new ContainerRemoveParameters()).ConfigureAwait(false).GetAwaiter().GetResult();
 
         public void Dispose()
         {
-            Stop();
-
-            if(_rm)
-            {
-                Remove();
-            }
-
             _client.Dispose();
         }
     }

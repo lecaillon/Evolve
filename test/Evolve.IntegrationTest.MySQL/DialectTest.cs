@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Data;
 using System.Linq;
-using System.Threading;
 using Evolve.Connection;
 using Evolve.Dialect;
 using Evolve.Dialect.MySQL;
 using Evolve.Metadata;
 using Evolve.Migration;
+using Evolve.Test.Utilities;
 using MySql.Data.MySqlClient;
 using Xunit;
 
@@ -15,18 +15,22 @@ namespace Evolve.IntegrationTest.MySQL
     [Collection("Database collection")]
     public class DialectTest
     {
-        private readonly DatabaseFixture _fixture;
+        private readonly MySQLFixture _mySQLFixture;
 
-        public DialectTest(DatabaseFixture fixture)
+        public DialectTest(MySQLFixture mySQLFixture)
         {
-            _fixture = fixture;
+            _mySQLFixture = mySQLFixture;
+            if (!TestContext.Travis && !TestContext.AppVeyor)
+            { // AppVeyor and Windows 2016 does not support linux docker images
+                mySQLFixture.Start(fromScratch: true);
+            }
         }
 
         [Fact(DisplayName = "Run_all_MySQL_integration_tests_work")]
         public void Run_all_MySQL_integration_tests_work()
         {
             // Open a connection to the PostgreSQL database
-            var cnn = new MySqlConnection($"Server=127.0.0.1;Port={_fixture.MySql.HostPort};Database={_fixture.MySql.DbName};Uid={_fixture.MySql.DbUser};Pwd={_fixture.MySql.DbPwd};");
+            var cnn = new MySqlConnection($"Server=127.0.0.1;Port={_mySQLFixture.HostPort};Database={_mySQLFixture.DbName};Uid={_mySQLFixture.DbUser};Pwd={_mySQLFixture.DbPwd};");
             cnn.Open();
             Assert.True(cnn.State == ConnectionState.Open, "Cannot open a connection to the database.");
 
@@ -40,7 +44,7 @@ namespace Evolve.IntegrationTest.MySQL
             DatabaseHelper db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.MySQL_MariaDB, wcnn);
 
             // Get default schema name
-            Assert.True(db.GetCurrentSchemaName() == _fixture.MySql.DbName, $"The default MySQL schema should be '{_fixture.MySql.DbName}'.");
+            Assert.True(db.GetCurrentSchemaName() == _mySQLFixture.DbName, $"The default MySQL schema should be '{_mySQLFixture.DbName}'.");
 
             // Create schema
             string metadataSchemaName = "My metadata schema";

@@ -39,7 +39,7 @@ namespace Evolve.Driver
         ///         If it is not in memory, load it from the driver assembly. <see cref="ReflectionBasedDriver.TypeFromAssembly()"/>
         ///     </para>
         /// </summary>
-        /// <exception cref="EvolveException"></exception>
+        /// <exception cref="EvolveCoreDriverException"></exception>
         protected virtual Type DbConnectionType
         {
             get

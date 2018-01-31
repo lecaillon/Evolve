@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
+using Evolve.Test.Utilities;
+using Xunit;
 
 namespace Evolve.IntegrationTest.SQLServer
 {
@@ -22,5 +24,8 @@ namespace Evolve.IntegrationTest.SQLServer
         public static string EmptyMigrationScriptPath { get; }
         public static bool AppVeyor => Environment.GetEnvironmentVariable("APPVEYOR") == "True";
         public static bool Travis => Environment.GetEnvironmentVariable("TRAVIS") == "True";
+
+        [CollectionDefinition("Database collection")]
+        public class DatabaseCollection : ICollectionFixture<SQLServerFixture> { }
     }
 }

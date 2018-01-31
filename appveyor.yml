@@ -46,8 +46,6 @@ before_test:
 
 # tests
 test_script:
-- cmd: xunit.console.exe test\Evolve.Test\bin\%CONFIGURATION%\Evolve.Test.dll
-
 - ps: cd test/Evolve.Core.Test/
 - ps: dotnet test
 - ps: cd ../..
@@ -60,7 +58,8 @@ test_script:
 - ps: dotnet test
 - ps: cd ../..
 
-- cmd: xunit.console.exe test\Evolve.Test\bin\%CONFIGURATION%\Evolve.Test.dll
+- cmd: xunit.console.exe test\Evolve.Test\bin\%CONFIGURATION%\Evolve.Test.dll -notrait "Category=Standalone"
+- cmd: xunit.console.exe test\Evolve.Test\bin\%CONFIGURATION%\Evolve.Test.dll -method "Evolve.Test.Driver.NetDriverTest.CoreMicrosoftDataSqliteDriverForNet_NET_Core_2_0_works"
 - cmd: xunit.console.exe test\Evolve.IntegrationTest.MySQL\bin\%CONFIGURATION%\Evolve.IntegrationTest.MySQL.dll
 - cmd: xunit.console.exe test\Evolve.IntegrationTest.PostgreSQL\bin\%CONFIGURATION%\Evolve.IntegrationTest.PostgreSQL.dll
 - cmd: xunit.console.exe test\Evolve.IntegrationTest.SQLServer\bin\%CONFIGURATION%\Evolve.IntegrationTest.SQLServer.dll
