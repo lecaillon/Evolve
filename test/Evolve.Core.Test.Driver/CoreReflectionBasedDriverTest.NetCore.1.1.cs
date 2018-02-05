@@ -1,5 +1,4 @@
 using System.Data;
-using System.Threading;
 using Evolve.Driver;
 using Evolve.Test.Utilities;
 using Xunit;

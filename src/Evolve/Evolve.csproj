@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
+  <Import Project="..\..\build\common.props" />
   <PropertyGroup>
     <TargetFrameworks>netcoreapp1.0;net35;net452;</TargetFrameworks>
-    <Version>1.8.0</Version>
+    <Version>$(PackageVersion)</Version>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net35'">
     <DefineConstants>NET</DefineConstants>

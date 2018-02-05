@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Evolve</id>
-    <version>1.8.0</version>
+    <!--<version>Set by Cake</version>-->
     <authors>Philippe Lécaillon</authors>
     <owners>Philippe Lécaillon</owners>
     <licenseUrl>https://github.com/lecaillon/Evolve/blob/master/LICENSE</licenseUrl>

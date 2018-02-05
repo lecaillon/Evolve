@@ -29,6 +29,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{195D75D4
 	ProjectSection(SolutionItems) = preProject
 		.travis.yml = .travis.yml
 		appveyor.yml = appveyor.yml
+		build.cake = build.cake
+		build\common.props = build\common.props
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evolve.Test.Utilities", "test\Evolve.Test.Utilities\Evolve.Test.Utilities.csproj", "{46273C60-0164-462F-843F-E6419FB51ACA}"
