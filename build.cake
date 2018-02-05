@@ -78,12 +78,7 @@ Task("Pack").WithCriteria(() => IsRunningOnWindows()).Does(() =>
     });
 });
 
-Task("Linux")
-    .IsDependentOn("Restore")
-    .IsDependentOn("Test .NET Core");
-
 Task("Default")
-    .WithCriteria(() => IsRunningOnWindows())
     .IsDependentOn("Restore")
     .IsDependentOn("Build")
     .IsDependentOn("Test .NET")
