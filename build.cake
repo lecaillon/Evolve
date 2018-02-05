@@ -7,7 +7,6 @@ var configuration = Argument("configuration", "Release");
 var solutionFile = GetFiles("./*.sln").First();
 var distDir = Directory("./dist");
 var version = XmlPeek(File("./build/common.props"), "/Project/PropertyGroup/PackageVersion/text()");
-bool noBuild = IsRunningOnWindows() ? true : false;
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP / TEARDOWN
@@ -60,7 +59,7 @@ Task("Test .NET Core").Does(() =>
         DotNetCoreTest(project.FullPath, new DotNetCoreTestSettings 
         {
             Configuration = configuration,
-            NoBuild = noBuild,
+            NoBuild = IsRunningOnWindows(),
             ArgumentCustomization = args => args.Append($"--no-restore --filter \"Category!=Standalone\""),
         });
     }
@@ -84,11 +83,11 @@ Task("Linux")
     .IsDependentOn("Test .NET Core");
 
 Task("Default")
-    .WithCriteria(() => IsRunningOnWindows()
+    .WithCriteria(() => IsRunningOnWindows())
     .IsDependentOn("Restore")
     .IsDependentOn("Build")
     .IsDependentOn("Test .NET")
     .IsDependentOn("Test .NET Core")
-    .IsDependentOn("Pack"));
+    .IsDependentOn("Pack");
 
 RunTarget(target);
