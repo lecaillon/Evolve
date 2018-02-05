@@ -21,7 +21,7 @@ Setup(ctx => { Information($"Building Evolve {version}"); });
 Task("Restore").Does(() =>
 {
     if(IsRunningOnWindows()) NuGetRestore(solutionFile);
-    DotNetCoreRestore(solutionFile);
+    DotNetCoreRestore(solutionFile.ToString());
 });
 
 Task("Build").WithCriteria(() => IsRunningOnWindows()).Does(() =>
