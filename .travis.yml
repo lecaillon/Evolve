@@ -17,7 +17,6 @@ before_script:
   - sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys B02C46DF417A0893
   - sudo apt-get update
   - sudo apt-get install dotnet-dev-1.0.4
-before_script:
   - chmod a+x ./build.sh
 script:
   - ./build.sh
