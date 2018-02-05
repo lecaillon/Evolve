@@ -17,4 +17,4 @@ before_script:
   - sudo apt-get install dotnet-dev-1.0.4
   - chmod a+x ./build.sh
 script:
-  - ./build.sh -t "Linux"
+  - ./build.sh -t Linux
