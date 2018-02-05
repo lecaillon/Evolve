@@ -7,12 +7,13 @@ var configuration = Argument("configuration", "Release");
 var solutionFile = GetFiles("./*.sln").First();
 var distDir = Directory("./dist");
 var version = XmlPeek(File("./build/common.props"), "/Project/PropertyGroup/PackageVersion/text()");
+bool noBuild = IsRunningOnWindows() ? true : false;
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP / TEARDOWN
 ///////////////////////////////////////////////////////////////////////////////
 
-Setup(ctx => { Information($"Building Evolve {version} ..."); });
+Setup(ctx => { Information($"Building Evolve {version}"); });
 
 ///////////////////////////////////////////////////////////////////////////////
 // TASKS
@@ -24,16 +25,13 @@ Task("Restore").Does(() =>
     DotNetCoreRestore();
 });
 
-Task("Build").IsDependentOn("Restore").Does(() =>
+Task("Build").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 {
     MSBuild(solutionFile, settings => settings.SetConfiguration(configuration)
                                               .SetVerbosity(Verbosity.Minimal));
 });
 
-Task("Test .NET")
-    .IsDependentOn("Build")
-    .WithCriteria(() => IsRunningOnWindows())
-    .Does(() =>
+Task("Test .NET").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 {
     foreach(var project in GetFiles("./test/**/Evolve.*Test*.csproj").Where(x => !x.GetFilename().FullPath.Contains("Core"))
                                                                      .Where(x => !x.GetFilename().FullPath.Contains("Utilities"))
@@ -50,7 +48,7 @@ Task("Test .NET")
         {
             Configuration = configuration,
             NoBuild = true,
-            ArgumentCustomization = args => args.Append($"--no-restore --filter \"Category=Standalone\""),
+            ArgumentCustomization = args => args.Append($"--no-restore --filter \"Category=Standalone\""), // standalone tests !
         });
     }
 });
@@ -62,21 +60,13 @@ Task("Test .NET Core").Does(() =>
         DotNetCoreTest(project.FullPath, new DotNetCoreTestSettings 
         {
             Configuration = configuration,
-            NoBuild = true,
+            NoBuild = noBuild,
             ArgumentCustomization = args => args.Append($"--no-restore --filter \"Category!=Standalone\""),
         });
     }
 });
 
-Task("Test All")
-    .IsDependentOn("Test .NET")
-    .IsDependentOn("Test .NET Core")
-    .WithCriteria(() => IsRunningOnWindows());
-
-Task("Pack")
-    .IsDependentOn("Test All")
-    .WithCriteria(() => IsRunningOnWindows())
-    .Does(() => 
+Task("Pack").WithCriteria(() => IsRunningOnWindows()).Does(() => 
 {
     NuGetPack("./src/Evolve/Evolve.nuspec", new NuGetPackSettings
     {
@@ -89,8 +79,16 @@ Task("Pack")
     });
 });
 
+Task("Linux")
+    .IsDependentOn("Restore")
+    .IsDependentOn("Test .NET Core");
+
 Task("Default")
-    .IsDependentOn("Pack")
-    .WithCriteria(() => IsRunningOnWindows());
+    .WithCriteria(() => IsRunningOnWindows()
+    .IsDependentOn("Restore")
+    .IsDependentOn("Build")
+    .IsDependentOn("Test .NET")
+    .IsDependentOn("Test .NET Core")
+    .IsDependentOn("Pack"));
 
 RunTarget(target);
