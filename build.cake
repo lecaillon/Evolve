@@ -4,8 +4,9 @@
 
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
-var solutionFile = GetFiles("./*.sln").First();
-var distDir = Directory("./dist");
+var sln = GetFiles("./Evolve.sln").First();
+var slnTest = GetFiles("./Evolve.Test.Package.sln").First();
+var distDir = MakeAbsolute(Directory("./dist"));
 var version = XmlPeek(File("./build/common.props"), "/Project/PropertyGroup/PackageVersion/text()");
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -20,14 +21,14 @@ Setup(ctx => { Information($"Building Evolve {version}"); });
 
 Task("Restore").Does(() =>
 {
-    if(IsRunningOnWindows()) NuGetRestore(solutionFile);
-    DotNetCoreRestore(solutionFile.ToString());
+    if(IsRunningOnWindows()) NuGetRestore(sln);
+    DotNetCoreRestore(sln.ToString());
 });
 
 Task("Build").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 {
-    MSBuild(solutionFile, settings => settings.SetConfiguration(configuration)
-                                              .SetVerbosity(Verbosity.Minimal));
+    MSBuild(sln, settings => settings.SetConfiguration(configuration)
+                                     .SetVerbosity(Verbosity.Minimal));
 });
 
 Task("Test .NET").WithCriteria(() => IsRunningOnWindows()).Does(() =>
@@ -69,7 +70,7 @@ Task("Pack").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 {
     NuGetPack("./src/Evolve/Evolve.nuspec", new NuGetPackSettings
     {
-        OutputDirectory = distDir,
+        OutputDirectory = distDir.FullPath,
         Version = version,
         Properties = new Dictionary<string, string> 
         {
@@ -78,11 +79,59 @@ Task("Pack").WithCriteria(() => IsRunningOnWindows()).Does(() =>
     });
 });
 
+Task("Restore Test-Package").Does(() =>
+{
+    var feed = new 
+    {
+        Name = "Localhost",
+        Source = IsRunningOnWindows() ? distDir.FullPath.Replace('/', '\\') : distDir.FullPath
+    };
+
+    if (!NuGetHasSource(feed.Source))
+    {
+        NuGetAddSource(feed.Name, feed.Source);
+    }
+
+    if(IsRunningOnWindows()) NuGetRestore(slnTest);
+    DotNetCoreRestore(slnTest.ToString());
+
+    if (!NuGetHasSource(feed.Source))
+    {
+        NuGetRemoveSource(feed.Name, feed.Source);
+    }
+});
+
+Task("Build Test-Package").WithCriteria(() => IsRunningOnWindows()).Does(() =>
+{
+    MSBuild(slnTest, settings => settings.SetConfiguration(configuration)
+                                         .SetVerbosity(Verbosity.Minimal));
+});
+
+Task("Build .NET Core Test-Package").Does(() =>
+{
+    foreach(var project in GetFiles("./test-package/**/Evolve.*Core*.Test.csproj"))
+    {
+        DotNetCoreBuild(project.FullPath, new DotNetCoreBuildSettings 
+        {
+            Configuration = configuration,
+            ArgumentCustomization = args => args.Append($"--no-restore"),
+        });
+    }
+});
+
 Task("Default")
     .IsDependentOn("Restore")
     .IsDependentOn("Build")
     .IsDependentOn("Test .NET")
     .IsDependentOn("Test .NET Core")
-    .IsDependentOn("Pack");
+    .IsDependentOn("Pack")
+    .IsDependentOn("Restore Test-Package")
+    .IsDependentOn("Build Test-Package")
+    .IsDependentOn("Build .NET Core Test-Package");
+
+Task("Test-Package")
+    .IsDependentOn("Restore Test-Package")
+    .IsDependentOn("Build Test-Package")
+    .IsDependentOn("Build .NET Core Test-Package");
 
 RunTarget(target);
