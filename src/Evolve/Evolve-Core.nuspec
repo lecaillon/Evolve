@@ -17,6 +17,6 @@
   </metadata>
   <files>
     <file src="bin\Release\netcoreapp1.0\*.dll"     target="lib\netcoreapp1.0" />
-    <file src="build\netcoreapp1.0\Evolve.targets"  target="build" />
+    <file src="Build\**"                            target="build" />
   </files>
 </package>
