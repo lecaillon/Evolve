@@ -44,8 +44,8 @@ namespace Evolve.Driver
         public const string DriverAssemblyName = "MySql.Data";
         public const string ConnectionTypeName = "MySql.Data.MySqlClient.MySqlConnection";
 
-        public CoreMySqlDataDriverForNet(string depsFile, string nugetPackageDir) 
-            : base(DriverAssemblyName, ConnectionTypeName, depsFile, nugetPackageDir)
+        public CoreMySqlDataDriverForNet(string depsFile, string nugetPackageDir, string msBuildExtensionsPath) 
+            : base(DriverAssemblyName, ConnectionTypeName, depsFile, nugetPackageDir, msBuildExtensionsPath)
         {
         }
     }

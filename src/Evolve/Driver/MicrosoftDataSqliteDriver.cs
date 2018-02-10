@@ -44,8 +44,8 @@ namespace Evolve.Driver
         public const string DriverAssemblyName = "Microsoft.Data.Sqlite";
         public const string ConnectionTypeName = "Microsoft.Data.Sqlite.SqliteConnection";
 
-        public CoreMicrosoftDataSqliteDriverForNet(string depsFile, string nugetPackageDir) 
-            : base(DriverAssemblyName, ConnectionTypeName, depsFile, nugetPackageDir)
+        public CoreMicrosoftDataSqliteDriverForNet(string depsFile, string nugetPackageDir, string msBuildExtensionsPath)
+            : base(DriverAssemblyName, ConnectionTypeName, depsFile, nugetPackageDir, msBuildExtensionsPath)
         {
         }
     }

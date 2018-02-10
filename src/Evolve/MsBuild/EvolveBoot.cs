@@ -62,6 +62,12 @@ namespace Evolve.MsBuild
         public string Configuration { get; set; }
 
         /// <summary>
+        ///     Path to the MSBuild extension folder, used by Evolve when loading .NET Core 2 driver via .NET MSBuild
+        /// </summary>
+        [Required]
+        public string MSBuildExtensionsPath { get; set; }
+
+        /// <summary>
         ///     The directory of the primary output file for the build.
         /// </summary>
         public string TargetDir => Path.GetDirectoryName(TargetPath);
@@ -118,12 +124,12 @@ namespace Evolve.MsBuild
                 Directory.SetCurrentDirectory(TargetDir);
                 Evolve evolve = null;
 #if NETCORE
-                evolve = new Evolve(EvolveConfigurationFile, AppDepsFile, NugetPackageDir, logInfoDelegate: msg => LogInfo(msg), environmentName: Configuration);
+                evolve = new Evolve(EvolveConfigurationFile, AppDepsFile, NugetPackageDir, MSBuildExtensionsPath, logInfoDelegate: msg => LogInfo(msg), environmentName: Configuration);
 #else
     #if NET45
                 if (IsDotNetStandardProject)
                 {
-                    evolve = new Evolve(EvolveConfigurationFile, AppDepsFile, NugetPackageDir, logInfoDelegate: msg => LogInfo(msg), environmentName: Configuration);
+                    evolve = new Evolve(EvolveConfigurationFile, AppDepsFile, NugetPackageDir, MSBuildExtensionsPath, logInfoDelegate: msg => LogInfo(msg), environmentName: Configuration);
                 }
     #endif
                 if (!IsDotNetStandardProject)

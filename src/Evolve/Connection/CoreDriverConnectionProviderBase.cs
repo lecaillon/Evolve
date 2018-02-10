@@ -19,6 +19,7 @@ namespace Evolve.Connection
         private readonly string _connectionString;
         private readonly string _depsFile;
         private readonly string _nugetPackageDir;
+        private readonly string _msBuildExtensionsPath;
         private WrappedConnection _wrappedConnection;
 
         /// <summary>
@@ -28,12 +29,14 @@ namespace Evolve.Connection
         /// <param name="connectionString"> Connection string used to initialised a database connection. </param>
         /// <param name="depsFile"> Dependency file of the project to migrate. </param>
         /// <param name="nugetPackageDir"> Path to the NuGet package folder. </param>
-        public CoreDriverConnectionProviderBase(string driverName, string connectionString, string depsFile, string nugetPackageDir)
+        /// <param name="msBuildExtensionsPath"> Path to the MSBuild extension folder, used by Evolve when loading .NET Core 2 driver via .NET MSBuild. </param>
+        public CoreDriverConnectionProviderBase(string driverName, string connectionString, string depsFile, string nugetPackageDir, string msBuildExtensionsPath = null)
         {
             _driverName = Check.NotNullOrEmpty(driverName, nameof(driverName));
             _connectionString = Check.NotNullOrEmpty(connectionString, nameof(connectionString));
             _depsFile = Check.NotNullOrEmpty(depsFile, nameof(depsFile));
             _nugetPackageDir = Check.NotNullOrEmpty(nugetPackageDir, nameof(nugetPackageDir));
+            _msBuildExtensionsPath = msBuildExtensionsPath;
 
             Driver = LoadDriver();
         }
@@ -43,7 +46,7 @@ namespace Evolve.Connection
         /// <summary>
         ///     Returns a map of driver names and their implementations.
         /// </summary>
-        protected abstract Dictionary<string, Func<string, string, IDriver>> DriversMap { get; }
+        protected abstract Dictionary<string, Func<string, string, string, IDriver>> DriversMap { get; }
 
         /// <summary>
         ///     Returns a wrapped <see cref="System.Data.IDbConnection"/> initiated by the loaded <see cref="Driver"/>.
@@ -66,7 +69,7 @@ namespace Evolve.Connection
                                                 .Replace(" ", "")
                                                 .Replace(".", "");
 
-            DriversMap.TryGetValue(cleanDriverName, out Func<string, string, IDriver> driverCreationDelegate);
+            DriversMap.TryGetValue(cleanDriverName, out Func<string, string, string, IDriver> driverCreationDelegate);
 
             if (driverCreationDelegate == null)
             {
@@ -75,7 +78,7 @@ namespace Evolve.Connection
 
             try
             {
-                return driverCreationDelegate(_depsFile, _nugetPackageDir);
+                return driverCreationDelegate(_depsFile, _nugetPackageDir, _msBuildExtensionsPath);
             }
             catch (Exception ex)
             {

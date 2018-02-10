@@ -8,6 +8,7 @@ var sln = GetFiles("./Evolve.sln").First();
 var slnTest = GetFiles("./Evolve.Test.Package.sln").First();
 var distDir = MakeAbsolute(Directory("./dist"));
 var version = XmlPeek(File("./build/common.props"), "/Project/PropertyGroup/PackageVersion/text()");
+var envHome = Environment.GetEnvironmentVariable("USERPROFILE") ?? Environment.GetEnvironmentVariable("HOME");
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP / TEARDOWN
@@ -18,6 +19,11 @@ Setup(ctx => { Information($"Building Evolve {version}"); });
 ///////////////////////////////////////////////////////////////////////////////
 // TASKS
 ///////////////////////////////////////////////////////////////////////////////
+
+Task("Clean").Does(() =>
+{ 
+    CleanDirectory($@"{envHome}/.nuget/packages/evolve/{version}");
+});
 
 Task("Restore").Does(() =>
 {
@@ -120,6 +126,7 @@ Task("Build .NET Core Test-Package").Does(() =>
 });
 
 Task("Default")
+    .IsDependentOn("Clean")
     .IsDependentOn("Restore")
     .IsDependentOn("Build")
     .IsDependentOn("Test .NET")

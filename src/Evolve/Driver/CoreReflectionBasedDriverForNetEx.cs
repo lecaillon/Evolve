@@ -34,11 +34,24 @@ namespace Evolve.Driver
         /// <param name="connectionTypeName"> Name of the driver Type. </param>
         /// <param name="depsFile"> Dependency file of the project to migrate. </param>
         /// <param name="nugetPackageDir"> Path to the NuGet package folder. </param>
-        public CoreReflectionBasedDriverForNetEx(string driverAssemblyName, string connectionTypeName, string depsFile, string nugetPackageDir) 
+        /// <param name="msBuildExtensionsPath"> Path to the MSBuild extension folder for .NET Core 2.0 drivers. </param>
+        public CoreReflectionBasedDriverForNetEx(string driverAssemblyName, string connectionTypeName, string depsFile, string nugetPackageDir, string msBuildExtensionsPath) 
             : base(driverAssemblyName, connectionTypeName, depsFile, nugetPackageDir)
         {
+            if (!string.IsNullOrEmpty(msBuildExtensionsPath))
+            {
+                msBuildExtensionsPath = Path.Combine(msBuildExtensionsPath, @"Microsoft\Microsoft.NET.Build.Extensions");
+                MSBuildExtensionsPath = Directory.Exists(msBuildExtensionsPath) ? msBuildExtensionsPath : null;
+            }
+
             AppDomain.CurrentDomain.AssemblyResolve += CurrentAppDomain_AssemblyResolve;
         }
+
+        /// <summary>
+        ///     Path to the MSBuild extension folder used by .NET Core 2.0 drivers
+        ///     to load netstandard 2.0 references.
+        /// </summary>
+        public string MSBuildExtensionsPath { get; set; }
 
         /// <summary>
         ///     <para>
@@ -218,6 +231,21 @@ namespace Evolve.Driver
                 packageFolder = Path.Combine(NugetPackageDir, assemblyName);
                 if (!Directory.Exists(packageFolder))
                 {
+                    // The requested assembly is not in the Nuget cache folder.
+                    // Try to load it from the MSBuild extensions folder in case the driver needs to load NETStandard references.
+                    if (MSBuildExtensionsPath != null)
+                    {
+                        string netStandardFacade = Directory.GetFiles(MSBuildExtensionsPath, $"{assemblyName}.dll", SearchOption.AllDirectories)
+                                    .DefaultIfEmpty()
+                                    .OrderByDescending(x => x)
+                                    .First();
+
+                        if (netStandardFacade != null)
+                        {
+                            return Assembly.LoadFile(netStandardFacade);
+                        }
+                    }
+
                     throw new EvolveCoreDriverException($"Can't resolve {args.Name}.\r\n Folder {packageFolder} not found.", DumpDetails());
                 }
 

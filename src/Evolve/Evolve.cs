@@ -82,6 +82,7 @@ namespace Evolve
         private readonly string _depsFile = "";
 #if NETCORE || NET45
         private readonly string _nugetPackageDir;
+        private readonly string _msBuildExtensionsPath;
 #endif
 
         #endregion
@@ -146,12 +147,14 @@ namespace Evolve
         /// <param name="evolveConfigurationPath"> Evolve configuration file (can be relative). </param>
         /// <param name="depsFile"> Dependency file of the project to migrate (can be relative). </param>
         /// <param name="nugetPackageDir"> Path to the NuGet package folder. </param>
+        /// <param name="msBuildExtensionsPath"> Path to the MSBuild extension folder, used by Evolve when loading .NET Core 2 driver via .NET MSBuild. </param>
         /// <param name="dbConnection"> Optional database connection. </param>
         /// <param name="logInfoDelegate"> Optional logger. </param>
         /// <param name="environmentName"> The environment is typically set to one of Development, Staging, or Production. Optional. </param>
         public Evolve(string evolveConfigurationPath, 
                       string depsFile, 
                       string nugetPackageDir, 
+                      string msBuildExtensionsPath = null,
                       IDbConnection dbConnection = null, 
                       Action<string> logInfoDelegate = null, 
                       string environmentName = "")
@@ -159,6 +162,7 @@ namespace Evolve
             _configurationPath = Check.FileExists(ResolveConfigurationFileLocation(evolveConfigurationPath), nameof(evolveConfigurationPath));
             _depsFile = Check.FileExists(ResolveConfigurationFileLocation(depsFile), nameof(depsFile));
             _nugetPackageDir = Check.DirectoryExists(nugetPackageDir, nameof(nugetPackageDir));
+            _msBuildExtensionsPath = msBuildExtensionsPath;
             _userDbConnection = dbConnection;
             _logInfoDelegate = logInfoDelegate ?? new Action<string>((msg) => { });
             _environmentName = environmentName;
@@ -495,7 +499,7 @@ namespace Evolve
 #if NET45
             if(IsDotNetStandardProject)
             {
-                return new CoreDriverConnectionProviderForNet(Driver, ConnectionString, _depsFile, _nugetPackageDir);
+                return new CoreDriverConnectionProviderForNet(Driver, ConnectionString, _depsFile, _nugetPackageDir, _msBuildExtensionsPath);
             }
 #endif
             return new DriverConnectionProvider(Driver, ConnectionString);

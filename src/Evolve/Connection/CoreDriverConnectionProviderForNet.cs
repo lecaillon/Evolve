@@ -14,20 +14,20 @@ namespace Evolve.Connection
         /// <summary>
         ///     Map a driver name to its <see cref="IDriver"/> implementation.
         /// </summary>
-        private readonly Dictionary<string, Func<string, string, IDriver>> _driversMap = new Dictionary<string, Func<string, string, IDriver>>
+        private readonly Dictionary<string, Func<string, string, string, IDriver>> _driversMap = new Dictionary<string, Func<string, string, string, IDriver>>
         {
-            ["microsoftdatasqlite"] = (depsFile, nugetPackageDir) => new CoreMicrosoftDataSqliteDriverForNet(depsFile, nugetPackageDir),
-            ["microsoftsqlite"]     = (depsFile, nugetPackageDir) => new CoreMicrosoftDataSqliteDriverForNet(depsFile, nugetPackageDir),
+            ["microsoftdatasqlite"] = (depsFile, nugetPackageDir, msBuildExtensionsPath) => new CoreMicrosoftDataSqliteDriverForNet(depsFile, nugetPackageDir, msBuildExtensionsPath),
+            ["microsoftsqlite"]     = (depsFile, nugetPackageDir, msBuildExtensionsPath) => new CoreMicrosoftDataSqliteDriverForNet(depsFile, nugetPackageDir, msBuildExtensionsPath),
 
-            ["npgsql"]              = (depsFile, nugetPackageDir) => new CoreNpgsqlDriverForNet(depsFile, nugetPackageDir),
-            ["postgresql"]          = (depsFile, nugetPackageDir) => new CoreNpgsqlDriverForNet(depsFile, nugetPackageDir),
+            ["npgsql"]              = (depsFile, nugetPackageDir, msBuildExtensionsPath) => new CoreNpgsqlDriverForNet(depsFile, nugetPackageDir, msBuildExtensionsPath),
+            ["postgresql"]          = (depsFile, nugetPackageDir, msBuildExtensionsPath) => new CoreNpgsqlDriverForNet(depsFile, nugetPackageDir, msBuildExtensionsPath),
 
-            ["mysql"]               = (depsFile, nugetPackageDir) => new CoreMySqlDataDriverForNet(depsFile, nugetPackageDir),
-            ["mariadb"]             = (depsFile, nugetPackageDir) => new CoreMySqlDataDriverForNet(depsFile, nugetPackageDir),
-            ["mysqldata"]           = (depsFile, nugetPackageDir) => new CoreMySqlDataDriverForNet(depsFile, nugetPackageDir),
+            ["mysql"]               = (depsFile, nugetPackageDir, msBuildExtensionsPath) => new CoreMySqlDataDriverForNet(depsFile, nugetPackageDir, msBuildExtensionsPath),
+            ["mariadb"]             = (depsFile, nugetPackageDir, msBuildExtensionsPath) => new CoreMySqlDataDriverForNet(depsFile, nugetPackageDir, msBuildExtensionsPath),
+            ["mysqldata"]           = (depsFile, nugetPackageDir, msBuildExtensionsPath) => new CoreMySqlDataDriverForNet(depsFile, nugetPackageDir, msBuildExtensionsPath),
 
-            ["sqlserver"]           = (depsFile, nugetPackageDir) => new SqlClientDriver(),
-            ["sqlclient"]           = (depsFile, nugetPackageDir) => new SqlClientDriver(),
+            ["sqlserver"]           = (depsFile, nugetPackageDir, _) => new SqlClientDriver(),
+            ["sqlclient"]           = (depsFile, nugetPackageDir, _) => new SqlClientDriver(),
         };
 
         /// <summary>
@@ -37,15 +37,16 @@ namespace Evolve.Connection
         /// <param name="connectionString"> Connection string used to initialised a database connection. </param>
         /// <param name="depsFile"> Dependency file of the project to migrate. </param>
         /// <param name="nugetPackageDir"> Path to the NuGet package folder. </param>
-        public CoreDriverConnectionProviderForNet(string driverName, string connectionString, string depsFile, string nugetPackageDir) 
-            : base(driverName, connectionString, depsFile, nugetPackageDir)
+        /// <param name="msBuildExtensionsPath"> Path to the MSBuild extension folder, used by Evolve when loading .NET Core 2 driver via .NET MSBuild. </param>
+        public CoreDriverConnectionProviderForNet(string driverName, string connectionString, string depsFile, string nugetPackageDir, string msBuildExtensionsPath = null) 
+            : base(driverName, connectionString, depsFile, nugetPackageDir, msBuildExtensionsPath)
         {
         }
 
         /// <summary>
         ///     Returns a map of driver names and their implementations.
         /// </summary>
-        protected override Dictionary<string, Func<string, string, IDriver>> DriversMap => _driversMap;
+        protected override Dictionary<string, Func<string, string, string, IDriver>> DriversMap => _driversMap;
     }
 }
 

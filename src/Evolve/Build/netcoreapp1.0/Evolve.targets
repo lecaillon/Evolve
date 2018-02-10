@@ -8,6 +8,6 @@
   
   <Target Name="SqlMigration" AfterTargets="Build">
     <Message Condition="!Exists('Evolve.json')" Importance="High" Text="Evolve.json configuration file not found. MsBuild task execution cancelled." />
-    <EvolveBoot Condition="Exists('Evolve.json')" TargetPath="$(TargetPath)" ProjectDir="$(ProjectDir)" EvolveNugetPackageBuildDir="$(MSBuildThisFileDirectory)" IsDotNetStandardProject="true" Configuration="$(Configuration)" />
+    <EvolveBoot Condition="Exists('Evolve.json')" TargetPath="$(TargetPath)" ProjectDir="$(ProjectDir)" EvolveNugetPackageBuildDir="$(MSBuildThisFileDirectory)" IsDotNetStandardProject="true" MSBuildExtensionsPath="$(MSBuildExtensionsPath)" Configuration="$(Configuration)" />
   </Target>
 </Project>

@@ -44,8 +44,8 @@ namespace Evolve.Driver
         public const string DriverAssemblyName = "Npgsql";
         public const string ConnectionTypeName = "Npgsql.NpgsqlConnection";
 
-        public CoreNpgsqlDriverForNet(string depsFile, string nugetPackageDir) 
-            : base(DriverAssemblyName, ConnectionTypeName, depsFile, nugetPackageDir)
+        public CoreNpgsqlDriverForNet(string depsFile, string nugetPackageDir, string msBuildExtensionsPath) 
+            : base(DriverAssemblyName, ConnectionTypeName, depsFile, nugetPackageDir, msBuildExtensionsPath)
         {
         }
     }
