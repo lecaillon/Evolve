@@ -138,11 +138,7 @@ Task("Default")
     .IsDependentOn("Clean")
     .IsDependentOn("Restore")
     .IsDependentOn("Build")
-    .IsDependentOn("Test .NET")
-    .IsDependentOn("Test .NET Core")
-    .IsDependentOn("Pack")
-    .IsDependentOn("Restore Test-Package")
-    .IsDependentOn("Build Test-Package")
+
     .IsDependentOn("Build .NET Core Test-Package");
 
 Task("Test-Package")
