@@ -74,7 +74,7 @@ Task("Test .NET Core").Does(() =>
 
 Task("Pack").Does(() => 
 {
-    NuGetPack("./src/Evolve/Evolve.nuspec", new NuGetPackSettings
+    var settings = new NuGetPackSettings
     {
         OutputDirectory = distDir.FullPath,
         Version = version,
@@ -82,7 +82,16 @@ Task("Pack").Does(() =>
         {
             { "Configuration", configuration }
         }
-    });
+    };
+
+    if (IsRunningOnWindows())
+    {
+        NuGetPack("./src/Evolve/Evolve.nuspec", settings);
+    }
+    else
+    {
+        NuGetPack("./src/Evolve/Evolve-Core.nuspec", settings);
+    }
 });
 
 Task("Restore Test-Package").Does(() =>
