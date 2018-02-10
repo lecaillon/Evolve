@@ -108,7 +108,10 @@ Task("Restore Test-Package").Does(() =>
     }
 
     if(IsRunningOnWindows()) NuGetRestore(slnTest);
-    DotNetCoreRestore(slnTest.ToString());
+    DotNetCoreRestore(slnTest.ToString(), new DotNetCoreRestoreSettings
+    {
+        FallbackSources = new[] { feed.Source }
+    });
 
     if (!NuGetHasSource(feed.Source))
     {
