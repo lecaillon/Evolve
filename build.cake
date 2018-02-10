@@ -72,7 +72,7 @@ Task("Test .NET Core").Does(() =>
     }
 });
 
-Task("Pack").WithCriteria(() => IsRunningOnWindows()).Does(() => 
+Task("Pack").Does(() => 
 {
     NuGetPack("./src/Evolve/Evolve.nuspec", new NuGetPackSettings
     {
