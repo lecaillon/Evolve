@@ -7,6 +7,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SQLite", "SQLite", "{3D88DC
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evolve.AspNetCore2.SQLite.Test", "test-package\Evolve.AspNetCore2.SQLite.Test\Evolve.AspNetCore2.SQLite.Test.csproj", "{C0E57185-9C71-460B-84BE-65BF7BEB5686}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PostgreSQL", "PostgreSQL", "{D7E774FF-B924-41B9-94AC-18799CBF564B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.AspNetCore2.Npgsql.Test", "test-package\Evolve.AspNetCore2.Npgsql.Test\Evolve.AspNetCore2.Npgsql.Test.csproj", "{FD2FED09-6C19-4175-87DA-CE9D82D9A7B0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,12 +21,17 @@ Global
 		{C0E57185-9C71-460B-84BE-65BF7BEB5686}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C0E57185-9C71-460B-84BE-65BF7BEB5686}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C0E57185-9C71-460B-84BE-65BF7BEB5686}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD2FED09-6C19-4175-87DA-CE9D82D9A7B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD2FED09-6C19-4175-87DA-CE9D82D9A7B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD2FED09-6C19-4175-87DA-CE9D82D9A7B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD2FED09-6C19-4175-87DA-CE9D82D9A7B0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{C0E57185-9C71-460B-84BE-65BF7BEB5686} = {3D88DCC8-AFAA-4734-BF76-D0E46D67B56A}
+		{FD2FED09-6C19-4175-87DA-CE9D82D9A7B0} = {D7E774FF-B924-41B9-94AC-18799CBF564B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D1A92AB0-3CBC-4174-A7D1-E6B53B0EAF73}
