@@ -85,7 +85,7 @@ namespace Evolve.IntegrationTest.PostgreSQL
             Assert.True(migrationMetadata.Name == migrationScript.Name, "Metadata name is not the same.");
             Assert.True(migrationMetadata.Success == true, "Metadata success is not true.");
             Assert.True(migrationMetadata.Id > 0, "Metadata id is not set.");
-            //Assert.True(migrationMetadata.InstalledOn.Date == DateTime.Now.Date, "Installed date is not set.");
+            Assert.True(migrationMetadata.InstalledOn.Date == DateTime.UtcNow.Date, "Installed date is not set.");
 
             // Update checksum
             metadata.UpdateChecksum(migrationMetadata.Id, "Hi !");

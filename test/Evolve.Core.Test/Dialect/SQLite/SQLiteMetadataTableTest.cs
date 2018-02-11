@@ -97,7 +97,7 @@ namespace Evolve.Core.Test.Dialect.SQLite
                 Assert.True(migrationMetadata.Success);
                 Assert.Equal(string.Empty, migrationMetadata.InstalledBy);
                 Assert.True(migrationMetadata.Id > 0);
-                Assert.True(migrationMetadata.InstalledOn.Date == DateTime.Now.Date);
+                Assert.True(migrationMetadata.InstalledOn.Date == DateTime.UtcNow.Date);
             }
         }
 
