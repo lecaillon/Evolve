@@ -110,7 +110,7 @@ Task("Restore Test-Package").Does(() =>
     if(IsRunningOnWindows()) NuGetRestore(slnTest);
     DotNetCoreRestore(slnTest.ToString(), new DotNetCoreRestoreSettings
     {
-        FallbackSources = new[] { feed.Source }
+        Sources = new[] { "https://api.nuget.org/v3/index.json", feed.Source }
     });
 
     if (!NuGetHasSource(feed.Source))
