@@ -37,7 +37,7 @@ Task("Build").WithCriteria(() => IsRunningOnWindows()).Does(() =>
                                      .SetVerbosity(Verbosity.Minimal));
 });
 
-Task("Test .NET").WithCriteria(() => IsRunningOnWindows()).Does(() =>
+Task("Test").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 {
     foreach(var project in GetFiles("./test/**/Evolve.*Test*.csproj").Where(x => !x.GetFilename().FullPath.Contains("Core"))
                                                                      .Where(x => !x.GetFilename().FullPath.Contains("Utilities"))
@@ -59,7 +59,7 @@ Task("Test .NET").WithCriteria(() => IsRunningOnWindows()).Does(() =>
     }
 });
 
-Task("Test .NET Core").Does(() =>
+Task("Test Core").Does(() =>
 {
     foreach(var project in GetFiles("./test/**/Evolve.Core*.Test*.csproj").Where(x => !x.GetFilename().FullPath.Contains("Resources")))
     {
@@ -125,7 +125,7 @@ Task("Build Test-Package").WithCriteria(() => IsRunningOnWindows()).Does(() =>
                                          .SetVerbosity(Verbosity.Minimal));
 });
 
-Task("Build .NET Core Test-Package").Does(() =>
+Task("Build Test-Package Core").Does(() =>
 {
     foreach(var project in GetFiles("./test-package/**/Evolve.*Core*.Test.csproj"))
     {
@@ -141,16 +141,16 @@ Task("Default")
     .IsDependentOn("Clean")
     .IsDependentOn("Restore")
     .IsDependentOn("Build")
-    .IsDependentOn("Test .NET")
-    .IsDependentOn("Test .NET Core")
+    .IsDependentOn("Test")
+    .IsDependentOn("Test Core")
     .IsDependentOn("Pack")
     .IsDependentOn("Restore Test-Package")
     .IsDependentOn("Build Test-Package")
-    .IsDependentOn("Build .NET Core Test-Package");
+    .IsDependentOn("Build Test-Package Core");
 
 Task("Test-Package")
     .IsDependentOn("Restore Test-Package")
     .IsDependentOn("Build Test-Package")
-    .IsDependentOn("Build .NET Core Test-Package");
+    .IsDependentOn("Build Test-Package Core");
 
 RunTarget(target);
