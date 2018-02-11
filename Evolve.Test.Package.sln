@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.27130.2026
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SQLite", "SQLite", "{3D88DCC8-AFAA-4734-BF76-D0E46D67B56A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evolve.AspNetCore2.SQLite.Test", "test-package\Evolve.AspNetCore2.SQLite.Test\Evolve.AspNetCore2.SQLite.Test.csproj", "{C0E57185-9C71-460B-84BE-65BF7BEB5686}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evolve.AspNetCore2.Microsoft.Data.SQLite.Test", "test-package\Evolve.AspNetCore2.Microsoft.Data.SQLite.Test\Evolve.AspNetCore2.Microsoft.Data.SQLite.Test.csproj", "{C0E57185-9C71-460B-84BE-65BF7BEB5686}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PostgreSQL", "PostgreSQL", "{D7E774FF-B924-41B9-94AC-18799CBF564B}"
 EndProject
