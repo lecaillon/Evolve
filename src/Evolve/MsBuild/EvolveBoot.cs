@@ -76,28 +76,7 @@ namespace Evolve.MsBuild
         ///     Full path to the app.config or evolve.json
         /// </summary>
         /// <exception cref="EvolveConfigurationException"> When configuration file is not found. </exception>
-        public string EvolveConfigurationFile
-        {
-            get
-            {
-                string configFile = null;
-
-                if(IsDotNetStandardProject)
-                {
-                    configFile = Path.Combine(ProjectDir, "evolve.json");
-                    if (!File.Exists(configFile))
-                    {
-                        throw new EvolveConfigurationException(string.Format(EvolveJsonConfigFileNotFound, configFile));
-                    }
-                }
-                else
-                {
-                    configFile = TargetPath + ".config";
-                }
-
-                return configFile;
-            }
-        }
+        public string EvolveConfigurationFile => IsDotNetStandardProject ? FindJsonConfigurationFile() : TargetPath + ".config";
 
         /// <summary>
         ///     Full path to the deps file of the project.
@@ -214,7 +193,28 @@ namespace Evolve.MsBuild
             }
         }
 
-#region Logger
+        /// <summary>
+        ///     Returns the path of the json configuration file or throws ex if not found.
+        /// </summary>
+        /// <returns> Evolve.json or evolve.json configuration file. </returns>
+        /// <exception cref="EvolveConfigurationException"> When configuration file is not found. </exception>
+        private string FindJsonConfigurationFile()
+        {
+            string file = Path.Combine(ProjectDir, "Evolve.json");
+            if (File.Exists(file))
+            {
+                return file;
+            }
+            file = Path.Combine(ProjectDir, "evolve.json");
+            if (File.Exists(file))
+            {
+                return file;
+            }
+
+            throw new EvolveConfigurationException(string.Format(EvolveJsonConfigFileNotFound, file));
+        }
+
+        #region Logger
 
         private void LogError(Exception ex)
         {
