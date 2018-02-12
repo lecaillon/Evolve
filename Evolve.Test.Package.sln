@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.MySql.Data.AspNetCor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.SqlClient.AspNetCore11.Test", "test-package\Evolve.SqlClient.AspNetCore11.Test\Evolve.SqlClient.AspNetCore11.Test.csproj", "{60371B42-640D-46EA-8ABD-AE8BD4DCA0A1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.Microsoft.Data.SQLite.AspNetCore11.Test", "test-package\Evolve.Microsoft.Data.SQLite.AspNetCore11.Test\Evolve.Microsoft.Data.SQLite.AspNetCore11.Test.csproj", "{4FC7F59C-4E97-4421-BB05-628E5F2FA3D8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,10 @@ Global
 		{60371B42-640D-46EA-8ABD-AE8BD4DCA0A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{60371B42-640D-46EA-8ABD-AE8BD4DCA0A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{60371B42-640D-46EA-8ABD-AE8BD4DCA0A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FC7F59C-4E97-4421-BB05-628E5F2FA3D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FC7F59C-4E97-4421-BB05-628E5F2FA3D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FC7F59C-4E97-4421-BB05-628E5F2FA3D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FC7F59C-4E97-4421-BB05-628E5F2FA3D8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -71,6 +77,7 @@ Global
 		{1CA69EB6-4731-4E10-B57E-C4B6AF7DE838} = {D7E774FF-B924-41B9-94AC-18799CBF564B}
 		{917799E9-F360-4C78-997F-197A8CAD8000} = {6D80708C-0287-4754-8ACA-DBF3240AB880}
 		{60371B42-640D-46EA-8ABD-AE8BD4DCA0A1} = {7420B649-9F67-423C-BDBE-9198A5DA4029}
+		{4FC7F59C-4E97-4421-BB05-628E5F2FA3D8} = {3D88DCC8-AFAA-4734-BF76-D0E46D67B56A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D1A92AB0-3CBC-4174-A7D1-E6B53B0EAF73}
