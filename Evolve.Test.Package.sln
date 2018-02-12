@@ -1,23 +1,23 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2026
+VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SQLite", "SQLite", "{3D88DCC8-AFAA-4734-BF76-D0E46D67B56A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evolve.AspNetCore20.Microsoft.Data.SQLite.Test", "test-package\Evolve.AspNetCore20.Microsoft.Data.SQLite.Test\Evolve.AspNetCore20.Microsoft.Data.SQLite.Test.csproj", "{C0E57185-9C71-460B-84BE-65BF7BEB5686}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evolve.Microsoft.Data.SQLite.AspNetCore20.Test", "test-package\Evolve.Microsoft.Data.SQLite.AspNetCore20.Test\Evolve.Microsoft.Data.SQLite.AspNetCore20.Test.csproj", "{C0E57185-9C71-460B-84BE-65BF7BEB5686}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PostgreSQL", "PostgreSQL", "{D7E774FF-B924-41B9-94AC-18799CBF564B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evolve.AspNetCore20.Npgsql.Test", "test-package\Evolve.AspNetCore20.Npgsql.Test\Evolve.AspNetCore20.Npgsql.Test.csproj", "{FD2FED09-6C19-4175-87DA-CE9D82D9A7B0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evolve.Npgsql.AspNetCore20.Test", "test-package\Evolve.Npgsql.AspNetCore20.Test\Evolve.Npgsql.AspNetCore20.Test.csproj", "{FD2FED09-6C19-4175-87DA-CE9D82D9A7B0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MySQL", "MySQL", "{6D80708C-0287-4754-8ACA-DBF3240AB880}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.AspNetCore20.MySql.Data.Test", "test-package\Evolve.AspNetCore20.MySql.Data.Test\Evolve.AspNetCore20.MySql.Data.Test.csproj", "{DD114EEA-5CCE-44F6-9454-0C6B9070D45B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evolve.MySql.Data.AspNetCore20.Test", "test-package\Evolve.MySql.Data.AspNetCore20.Test\Evolve.MySql.Data.AspNetCore20.Test.csproj", "{DD114EEA-5CCE-44F6-9454-0C6B9070D45B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SQLServer", "SQLServer", "{7420B649-9F67-423C-BDBE-9198A5DA4029}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.AspNetCore20.SqlClient.Test", "test-package\Evolve.AspNetCore20.SqlClient.Test\Evolve.AspNetCore20.SqlClient.Test.csproj", "{4F9741B2-9E5B-4552-B8AE-B206075A0B11}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evolve.SqlClient.AspNetCore20.Test", "test-package\Evolve.SqlClient.AspNetCore20.Test\Evolve.SqlClient.AspNetCore20.Test.csproj", "{4F9741B2-9E5B-4552-B8AE-B206075A0B11}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
