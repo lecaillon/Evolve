@@ -14,6 +14,7 @@
     <PackageReference Include="Evolve" Version="$(PackageVersion)" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore" Version="1.1.5" />
+    <PackageReference Include="Npgsql" Version="3.2.6" />
   </ItemGroup>
 
 </Project>
