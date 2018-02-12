@@ -1,0 +1,6 @@
+﻿{
+  "Evolve.Driver": "SqlClient",
+  "Evolve.ConnectionString": "Server=127.0.0.1;Database=master;User Id=sa;Password=Password12!;",
+  "Evolve.Locations": "scripts",
+  "Evolve.Command": "erase"
+}
