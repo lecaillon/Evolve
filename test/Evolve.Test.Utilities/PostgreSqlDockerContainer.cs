@@ -9,7 +9,7 @@ namespace Evolve.Test.Utilities
 
         public string Id => _container.Id;
         public string ExposedPort => "5432";
-        public string HostPort => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "5432" : "5433"; //  AppVeyor: 5432 Travis CI: 5433
+        public string HostPort => Environment.GetEnvironmentVariable("PG_PORT") ?? "5432";
         public string DbName => "my_database";
         public string DbPwd => "Password12!"; // AppVeyor
         public string DbUser => "postgres";

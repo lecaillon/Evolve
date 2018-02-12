@@ -14,7 +14,20 @@ var envHome = Environment.GetEnvironmentVariable("USERPROFILE") ?? Environment.G
 // SETUP / TEARDOWN
 ///////////////////////////////////////////////////////////////////////////////
 
-Setup(ctx => { Information($"Building Evolve {version}"); });
+Setup(ctx => 
+{ 
+    Information($"Building Evolve {version}");
+    if(IsRunningOnWindows())
+    { // AppVeyor
+        Environment.SetEnvironmentVariable("PG_PORT", "5432");
+        Environment.SetEnvironmentVariable("MYSQL_PORT", "3306");
+    }
+    else
+    { // Travis CI
+        Environment.SetEnvironmentVariable("PG_PORT", "5433");
+        Environment.SetEnvironmentVariable("MYSQL_PORT", "3307");
+    }
+});
 
 ///////////////////////////////////////////////////////////////////////////////
 // TASKS
