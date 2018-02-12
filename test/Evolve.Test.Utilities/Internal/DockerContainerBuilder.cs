@@ -45,7 +45,7 @@ namespace Evolve.Test.Utilities
                 return new DockerContainer(container.ID, DelayAfterStartup);
             }
 
-            if (RemovePreviousContainer)
+            if (container != null && RemovePreviousContainer)
             {
                 var oldContainer = new DockerContainer(container.ID, DelayAfterStartup);
                 oldContainer.Stop();
