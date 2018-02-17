@@ -37,6 +37,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.System.Data.SQLite.C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.SqlClient.ConsoleApp35.Test", "test-package\Evolve.SqlClient.ConsoleApp35.Test\Evolve.SqlClient.ConsoleApp35.Test.csproj", "{BAA32544-24E8-4986-B976-42A018D8345D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.System.Data.SQLite.ConsoleApp35.Test", "test-package\Evolve.System.Data.SQLite.ConsoleApp35.Test\Evolve.System.Data.SQLite.ConsoleApp35.Test.csproj", "{75F348BB-9F6A-46A7-BD6D-8EBA2471ED70}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -95,6 +97,10 @@ Global
 		{BAA32544-24E8-4986-B976-42A018D8345D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BAA32544-24E8-4986-B976-42A018D8345D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BAA32544-24E8-4986-B976-42A018D8345D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75F348BB-9F6A-46A7-BD6D-8EBA2471ED70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75F348BB-9F6A-46A7-BD6D-8EBA2471ED70}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75F348BB-9F6A-46A7-BD6D-8EBA2471ED70}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75F348BB-9F6A-46A7-BD6D-8EBA2471ED70}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -113,6 +119,7 @@ Global
 		{D776646D-B9D2-42D3-9E31-1E8844ADA802} = {7420B649-9F67-423C-BDBE-9198A5DA4029}
 		{3F13E923-08DD-4071-AA73-1389846D6876} = {3D88DCC8-AFAA-4734-BF76-D0E46D67B56A}
 		{BAA32544-24E8-4986-B976-42A018D8345D} = {7420B649-9F67-423C-BDBE-9198A5DA4029}
+		{75F348BB-9F6A-46A7-BD6D-8EBA2471ED70} = {3D88DCC8-AFAA-4734-BF76-D0E46D67B56A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D1A92AB0-3CBC-4174-A7D1-E6B53B0EAF73}
