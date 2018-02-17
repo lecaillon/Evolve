@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2026
+VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SQLite", "SQLite", "{3D88DCC8-AFAA-4734-BF76-D0E46D67B56A}"
 EndProject
@@ -27,9 +27,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evolve.SqlClient.AspNetCore
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evolve.Microsoft.Data.SQLite.AspNetCore11.Test", "test-package\Evolve.Microsoft.Data.SQLite.AspNetCore11.Test\Evolve.Microsoft.Data.SQLite.AspNetCore11.Test.csproj", "{4FC7F59C-4E97-4421-BB05-628E5F2FA3D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.Npgsql.ConsoleApp451.Test", "test-package\Evolve.Npgsql.ConsoleApp451.Test\Evolve.Npgsql.ConsoleApp451.Test.csproj", "{4DB04F5F-714C-4ADE-8F71-50495BAF772A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.Npgsql.ConsoleApp452.Test", "test-package\Evolve.Npgsql.ConsoleApp452.Test\Evolve.Npgsql.ConsoleApp452.Test.csproj", "{4DB04F5F-714C-4ADE-8F71-50495BAF772A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.MySql.Data.ConsoleApp451.Test", "test-package\Evolve.MySql.Data.ConsoleApp451.Test\Evolve.MySql.Data.ConsoleApp451.Test.csproj", "{EC4E4E06-79B9-4873-8A56-CE97FFEDA9D7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.MySql.Data.ConsoleApp452.Test", "test-package\Evolve.MySql.Data.ConsoleApp452.Test\Evolve.MySql.Data.ConsoleApp452.Test.csproj", "{EC4E4E06-79B9-4873-8A56-CE97FFEDA9D7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
