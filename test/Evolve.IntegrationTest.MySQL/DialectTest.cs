@@ -84,7 +84,7 @@ namespace Evolve.IntegrationTest.MySQL
             Assert.True(migrationMetadata.Name == migrationScript.Name, "Metadata name is not the same.");
             Assert.True(migrationMetadata.Success == true, "Metadata success is not true.");
             Assert.True(migrationMetadata.Id > 0, "Metadata id is not set.");
-            Assert.True(migrationMetadata.InstalledOn.Date == DateTime.UtcNow.Date, "Installed date is not set.");
+            Assert.True(migrationMetadata.InstalledOn.Date == DateTime.UtcNow.Date, $"Installed date is {migrationMetadata.InstalledOn.Date} whereas UtcNow is {DateTime.UtcNow.Date}.");
 
             // Update checksum
             metadata.UpdateChecksum(migrationMetadata.Id, "Hi !");
