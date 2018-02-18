@@ -35,6 +35,7 @@ namespace Evolve.Test.Configuration
             Assert.Equal(CommandOptions.Erase, evolve.Command);
             Assert.False(evolve.EnableClusterMode);
             Assert.False(evolve.OutOfOrder);
+            Assert.Equal(100, evolve.CommandTimeout);
         }
 
         [Fact(DisplayName = "Load_web_configuration_file_works")]
@@ -60,6 +61,7 @@ namespace Evolve.Test.Configuration
             Assert.Equal(CommandOptions.DoNothing, evolve.Command);
             Assert.True(evolve.EnableClusterMode);
             Assert.True(evolve.OutOfOrder);
+            Assert.Null(evolve.CommandTimeout);
         }
     }
 }

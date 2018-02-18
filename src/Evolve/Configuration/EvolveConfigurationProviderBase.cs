@@ -40,6 +40,7 @@ namespace Evolve.Configuration
         protected const string Placeholder = "Evolve.Placeholder.";
         protected const string EnableClusterMode = "Evolve.EnableClusterMode";
         protected const string OutOfOrder = "Evolve.OutOfOrder";
+        protected const string CommandTimeout = "Evolve.CommandTimeout";
 
         #endregion
 
@@ -225,6 +226,16 @@ namespace Evolve.Configuration
                 try
                 {
                     _configuration.OutOfOrder = Convert.ToBoolean(ReadValue(OutOfOrder));
+                }
+                catch { }
+            }
+
+            // CommandTimeout
+            if (!ReadValue(CommandTimeout).IsNullOrWhiteSpace())
+            {
+                try
+                {
+                    _configuration.CommandTimeout = int.Parse(ReadValue(CommandTimeout));
                 }
                 catch { }
             }

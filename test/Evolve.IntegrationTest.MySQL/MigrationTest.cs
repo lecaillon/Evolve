@@ -30,6 +30,7 @@ namespace Evolve.IntegrationTest.MySQL
             var evolve = new Evolve(cnn, msg => Debug.WriteLine(msg))
             {
                 Locations = new List<string> { TestContext.MigrationFolder },
+                CommandTimeout = 25
             };
 
             int nbMigration = Directory.GetFiles(TestContext.MigrationFolder).Length;

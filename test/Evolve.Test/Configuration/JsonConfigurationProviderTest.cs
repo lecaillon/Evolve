@@ -34,6 +34,7 @@ namespace Evolve.Test.Configuration
             Assert.Equal(CommandOptions.Erase, evolve.Command);
             Assert.True(evolve.EnableClusterMode);
             Assert.True(evolve.OutOfOrder);
+            Assert.Equal(200, evolve.CommandTimeout);
         }
 
         [Fact(DisplayName = "Load_multiple_json_configuration_files_works")]
@@ -62,6 +63,7 @@ namespace Evolve.Test.Configuration
             Assert.Equal(CommandOptions.Migrate, evolve.Command);
             Assert.False(evolve.EnableClusterMode);
             Assert.False(evolve.OutOfOrder);
+            Assert.Null(evolve.CommandTimeout);
         }
     }
 }

@@ -60,7 +60,7 @@ namespace Evolve
 
         public static long QueryForLong(this WrappedConnection wrappedConnection, string sql)
         {
-            return Execute(wrappedConnection, sql, (cmd) =>
+            return Execute(wrappedConnection, sql, cmd =>
             {
                 return Convert.ToInt64(cmd.ExecuteScalar());
             });
@@ -68,7 +68,7 @@ namespace Evolve
 
         public static string QueryForString(this WrappedConnection wrappedConnection, string sql)
         {
-            return Execute(wrappedConnection, sql, (cmd) =>
+            return Execute(wrappedConnection, sql, cmd =>
             {
                 return (string)cmd.ExecuteScalar();
             });
@@ -76,7 +76,7 @@ namespace Evolve
 
         public static bool QueryForBool(this WrappedConnection wrappedConnection, string sql)
         {
-            return Execute(wrappedConnection, sql, (cmd) =>
+            return Execute(wrappedConnection, sql, cmd =>
             {
                 return (bool)cmd.ExecuteScalar();
             });
@@ -84,7 +84,7 @@ namespace Evolve
 
         public static IEnumerable<string> QueryForListOfString(this WrappedConnection wrappedConnection, string sql)
         {
-            return Execute(wrappedConnection, sql, (cmd) =>
+            return Execute(wrappedConnection, sql, cmd =>
             {
                 var list = new List<string>();
                 using (var reader = cmd.ExecuteReader())
@@ -101,7 +101,7 @@ namespace Evolve
 
         public static IEnumerable<T> QueryForList<T>(this WrappedConnection wrappedConnection, string sql, Func<IDataReader, T> map)
         {
-            return Execute(wrappedConnection, sql, (cmd) =>
+            return Execute(wrappedConnection, sql, cmd =>
             {
                 var list = new List<T>();
                 using (var reader = cmd.ExecuteReader())
@@ -116,10 +116,14 @@ namespace Evolve
             });
         }
 
-        public static int ExecuteNonQuery(this WrappedConnection wrappedConnection, string sql)
+        public static int ExecuteNonQuery(this WrappedConnection wrappedConnection, string sql, int? commandTimeout = null)
         {
-            return Execute(wrappedConnection, sql, (cmd) =>
+            return Execute(wrappedConnection, sql, cmd =>
             {
+                if (commandTimeout != null)
+                {
+                    cmd.CommandTimeout = commandTimeout.Value;
+                }
                 return cmd.ExecuteNonQuery();
             });
         }

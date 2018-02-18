@@ -205,7 +205,8 @@ namespace Evolve
         public MigrationVersion StartVersion { get; set; } = MigrationVersion.MinVersion;
         public bool EnableClusterMode { get; set; } = true;
         public bool OutOfOrder { get; set; } = false;
-        
+        public int? CommandTimeout { get; set; }
+
         #endregion
 
         #region Properties
@@ -453,7 +454,7 @@ namespace Evolve
                 db.WrappedConnection.BeginTransaction();
                 foreach (string sql in script.LoadSqlStatements(Placeholders, Encoding, db.BatchDelimiter))
                 {
-                    db.WrappedConnection.ExecuteNonQuery(sql);
+                    db.WrappedConnection.ExecuteNonQuery(sql, CommandTimeout);
                 }
                 metadata.SaveMigration(script, true);
                 db.WrappedConnection.Commit();
