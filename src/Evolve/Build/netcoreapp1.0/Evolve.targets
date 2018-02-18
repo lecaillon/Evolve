@@ -4,10 +4,17 @@
     <Evolve_PlatformSuffix Condition=" '$(Evolve_PlatformSuffix)' == '' ">MSBuildFull/</Evolve_PlatformSuffix>
   </PropertyGroup>
   
-  <UsingTask TaskName="Evolve.MsBuild.EvolveBoot" AssemblyFile="$(MSBuildThisFileDirectory)$(Evolve_PlatformSuffix)Evolve.dll" />
+  <UsingTask TaskName="Evolve.MsBuild.EvolveBoot" 
+             AssemblyFile="$([MSBuild]::Unescape($(MSBuildThisFileDirectory)))$([MSBuild]::Unescape($(Evolve_PlatformSuffix)Evolve.dll))" />
   
   <Target Name="SqlMigration" AfterTargets="Build">
     <Message Condition="!Exists('Evolve.json') AND !Exists('evolve.json')" Importance="High" Text="No evolve.json configuration file found. Evolve MSBuild task execution deactivated." />
-    <EvolveBoot Condition="Exists('Evolve.json') OR Exists('evolve.json')" TargetPath="$(TargetPath)" ProjectDir="$(ProjectDir)" EvolveNugetPackageBuildDir="$(MSBuildThisFileDirectory)" IsDotNetStandardProject="true" MSBuildExtensionsPath="$(MSBuildExtensionsPath)" Configuration="$(Configuration)" />
+    <EvolveBoot Condition="Exists('Evolve.json') OR Exists('evolve.json')" 
+                TargetPath="$([MSBuild]::Unescape($(TargetPath)))" 
+                ProjectDir="$([MSBuild]::Unescape($(ProjectDir)))" 
+                EvolveNugetPackageBuildDir="$([MSBuild]::Unescape($(MSBuildThisFileDirectory)))" 
+                IsDotNetStandardProject="true" 
+                MSBuildExtensionsPath="$([MSBuild]::Unescape($(MSBuildExtensionsPath)))" 
+                Configuration="$(Configuration)" />
   </Target>
 </Project>
