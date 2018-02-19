@@ -32,7 +32,7 @@ namespace Evolve.Dialect.MySQL
             string sql = $"CREATE TABLE `{Schema}`.`{TableName}` " +
              "( " +
                  "id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
-                 "type TINYINT, " +
+                 "type TINYINT unsigned, " +
                  "version VARCHAR(50), " +
                  "description VARCHAR(200) NOT NULL, " +
                  "name VARCHAR(300) NOT NULL, " +
