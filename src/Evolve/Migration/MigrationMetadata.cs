@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO;
-using Evolve.Utilities;
 using Evolve.Metadata;
 
 namespace Evolve.Migration

@@ -1,6 +1,6 @@
-﻿using Evolve.Metadata;
+﻿using System;
+using Evolve.Metadata;
 using Evolve.Utilities;
-using System;
 
 namespace Evolve.Migration
 {

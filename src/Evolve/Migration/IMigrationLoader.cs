@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 
 namespace Evolve.Migration
 {
@@ -11,8 +12,9 @@ namespace Evolve.Migration
         /// <param name="prefix"> File name prefix for sql migrations. </param>
         /// <param name="separator"> File name separator for sql migrations. </param>
         /// <param name="suffix"> File name suffix for sql migrations. </param>
+        /// <param name="textEncoding"> Encoding of the migration script. </param>
         /// <returns> A list of migration script. </returns>
         /// <exception cref="EvolveException"> Throws EvolveException when duplicate version found. </exception>
-        IEnumerable<MigrationScript> GetMigrations(IEnumerable<string> locations, string prefix, string separator, string suffix);
+        IEnumerable<MigrationScript> GetMigrations(IEnumerable<string> locations, string prefix, string separator, string suffix, Encoding textEncoding);
     }
 }

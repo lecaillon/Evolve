@@ -26,7 +26,6 @@ namespace Evolve
         private const string CannotReleaseApplicationLock = "Error trying to release Evolve application lock.";
 
         // Validate
-        private const string IncorrectMigrationChecksum = "Validate failed: invalid checksum for migration: {0}.";
         private const string MigrationMetadataNotFound = "Validate failed: script {0} not found in the metadata table of applied migrations.";
         private const string ChecksumFixed = "Checksum fixed for migration: {0}.";
         private const string NoMetadataFound = "No metadata found.";
@@ -278,7 +277,7 @@ namespace Evolve
             var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
             var lastAppliedVersion = metadata.GetAllMigrationMetadata().LastOrDefault()?.Version ?? MigrationVersion.MinVersion;
             var startVersion = metadata.FindStartVersion(); // Load start version from metadata
-            var scripts = _loader.GetMigrations(Locations, SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix)
+            var scripts = _loader.GetMigrations(Locations, SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding)
                                  .SkipWhile(x => x.Version < startVersion)
                                  .SkipWhile(x => x.Version <= lastAppliedVersion)
                                  .TakeWhile(x => x.Version <= TargetVersion);
@@ -602,7 +601,7 @@ namespace Evolve
 
             var lastAppliedVersion = appliedMigrations.Last().Version;                                                      // Get the last applied migration version
             var startVersion = metadata.FindStartVersion();                                                                 // Load start version from metadata
-            var scripts = _loader.GetMigrations(Locations, SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix)
+            var scripts = _loader.GetMigrations(Locations, SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding)
                                  .SkipWhile(x => x.Version < startVersion)
                                  .TakeWhile(x => x.Version <= lastAppliedVersion);                                          // Keep scripts between first and last applied migration
 
@@ -622,19 +621,22 @@ namespace Evolve
                     }
                 }
 
-                string scriptChecksum = script.CalculateChecksum();
-                if (scriptChecksum != appliedMigration.Checksum)                                                            // Script found, verify checksum
+                try
+                {
+                    script.ValidateChecksum(appliedMigration.Checksum);                                                     // Script found, verify checksum
+                }
+                catch (Exception ex)
                 {
                     if (Command == CommandOptions.Repair)
                     {
-                        metadata.UpdateChecksum(appliedMigration.Id, scriptChecksum);
+                        metadata.UpdateChecksum(appliedMigration.Id, script.CalculateChecksum());
                         NbReparation++;
 
                         _logInfoDelegate(string.Format(ChecksumFixed, script.Name));
                     }
                     else
                     {
-                        throw new EvolveValidationException(string.Format(IncorrectMigrationChecksum, script.Name));
+                        throw ex;
                     }
                 }
             }

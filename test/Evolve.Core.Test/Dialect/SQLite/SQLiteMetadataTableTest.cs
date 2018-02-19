@@ -49,7 +49,7 @@ namespace Evolve.Core.Test.Dialect.SQLite
         [Fact(DisplayName = "SaveMigration_works")]
         public void SaveMigration_works()
         {
-            var migration = new MigrationScript(TestContext.ValidMigrationScriptPath, "1.0.0", "desc");
+            var migration = new FileMigrationScript(TestContext.ValidMigrationScriptPath, "1.0.0", "desc");
 
             using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
             {
@@ -64,7 +64,7 @@ namespace Evolve.Core.Test.Dialect.SQLite
         [Fact(DisplayName = "UpdateChecksum_works")]
         public void UpdateChecksum_works()
         {
-            var migration = new MigrationScript(TestContext.ValidMigrationScriptPath, "1.0.0", "desc");
+            var migration = new FileMigrationScript(TestContext.ValidMigrationScriptPath, "1.0.0", "desc");
 
             using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
             {
@@ -81,7 +81,7 @@ namespace Evolve.Core.Test.Dialect.SQLite
         [Fact(DisplayName = "GetAllMigrationMetadata_works")]
         public void GetAllMigrationMetadata_works()
         {
-            var migrationScript = new MigrationScript(TestContext.ValidMigrationScriptPath, "1.0.0", "desc");
+            var migrationScript = new FileMigrationScript(TestContext.ValidMigrationScriptPath, "1.0.0", "desc");
 
             using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
             {

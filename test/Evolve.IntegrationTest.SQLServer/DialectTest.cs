@@ -71,7 +71,7 @@ namespace Evolve.IntegrationTest.SQLServer
             Assert.True(metadata.CanEraseSchema(metadataSchemaName), $"[{metadataSchemaName}] should be erasable.");
 
             // Add metadata migration
-            var migrationScript = new MigrationScript(TestContext.EmptyMigrationScriptPath, "1_3_2", "Migration_description");
+            var migrationScript = new FileMigrationScript(TestContext.EmptyMigrationScriptPath, "1_3_2", "Migration_description");
             metadata.SaveMigration(migrationScript, true);
             var migrationMetadata = metadata.GetAllMigrationMetadata().FirstOrDefault();
             Assert.True(migrationMetadata != null, "One migration metadata should be found.");

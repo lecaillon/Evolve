@@ -1,47 +1,45 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Security.Cryptography;
+﻿using System.Collections.Generic;
 using System.Text;
 using Evolve.Metadata;
 using Evolve.Utilities;
 
 namespace Evolve.Migration
 {
-    public class MigrationScript : MigrationBase
+    public abstract class MigrationScript : MigrationBase
     {
-        public MigrationScript(string path, string version, string description) 
-            : base(version, description, System.IO.Path.GetFileName(Check.FileExists(path, nameof(path))), MetadataType.Migration)
+        private const string IncorrectMigrationChecksum = "Validate failed: invalid checksum for migration: {0}.";
+
+        public MigrationScript(string version, string description, string name, Encoding textEncoding = null) 
+            : base(version, description, name, MetadataType.Migration)
         {
-            Path = path;
+            Encoding = textEncoding ?? Encoding.UTF8;
         }
 
-        public string Path { get; set; }
-
-        public string CalculateChecksum()
+        public Encoding Encoding { get; }
+        
+        /// <summary>
+        ///     Validates the <paramref name="checksum"/> against the actual migration one.
+        ///     Throws on mismatch.
+        /// </summary>
+        /// <param name="checksum"> The applied migration checksum. </param>
+        /// <exception cref="EvolveValidationException"></exception>
+        public virtual void ValidateChecksum(string checksum)
         {
-            using (var md5 = MD5.Create())
+            Check.NotNull(checksum, nameof(checksum));
+
+            if (checksum != CalculateChecksum())
             {
-                using (FileStream stream = File.OpenRead(Path))
-                {
-                    byte[] checksum = md5.ComputeHash(stream);
-                    return BitConverter.ToString(checksum).Replace("-", string.Empty);
-                }
+                throw new EvolveValidationException(string.Format(IncorrectMigrationChecksum, Name));
             }
         }
 
-        public IEnumerable<string> LoadSqlStatements(Dictionary<string, string> placeholders, Encoding encoding, string delimiter)
-        {
-            Check.NotNull(placeholders, nameof(placeholders));
-            Check.NotNull(encoding, nameof(encoding));
+        public abstract string CalculateChecksum();
 
-            string sql = File.ReadAllText(Path, encoding);
-            foreach (var entry in placeholders)
-            {
-                sql = sql.Replace(entry.Key, entry.Value);
-            }
+        public abstract IEnumerable<string> LoadSqlStatements(Dictionary<string, string> placeholders, Encoding encoding, string delimiter);
 
-            return MigrationUtil.SplitSqlStatements(sql, delimiter);
-        }
+        /// <summary>
+        ///     <code>crlf</code> and <code>lf</code> line endings will be normalized to <code>lf</code>
+        /// </summary>
+        protected static string NormalizeLineEndings(string str) => str.Replace("\r\n", "\n");
     }
 }
