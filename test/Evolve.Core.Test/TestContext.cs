@@ -10,7 +10,9 @@ namespace Evolve.Core.Test
             ResourcesFolder = Path.Combine(Path.GetDirectoryName(typeof(TestContext).GetTypeInfo().Assembly.Location), "Resources");
             ScriptsSQL1 = Path.Combine(ResourcesFolder, "Scripts_SQL_1");
             ScriptsSQL2 = Path.Combine(ResourcesFolder, "Scripts_SQL_2");
-            ValidMigrationScriptPath = Path.Combine(ResourcesFolder, "V1_3_1__Migration_description.sql");
+            ScriptsSQL3 = Path.Combine(ResourcesFolder, "Scripts_SQL_3");
+            ValidMigrationScriptPath = Path.Combine(ScriptsSQL3, "V2_3_1__Migration_description.sql");
+            ValidLfMigrationScriptPath = Path.Combine(ScriptsSQL3, "V2_3_2__Migration_description_lf.sql");
             ChinookScriptPath = Path.Combine(ResourcesFolder, "Chinook_Sqlite.sql");
         }
 
@@ -20,7 +22,11 @@ namespace Evolve.Core.Test
 
         public static string ScriptsSQL2 { get; }
 
+        public static string ScriptsSQL3 { get; }
+
         public static string ValidMigrationScriptPath { get; }
+
+        public static string ValidLfMigrationScriptPath { get; }
 
         public static string ChinookScriptPath { get; }
 
