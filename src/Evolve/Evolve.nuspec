@@ -12,12 +12,18 @@
     <summary>Database migration tool for .NET. Inspired by Flyway.</summary>
     <description>Evolve is an easy migration tool that uses plain old sql scripts. Its purpose is to automate your database changes, and help keep those changes synchronized through all your environments and developpement teams.
 Every time you build your project, it will automatically ensure that your database is up-to-date, without having to do anything other than build. Install it and forget it !</description>
-    <releaseNotes>Add full support of .NET Core 2.0</releaseNotes>
+    <releaseNotes>- Full .NET Core 2.0 support.
+- Add a new configuration parameter: Evolve.CommandTimeout.
+- Normalize line endings when calculating checksums. (Thx to @mhelleborg)
+- New Cake build script.
+- Add new Evolve package integration tests.
+- Fix Linux evolve.json not found for lowercase file name.
+- Fix MSBuild task fails if path contains parentheses.</releaseNotes>
     <copyright>Copyright © P.Lécaillon 2018</copyright>
     <tags>Evolve Flyway sql database migration database-migration continuous-integration continuous-delivery</tags>
     <dependencies>
       <group targetFramework="net35" />
-      <group targetFramework="net451">
+      <group targetFramework="net452">
         <dependency id="Microsoft.DotNet.PlatformAbstractions"    version="1.0.3" />
         <dependency id="Microsoft.Extensions.DependencyModel"     version="1.0.3" />
         <dependency id="Newtonsoft.Json"                          version="9.0.1" />
@@ -27,6 +33,13 @@ Every time you build your project, it will automatically ensure that your databa
         <dependency id="Microsoft.Build.Framework"                version="15.1.548" />
         <dependency id="Microsoft.Build.Utilities.Core"           version="15.1.548" />
         <dependency id="Microsoft.Extensions.DependencyModel"     version="1.0.3" />
+        <dependency id="System.Runtime.Loader"                    version="4.0.0" />
+      </group>
+      <group targetFramework="netcoreapp2.0">
+        <dependency id="System.Data.Common"                       version="4.1.0" />
+        <dependency id="Microsoft.Build.Framework"                version="15.1.548" />
+        <dependency id="Microsoft.Build.Utilities.Core"           version="15.1.548" />
+        <dependency id="Microsoft.Extensions.DependencyModel"     version="2.0.3" />
         <dependency id="System.Runtime.Loader"                    version="4.0.0" />
       </group>
     </dependencies>
