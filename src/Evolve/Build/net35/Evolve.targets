@@ -1,7 +1,9 @@
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <UsingTask TaskName="Evolve.MsBuild.EvolveBoot" AssemblyFile="$([MSBuild]::Unescape($(TargetDir)\Evolve.dll))" />
   <Target Name="SqlMigration" AfterTargets="Build">
-    <EvolveBoot TargetPath="$([MSBuild]::Unescape($(TargetPath)))" 
+    <Message Condition="!Exists('Web.config') AND !Exists('App.config')" Importance="High" Text="No configuration file found. Evolve MSBuild task execution deactivated." />
+    <EvolveBoot Condition="Exists('Web.config') OR Exists('App.config')" 
+                TargetPath="$([MSBuild]::Unescape($(TargetPath)))" 
                 ProjectDir="$([MSBuild]::Unescape($(ProjectDir)))" 
                 EvolveNugetPackageBuildDir="$([MSBuild]::Unescape($(MSBuildThisFileDirectory)))" 
                 IsDotNetStandardProject="false" 
