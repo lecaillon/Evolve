@@ -46,4 +46,4 @@ test: off
 #---------------------------------#
 
 artifacts:
-- path: '**\Evolve*.nupkg'
+- path: '.\dist\Evolve*.nupkg'
