@@ -8,7 +8,7 @@
              AssemblyFile="$([MSBuild]::Unescape($(MSBuildThisFileDirectory)))$([MSBuild]::Unescape($(Evolve_PlatformSuffix)Evolve.dll))" />
   
   <Target Name="SqlMigration" AfterTargets="Build">
-    <Message Condition="!Exists('Evolve.json') AND !Exists('evolve.json')" Importance="High" Text="No evolve.json configuration file found. Evolve MSBuild task execution deactivated." />
+    <Message Condition="!Exists('Evolve.json') AND !Exists('evolve.json')" Importance="High" Text="Evolve MSBuild mode is off: evolve.json configuration file not found." />
     <EvolveBoot Condition="Exists('Evolve.json') OR Exists('evolve.json')" 
                 TargetPath="$([MSBuild]::Unescape($(TargetPath)))" 
                 ProjectDir="$([MSBuild]::Unescape($(ProjectDir)))" 

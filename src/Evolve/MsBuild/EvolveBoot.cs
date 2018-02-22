@@ -3,6 +3,7 @@ using System.IO;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using System.Collections.Generic;
+using Evolve.Configuration;
 
 namespace Evolve.MsBuild
 {
@@ -98,8 +99,6 @@ namespace Evolve.MsBuild
 
             try
             {
-                WriteHeader();
-
                 Directory.SetCurrentDirectory(TargetDir);
                 Evolve evolve = null;
 #if NETCORE
@@ -116,10 +115,16 @@ namespace Evolve.MsBuild
                     evolve = new Evolve(EvolveConfigurationFile, logInfoDelegate: msg => LogInfo(msg), environmentName: Configuration);
                 }
 #endif
+                if (evolve.Command == CommandOptions.DoNothing)
+                {
+                    LogInfo("Evolve MSBuild mode is off: Evolve.Command parameter not set.");
+                    return true;
+                }
+
+                WriteHeader();
+
                 CopyMigrationProjectDirToTargetDir(evolve.Locations);
-
                 evolve.ExecuteCommand();
-
                 return true;
             }
             catch (Exception ex)
