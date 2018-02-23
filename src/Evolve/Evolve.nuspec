@@ -15,6 +15,7 @@ Every time you build your project, it will automatically ensure that your databa
     <releaseNotes>- Full .NET Core 2.0 support.
 - Add a new configuration parameter: Evolve.CommandTimeout.
 - Normalize line endings when calculating checksums. (Thx to @mhelleborg)
+- Support to drop temporal tables in SQL Server.
 - New Cake build script.
 - Add new Evolve package integration tests.
 - Fix Linux evolve.json not found for lowercase file name.

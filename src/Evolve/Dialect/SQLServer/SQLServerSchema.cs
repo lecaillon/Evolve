@@ -1,10 +1,13 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Evolve.Connection;
 
 namespace Evolve.Dialect.SQLServer
 {
     public class SQLServerSchema : Schema
     {
+        private long _version = 0;
+
         public SQLServerSchema(string schemaName, WrappedConnection wrappedConnection) : base(schemaName, wrappedConnection)
         {
         }
@@ -54,11 +57,12 @@ namespace Evolve.Dialect.SQLServer
             DropDefaultConstraints();
             DropProcedures();
             DropViews();
+            DropSystemVersioning();  // SQLServerVersion >= 13
             DropTables();
             DropFunctions();
             DropTypes();
             DropSynonyms();
-            DropSequences(); // SQLServer >= 11
+            DropSequences(); // SQLServerVersion >= 11
 
             return true;
         }
@@ -108,6 +112,25 @@ namespace Evolve.Dialect.SQLServer
             });
         }
 
+        private void DropSystemVersioning()
+        {
+            if (SQLServerVersion < 13)
+            {
+                return;
+            }
+
+            string sql = "SELECT t.name as TABLE_NAME " +
+                         "FROM sys.tables t " +
+                         "INNER JOIN sys.schemas s ON s.schema_id = t.schema_id " +
+                        $"WHERE s.name = '{Name}' " +
+                         "AND t.temporal_type = 2";
+
+            _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(table =>
+            {
+                _wrappedConnection.ExecuteNonQuery($"ALTER TABLE [{Name}].[{table}] SET (SYSTEM_VERSIONING = OFF)");
+            });
+        }
+
         protected void DropTables()
         {
             string sql = $"SELECT table_name FROM INFORMATION_SCHEMA.TABLES WHERE table_type='BASE TABLE' AND table_schema = '{Name}'";
@@ -146,20 +169,34 @@ namespace Evolve.Dialect.SQLServer
 
         protected void DropSequences()
         {
-            string sqlversion = "SELECT CAST (CASE WHEN CAST(SERVERPROPERTY ('productversion') as VARCHAR) LIKE '8%' THEN 8 " +
-                                                  "WHEN CAST(SERVERPROPERTY ('productversion') as VARCHAR) LIKE '9%' THEN 9 " +
-                                                  "WHEN CAST(SERVERPROPERTY ('productversion') as VARCHAR) LIKE '10%' THEN 10 " +
-                                                  "ELSE CAST(LEFT(CAST(SERVERPROPERTY ('productversion') as VARCHAR), 2) as int) " +
-                                             "END AS int)";
-
-            if (_wrappedConnection.QueryForLong(sqlversion) < 11)
+            if (SQLServerVersion < 11)
+            {
                 return;
+            }
 
             string sql = $"SELECT sequence_name FROM INFORMATION_SCHEMA.SEQUENCES WHERE sequence_schema = '{Name}'";
             _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(s =>
             {
                 _wrappedConnection.ExecuteNonQuery($"DROP SEQUENCE [{Name}].[{s}]");
             });
+        }
+
+        private long SQLServerVersion
+        {
+            get
+            {
+                if (_version > 0)
+                {
+                    return _version;
+                }
+
+                _version = _wrappedConnection.QueryForLong("SELECT CAST (CASE WHEN CAST(SERVERPROPERTY ('productversion') as VARCHAR) LIKE '8%' THEN 8 " +
+                                                                             "WHEN CAST(SERVERPROPERTY ('productversion') as VARCHAR) LIKE '9%' THEN 9 " +
+                                                                             "WHEN CAST(SERVERPROPERTY ('productversion') as VARCHAR) LIKE '10%' THEN 10 " +
+                                                                             "ELSE CAST(LEFT(CAST(SERVERPROPERTY ('productversion') as VARCHAR), 2) as int) " +
+                                                                        "END AS int)");
+                return _version;
+            }
         }
     }
 }
