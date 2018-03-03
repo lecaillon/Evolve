@@ -31,10 +31,10 @@ namespace AspNetCoreSample
                 try
                 {
                     var cnx = new SqliteConnection(Configuration.GetConnectionString("MyDatabase"));
-                    var evolve = new Evolve.Evolve("evolve.json", cnx, msg => _logger.LogInformation(msg))
+                    var evolve = new Evolve.Evolve("evolve.json", cnx, msg => _logger.LogInformation(msg)) // retrieve the MSBuild configuration
                     {
-                        Locations = new List<string> { "scripts/migrations" },
-                        IsEraseDisabled = true,
+                        Locations = new List<string> { "db/migrations" }, // exclude db/datasets from production environment
+                        IsEraseDisabled = true, // ensure erase command is disabled in production
                     };
 
                     evolve.Migrate();

@@ -5,8 +5,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="scripts\migrations\" />
-    <Folder Include="scripts\datasets\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
