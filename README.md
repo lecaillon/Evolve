@@ -6,6 +6,11 @@ This makes it an ideal tool for continuous integration / delivery.
 
 Over all Evolve embraces simplicity. Every time you build or run your project, it will automatically ensure that your database is up-to-date. Install it and forget it!
 
+## Documentation
+- [Getting started](https://evolve-db.netlify.com/getting-started/)
+- [Concepts](https://evolve-db.netlify.com/concepts/)
+- [Samples](https://evolve-db.netlify.com/samples/)
+
 ## Supported Databases
 - [x] PostgreSQL
 - [x] SQL Server
@@ -17,11 +22,6 @@ Over all Evolve embraces simplicity. Every time you build or run your project, i
 - [x] .NET 4.5.2+
 - [x] .NET Core 1.0+
 - [x] .NET Core 2.0+
-
-## Documentation
-- [Getting started](https://evolve-db.netlify.com/getting-started/)
-- [Concepts](https://evolve-db.netlify.com/concepts/)
-- [Samples](https://evolve-db.netlify.com/samples/)
 
 ## Feedback and issues
 Feedback, improvements, ideas are welcomed.
