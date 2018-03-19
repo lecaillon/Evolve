@@ -31,5 +31,6 @@ namespace Evolve.Core2.Test.Driver
     [CollectionDefinition("Database collection")]
     public class DatabaseCollection : ICollectionFixture<MySQLFixture>,
                                       ICollectionFixture<PostgreSqlFixture>,
-                                      ICollectionFixture<SQLServerFixture> { }
+                                      ICollectionFixture<SQLServerFixture>,
+                                      ICollectionFixture<CassandraFixture> { }
 }

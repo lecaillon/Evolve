@@ -9,7 +9,6 @@ namespace Evolve.Test.Utilities
         public string Id => _container.Id;
         public string ExposedPort => "9042";
         public string HostPort => "9042";
-        public string Keyspace => "my_keyspace";
         public TimeSpan DelayAfterStartup => TimeSpan.FromMinutes(1);
 
         public bool Start(bool fromScratch = false)
