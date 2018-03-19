@@ -10,6 +10,7 @@
     <PackageReference Include="Npgsql" Version="3.2.6" />
     <PackageReference Include="sqlite" Version="3.13.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.4.2" />
+    <PackageReference Include="CassandraCSharpDriver" Version="3.4.1" />
   </ItemGroup>
 
 </Project>
