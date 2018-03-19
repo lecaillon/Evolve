@@ -73,7 +73,7 @@ namespace Evolve.Core.Test.Driver
         public void CassandraDriver_NET_Core_1_1_works()
         {
             var driver = new CoreCassandraDriver(TestContext.NetCore11DepsFile, TestContext.NugetPackageFolder);
-            var cnn = driver.CreateConnection("Contact Points=127.0.0.1;Port=9042;Cluster Name=evolve");
+            var cnn = driver.CreateConnection($"Contact Points=127.0.0.1;Port={_cassandraFixture.Cassandra.HostPort};Cluster Name={_cassandraFixture.Cassandra.ClusterName}");
             cnn.Open();
 
             Assert.True(cnn.State == ConnectionState.Open);

@@ -55,6 +55,14 @@ namespace Evolve
             }
             catch { }
 
+            try
+            {
+                dbVersion = QueryForString(wrappedConnection, "select release_version from system.local");
+                if (!dbVersion.IsNullOrWhiteSpace())
+                    return DBMS.Cassandra;
+            }
+            catch { }
+
             throw new EvolveException(DBMSNotSUpported);
         }
 
@@ -109,6 +117,14 @@ namespace Evolve
             return Execute(wrappedConnection, sql, cmd =>
             {
                 return (bool)cmd.ExecuteScalar();
+            });
+        }
+
+        public static T Query<T>(this WrappedConnection wrappedConnection, string sql)
+        {
+            return Execute(wrappedConnection, sql, cmd =>
+            {
+                return (T)cmd.ExecuteScalar();
             });
         }
 

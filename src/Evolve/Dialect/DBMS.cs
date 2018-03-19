@@ -6,6 +6,7 @@
         Oracle,
         PostgreSQL,
         SQLite,
-        SQLServer
+        SQLServer,
+        Cassandra
     }
 }
