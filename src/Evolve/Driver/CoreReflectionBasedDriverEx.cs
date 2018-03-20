@@ -349,7 +349,7 @@ namespace Evolve.Driver
                 $"Driver details: " + Environment.NewLine +
                 $"- Assembly: {DriverTypeName.Assembly}" + Environment.NewLine +
                 $"- Type: {DriverTypeName.Type}" + Environment.NewLine +
-                $"- OS platform: {OSPlatform}" + Environment.NewLine +
+                $"- OS platform: {String.Join(", ", OSPlatform)}" + Environment.NewLine +
                 $"- Process architecture: {ProcessArchitecture}" + Environment.NewLine +
                 $"- Deps file: {_depsFile}" + Environment.NewLine +
                 $"- Managed dependencies found: " + Environment.NewLine +
