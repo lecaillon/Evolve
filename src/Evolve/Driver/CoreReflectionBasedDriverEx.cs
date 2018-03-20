@@ -163,6 +163,7 @@ namespace Evolve.Driver
 
             ManagedDependencies.Where(x => !x.Equals(driverPath, StringComparison.OrdinalIgnoreCase))
                                .Where(x => !Path.GetFileName(x).Equals("System.Data.Common.dll", StringComparison.OrdinalIgnoreCase)) // .NET Core 1.1
+                               .Where(x => !Path.GetFileName(x).Equals("sqlite3.dll", StringComparison.OrdinalIgnoreCase)) // .NET Core 1.1
                                .Distinct()
                                .ToList()
                                .ForEach(x => _assemblyLoader.LoadFromAssemblyPath(x));

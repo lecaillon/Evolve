@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Evolve\Evolve.csproj" />
-    <ProjectReference Include="..\Evolve.Core.Test.Resources.SupportedDrivers\Evolve.Core.Test.Resources.SupportedDrivers.csproj" />
     <ProjectReference Include="..\Evolve.Test.Utilities\Evolve.Test.Utilities.csproj" />
   </ItemGroup>
 
