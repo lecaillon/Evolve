@@ -32,11 +32,17 @@ namespace Evolve.Driver
         /// </summary>
         /// <param name="driverAssemblyName"> Assembly to load the driver Type from. </param>
         /// <param name="connectionTypeName"> Name of the driver Type. </param>
+        /// <param name="nugetPackageName"> Name of the Nuget package of the driver in the deps file. </param>
         /// <param name="depsFile"> Dependency file of the project to migrate. </param>
         /// <param name="nugetPackageDir"> Path to the NuGet package folder. </param>
         /// <param name="msBuildExtensionsPath"> Path to the MSBuild extension folder for .NET Core 2.0 drivers. </param>
-        public CoreReflectionBasedDriverForNetEx(string driverAssemblyName, string connectionTypeName, string depsFile, string nugetPackageDir, string msBuildExtensionsPath) 
-            : base(driverAssemblyName, connectionTypeName, depsFile, nugetPackageDir)
+        public CoreReflectionBasedDriverForNetEx(string driverAssemblyName, 
+                                                 string connectionTypeName, 
+                                                 string nugetPackageName,
+                                                 string depsFile, 
+                                                 string nugetPackageDir, 
+                                                 string msBuildExtensionsPath) 
+            : base(driverAssemblyName, connectionTypeName, nugetPackageName, depsFile, nugetPackageDir)
         {
             if (!string.IsNullOrEmpty(msBuildExtensionsPath))
             {
@@ -144,7 +150,7 @@ namespace Evolve.Driver
             ManagedDependencies = new List<string>();
             NativeDependencies = new List<string>();
 
-            RuntimeLibrary rootLib = GetRuntimeLibrary(DriverTypeName.Assembly);
+            RuntimeLibrary rootLib = GetRuntimeLibrary(NugetPackageName);
             FindDependencies(rootLib);
 
             string driverPath = ManagedDependencies.FirstOrDefault(x => x.Contains(DriverTypeName.Assembly));
@@ -366,7 +372,7 @@ namespace Evolve.Driver
             public string Version { get; }
             public List<long> VersionParts { get; set; }
 
-            #region IComparable
+#region IComparable
 
             public int CompareTo(AssemblyVersion other)
             {
@@ -397,9 +403,9 @@ namespace Evolve.Driver
                 return CompareTo(obj as AssemblyVersion);
             }
 
-            #endregion
+#endregion
 
-            #region Operators
+#region Operators
 
             public override bool Equals(object obj) => (CompareTo(obj as AssemblyVersion) == 0);
 
@@ -423,7 +429,7 @@ namespace Evolve.Driver
 
             public static bool operator <=(AssemblyVersion operand1, AssemblyVersion operand2) => operand1.CompareTo(operand2) <= 0;
 
-            #endregion
+#endregion
 
             public override int GetHashCode() => Version.GetHashCode();
 

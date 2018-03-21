@@ -52,11 +52,18 @@ namespace Evolve.Driver
         /// </summary>
         /// <param name="driverAssemblyName"> Assembly to load the driver Type from. </param>
         /// <param name="connectionTypeName"> Name of the driver Type. </param>
+        /// <param name="nugetPackageName"> Name of the Nuget package of the driver in the deps file. </param>
         /// <param name="depsFile"> Dependency file of the project to migrate. </param>
         /// <param name="nugetPackageDir"> Path to the NuGet package folder. </param>
         /// <exception cref="EvolveCoreDriverException"></exception>
-        public CoreReflectionBasedDriverEx(string driverAssemblyName, string connectionTypeName, string depsFile, string nugetPackageDir) : base(driverAssemblyName, connectionTypeName)
+        public CoreReflectionBasedDriverEx(string driverAssemblyName,
+                                           string connectionTypeName,
+                                           string nugetPackageName,
+                                           string depsFile,
+                                           string nugetPackageDir)
+            : base(driverAssemblyName, connectionTypeName)
         {
+            NugetPackageName = nugetPackageName;
             _depsFile = Check.FileExists(depsFile, nameof(depsFile));
             NugetPackageDir = Check.DirectoryExists(nugetPackageDir, nameof(nugetPackageDir));
             ProjectDependencyContext = LoadDependencyContext(depsFile);
@@ -64,7 +71,7 @@ namespace Evolve.Driver
             {
                 NuGetFallbackDir = GetNuGetFallbackFolder();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Debug.WriteLine($"NuGetFallbackFolder not found. {ex.Message}");
             }
@@ -83,6 +90,11 @@ namespace Evolve.Driver
         ///     NuGet package cache folder
         /// </summary>
         protected string NugetPackageDir { get; }
+
+        /// <summary>
+        ///     NuGet package name of the driver in the deps file
+        /// </summary>
+        protected string NugetPackageName { get; }
 
         /// <summary>
         ///     NuGet package fallback folder
@@ -152,7 +164,7 @@ namespace Evolve.Driver
             ManagedDependencies = new List<string>();
             NativeDependencies = new List<string>();
 
-            RuntimeLibrary rootLib = GetRuntimeLibrary(DriverTypeName.Assembly);
+            RuntimeLibrary rootLib = GetRuntimeLibrary(NugetPackageName);
             FindDependencies(rootLib);
 
             string driverPath = ManagedDependencies.FirstOrDefault(x => x.Contains(DriverTypeName.Assembly));

@@ -9,9 +9,10 @@ namespace Evolve.Driver
     {
         public const string DriverAssemblyName = "Microsoft.Data.Sqlite";
         public const string ConnectionTypeName = "Microsoft.Data.Sqlite.SqliteConnection";
+        public const string NugetPackageName = "Microsoft.Data.Sqlite";
 
-        public CoreMicrosoftDataSqliteDriver(string depsFile, string nugetPackageDir) 
-            : base(DriverAssemblyName, ConnectionTypeName, depsFile, nugetPackageDir)
+        public CoreMicrosoftDataSqliteDriver(string depsFile, string nugetPackageDir)
+            : base(DriverAssemblyName, ConnectionTypeName, NugetPackageName, depsFile, nugetPackageDir)
         {
         }
     }
@@ -43,9 +44,10 @@ namespace Evolve.Driver
     {
         public const string DriverAssemblyName = "Microsoft.Data.Sqlite";
         public const string ConnectionTypeName = "Microsoft.Data.Sqlite.SqliteConnection";
+        public const string NugetPackageName = "Microsoft.Data.Sqlite";
 
         public CoreMicrosoftDataSqliteDriverForNet(string depsFile, string nugetPackageDir, string msBuildExtensionsPath)
-            : base(DriverAssemblyName, ConnectionTypeName, depsFile, nugetPackageDir, msBuildExtensionsPath)
+            : base(DriverAssemblyName, ConnectionTypeName, NugetPackageName, depsFile, nugetPackageDir, msBuildExtensionsPath)
         {
         }
     }
