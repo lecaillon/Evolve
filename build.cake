@@ -74,6 +74,16 @@ Task("Test").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 
 Task("Test Core").Does(() =>
 {
+
+    foreach(var project in GetFiles("./test/**/Evolve.Core*.Test.Resources.SupportedDrivers.csproj"))
+    {
+        DotNetCoreBuild(project.FullPath, new DotNetCoreBuildSettings 
+        {
+            Configuration = configuration,
+            ArgumentCustomization = args => args.Append($"--no-restore"),
+        });
+    }
+
     foreach(var project in GetFiles("./test/**/Evolve.Core*.Test*.csproj").Where(x => !x.GetFilename().FullPath.Contains("Resources")))
     {
         DotNetCoreTest(project.FullPath, new DotNetCoreTestSettings 
