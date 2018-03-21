@@ -103,10 +103,13 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <Content Include="Resources\Cql_Scripts\Migration\V1_Create_Keyspace_And_Table.cql">
+    <Content Include="Resources\Cql_Scripts\Migration\V1_0_0_2__Create_Table.cql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Cql_Scripts\Migration\V2_Add_Column.cql">
+    <Content Include="Resources\Cql_Scripts\Migration\V1_0_0_1__Create_Keyspace.cql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Cql_Scripts\Migration\V2_0_0_1__Add_Column.cql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\V1_3_2__Migration_description.cql">

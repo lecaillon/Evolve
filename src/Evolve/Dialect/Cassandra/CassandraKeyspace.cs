@@ -7,12 +7,15 @@ namespace Evolve.Dialect.Cassandra
 {
     public sealed class CassandraKeyspace : Schema
     {
+        //Might want to make this configurable
+        private static ReplicationStrategy DefaultReplicationStrategy = CreateSimpleStrategy(1);
+
         private readonly ReplicationStrategy _replicationStrategy;
 
         public CassandraKeyspace(string keyspaceName, ReplicationStrategy replicationStrategy, WrappedConnection wrappedConnection)
             : base(keyspaceName, wrappedConnection)
         {
-            _replicationStrategy = replicationStrategy;
+            _replicationStrategy = replicationStrategy ?? throw new ArgumentNullException(nameof(replicationStrategy));
         }
 
         public override bool Create()
@@ -71,7 +74,7 @@ namespace Evolve.Dialect.Cassandra
             var replication = wrappedConnection.Query<SortedDictionary<string, string>>($"select replication from system_schema.keyspaces where keyspace_name = '{keyspaceName}'");
 
             if (replication == null || !replication.Any())
-                throw new ArgumentOutOfRangeException($"Keyspace {keyspaceName} does not exist");
+                return new CassandraKeyspace(keyspaceName, DefaultReplicationStrategy, wrappedConnection);
 
             return new CassandraKeyspace(keyspaceName, ReplicationStrategy.FromSortedDictionary(replication), wrappedConnection);
         }
@@ -86,11 +89,11 @@ namespace Evolve.Dialect.Cassandra
                 switch (type)
                 {
                     case "org.apache.cassandra.locator.LocalStrategy":
-                        return new LocalStrategy();
+                        return CreateLocalStrategy();
                     case "org.apache.cassandra.locator.SimpleStrategy":
-                        return new SimpleStrategy(int.Parse(properties["replication_factor"]));
+                        return CreateSimpleStrategy(int.Parse(properties["replication_factor"]));
                     case "org.apache.cassandra.locator.NetworkTopologyStrategy":
-                        return new NetworkTopologyStrategy(
+                        return CreateNetworkTopologyStrategy(
                             properties
                                 .Where(i => i.Key != "class")
                                 .Select(i =>
@@ -103,10 +106,12 @@ namespace Evolve.Dialect.Cassandra
             }
         }
 
-        public static ReplicationStrategy CreateLocalStrategy() => new LocalStrategy();
+        internal static ReplicationStrategy CreateLocalStrategy() => new LocalStrategy();
 
         public sealed class LocalStrategy : ReplicationStrategy
         {
+            internal LocalStrategy() { }
+
             public override string ToCql() => "{ 'class' : 'LocalStrategy' }";
         }
 

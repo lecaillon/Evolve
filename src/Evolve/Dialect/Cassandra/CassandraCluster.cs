@@ -1,4 +1,5 @@
-﻿using Evolve.Connection;
+﻿using System.Data;
+using Evolve.Connection;
 using Evolve.Metadata;
 
 namespace Evolve.Dialect.Cassandra
@@ -7,9 +8,7 @@ namespace Evolve.Dialect.Cassandra
     {
         private string _currentKeyspaceName = "system";
 
-        public CassandraCluster(WrappedConnection wrappedConnection) : base(wrappedConnection)
-        {
-        }
+        public CassandraCluster(WrappedConnection wrappedConnection) : base(wrappedConnection) { }
 
         public override string DatabaseName => "Cassandra";
 
