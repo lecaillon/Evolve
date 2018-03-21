@@ -7,11 +7,12 @@ namespace Evolve.Driver
     /// </summary>
     public class CoreCassandraDriver : CoreReflectionBasedDriverEx
     {
-        public const string DriverAssemblyName = "Cassandra";
-        public const string ConnectionTypeName = "Cassandra.Data.CqlConnection";
+        private const string DriverAssemblyName = "Cassandra";
+        private const string ConnectionTypeName = "Cassandra.Data.CqlConnection";
+        private const string NugetPackageId = "CassandraCSharpDriver";
 
         public CoreCassandraDriver(string depsFile, string nugetPackageDir)
-            : base(DriverAssemblyName, ConnectionTypeName, depsFile, nugetPackageDir)
+            : base(DriverAssemblyName, ConnectionTypeName, NugetPackageId, depsFile, nugetPackageDir)
         {
         }
     }
@@ -41,11 +42,12 @@ namespace Evolve.Driver
     /// </summary>
     public class CoreCassandraDriverForNet : CoreReflectionBasedDriverForNetEx
     {
-        public const string DriverAssemblyName = "Cassandra";
-        public const string ConnectionTypeName = "Cassandra.Data.CqlConnection";
+        private const string DriverAssemblyName = "Cassandra";
+        private const string ConnectionTypeName = "Cassandra.Data.CqlConnection";
+        private const string NugetPackageId = "CassandraCSharpDriver";
 
         public CoreCassandraDriverForNet(string depsFile, string nugetPackageDir, string msBuildExtensionsPath) 
-            : base(DriverAssemblyName, ConnectionTypeName, depsFile, nugetPackageDir, msBuildExtensionsPath)
+            : base(DriverAssemblyName, ConnectionTypeName, NugetPackageId, depsFile, nugetPackageDir, msBuildExtensionsPath)
         {
         }
     }

@@ -1,9 +1,46 @@
-﻿using Xunit;
+﻿using Cassandra.Data;
+using Evolve.Test.Utilities;
+using System.Collections.Generic;
+using System.IO;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace Evolve.IntegrationTest.Cassandra
 {
     [Collection("Database collection")]
     public class MigrationTest
     {
+        private readonly CassandraFixture _cassandraFixture;
+        private readonly ITestOutputHelper _output;
+
+        public MigrationTest(CassandraFixture cassandraFixture, ITestOutputHelper output)
+        {
+            _cassandraFixture = cassandraFixture;
+            _output = output;
+            if (!TestContext.Travis && !TestContext.AppVeyor)
+            { // AppVeyor and Windows 2016 does not support linux docker images
+                cassandraFixture.Start(fromScratch: true);
+            }
+        }
+
+        [Fact(DisplayName = "Run_all_Cassandra_migrations_work")]
+        public void Run_all_Cassandra_migrations_work()
+        {
+            var cnn = new CqlConnection($"Contact Points=127.0.0.1;Port={_cassandraFixture.Cassandra.HostPort};Cluster Name={_cassandraFixture.Cassandra.ClusterName}");
+
+            var evolve = new Evolve(cnn, msg => _output.WriteLine(msg))
+            {
+                Locations = new List<string> { TestContext.MigrationFolder },
+                CommandTimeout = 25,
+                MetadataTableSchema = "my_metadata_keyspace",
+                SqlMigrationSuffix = ".cql"
+            };
+
+            int nbMigration = Directory.GetFiles(TestContext.MigrationFolder).Length;
+
+            // Migrate Cql_Scripts\Migration
+            evolve.Migrate();
+            Assert.True(evolve.NbMigration == nbMigration, $"{nbMigration} migrations should have been applied, not {evolve.NbMigration}.");
+        }
     }
 }
