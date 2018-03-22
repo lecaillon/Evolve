@@ -450,13 +450,19 @@ namespace Evolve
 
             try
             {
-                db.WrappedConnection.BeginTransaction();
-                foreach (string sql in script.LoadSqlStatements(Placeholders, Encoding, db.BatchDelimiter))
+                foreach (var item in db.SqlStatementBuilder.LoadSqlStatements(script, Placeholders, db.BatchDelimiter))
                 {
-                    db.WrappedConnection.ExecuteNonQuery(sql, CommandTimeout);
+
                 }
-                metadata.SaveMigration(script, true);
-                db.WrappedConnection.Commit();
+
+                //db.WrappedConnection.BeginTransaction();
+                //foreach (string sql in script.LoadSqlStatements(Placeholders, db.BatchDelimiter))
+                //{
+                //    db.WrappedConnection.ExecuteNonQuery(sql, CommandTimeout);
+                //}
+                //metadata.SaveMigration(script, true);
+                //db.WrappedConnection.Commit();
+
                 NbMigration++;
 
                 _logInfoDelegate(string.Format(MigrationSuccessfull, script.Name));

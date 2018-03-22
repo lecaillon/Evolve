@@ -18,6 +18,8 @@ namespace Evolve.Dialect.MySQL
 
         public override string BatchDelimiter => null;
 
+        public override SqlStatementBuilder SqlStatementBuilder => new SimpleSqlStatementBuilder();
+
         public override string GetCurrentSchemaName() => WrappedConnection.QueryForString("SELECT DATABASE();");
 
         public override IEvolveMetadata GetMetadataTable(string schema, string tableName) => new MySQLMetadataTable(schema, tableName, this);

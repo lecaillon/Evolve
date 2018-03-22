@@ -18,6 +18,8 @@ namespace Evolve.Dialect.PostgreSQL
 
         public override string BatchDelimiter => null;
 
+        public override SqlStatementBuilder SqlStatementBuilder => new SimpleSqlStatementBuilder();
+
         public override IEvolveMetadata GetMetadataTable(string schema, string tableName) => new PostgreSQLMetadataTable(schema, tableName, this);
 
         public override string GetCurrentSchemaName() => CleanSchemaName(WrappedConnection.QueryForString("SHOW search_path"));

@@ -18,6 +18,8 @@ namespace Evolve.Dialect.SQLServer
 
         public override string BatchDelimiter => "GO";
 
+        public override SqlStatementBuilder SqlStatementBuilder => new SimpleSqlStatementBuilder();
+
         public override IEvolveMetadata GetMetadataTable(string schema, string tableName) => new SQLServerMetadataTable(schema, tableName, this);
 
         public override Schema GetSchema(string schemaName) => new SQLServerSchema(schemaName, WrappedConnection);

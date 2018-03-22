@@ -24,6 +24,8 @@ namespace Evolve.Dialect
 
         public abstract string BatchDelimiter { get; }
 
+        public abstract SqlStatementBuilder SqlStatementBuilder { get; }
+
         public virtual Schema ChangeSchema(string toSchemaName)
         {
             var schema = GetSchema(toSchemaName);
