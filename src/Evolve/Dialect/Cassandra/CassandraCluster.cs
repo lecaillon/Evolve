@@ -14,8 +14,6 @@ namespace Evolve.Dialect.Cassandra
 
         public override string CurrentUser => string.Empty;
 
-        public override string BatchDelimiter => null;
-
         public override string GetCurrentSchemaName() => _currentKeyspaceName;
 
         public override Schema GetSchema(string schemaName) => CassandraKeyspace.Retreive(schemaName, WrappedConnection);
@@ -32,5 +30,7 @@ namespace Evolve.Dialect.Cassandra
         public override bool TryAcquireApplicationLock() => true;
 
         public override bool ReleaseApplicationLock() => true;
+
+        public override SqlStatementBuilderBase SqlStatementBuilder { get; } = new CqlStatementBuilder();
     }
 }

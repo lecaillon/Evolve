@@ -86,6 +86,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CqlStatementBuilderTest.cs" />
     <Compile Include="DialectTest.cs" />
     <Compile Include="MigrationTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

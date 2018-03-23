@@ -32,15 +32,14 @@ namespace Evolve.IntegrationTest.Cassandra
             {
                 Locations = new List<string> { TestContext.MigrationFolder },
                 CommandTimeout = 25,
-                MetadataTableSchema = "my_metadata_keyspace",
+                MetadataTableSchema = "my_keyspace",
+                MetadataTableName = "evolve_change_log",
                 SqlMigrationSuffix = ".cql"
             };
 
-            int nbMigration = Directory.GetFiles(TestContext.MigrationFolder).Length;
-
             // Migrate Cql_Scripts\Migration
             evolve.Migrate();
-            Assert.True(evolve.NbMigration == nbMigration, $"{nbMigration} migrations should have been applied, not {evolve.NbMigration}.");
+            Assert.Equal(2, evolve.NbMigration);
         }
     }
 }
