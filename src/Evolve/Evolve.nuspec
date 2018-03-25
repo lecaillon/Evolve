@@ -12,13 +12,7 @@
     <summary>Database migration tool for .NET. Inspired by Flyway.</summary>
     <description>Evolve is an easy migration tool that uses plain old sql scripts. Its purpose is to automate your database changes, and help keep those changes synchronized through all your environments and developpement teams.
 Every time you build your project, it will automatically ensure that your database is up-to-date, without having to do anything other than build. Install it and forget it !</description>
-    <releaseNotes>- Full .NET Core 2.0 support.
-- Add a new configuration parameter: Evolve.CommandTimeout.
-- Normalize line endings when calculating checksums. (Thx to @mhelleborg)
-- Support to drop temporal tables in SQL Server.
-- New Cake build script.
-- Add new Evolve package integration tests.
-- Fix Linux evolve.json not found for lowercase file name.
+    <releaseNotes>- Add Cassandra support.
 - Fix MSBuild task fails if path contains parentheses.</releaseNotes>
     <copyright>Copyright © P.Lécaillon 2018</copyright>
     <tags>Evolve Flyway sql database migration database-migration continuous-integration continuous-delivery</tags>

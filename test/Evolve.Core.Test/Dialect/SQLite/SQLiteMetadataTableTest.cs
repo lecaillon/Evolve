@@ -12,7 +12,7 @@ namespace Evolve.Core.Test.Dialect.SQLite
         [Fact(DisplayName = "When_not_exists_IsExists_returns_false")]
         public void When_not_exists_IsExists_returns_false()
         {
-            using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
+            using (var connection = TestUtil.CreateSQLiteWrappedCnx())
             {
                 var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLite, connection);
                 var metadataTable = db.GetMetadataTable("", TestContext.DefaultMetadataTableName);
@@ -23,7 +23,7 @@ namespace Evolve.Core.Test.Dialect.SQLite
         [Fact(DisplayName = "When_exists_IsExists_returns_true")]
         public void When_exists_IsExists_returns_true()
         {
-            using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
+            using (var connection = TestUtil.CreateSQLiteWrappedCnx())
             {
                 var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLite, connection);
                 var metadataTable = db.GetMetadataTable("", TestContext.DefaultMetadataTableName);
@@ -36,7 +36,7 @@ namespace Evolve.Core.Test.Dialect.SQLite
         [Fact(DisplayName = "When_not_exists_create_metadataTable")]
         public void When_not_exists_create_metadataTable()
         {
-            using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
+            using (var connection = TestUtil.CreateSQLiteWrappedCnx())
             {
                 var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLite, connection);
                 var metadataTable = db.GetMetadataTable("", TestContext.DefaultMetadataTableName);
@@ -51,7 +51,7 @@ namespace Evolve.Core.Test.Dialect.SQLite
         {
             var migration = new FileMigrationScript(TestContext.ValidMigrationScriptPath, "1.0.0", "desc");
 
-            using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
+            using (var connection = TestUtil.CreateSQLiteWrappedCnx())
             {
                 var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLite, connection);
                 var metadataTable = db.GetMetadataTable("", TestContext.DefaultMetadataTableName);
@@ -66,7 +66,7 @@ namespace Evolve.Core.Test.Dialect.SQLite
         {
             var migration = new FileMigrationScript(TestContext.ValidMigrationScriptPath, "1.0.0", "desc");
 
-            using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
+            using (var connection = TestUtil.CreateSQLiteWrappedCnx())
             {
                 var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLite, connection);
                 var metadataTable = db.GetMetadataTable("", TestContext.DefaultMetadataTableName);
@@ -83,7 +83,7 @@ namespace Evolve.Core.Test.Dialect.SQLite
         {
             var migrationScript = new FileMigrationScript(TestContext.ValidMigrationScriptPath, "1.0.0", "desc");
 
-            using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
+            using (var connection = TestUtil.CreateSQLiteWrappedCnx())
             {
                 var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLite, connection);
                 var metadataTable = db.GetMetadataTable("", TestContext.DefaultMetadataTableName);
@@ -104,7 +104,7 @@ namespace Evolve.Core.Test.Dialect.SQLite
         [Fact(DisplayName = "CanDropSchema_works")]
         public void CanDropSchema_works()
         {
-            using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
+            using (var connection = TestUtil.CreateSQLiteWrappedCnx())
             {
                 var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLite, connection);
                 var metadataTable = db.GetMetadataTable("", TestContext.DefaultMetadataTableName);
@@ -118,7 +118,7 @@ namespace Evolve.Core.Test.Dialect.SQLite
         [Fact(DisplayName = "CanEraseSchema_works")]
         public void CanEraseSchema_works()
         {
-            using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
+            using (var connection = TestUtil.CreateSQLiteWrappedCnx())
             {
                 var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLite, connection);
                 var metadataTable = db.GetMetadataTable("", TestContext.DefaultMetadataTableName);
@@ -132,7 +132,7 @@ namespace Evolve.Core.Test.Dialect.SQLite
         [Fact(DisplayName = "FindStartVersion_works")]
         public void FindStartVersion_works()
         {
-            using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
+            using (var connection = TestUtil.CreateSQLiteWrappedCnx())
             {
                 var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLite, connection);
                 var metadataTable = db.GetMetadataTable("", TestContext.DefaultMetadataTableName);

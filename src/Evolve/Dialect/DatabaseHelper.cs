@@ -21,8 +21,8 @@ namespace Evolve.Dialect
         public abstract string DatabaseName { get; }
 
         public abstract string CurrentUser { get; }
-
-        public abstract string BatchDelimiter { get; }
+        
+        public abstract SqlStatementBuilderBase SqlStatementBuilder { get; }
 
         public virtual Schema ChangeSchema(string toSchemaName)
         {

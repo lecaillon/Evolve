@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -15,27 +14,22 @@ namespace Evolve.Migration
             : base(version,
                    description,
                    System.IO.Path.GetFileName(Check.FileExists(path, nameof(path))),
-                   textEncoding)
+                   File.ReadAllText(path, textEncoding ?? Encoding.UTF8))
         {
             Path = path;
+            Encoding = textEncoding ?? Encoding.UTF8;
         }
+        
+        public string Path { get; }
 
-        public string Path { get; set; }
+        public Encoding Encoding { get; }
 
-        public override IEnumerable<string> LoadSqlStatements(Dictionary<string, string> placeholders, Encoding encoding, string delimiter)
-        {
-            Check.NotNull(placeholders, nameof(placeholders));
-            Check.NotNull(encoding, nameof(encoding));
-
-            string sql = File.ReadAllText(Path, encoding);
-            foreach (var entry in placeholders)
-            {
-                sql = sql.Replace(entry.Key, entry.Value);
-            }
-
-            return MigrationUtil.SplitSqlStatements(sql, delimiter);
-        }
-
+        /// <summary>
+        ///     Validates the given <paramref name="checksum"/> against the <see cref="MigrationScript"/>.
+        ///     If the validation fails, use the pre v1.8.0 version of the method.
+        /// </summary>
+        /// <param name="checksum"> The given checksum. </param>
+        /// <exception cref="Exception"> Throws when the validation fails. </exception>
         public override void ValidateChecksum(string checksum)
         {
             Check.NotNull(checksum, nameof(checksum));
@@ -50,19 +44,6 @@ namespace Evolve.Migration
                 {
                     throw ex;
                 }
-            }
-        }
-
-        /// <summary>
-        ///     Returns the checksum where <code>crlf</code> and <code>lf</code> line endings have been previously normalized to <code>lf</code>.
-        /// </summary>
-        /// <returns></returns>
-        public override string CalculateChecksum()
-        {
-            using (var md5 = MD5.Create())
-            {
-                byte[] checksum = md5.ComputeHash(Encoding.UTF8.GetBytes(NormalizeLineEndings(File.ReadAllText(Path, Encoding))));
-                return BitConverter.ToString(checksum).Replace("-", string.Empty);
             }
         }
 

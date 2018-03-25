@@ -16,7 +16,7 @@ namespace Evolve.Dialect.MySQL
 
         public override string CurrentUser => "SUBSTRING_INDEX(USER(),'@',1)";
 
-        public override string BatchDelimiter => null;
+        public override SqlStatementBuilderBase SqlStatementBuilder => new SimpleSqlStatementBuilder();
 
         public override string GetCurrentSchemaName() => WrappedConnection.QueryForString("SELECT DATABASE();");
 

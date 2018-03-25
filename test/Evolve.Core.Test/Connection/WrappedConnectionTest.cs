@@ -124,5 +124,46 @@ namespace Evolve.Core.Test.Connection
                 Assert.ThrowsAny<Exception>(() => wrappedConnection.Validate());
             }
         }
+
+        [Fact(DisplayName = "TryBeginTransaction_creates_a_tx_when_needed")]
+        public void TryBeginTransaction_creates_a_tx_when_needed()
+        {
+            using (var cnx = TestUtil.CreateSQLiteWrappedCnx())
+            {
+                Assert.True(cnx.TryBeginTransaction());
+                Assert.NotNull(cnx.CurrentTx);
+
+                Assert.False(cnx.TryBeginTransaction());
+                Assert.NotNull(cnx.CurrentTx);
+            }
+        }
+
+        [Fact(DisplayName = "TryCommit_returns_true_when_a_tx_exists")]
+        public void TryCommit_returns_true_when_a_tx_exists()
+        {
+            using (var cnx = TestUtil.CreateSQLiteWrappedCnx())
+            {
+                Assert.False(cnx.TryCommit());
+                Assert.Null(cnx.CurrentTx);
+
+                cnx.BeginTransaction();
+                Assert.True(cnx.TryCommit());
+                Assert.Null(cnx.CurrentTx);
+            }
+        }
+
+        [Fact(DisplayName = "TryRollback_returns_true_when_a_tx_exists")]
+        public void TryRollback_returns_true_when_a_tx_exists()
+        {
+            using (var cnx = TestUtil.CreateSQLiteWrappedCnx())
+            {
+                Assert.False(cnx.TryRollback());
+                Assert.Null(cnx.CurrentTx);
+
+                cnx.BeginTransaction();
+                Assert.True(cnx.TryRollback());
+                Assert.Null(cnx.CurrentTx);
+            }
+        }
     }
 }
