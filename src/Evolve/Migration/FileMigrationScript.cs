@@ -14,7 +14,7 @@ namespace Evolve.Migration
             : base(version,
                    description,
                    System.IO.Path.GetFileName(Check.FileExists(path, nameof(path))),
-                   File.ReadAllText(path, textEncoding))
+                   File.ReadAllText(path, textEncoding ?? Encoding.UTF8))
         {
             Path = path;
             Encoding = textEncoding ?? Encoding.UTF8;
@@ -24,6 +24,12 @@ namespace Evolve.Migration
 
         public Encoding Encoding { get; }
 
+        /// <summary>
+        ///     Validates the given <paramref name="checksum"/> against the <see cref="MigrationScript"/>.
+        ///     If the validation fails, use the pre v1.8.0 version of the method.
+        /// </summary>
+        /// <param name="checksum"> The given checksum. </param>
+        /// <exception cref="Exception"> Throws when the validation fails. </exception>
         public override void ValidateChecksum(string checksum)
         {
             Check.NotNull(checksum, nameof(checksum));

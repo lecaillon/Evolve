@@ -1,14 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using Evolve.Migration;
+﻿using System.Collections.Generic;
 
 namespace Evolve.Dialect
 {
-    public class SimpleSqlStatementBuilder : SqlStatementBuilder
+    /// <summary>
+    ///     A simple sql statement builder that does nothing and returns only one 
+    ///     sql statement that must be enlists in a transacation.
+    /// </summary>
+    public class SimpleSqlStatementBuilder : SqlStatementBuilderBase
     {
-        protected override IEnumerable<SqlStatement> Parse(string sqlScript, string delimiter)
+        public override string BatchDelimiter => null;
+
+        protected override IEnumerable<SqlStatement> Parse(string sqlScript)
         {
-            throw new NotImplementedException();
+            if (sqlScript.IsNullOrWhiteSpace())
+            {
+                return new List<SqlStatement>();
+            }
+
+            return new List<SqlStatement>
+            {
+                new SqlStatement(sqlScript, 0, mustExecuteInTransaction: true)
+            };
         }
     }
 }

@@ -16,9 +16,7 @@ namespace Evolve.Dialect.PostgreSQL
 
         public override string CurrentUser => "current_user";
 
-        public override string BatchDelimiter => null;
-
-        public override SqlStatementBuilder SqlStatementBuilder => new SimpleSqlStatementBuilder();
+        public override SqlStatementBuilderBase SqlStatementBuilder => new SimpleSqlStatementBuilder();
 
         public override IEvolveMetadata GetMetadataTable(string schema, string tableName) => new PostgreSQLMetadataTable(schema, tableName, this);
 

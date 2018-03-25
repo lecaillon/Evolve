@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
 using Evolve.Migration;
 using Xunit;
 
@@ -17,20 +15,6 @@ namespace Evolve.Core.Test.Migration
             var script = new FileMigrationScript(TestContext.ValidMigrationScriptPath, "2.3.1", "Migration description");
             string checksum = script.CalculateChecksum();
             Assert.False(string.IsNullOrEmpty(checksum));
-        }
-
-        [Fact(DisplayName = "LoadSQL_returns_string_and_replace_placeholders")]
-        public void LoadSQL_returns_string_and_replace_placeholders()
-        {
-            var script = new FileMigrationScript(TestContext.ValidMigrationScriptPath, "2.3.1", "Migration description");
-            var placeholders = new Dictionary<string, string>
-            {
-                ["${schema}"] = "my_schema",
-                ["${nothing}"] = "nil",
-            };
-            string sql = script.LoadSqlStatements(placeholders, Encoding.UTF8, null).First();
-            Assert.DoesNotContain("${schema}", sql);
-            Assert.Contains("my_schema", sql);
         }
 
         [Fact(DisplayName = "ValidateChecksum_should_work_with_both_crlf_and_lf_versions")]

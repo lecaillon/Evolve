@@ -16,9 +16,7 @@ namespace Evolve.Dialect.SQLServer
 
         public override string CurrentUser => "SUSER_SNAME()";
 
-        public override string BatchDelimiter => "GO";
-
-        public override SqlStatementBuilder SqlStatementBuilder => new SimpleSqlStatementBuilder();
+        public override SqlStatementBuilderBase SqlStatementBuilder => new SQLServerStatementBuilder();
 
         public override IEvolveMetadata GetMetadataTable(string schema, string tableName) => new SQLServerMetadataTable(schema, tableName, this);
 

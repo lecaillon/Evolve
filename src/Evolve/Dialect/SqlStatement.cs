@@ -1,14 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Evolve.Dialect
+﻿namespace Evolve.Dialect
 {
     public class SqlStatement
     {
-        public SqlStatement()
+        /// <summary>
+        ///     Initialize a instance of the <see cref="SqlStatement"/> class.
+        /// </summary>
+        public SqlStatement(string sql, int lineNumber, bool mustExecuteInTransaction)
         {
-
+            Sql = sql;
+            LineNumber = lineNumber;
+            MustExecuteInTransaction = mustExecuteInTransaction;
         }
 
         /// <summary>
@@ -24,6 +25,6 @@ namespace Evolve.Dialect
         /// <summary>
         ///     Returns true if the statement must be executed inside a transaction, false otherwise.
         /// </summary>
-        public bool CanExecuteInTransaction { get; set; }
+        public bool MustExecuteInTransaction { get; set; }
     }
 }

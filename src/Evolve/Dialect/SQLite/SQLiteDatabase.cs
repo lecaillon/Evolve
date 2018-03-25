@@ -13,9 +13,7 @@ namespace Evolve.Dialect.SQLite
 
         public override string CurrentUser => "''";
 
-        public override string BatchDelimiter => null;
-
-        public override SqlStatementBuilder SqlStatementBuilder => new SimpleSqlStatementBuilder();
+        public override SqlStatementBuilderBase SqlStatementBuilder => new SimpleSqlStatementBuilder();
 
 
         public override string GetCurrentSchemaName() => "main";

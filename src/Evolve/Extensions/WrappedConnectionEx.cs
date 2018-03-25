@@ -58,6 +58,36 @@ namespace Evolve
             throw new EvolveException(DBMSNotSUpported);
         }
 
+        public static bool TryBeginTransaction(this WrappedConnection wrappedConnection)
+        {
+            if (wrappedConnection.CurrentTx == null)
+            {
+                wrappedConnection.BeginTransaction();
+                return true;
+            }
+            return false;
+        }
+
+        public static bool TryCommit(this WrappedConnection wrappedConnection)
+        {
+            if (wrappedConnection.CurrentTx != null)
+            {
+                wrappedConnection.Commit();
+                return true;
+            }
+            return false;
+        }
+
+        public static bool TryRollback(this WrappedConnection wrappedConnection)
+        {
+            if (wrappedConnection.CurrentTx != null)
+            {
+                wrappedConnection.Rollback();
+                return true;
+            }
+            return false;
+        }
+
         public static long QueryForLong(this WrappedConnection wrappedConnection, string sql)
         {
             return Execute(wrappedConnection, sql, cmd =>
