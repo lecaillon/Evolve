@@ -10,7 +10,7 @@ namespace Evolve.Core.Test.Extensions
         [Fact(DisplayName = "GetDatabaseServerType_is_sqlite")]
         public void GetDatabaseServerType_is_sqlite()
         {
-            using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
+            using (var connection = TestUtil.CreateSQLiteWrappedCnx())
             {
                 Assert.Equal(DBMS.SQLite, WrappedConnectionEx.GetDatabaseServerType(connection));
             }
@@ -19,7 +19,7 @@ namespace Evolve.Core.Test.Extensions
         [Fact(DisplayName = "QueryForLong_works")]
         public void QueryForLong_works()
         {
-            using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
+            using (var connection = TestUtil.CreateSQLiteWrappedCnx())
             {
                 Assert.Equal(1L, WrappedConnectionEx.QueryForLong(connection, "SELECT 1;"));
             }
@@ -28,7 +28,7 @@ namespace Evolve.Core.Test.Extensions
         [Fact(DisplayName = "QueryForString_works")]
         public void QueryForString_works()
         {
-            using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
+            using (var connection = TestUtil.CreateSQLiteWrappedCnx())
             {
                 Assert.Equal("azerty", WrappedConnectionEx.QueryForString(connection, "SELECT 'azerty';"));
             }
@@ -40,7 +40,7 @@ namespace Evolve.Core.Test.Extensions
             var expected = new List<string> { "azerty", "qwerty" };
             string sql = "SELECT 'azerty' UNION SELECT 'qwerty';";
 
-            using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
+            using (var connection = TestUtil.CreateSQLiteWrappedCnx())
             {
                 Assert.Equal(expected, WrappedConnectionEx.QueryForListOfString(connection, sql));
             }
@@ -52,7 +52,7 @@ namespace Evolve.Core.Test.Extensions
             var expected = new[] { new { Item1 = "azerty", Item2 = "qwerty" } }.ToList();
             string sql = "SELECT 'azerty','qwerty';";
 
-            using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
+            using (var connection = TestUtil.CreateSQLiteWrappedCnx())
             {
                 Assert.Equal(expected, WrappedConnectionEx.QueryForList(connection, sql, (r) => new { Item1 = r.GetString(0), Item2 = r.GetString(1) }));
             }
@@ -63,7 +63,7 @@ namespace Evolve.Core.Test.Extensions
         {
             string sql = "SELECT tbl_name FROM sqlite_master WHERE type = 'PSG'";
 
-            using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
+            using (var connection = TestUtil.CreateSQLiteWrappedCnx())
             {
                 Assert.True(WrappedConnectionEx.QueryForList(connection, sql, (r) => new { Item1 = r.GetString(0) }).Count() == 0);
             }

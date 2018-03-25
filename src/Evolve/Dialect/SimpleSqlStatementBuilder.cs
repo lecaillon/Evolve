@@ -19,7 +19,7 @@ namespace Evolve.Dialect
 
             return new List<SqlStatement>
             {
-                new SqlStatement(sqlScript, 0, mustExecuteInTransaction: true)
+                new SqlStatement(sqlScript, mustExecuteInTransaction: true)
             };
         }
     }

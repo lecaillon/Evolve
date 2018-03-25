@@ -7,7 +7,7 @@ namespace Evolve.Core.Test.Dialect.SQLite
         [Fact(DisplayName = "Can_get_schema")]
         public void Can_get_schema()
         {
-            using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
+            using (var connection = TestUtil.CreateSQLiteWrappedCnx())
             {
                 var schema = TestUtil.GetDefaultSQLiteSchema(connection);
 
@@ -18,7 +18,7 @@ namespace Evolve.Core.Test.Dialect.SQLite
         [Fact(DisplayName = "When_new_database_is_created_schema_is_empty")]
         public void When_new_database_is_created_schema_is_empty()
         {
-            using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
+            using (var connection = TestUtil.CreateSQLiteWrappedCnx())
             {
                 var schema = TestUtil.GetDefaultSQLiteSchema(connection);
 
@@ -29,7 +29,7 @@ namespace Evolve.Core.Test.Dialect.SQLite
         [Fact(DisplayName = "SQLite_does_not_support_creating_schemas")]
         public void SQLite_does_not_support_creating_schemas()
         {
-            using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
+            using (var connection = TestUtil.CreateSQLiteWrappedCnx())
             {
                 var schema = TestUtil.GetDefaultSQLiteSchema(connection);
 
@@ -40,7 +40,7 @@ namespace Evolve.Core.Test.Dialect.SQLite
         [Fact(DisplayName = "SQLite_does_not_support_dropping_schemas")]
         public void SQLite_does_not_support_dropping_schemas()
         {
-            using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
+            using (var connection = TestUtil.CreateSQLiteWrappedCnx())
             {
                 var schema = TestUtil.GetDefaultSQLiteSchema(connection);
 
@@ -51,7 +51,7 @@ namespace Evolve.Core.Test.Dialect.SQLite
         [Fact(DisplayName = "When_schema_contains_tables_schema_is_not_empty")]
         public void When_schema_contains_tables_schema_is_not_empty()
         {
-            using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
+            using (var connection = TestUtil.CreateSQLiteWrappedCnx())
             {
                 var schema = TestUtil.LoadChinookDatabase(connection);
 
@@ -62,7 +62,7 @@ namespace Evolve.Core.Test.Dialect.SQLite
         [Fact(DisplayName = "After_schema_cleannig_schema_is_empty")]
         public void After_schema_cleannig_schema_is_empty()
         {
-            using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
+            using (var connection = TestUtil.CreateSQLiteWrappedCnx())
             {
                 var schema = TestUtil.LoadChinookDatabase(connection);
 
@@ -74,7 +74,7 @@ namespace Evolve.Core.Test.Dialect.SQLite
         [Fact(DisplayName = "After_schema_cleannig_and_rollback_schema_is_not_empty")]
         public void After_schema_cleannig_and_rollback_schema_is_not_empty()
         {
-            using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
+            using (var connection = TestUtil.CreateSQLiteWrappedCnx())
             {
                 var schema = TestUtil.LoadChinookDatabase(connection);
 

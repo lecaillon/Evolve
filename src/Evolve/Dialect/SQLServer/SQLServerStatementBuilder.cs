@@ -4,22 +4,21 @@ using System.Text.RegularExpressions;
 
 namespace Evolve.Dialect.SQLServer
 {
+    /// <summary>
+    ///     A SQL Server dedicated builder which handles the statement delimiter GO.
+    /// </summary>
     public class SQLServerStatementBuilder : SqlStatementBuilderBase
     {
+        /// <inheritdoc />
         public override string BatchDelimiter => "GO";
 
-        protected override IEnumerable<SqlStatement> Parse(string sqlScript)
+        protected override IEnumerable<SqlStatement> Parse(string migrationScript)
         {
-            return SplitSqlScript(sqlScript)
-                .Select(x => new SqlStatement(sql: x, lineNumber: 0, mustExecuteInTransaction: true));
+            return ParseBatchDelimiter(migrationScript)
+                .Select(x => new SqlStatement(sql: x, mustExecuteInTransaction: true));
         }
 
-        /// <summary>
-        ///     Splits the <paramref name="sqlScript"/> based on the <see cref="BatchDelimiter"/> pattern.
-        /// </summary>
-        /// <param name="sqlScript"> The script to parse. </param>
-        /// <returns> A list of sql statement. </returns>
-        private IEnumerable<string> SplitSqlScript(string sqlScript)
+        private IEnumerable<string> ParseBatchDelimiter(string sqlScript)
         {
             if (sqlScript.IsNullOrWhiteSpace()) return new List<string>();
 

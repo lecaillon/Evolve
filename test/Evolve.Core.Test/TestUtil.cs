@@ -7,7 +7,7 @@ namespace Evolve.Core.Test
 {
     public static class TestUtil
     {
-        public static WrappedConnection GetInMemorySQLiteWrappedConnection() => new WrappedConnection(new SqliteConnection(TestContext.SQLiteInMemoryConnectionString));
+        public static WrappedConnection CreateSQLiteWrappedCnx() => new WrappedConnection(new SqliteConnection(TestContext.SQLiteInMemoryConnectionString));
 
         public static SQLiteSchema GetDefaultSQLiteSchema(WrappedConnection connection) => new SQLiteSchema(connection);
 

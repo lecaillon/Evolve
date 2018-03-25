@@ -8,7 +8,7 @@ namespace Evolve.Core.Test.Dialect.SQLite
         [Fact(DisplayName = "SQLiteDatabase_name_is_sqlite")]
         public void SQLiteDatabase_name_is_sqlite()
         {
-            using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
+            using (var connection = TestUtil.CreateSQLiteWrappedCnx())
             {
                 var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLite, connection);
                 Assert.Equal("SQLite", db.DatabaseName);
@@ -18,7 +18,7 @@ namespace Evolve.Core.Test.Dialect.SQLite
         [Fact(DisplayName = "GetCurrentSchemaName_is_always_main")]
         public void GetCurrentSchemaName_is_always_main()
         {
-            using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
+            using (var connection = TestUtil.CreateSQLiteWrappedCnx())
             {
                 var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLite, connection);
                 Assert.Equal("main", db.GetCurrentSchemaName());
@@ -28,7 +28,7 @@ namespace Evolve.Core.Test.Dialect.SQLite
         [Fact(DisplayName = "ChangeSchema_always_returns_main")]
         public void ChangeSchema_always_returns_main()
         {
-            using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
+            using (var connection = TestUtil.CreateSQLiteWrappedCnx())
             {
                 var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLite, connection);
                 var schema = db.ChangeSchema("another_shema");
@@ -41,7 +41,7 @@ namespace Evolve.Core.Test.Dialect.SQLite
         [Fact(DisplayName = "GetMetadataTable_works")]
         public void GetMetadataTable_works()
         {
-            using (var connection = TestUtil.GetInMemorySQLiteWrappedConnection())
+            using (var connection = TestUtil.CreateSQLiteWrappedCnx())
             {
                 var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLite, connection);
                 var metadataTable = db.GetMetadataTable("main", TestContext.DefaultMetadataTableName);
