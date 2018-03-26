@@ -1,7 +1,6 @@
 ﻿using Cassandra.Data;
 using Evolve.Test.Utilities;
 using System.Collections.Generic;
-using System.IO;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -23,7 +22,7 @@ namespace Evolve.IntegrationTest.Cassandra
             }
         }
 
-        [Fact(DisplayName = "Run_all_Cassandra_migrations_work")]
+        [SkipOnAppVeyorFact(DisplayName = "Run_all_Cassandra_migrations_work")]
         public void Run_all_Cassandra_migrations_work()
         {
             var cnn = new CqlConnection($"Contact Points=127.0.0.1;Port={_cassandraFixture.Cassandra.HostPort};Cluster Name={_cassandraFixture.Cassandra.ClusterName}");

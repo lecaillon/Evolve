@@ -74,11 +74,14 @@ namespace Evolve.Core2.Test.Driver
         [Fact(DisplayName = "CassandraDriver_NET_Core_2_0_works")]
         public void CassandraDriver_NET_Core_2_0_works()
         {
-            var driver = new CoreCassandraDriver(TestContext.NetCore20DepsFile, TestContext.NugetPackageFolder);
-            var cnn = driver.CreateConnection($"Contact Points=127.0.0.1;Port={_cassandraFixture.Cassandra.HostPort};Cluster Name={_cassandraFixture.Cassandra.ClusterName}");
-            cnn.Open();
+            if (!TestContext.AppVeyor)
+            {
+                var driver = new CoreCassandraDriver(TestContext.NetCore20DepsFile, TestContext.NugetPackageFolder);
+                var cnn = driver.CreateConnection($"Contact Points=127.0.0.1;Port={_cassandraFixture.Cassandra.HostPort};Cluster Name={_cassandraFixture.Cassandra.ClusterName}");
+                cnn.Open();
 
-            Assert.True(cnn.State == ConnectionState.Open);
+                Assert.True(cnn.State == ConnectionState.Open);
+            }
         }
     }
 }

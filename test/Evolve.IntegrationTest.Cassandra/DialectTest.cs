@@ -27,7 +27,7 @@ namespace Evolve.IntegrationTest.Cassandra
             }
         }
 
-        [Fact(DisplayName = "Run_all_Cassandra_integration_tests_work")]
+        [SkipOnAppVeyorFact(DisplayName = "Run_all_Cassandra_integration_tests_work")]
         public void Run_all_Cassandra_integration_tests_work()
         {
             // Open a connection to Cassandra
