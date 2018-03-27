@@ -38,7 +38,7 @@ namespace Evolve.IntegrationTest.Cassandra
             // Initiate a connection to the database
             var wcnn = new WrappedConnection(cnn);
 
-            // Validate DBMS.MySQL_MariaDB
+            // Validate DBMS.Cassandra
             Assert.Equal(DBMS.Cassandra, wcnn.GetDatabaseServerType());
 
             // Init the DatabaseHelper

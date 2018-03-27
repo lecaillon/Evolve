@@ -13,6 +13,7 @@ namespace Evolve.IntegrationTest.Cassandra
             ResourcesFolder = Path.Combine(Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).AbsolutePath), "Resources");
             CqlScriptsFolder = Path.Combine(ResourcesFolder, "Cql_Scripts");
             MigrationFolder = Path.Combine(CqlScriptsFolder, "Migration");
+            ChecksumMismatchFolder = Path.Combine(CqlScriptsFolder, "Checksum_mismatch");
             EmptyMigrationScriptPath = Path.Combine(ResourcesFolder, "V1_3_2__Migration_description.cql");
         }
 

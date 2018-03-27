@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace Evolve.Dialect.Cassandra
@@ -14,21 +15,31 @@ namespace Evolve.Dialect.Cassandra
 
         protected override IEnumerable<SqlStatement> Parse(string sqlScript)
         {
-            var split = sqlScript.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-
             int lineNumber = 0;
+            int currentStatementLineStart = 0;
             var sb = new StringBuilder();
-            foreach (var line in split)
+            foreach (var line in getLines(sqlScript))
             {
                 sb.Append(line + Environment.NewLine);
 
                 if (line.TrimEnd(' ').EndsWith(StatementTerminationCharacter))
                 {
-                    yield return new SqlStatement(sb.ToString(), false, lineNumber);
+                    yield return new SqlStatement(sb.ToString(), false, currentStatementLineStart);
+                    currentStatementLineStart = lineNumber + 1;
                     sb = new StringBuilder();
                 }
 
                 lineNumber++;
+            }
+
+            IEnumerable<string> getLines(string s)
+            {
+                using (var sr = new StringReader(s))
+                {
+                    string line;
+                    while ((line = sr.ReadLine()) != null)
+                        yield return line;
+                }
             }
         }
     }

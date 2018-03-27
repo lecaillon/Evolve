@@ -351,7 +351,8 @@ namespace Evolve
                 return;
             }
 
-            db.WrappedConnection.BeginTransaction();
+            if (!db.WrappedConnection.CassandraCluster)
+                db.WrappedConnection.TryBeginTransaction();
 
             foreach (var schemaName in FindSchemas().Reverse())
             {
@@ -388,7 +389,8 @@ namespace Evolve
                 }
             }
 
-            db.WrappedConnection.Commit();
+            if (!db.WrappedConnection.CassandraCluster)
+                db.WrappedConnection.TryCommit();
 
             _logInfoDelegate(string.Format(EraseCompleted, NbSchemaErased, NbSchemaToEraseSkipped));
         }
