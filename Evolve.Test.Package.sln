@@ -59,6 +59,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.Void.AspNet471.Test"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.Void.ConsoleApp35.Test", "test-package\Evolve.Void.ConsoleApp35.Test\Evolve.Void.ConsoleApp35.Test.csproj", "{C5621D96-FD67-460A-98CD-DB0413B549B8}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Cassandra", "Cassandra", "{4AC7F2EB-34F3-4BA8-BAF5-C0670FE8B988}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.Cassandra.AspNet471.Test", "test-package\Evolve.Cassandra.AspNet471.Test\Evolve.Cassandra.AspNet471.Test.csproj", "{08D84478-1F1F-4E61-AB48-A0815C05B6ED}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evolve.Cassandra.AspNetCore20.Test", "test-package\Evolve.Cassandra.AspNetCore20.Test\Evolve.Cassandra.AspNetCore20.Test.csproj", "{6742A94B-2971-4D4A-B431-0D398CE48850}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.Cassandra.ConsoleApp452.Test", "test-package\Evolve.Cassandra.ConsoleApp452.Test\Evolve.Cassandra.ConsoleApp452.Test.csproj", "{B41ED7C0-B1C9-4904-9791-9A65228BEB6B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.Cassandra.AspNetCore11.Test", "test-package\Evolve.Cassandra.AspNetCore11.Test\Evolve.Cassandra.AspNetCore11.Test.csproj", "{4132516E-83A9-4C87-914F-96C462626BFE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -161,6 +171,22 @@ Global
 		{C5621D96-FD67-460A-98CD-DB0413B549B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C5621D96-FD67-460A-98CD-DB0413B549B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C5621D96-FD67-460A-98CD-DB0413B549B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08D84478-1F1F-4E61-AB48-A0815C05B6ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08D84478-1F1F-4E61-AB48-A0815C05B6ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08D84478-1F1F-4E61-AB48-A0815C05B6ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08D84478-1F1F-4E61-AB48-A0815C05B6ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6742A94B-2971-4D4A-B431-0D398CE48850}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6742A94B-2971-4D4A-B431-0D398CE48850}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6742A94B-2971-4D4A-B431-0D398CE48850}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6742A94B-2971-4D4A-B431-0D398CE48850}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B41ED7C0-B1C9-4904-9791-9A65228BEB6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B41ED7C0-B1C9-4904-9791-9A65228BEB6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B41ED7C0-B1C9-4904-9791-9A65228BEB6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B41ED7C0-B1C9-4904-9791-9A65228BEB6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4132516E-83A9-4C87-914F-96C462626BFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4132516E-83A9-4C87-914F-96C462626BFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4132516E-83A9-4C87-914F-96C462626BFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4132516E-83A9-4C87-914F-96C462626BFE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -185,6 +211,10 @@ Global
 		{8BFA7309-8079-4305-81EA-F41CA397DCB9} = {7420B649-9F67-423C-BDBE-9198A5DA4029}
 		{7EA4F872-082D-453A-BE09-B41EEAAA511D} = {3D88DCC8-AFAA-4734-BF76-D0E46D67B56A}
 		{4368BD49-A6D0-4509-9FDA-BFE1B41B5FB1} = {3D88DCC8-AFAA-4734-BF76-D0E46D67B56A}
+		{08D84478-1F1F-4E61-AB48-A0815C05B6ED} = {4AC7F2EB-34F3-4BA8-BAF5-C0670FE8B988}
+		{6742A94B-2971-4D4A-B431-0D398CE48850} = {4AC7F2EB-34F3-4BA8-BAF5-C0670FE8B988}
+		{B41ED7C0-B1C9-4904-9791-9A65228BEB6B} = {4AC7F2EB-34F3-4BA8-BAF5-C0670FE8B988}
+		{4132516E-83A9-4C87-914F-96C462626BFE} = {4AC7F2EB-34F3-4BA8-BAF5-C0670FE8B988}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D1A92AB0-3CBC-4174-A7D1-E6B53B0EAF73}
