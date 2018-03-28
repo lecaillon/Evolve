@@ -11,18 +11,21 @@ namespace Evolve.Core.Test.Driver
         private readonly MySQLFixture _mySqlfixture;
         private readonly PostgreSqlFixture _pgFixture;
         private readonly SQLServerFixture _sqlServerFixture;
+        private readonly CassandraFixture _cassandraFixture;
 
-        public CoreReflectionBasedDriverTest(MySQLFixture mySqlfixture, PostgreSqlFixture pgFixture, SQLServerFixture sqlServerFixture)
+        public CoreReflectionBasedDriverTest(MySQLFixture mySqlfixture, PostgreSqlFixture pgFixture, SQLServerFixture sqlServerFixture, CassandraFixture cassandraFixture)
         {
             _mySqlfixture = mySqlfixture;
             _pgFixture = pgFixture;
             _sqlServerFixture = sqlServerFixture;
+            _cassandraFixture = cassandraFixture;
 
             if (!TestContext.AppVeyor)
             { // AppVeyor and Windows 2016 does not support linux docker images
                 _mySqlfixture.Start();
                 _pgFixture.Start();
                 _sqlServerFixture.Start();
+                _cassandraFixture.Start();
             }
         }
 
@@ -64,6 +67,19 @@ namespace Evolve.Core.Test.Driver
             cnn.Open();
 
             Assert.True(cnn.State == ConnectionState.Open);
+        }
+
+        [Fact(DisplayName = "CassandraDriver_NET_Core_1_1_works")]
+        public void CassandraDriver_NET_Core_1_1_works()
+        {
+            if (!TestContext.AppVeyor)
+            {
+                var driver = new CoreCassandraDriver(TestContext.NetCore11DepsFile, TestContext.NugetPackageFolder);
+                var cnn = driver.CreateConnection($"Contact Points=127.0.0.1;Port={_cassandraFixture.Cassandra.HostPort};Cluster Name={_cassandraFixture.Cassandra.ClusterName}");
+                cnn.Open();
+
+                Assert.True(cnn.State == ConnectionState.Open);
+            }
         }
     }
 }

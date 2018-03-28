@@ -43,6 +43,11 @@ namespace Evolve.Connection
         public bool SQLiteInMemoryDatabase => DbConnection.ConnectionString.Contains(":memory:");
 
         /// <summary>
+        ///     Returns true if we are connected to a Cassandra cluster, false otherwise.
+        /// </summary>
+        internal bool CassandraCluster => DbConnection.ConnectionString.Contains("contact points=");
+
+        /// <summary>
         ///     Begins a new transaction.
         /// </summary>
         public IDbTransaction BeginTransaction(IsolationLevel isolationLevel = IsolationLevel.Unspecified)

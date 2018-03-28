@@ -1,0 +1,1 @@
+﻿select release_version from system.local;

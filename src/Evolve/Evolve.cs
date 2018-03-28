@@ -98,7 +98,7 @@ namespace Evolve
         /// </summary>
         /// <param name="dbConnection"> Optional database connection. </param>
         /// <param name="logInfoDelegate"> Optional logger. </param>
-        public Evolve(IDbConnection dbConnection = null, 
+        public Evolve(IDbConnection dbConnection = null,
                       Action<string> logInfoDelegate = null)
         {
             _userDbConnection = dbConnection;
@@ -117,9 +117,9 @@ namespace Evolve
         /// <param name="dbConnection"> Optional database connection. </param>
         /// <param name="logInfoDelegate"> Optional logger. </param>
         /// <param name="environmentName"> The environment is typically set to one of Development, Staging, or Production. Optional. </param>
-        public Evolve(string evolveConfigurationPath, 
-                      IDbConnection dbConnection = null, 
-                      Action<string> logInfoDelegate = null, 
+        public Evolve(string evolveConfigurationPath,
+                      IDbConnection dbConnection = null,
+                      Action<string> logInfoDelegate = null,
                       string environmentName = "")
         {
             _configurationPath = Check.FileExists(ResolveConfigurationFileLocation(evolveConfigurationPath), nameof(evolveConfigurationPath));
@@ -150,12 +150,12 @@ namespace Evolve
         /// <param name="dbConnection"> Optional database connection. </param>
         /// <param name="logInfoDelegate"> Optional logger. </param>
         /// <param name="environmentName"> The environment is typically set to one of Development, Staging, or Production. Optional. </param>
-        public Evolve(string evolveConfigurationPath, 
-                      string depsFile, 
-                      string nugetPackageDir, 
+        public Evolve(string evolveConfigurationPath,
+                      string depsFile,
+                      string nugetPackageDir,
                       string msBuildExtensionsPath = null,
-                      IDbConnection dbConnection = null, 
-                      Action<string> logInfoDelegate = null, 
+                      IDbConnection dbConnection = null,
+                      Action<string> logInfoDelegate = null,
                       string environmentName = "")
         {
             _configurationPath = Check.FileExists(ResolveConfigurationFileLocation(evolveConfigurationPath), nameof(evolveConfigurationPath));
@@ -351,7 +351,8 @@ namespace Evolve
                 return;
             }
 
-            db.WrappedConnection.BeginTransaction();
+            if (!db.WrappedConnection.CassandraCluster)
+                db.WrappedConnection.TryBeginTransaction();
 
             foreach (var schemaName in FindSchemas().Reverse())
             {
@@ -388,7 +389,8 @@ namespace Evolve
                 }
             }
 
-            db.WrappedConnection.Commit();
+            if (!db.WrappedConnection.CassandraCluster)
+                db.WrappedConnection.TryCommit();
 
             _logInfoDelegate(string.Format(EraseCompleted, NbSchemaErased, NbSchemaToEraseSkipped));
         }
@@ -432,7 +434,7 @@ namespace Evolve
             }
             finally
             {
-                if(EnableClusterMode && db.ReleaseApplicationLock() == false)
+                if (EnableClusterMode && db.ReleaseApplicationLock() == false)
                 {
                     _logInfoDelegate(CannotReleaseApplicationLock);
                 }
@@ -539,7 +541,7 @@ namespace Evolve
             {
                 var schema = db.GetSchema(schemaName);
 
-                if(!schema.IsExists())
+                if (!schema.IsExists())
                 {
                     _logInfoDelegate(string.Format(SchemaNotExists, schemaName));
 
@@ -551,7 +553,7 @@ namespace Evolve
 
                     _logInfoDelegate(string.Format(SchemaCreated, schemaName));
                 }
-                else if(schema.IsEmpty())
+                else if (schema.IsEmpty())
                 {
                     // Mark schema as empty in the metadata table
                     metadata.Save(MetadataType.EmptySchema, "0", string.Format(EmptySchemaFound, schemaName), schemaName);
@@ -563,7 +565,7 @@ namespace Evolve
 
         private void ManageStartVersion(DatabaseHelper db)
         {
-            if(StartVersion == null || StartVersion == MigrationVersion.MinVersion)
+            if (StartVersion == null || StartVersion == MigrationVersion.MinVersion)
             { // StartVersion parameter undefined
                 return;
             }
@@ -571,17 +573,17 @@ namespace Evolve
             var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
             var currentStartVersion = metadata.FindStartVersion();
 
-            if(currentStartVersion == StartVersion)
+            if (currentStartVersion == StartVersion)
             { // The StartVersion parameter has already been applied
-                return; 
+                return;
             }
 
-            if(currentStartVersion != MigrationVersion.MinVersion)
+            if (currentStartVersion != MigrationVersion.MinVersion)
             { // Metadatatable StartVersion found and do not match the StartVersion parameter
                 throw new EvolveConfigurationException(string.Format(MultipleStartVersionError, currentStartVersion));
             }
 
-            if(metadata.GetAllMigrationMetadata().Any())
+            if (metadata.GetAllMigrationMetadata().Any())
             { // At least one migration has already been applied, StartVersion parameter not allowed anymore
                 throw new EvolveConfigurationException(StartVersionNotAllowed);
             }
@@ -619,7 +621,7 @@ namespace Evolve
                 var appliedMigration = appliedMigrations.SingleOrDefault(x => x.Version == script.Version);                 // Search script in the applied migrations
                 if (appliedMigration == null)
                 {
-                    if(Command == CommandOptions.Migrate && OutOfOrder)
+                    if (Command == CommandOptions.Migrate && OutOfOrder)
                     {
                         ExecuteMigrationScript(script, db);
                         continue;

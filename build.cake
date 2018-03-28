@@ -181,4 +181,11 @@ Task("Test-Package")
     .IsDependentOn("Build Test-Package")
     .IsDependentOn("Build Test-Package Core");
 
+Task("TestsOnly")
+    .IsDependentOn("Clean")
+    .IsDependentOn("Restore")
+    .IsDependentOn("Build")
+    .IsDependentOn("Test")
+    .IsDependentOn("Test Core");
+
 RunTarget(target);

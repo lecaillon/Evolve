@@ -1,62 +1,62 @@
-﻿using System;
-using System.Data;
-using System.Linq;
+﻿using Cassandra.Data;
 using Evolve.Connection;
 using Evolve.Dialect;
-using Evolve.Dialect.MySQL;
+using Evolve.Dialect.Cassandra;
 using Evolve.Metadata;
 using Evolve.Migration;
 using Evolve.Test.Utilities;
-using MySql.Data.MySqlClient;
+using System;
+using System.Data;
+using System.Linq;
 using Xunit;
 
-namespace Evolve.IntegrationTest.MySQL
+namespace Evolve.IntegrationTest.Cassandra
 {
     [Collection("Database collection")]
     public class DialectTest
     {
-        private readonly MySQLFixture _mySQLFixture;
+        private readonly CassandraFixture _cassandraFixture;
 
-        public DialectTest(MySQLFixture mySQLFixture)
+        public DialectTest(CassandraFixture cassandraFixture)
         {
-            _mySQLFixture = mySQLFixture;
+            _cassandraFixture = cassandraFixture;
+
             if (!TestContext.Travis && !TestContext.AppVeyor)
             { // AppVeyor and Windows 2016 does not support linux docker images
-                mySQLFixture.Start(fromScratch: true);
+                cassandraFixture.Start(fromScratch: true);
             }
         }
 
-        [Fact(DisplayName = "Run_all_MySQL_integration_tests_work")]
-        public void Run_all_MySQL_integration_tests_work()
+        [SkipOnAppVeyorFact(DisplayName = "Run_all_Cassandra_integration_tests_work")]
+        public void Run_all_Cassandra_integration_tests_work()
         {
-            // Open a connection to the MySQL database
-            var cnn = new MySqlConnection($"Server=127.0.0.1;Port={_mySQLFixture.HostPort};Database={_mySQLFixture.DbName};Uid={_mySQLFixture.DbUser};Pwd={_mySQLFixture.DbPwd};");
+            // Open a connection to Cassandra
+            var cnn = new CqlConnection($"Contact Points=127.0.0.1;Port={_cassandraFixture.Cassandra.HostPort};Cluster Name={_cassandraFixture.Cassandra.ClusterName}");
             cnn.Open();
-            Assert.True(cnn.State == ConnectionState.Open, "Cannot open a connection to the database.");
+            Assert.True(cnn.State == ConnectionState.Open, "Cannot open a connection to Cassandra.");
 
             // Initiate a connection to the database
             var wcnn = new WrappedConnection(cnn);
 
-            // Validate DBMS.MySQL_MariaDB
-            Assert.Equal(DBMS.MySQL_MariaDB, wcnn.GetDatabaseServerType());
+            // Validate DBMS.Cassandra
+            Assert.Equal(DBMS.Cassandra, wcnn.GetDatabaseServerType());
 
             // Init the DatabaseHelper
-            DatabaseHelper db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.MySQL_MariaDB, wcnn);
-
-            // Get default schema name
-            Assert.True(db.GetCurrentSchemaName() == _mySQLFixture.DbName, $"The default MySQL schema should be '{_mySQLFixture.DbName}'.");
+            var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.Cassandra, wcnn);
 
             // Create schema
-            string metadataSchemaName = "My metadata schema";
-            Schema metadataSchema = new MySQLSchema(metadataSchemaName, wcnn);
-            Assert.False(metadataSchema.IsExists(), $"The schema [{metadataSchemaName}] should not already exist.");
-            Assert.True(metadataSchema.Create(), $"Creation of the schema [{metadataSchemaName}] failed.");
-            Assert.True(metadataSchema.IsExists(), $"The schema [{metadataSchemaName}] should be created.");
-            Assert.True(metadataSchema.IsEmpty(), $"The schema [{metadataSchemaName}] should be empty.");
+            string metadataKeyspaceName = "my_metadata_keyspace";
+            Schema metadataSchema = new CassandraKeyspace(metadataKeyspaceName, CassandraKeyspace.CreateSimpleStrategy(1), wcnn);
+            Assert.False(metadataSchema.IsExists(), $"The schema [{metadataKeyspaceName}] should not already exist.");
+            Assert.True(metadataSchema.Create(), $"Creation of the schema [{metadataKeyspaceName}] failed.");
+            Assert.True(metadataSchema.IsExists(), $"The schema [{metadataKeyspaceName}] should be created.");
+            Assert.True(metadataSchema.IsEmpty(), $"The schema [{metadataKeyspaceName}] should be empty.");
+
+            var s = db.GetSchema("my_metadata_keyspace");
 
             // Get MetadataTable
-            string metadataTableName = "change log";
-            var metadata = db.GetMetadataTable(metadataSchemaName, metadataTableName);
+            string metadataTableName = "change_log";
+            var metadata = db.GetMetadataTable(metadataKeyspaceName, metadataTableName);
 
             // Create MetadataTable
             Assert.False(metadata.IsExists(), "MetadataTable sould not already exist.");
@@ -69,9 +69,9 @@ namespace Evolve.IntegrationTest.MySQL
             metadata.Lock();
 
             // Save NewSchema metadata
-            metadata.Save(MetadataType.NewSchema, "0", "New schema created.", metadataSchemaName);
-            Assert.True(metadata.CanDropSchema(metadataSchemaName), $"[{metadataSchemaName}] should be droppable.");
-            Assert.False(metadata.CanEraseSchema(metadataSchemaName), $"[{metadataSchemaName}] should not be erasable.");
+            metadata.Save(MetadataType.NewSchema, "0", "New schema created.", metadataKeyspaceName);
+            Assert.True(metadata.CanDropSchema(metadataKeyspaceName), $"[{metadataKeyspaceName}] should be droppable.");
+            Assert.False(metadata.CanEraseSchema(metadataKeyspaceName), $"[{metadataKeyspaceName}] should not be erasable.");
 
             // Add metadata migration
             var migrationScript = new FileMigrationScript(TestContext.EmptyMigrationScriptPath, "1_3_2", "Migration_description");
@@ -83,7 +83,7 @@ namespace Evolve.IntegrationTest.MySQL
             Assert.True(migrationMetadata.Description == migrationScript.Description, "Metadata descritpion is not the same.");
             Assert.True(migrationMetadata.Name == migrationScript.Name, "Metadata name is not the same.");
             Assert.True(migrationMetadata.Success == true, "Metadata success is not true.");
-            Assert.True(migrationMetadata.Id > 0, "Metadata id is not set.");
+            Assert.True(migrationMetadata.Id != 0, "Metadata id is not set.");
             Assert.True(migrationMetadata.InstalledOn.Date == DateTime.UtcNow.Date, $"Installed date is {migrationMetadata.InstalledOn.Date} whereas UtcNow is {DateTime.UtcNow.Date}.");
 
             // Update checksum
@@ -91,16 +91,16 @@ namespace Evolve.IntegrationTest.MySQL
             Assert.Equal("Hi !", metadata.GetAllMigrationMetadata().First().Checksum);
 
             // Assert metadata schema is not empty
-            Assert.False(metadataSchema.IsEmpty(), $"[{metadataSchemaName}] should not be empty.");
+            Assert.False(metadataSchema.IsEmpty(), $"[{metadataKeyspaceName}] should not be empty.");
 
             // Erase schema
             metadataSchema.Erase();
-            Assert.True(metadataSchema.IsEmpty(), $"The schema [{metadataSchemaName}] should be empty.");
-            Assert.True(metadataSchema.IsExists(), $"The schema [{metadataSchemaName}] should exist.");
+            Assert.True(metadataSchema.IsEmpty(), $"The schema [{metadataKeyspaceName}] should be empty.");
+            Assert.True(metadataSchema.IsExists(), $"The schema [{metadataKeyspaceName}] should exist.");
 
             // Drop schema
             metadataSchema.Drop();
-            Assert.False(metadataSchema.IsExists(), $"The schema [{metadataSchemaName}] should not exist.");
+            Assert.False(metadataSchema.IsExists(), $"The schema [{metadataKeyspaceName}] should not exist.");
         }
     }
 }

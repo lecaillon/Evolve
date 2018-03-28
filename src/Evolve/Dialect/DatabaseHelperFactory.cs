@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Evolve.Connection;
+using Evolve.Dialect.Cassandra;
 using Evolve.Dialect.MySQL;
 using Evolve.Dialect.PostgreSQL;
 using Evolve.Dialect.SQLite;
@@ -19,6 +20,7 @@ namespace Evolve.Dialect
             [DBMS.PostgreSQL]       = wcnn => new PostgreSQLDatabase(wcnn),
             [DBMS.MySQL_MariaDB]    = wcnn => new MySQLDatabase(wcnn),
             [DBMS.SQLServer]        = wcnn => new SQLServerDatabase(wcnn),
+            [DBMS.Cassandra]        = wcnn => new CassandraCluster(wcnn),
         };
 
         public static DatabaseHelper GetDatabaseHelper(DBMS dbmsType, WrappedConnection connection)
