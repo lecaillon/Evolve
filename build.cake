@@ -156,7 +156,7 @@ Task("Build Test-Package").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 
 Task("Build Test-Package Core").Does(() =>
 {
-    foreach(var project in GetFiles("./test-package/**/Evolve.*Core*.Test.csproj"))
+    foreach(var project in GetFiles("./test-package/**/Evolve.*Core*.Test.csproj").Where(x => !BuildRunsInAppVeyor || !x.GetFilename().FullPath.Contains("Cassandra")))
     {
         DotNetCoreBuild(project.FullPath, new DotNetCoreBuildSettings 
         {
