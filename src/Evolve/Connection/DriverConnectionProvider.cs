@@ -39,6 +39,8 @@ namespace Evolve.Connection
 
             ["sqlserver"]           = () => new SqlClientDriver(),
             ["sqlclient"]           = () => new SqlClientDriver(),
+
+            ["cassandra"]           = () => new CassandraDriver(),
         };
 
         /// <summary>

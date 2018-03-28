@@ -28,6 +28,8 @@ namespace Evolve.Connection
 
             ["sqlserver"]           = (depsFile, nugetPackageDir, _) => new SqlClientDriver(),
             ["sqlclient"]           = (depsFile, nugetPackageDir, _) => new SqlClientDriver(),
+
+            ["cassandra"]           = (depsFile, nugetPackageDir, msBuildExtensionsPath) => new CoreCassandraDriverForNet(depsFile, nugetPackageDir, msBuildExtensionsPath),
         };
 
         /// <summary>
