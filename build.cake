@@ -9,6 +9,7 @@ var slnTest = GetFiles("./Evolve.Test.Package.sln").First();
 var distDir = MakeAbsolute(Directory("./dist"));
 var version = XmlPeek(File("./build/common.props"), "/Project/PropertyGroup/PackageVersion/text()");
 var envHome = Environment.GetEnvironmentVariable("USERPROFILE") ?? Environment.GetEnvironmentVariable("HOME");
+var BuildRunsInAppVeyor = Environment.GetEnvironmentVariable("APPVEYOR") == "True";
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP / TEARDOWN
@@ -149,7 +150,7 @@ Task("Restore Test-Package").Does(() =>
 
 Task("Build Test-Package").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 {
-    MSBuild(slnTest, settings => settings.SetConfiguration(configuration)
+    MSBuild(slnTest, settings => settings.SetConfiguration(BuildRunsInAppVeyor ? "AppVeyor" : configuration) // AppVeyor does not support Cassandra yet
                                          .SetVerbosity(Verbosity.Minimal));
 });
 
