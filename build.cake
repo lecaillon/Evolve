@@ -9,7 +9,7 @@ var slnTest = GetFiles("./Evolve.Test.Package.sln").First();
 var distDir = MakeAbsolute(Directory("./dist"));
 var version = XmlPeek(File("./build/common.props"), "/Project/PropertyGroup/PackageVersion/text()");
 var envHome = Environment.GetEnvironmentVariable("USERPROFILE") ?? Environment.GetEnvironmentVariable("HOME");
-var BuildRunsInAppVeyor = Environment.GetEnvironmentVariable("APPVEYOR") == "True";
+var buildRunsInAppVeyor = Environment.GetEnvironmentVariable("APPVEYOR") == "True";
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP / TEARDOWN
@@ -150,13 +150,13 @@ Task("Restore Test-Package").Does(() =>
 
 Task("Build Test-Package").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 {
-    MSBuild(slnTest, settings => settings.SetConfiguration(BuildRunsInAppVeyor ? "AppVeyor" : configuration) // AppVeyor does not support Cassandra yet
+    MSBuild(slnTest, settings => settings.SetConfiguration(buildRunsInAppVeyor ? "AppVeyor" : configuration) // AppVeyor does not support Cassandra yet
                                          .SetVerbosity(Verbosity.Minimal));
 });
 
 Task("Build Test-Package Core").Does(() =>
 {
-    foreach(var project in GetFiles("./test-package/**/Evolve.*Core*.Test.csproj").Where(x => !BuildRunsInAppVeyor || !x.GetFilename().FullPath.Contains("Cassandra")))
+    foreach(var project in GetFiles("./test-package/**/Evolve.*Core*.Test.csproj").Where(x => !buildRunsInAppVeyor || !x.GetFilename().FullPath.Contains("Cassandra")))
     {
         DotNetCoreBuild(project.FullPath, new DotNetCoreBuildSettings 
         {
