@@ -12,13 +12,13 @@ namespace Evolve.Cli
     {
         public static Evolve Build(IDbConnection connection, Options options)
         {
-            var evolve = new Evolve(connection)
+            var evolve = new Evolve(connection, Console.WriteLine)
             {
                 Command = MapToCommandOptions(options.Command),
                 CommandTimeout = options.Timeout,
                 EnableClusterMode = !options.DisableClusterMode,
                 Encoding = ParseEncoding(options.Encoding),
-                IsEraseDisabled = !options.EraseEnabled,
+                IsEraseDisabled = !options.EnableErase,
                 Locations = options.Locations,
                 MetadataTableName = options.MetadataTableName,
                 OutOfOrder = options.OutOfOrder,
@@ -28,8 +28,8 @@ namespace Evolve.Cli
                 Placeholders = MapPlaceholders(options.Placeholders),
                 SqlMigrationPrefix = options.MigrationScriptsPrefix,
                 SqlMigrationSeparator = options.MigrationScriptsSeparator,
-                StartVersion = ParseVersion(options.StartVersion),
-                TargetVersion = ParseVersion(options.TargetVersion)
+                StartVersion = ParseVersion(options.StartVersion, MigrationVersion.MinVersion),
+                TargetVersion = ParseVersion(options.TargetVersion, MigrationVersion.MaxVersion)
             };
 
             switch (options)
@@ -42,7 +42,7 @@ namespace Evolve.Cli
                     evolve.MetadataTableSchema = cassandraOptions.MetadataTableKeyspace;
                     evolve.Locations = cassandraOptions.Locations;
                     evolve.Schemas = cassandraOptions.Keyspaces;
-                    evolve.IsEraseDisabled = !cassandraOptions.EraseEnabled;
+                    evolve.IsEraseDisabled = !cassandraOptions.EnableErase;
                     evolve.MustEraseOnValidationError = cassandraOptions.EraseOnValidationError;
                     evolve.SqlMigrationSuffix = cassandraOptions.ScriptsSuffix;
                     break;
@@ -52,10 +52,8 @@ namespace Evolve.Cli
             return evolve;
         }
 
-        private static MigrationVersion ParseVersion(string version)
-        {
-            return new MigrationVersion(version);
-        }
+        private static MigrationVersion ParseVersion(string version, MigrationVersion defaultIfEmpty) =>
+            !String.IsNullOrEmpty(version) ? new MigrationVersion(version) : defaultIfEmpty;
 
         private static Dictionary<string, string> MapPlaceholders(IEnumerable<string> placeholders) =>
             placeholders.Select(i => i.Split(':')).ToDictionary(i => i[0], i => i[1]);
