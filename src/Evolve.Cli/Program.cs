@@ -1,10 +1,15 @@
 ﻿using Cassandra.Data;
 using CommandLine;
-using Microsoft.Data.Sqlite;
 using MySql.Data.MySqlClient;
 using Npgsql;
 using System.Data;
 using System.Data.SqlClient;
+
+#if NETCORE
+using Microsoft.Data.Sqlite;
+#elif NET
+using System.Data.SQLite;
+#endif
 
 namespace Evolve.Cli
 {
@@ -40,7 +45,11 @@ namespace Evolve.Cli
             Evolve(new NpgsqlConnection(postgreSqlOptions.ConnectionString), postgreSqlOptions);
 
         static int EvolveWithSQLite(SQLiteOptions sqLiteOptions) =>
+#if NETCORE
             Evolve(new SqliteConnection(sqLiteOptions.ConnectionString), sqLiteOptions);
+#elif NET
+            Evolve(new SQLiteConnection(sqLiteOptions.ConnectionString), sqLiteOptions);
+#endif
 
         static int EvolveWithSqlServer(SqlServerOptions sqlServerOptions) =>
             Evolve(new SqlConnection(sqlServerOptions.ConnectionString), sqlServerOptions);
