@@ -1,5 +1,10 @@
 ﻿using Cassandra.Data;
 using CommandLine;
+using Microsoft.Data.Sqlite;
+using MySql.Data.MySqlClient;
+using Npgsql;
+using System.Data;
+using System.Data.SqlClient;
 
 namespace Evolve.Cli
 {
@@ -18,36 +23,26 @@ namespace Evolve.Cli
                     _ => 1);
         }
 
-
-        static int EvolveWithCassandra(CassandraOptions cassandraOptions)
+        static int Evolve(IDbConnection connection, Options options)
         {
-            var evolve = EvolveFactory.Build(
-                new CqlConnection(cassandraOptions.ConnectionString),
-                cassandraOptions);
-
-            evolve.ExecuteCommand();
+            EvolveFactory.Build(connection, options).ExecuteCommand();
 
             return 0;
         }
 
-        static int EvolveWithMySql(MySqlOptions mySqlOptions)
-        {
-            return 0;
-        }
+        static int EvolveWithCassandra(CassandraOptions cassandraOptions) =>
+            Evolve(new CqlConnection(cassandraOptions.ConnectionString), cassandraOptions);
 
-        static int EvolveWithPostgreSql(PostgreSqlOptions postgreSqlOptions)
-        {
-            return 0;
-        }
+        static int EvolveWithMySql(MySqlOptions mySqlOptions) =>
+            Evolve(new MySqlConnection(mySqlOptions.ConnectionString), mySqlOptions);
 
-        static int EvolveWithSqlServer(SqlServerOptions sqlServerOptions)
-        {
-            return 0;
-        }
+        static int EvolveWithPostgreSql(PostgreSqlOptions postgreSqlOptions) =>
+            Evolve(new NpgsqlConnection(postgreSqlOptions.ConnectionString), postgreSqlOptions);
 
-        static int EvolveWithSQLite(SQLiteOptions sqLiteOptions)
-        {
-            return 0;
-        }
+        static int EvolveWithSQLite(SQLiteOptions sqLiteOptions) =>
+            Evolve(new SqliteConnection(sqLiteOptions.ConnectionString), sqLiteOptions);
+
+        static int EvolveWithSqlServer(SqlServerOptions sqlServerOptions) =>
+            Evolve(new SqlConnection(sqlServerOptions.ConnectionString), sqlServerOptions);
     }
 }

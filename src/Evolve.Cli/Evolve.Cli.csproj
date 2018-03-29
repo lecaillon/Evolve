@@ -7,6 +7,10 @@
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.2.1" />
     <PackageReference Include="CassandraCSharpDriver" Version="3.4.1" />
+    <PackageReference Include="MySql.Data" Version="6.10.6" />
+    <PackageReference Include="Npgsql" Version="3.2.6" />
+    <PackageReference Include="Microsoft.Data.SQLite" Version="2.0.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.4.2" />
   </ItemGroup>
 
   <ItemGroup>
