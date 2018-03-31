@@ -32,6 +32,9 @@ create table my_table (
             Assert.Equal(0, statements.ElementAt(0).LineNumber);
             Assert.Equal(5, statements.ElementAt(1).LineNumber);
             Assert.Equal(7, statements.ElementAt(2).LineNumber);
+            Assert.False(statements.ElementAt(0).MustExecuteInTransaction);
+            Assert.False(statements.ElementAt(1).MustExecuteInTransaction);
+            Assert.False(statements.ElementAt(2).MustExecuteInTransaction);
         }
     }
 }

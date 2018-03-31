@@ -28,6 +28,7 @@ INSERT INTO distributors2 VALUES(1, 'azerty');";
 
             Assert.Single(statements);
             Assert.Equal(sql, statements.ElementAt(0).Sql);
+            Assert.True(statements.ElementAt(0).MustExecuteInTransaction);
         }
     }
 }

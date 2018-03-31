@@ -51,6 +51,8 @@ FROM varchar(11) NOT NULL ;";
             Assert.Equal(2, statements.Count());
             Assert.Equal(sql1, statements.ElementAt(0).Sql);
             Assert.Equal(sql2, statements.ElementAt(1).Sql);
+            Assert.True(statements.ElementAt(0).MustExecuteInTransaction);
+            Assert.True(statements.ElementAt(1).MustExecuteInTransaction);
         }
     }
 }
