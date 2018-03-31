@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using Evolve.Connection;
 using Evolve.Dialect.SQLite;
+using Evolve.Migration;
 using Microsoft.Data.Sqlite;
 
 namespace Evolve.Core.Test
@@ -22,5 +23,12 @@ namespace Evolve.Core.Test
 
             return new SQLiteSchema(connection);
         }
+    }
+
+    public class FakeMigrationScript : MigrationScript
+    {
+        public FakeMigrationScript(string content)
+            : base("1", "no description", "no name", content)
+        { }
     }
 }
