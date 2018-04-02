@@ -18,10 +18,17 @@ namespace Evolve.Dialect.PostgreSQL
         {
         }
 
-        protected override void InternalLock()
-        {
-            _database.WrappedConnection.ExecuteNonQuery($"SELECT * FROM \"{Schema}\".\"{TableName}\" FOR UPDATE");
-        }
+        /// <summary>
+        ///     Returns always true, because the lock is granted at application level.
+        ///     <see cref="PostgreSQLDatabase.TryAcquireApplicationLock"/>
+        /// </summary>
+        protected override bool InternalTryLock() => true;
+
+        /// <summary>
+        ///     Returns always true, because the lock is released at application level.
+        ///     <see cref="PostgreSQLDatabase.ReleaseApplicationLock"/>
+        /// </summary>
+        protected override bool InternalReleaseLock() => true;
 
         protected override bool InternalIsExists()
         {

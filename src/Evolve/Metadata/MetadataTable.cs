@@ -117,18 +117,11 @@ namespace Evolve.Metadata
             });
         }
 
-        public void Lock()
-        {
-            Execute(() =>
-            {
-                InternalLock();
-            });
-        }
+        public bool TryLock() => Execute(() => InternalTryLock());
 
-        public bool IsExists()
-        {
-            return Execute(() => InternalIsExists(), false);
-        }
+        public bool ReleaseLock() => Execute(() => InternalReleaseLock());
+
+        public bool IsExists() => Execute(() => InternalIsExists(), false);
 
         protected abstract bool InternalIsExists();
 
@@ -142,7 +135,9 @@ namespace Evolve.Metadata
 
         protected abstract void InternalCreate();
 
-        protected abstract void InternalLock();
+        protected abstract bool InternalTryLock();
+
+        protected abstract bool InternalReleaseLock();
 
         protected abstract void InternalSave(MigrationMetadata metadata);
 

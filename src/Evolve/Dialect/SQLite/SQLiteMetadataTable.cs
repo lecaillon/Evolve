@@ -16,11 +16,16 @@ namespace Evolve.Dialect.SQLite
         }
 
         /// <summary>
-        ///     SQLite does not support locking. No concurrent migration supported.
+        ///     Returns always true, because SQLite does not support locking. 
+        ///     No concurrent migration supported.
         /// </summary>
-        protected override void InternalLock()
-        {
-        }
+        protected override bool InternalTryLock() => true;
+
+        /// <summary>
+        ///     Returns always true, because SQLite does not support locking. 
+        ///     No concurrent migration supported.
+        /// </summary>
+        protected override bool InternalReleaseLock() => true;
 
         protected override bool InternalIsExists()
         {

@@ -27,8 +27,16 @@ namespace Evolve.Dialect.Cassandra
         public override IEvolveMetadata GetMetadataTable(string schema, string tableName) =>
             new CassandraMetadataTable(schema, tableName, this);
 
+        /// <summary>
+        ///     Returns always true, because the lock is granted at table level.
+        ///     <see cref="CassandraMetadataTable.TryLock"/>
+        /// </summary>
         public override bool TryAcquireApplicationLock() => true;
 
+        /// <summary>
+        ///     Returns always true, because the lock is released at table level.
+        ///     <see cref="CassandraMetadataTable.ReleaseLock"/>
+        /// </summary>
         public override bool ReleaseApplicationLock() => true;
 
         public override SqlStatementBuilderBase SqlStatementBuilder { get; } = new CqlStatementBuilder();

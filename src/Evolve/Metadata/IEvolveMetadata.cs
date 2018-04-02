@@ -6,10 +6,17 @@ namespace Evolve.Metadata
     public interface IEvolveMetadata
     {
         /// <summary>
-        ///     Lock the access to the metadata store to others migration processes.
+        ///     Try to lock the access to the metadata store to others migration processes.
         ///     Only one migration at a time is authorized.
         /// </summary>
-        void Lock();
+        /// <returns> Returns true if the lock was successfully granted, false otherwise. </returns>
+        bool TryLock();
+
+        /// <summary>
+        ///     Release the lock previously granted.
+        /// </summary>
+        /// <returns> Returns true if the lock was successfully released, false otherwise. </returns>
+        bool ReleaseLock();
 
         /// <summary>
         ///     Check if Evolve metadata exists in the database or not.

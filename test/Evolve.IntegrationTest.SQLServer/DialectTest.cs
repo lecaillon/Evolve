@@ -62,8 +62,9 @@ namespace Evolve.IntegrationTest.SQLServer
             Assert.False(metadata.CreateIfNotExists(), "MetadataTable already exists. Creation should return false.");
             Assert.True(metadata.GetAllMigrationMetadata().Count() == 0, "No migration metadata should be found.");
 
-            // Lock MetadataTable
-            metadata.Lock();
+            // TryLock/ReleaseLock MetadataTable
+            Assert.True(metadata.TryLock());
+            Assert.True(metadata.ReleaseLock());
 
             // Save EmptySchema metadata
             metadata.Save(MetadataType.EmptySchema, "0", "Empty schema found.", metadataSchemaName);

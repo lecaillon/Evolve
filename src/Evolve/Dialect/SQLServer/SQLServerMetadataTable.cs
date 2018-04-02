@@ -17,10 +17,17 @@ namespace Evolve.Dialect.SQLServer
         {
         }
 
-        protected override void InternalLock()
-        {
-            _database.WrappedConnection.ExecuteNonQuery($"SELECT * FROM [{Schema}].[{TableName}] WITH (TABLOCKX)");
-        }
+        /// <summary>
+        ///     Returns always true, because the lock is granted at application level.
+        ///     <see cref="SQLServerDatabase.TryAcquireApplicationLock"/>
+        /// </summary>
+        protected override bool InternalTryLock() => true;
+
+        /// <summary>
+        ///     Returns always true, because the lock is released at application level.
+        ///     <see cref="SQLServerDatabase.ReleaseApplicationLock"/>
+        /// </summary>
+        protected override bool InternalReleaseLock() => true;
 
         protected override bool InternalIsExists()
         {

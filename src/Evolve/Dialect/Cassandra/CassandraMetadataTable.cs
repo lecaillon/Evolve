@@ -46,9 +46,6 @@ namespace Evolve.Dialect.Cassandra
             _database.WrappedConnection.QueryForLong(
                 $"select count(table_name) from system_schema.tables where keyspace_name = '{Schema}' and table_name = '{TableName}'") > 0;
 
-        //No locks in Cassandra
-        protected override void InternalLock() { }
-
         protected override void InternalSave(MigrationMetadata metadata)
         {
             //Cassandra does not support auto incremented IDs, so we'll insert a random
@@ -73,5 +70,9 @@ namespace Evolve.Dialect.Cassandra
                 $"update {Schema}.{TableName} " +
                 $"set checksum = '{checksum}' " +
                 $"where id = {migrationId}");
+
+        protected override bool InternalTryLock() => true; // WIP
+
+        protected override bool InternalReleaseLock() => true; // WIP
     }
 }

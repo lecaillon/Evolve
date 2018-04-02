@@ -65,8 +65,9 @@ namespace Evolve.IntegrationTest.Cassandra
             Assert.False(metadata.CreateIfNotExists(), "MetadataTable already exists. Creation should return false.");
             Assert.True(metadata.GetAllMigrationMetadata().Count() == 0, "No migration metadata should be found.");
 
-            // Lock MetadataTable
-            metadata.Lock();
+            // TryLock/ReleaseLock MetadataTable
+            Assert.True(metadata.TryLock());
+            Assert.True(metadata.ReleaseLock());
 
             // Save NewSchema metadata
             metadata.Save(MetadataType.NewSchema, "0", "New schema created.", metadataKeyspaceName);
