@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Evolve.Metadata;
 using Evolve.Migration;
 
@@ -29,17 +30,17 @@ namespace Evolve.Dialect.Cassandra
         {
             string cql = $"SELECT id, type, version, description, name, checksum, installed_by, installed_on, success FROM {Schema}.{TableName}";
 
-            return _database.WrappedConnection.QueryForList(cql, r =>
-            {
-                return new MigrationMetadata(r.GetString(2), r.GetString(3), r.GetString(4), (MetadataType)(sbyte)r.GetValue(1))
-                {
-                    Id = r.GetInt32(0),
-                    Checksum = r.GetString(5),
-                    InstalledBy = r.GetString(6),
-                    InstalledOn = ((DateTimeOffset)r.GetValue(7)).DateTime,
-                    Success = r.GetBoolean(8)
-                };
-            });
+            return _database.WrappedConnection
+                .QueryForList(cql, r =>
+                    new MigrationMetadata(r.GetString(2), r.GetString(3), r.GetString(4), (MetadataType)(sbyte)r.GetValue(1))
+                    {
+                        Id = r.GetInt32(0),
+                        Checksum = r.GetString(5),
+                        InstalledBy = r.GetString(6),
+                        InstalledOn = ((DateTimeOffset)r.GetValue(7)).DateTime,
+                        Success = r.GetBoolean(8)
+                    })
+                .Where(i => i.Id > 0); //Filter out the lock entry that might be present (see InternalTryLock)
         }
 
         protected override bool InternalIsExists() =>
@@ -48,14 +49,14 @@ namespace Evolve.Dialect.Cassandra
 
         protected override void InternalSave(MigrationMetadata metadata)
         {
-            //Cassandra does not support auto incremented IDs, so we'll insert a random
+            //Cassandra does not support auto incremented IDs, so we'll insert a random one
             //Using Guid.GetHashCode ensure low probability of collision, and checking that it does not exist yet lowers it even more
             //It might still theoretically happen that the ID already exists, but in that case retrying the operation will likely fix the issue
             do
             {
                 metadata.Id = Math.Abs(Guid.NewGuid().GetHashCode());
             }
-            while (metadata.Id == 0 || idExists(metadata.Id));
+            while (metadata.Id == 0 || idExists(metadata.Id)); //0 is the id for the lock row, see InternalTryLock
 
             _database.WrappedConnection.ExecuteNonQuery(
                 $"insert into {Schema}.{TableName} (id, type, version, description, name, checksum, installed_by, installed_on, success) " +
@@ -71,14 +72,14 @@ namespace Evolve.Dialect.Cassandra
                 $"set checksum = '{checksum}' " +
                 $"where id = {migrationId}");
 
-        const int LockTtl = 3600;
+        const int LockTtlInSeconds = 3600; //One hour
 
         protected override bool InternalTryLock() =>
             //Insert a lock using LWT with a TTL (of one hour), in case of crash the migration can be retried 1h later with no intervention
             _database.WrappedConnection.Query<bool>(
                 $"insert into {Schema}.{TableName} (id, type, version, description, name, checksum, installed_by, installed_on, success) " +
-                $"values(0, 0, '', '', 'lock', '', '{Environment.MachineName}', toUnixTimestamp(now()), true) " +
-                $"if not exists using TTL {LockTtl}");
+                $"values(0, 0, '0', 'lock', 'lock', '', '{Environment.MachineName}', toUnixTimestamp(now()), true) " +
+                $"if not exists using TTL {LockTtlInSeconds}");
 
         protected override bool InternalReleaseLock() =>
             _database.WrappedConnection.Query<bool>(
