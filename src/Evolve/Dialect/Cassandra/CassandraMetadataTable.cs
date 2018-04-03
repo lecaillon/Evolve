@@ -71,8 +71,17 @@ namespace Evolve.Dialect.Cassandra
                 $"set checksum = '{checksum}' " +
                 $"where id = {migrationId}");
 
-        protected override bool InternalTryLock() => true; // WIP
+        const int LockTtl = 3600;
 
-        protected override bool InternalReleaseLock() => true; // WIP
+        protected override bool InternalTryLock() =>
+            //Insert a lock using LWT with a TTL (of one hour), in case of crash the migration can be retried 1h later with no intervention
+            _database.WrappedConnection.Query<bool>(
+                $"insert into {Schema}.{TableName} (id, type, version, description, name, checksum, installed_by, installed_on, success) " +
+                $"values(0, 0, '', '', 'lock', '', '{Environment.MachineName}', toUnixTimestamp(now()), true) " +
+                $"if not exists using TTL {LockTtl}");
+
+        protected override bool InternalReleaseLock() =>
+            _database.WrappedConnection.Query<bool>(
+                  $"delete from {Schema}.{TableName} where id = 0 if exists");
     }
 }
