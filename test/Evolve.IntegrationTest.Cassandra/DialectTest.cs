@@ -45,17 +45,17 @@ namespace Evolve.IntegrationTest.Cassandra
             var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.Cassandra, wcnn);
 
             // Create schema
-            string metadataKeyspaceName = "my_metadata_keyspace";
+            string metadataKeyspaceName = "my_keyspace";
             Schema metadataSchema = new CassandraKeyspace(metadataKeyspaceName, CassandraKeyspace.CreateSimpleStrategy(1), wcnn);
             Assert.False(metadataSchema.IsExists(), $"The schema [{metadataKeyspaceName}] should not already exist.");
             Assert.True(metadataSchema.Create(), $"Creation of the schema [{metadataKeyspaceName}] failed.");
             Assert.True(metadataSchema.IsExists(), $"The schema [{metadataKeyspaceName}] should be created.");
             Assert.True(metadataSchema.IsEmpty(), $"The schema [{metadataKeyspaceName}] should be empty.");
 
-            var s = db.GetSchema("my_metadata_keyspace");
+            var s = db.GetSchema("my_keyspace");
 
             // Get MetadataTable
-            string metadataTableName = "change_log";
+            string metadataTableName = "evolve_change_log";
             var metadata = db.GetMetadataTable(metadataKeyspaceName, metadataTableName);
 
             // Create MetadataTable
@@ -65,9 +65,17 @@ namespace Evolve.IntegrationTest.Cassandra
             Assert.False(metadata.CreateIfNotExists(), "MetadataTable already exists. Creation should return false.");
             Assert.True(metadata.GetAllMigrationMetadata().Count() == 0, "No migration metadata should be found.");
 
-            // TryLock/ReleaseLock MetadataTable
+            //Lock & Unlock
+            //..Applicaiton level: always return true
+            Assert.True(db.TryAcquireApplicationLock());
+            Assert.True(db.TryAcquireApplicationLock());
+            Assert.True(db.ReleaseApplicationLock());
+            Assert.True(db.ReleaseApplicationLock());
+            //..Table level: lock implemented with LWT on evolve metadata table
             Assert.True(metadata.TryLock());
+            Assert.False(metadata.TryLock());
             Assert.True(metadata.ReleaseLock());
+            Assert.False(metadata.ReleaseLock());
 
             // Save NewSchema metadata
             metadata.Save(MetadataType.NewSchema, "0", "New schema created.", metadataKeyspaceName);

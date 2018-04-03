@@ -122,9 +122,9 @@ Task("Restore Test-Package").Does(() =>
 {
     foreach(var file in GetFiles("./test-package/**/packages.config"))
     {
-		XmlPoke(file, "/packages/package[@id = 'Evolve']/@version", version);
+        XmlPoke(file, "/packages/package[@id = 'Evolve']/@version", version);
     }
-	
+  
     var feed = new 
     {
         Name = "Localhost",
