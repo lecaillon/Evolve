@@ -22,7 +22,8 @@ namespace Evolve
         private const string InvalidConfigurationLocation = "Evolve configuration file not found at: {0}.";
         private const string EvolveInitialized = "Evolve initialized.";
         private const string NoCommandSpecified = "Evolve.Command parameter is not set. No migration applied. See: https://evolve-db.netlify.com/configuration/ for more information.";
-        private const string CannotAcquireLock = "Cannot acquire Evolve lock. Another migration is running.";
+        private const string CannotAcquireApplicationLock = "Cannot acquire Evolve application lock. Another migration is running.";
+        private const string CannotAcquireMetadatatableLock = "Cannot acquire Evolve table lock. Another migration is running.";
         private const string CannotReleaseLock = "Error trying to release Evolve lock.";
 
         // Validate
@@ -352,7 +353,9 @@ namespace Evolve
             }
 
             if (!db.WrappedConnection.CassandraCluster)
+            {
                 db.WrappedConnection.TryBeginTransaction();
+            }
 
             foreach (var schemaName in FindSchemas().Reverse())
             {
@@ -390,7 +393,9 @@ namespace Evolve
             }
 
             if (!db.WrappedConnection.CassandraCluster)
+            {
                 db.WrappedConnection.TryCommit();
+            }
 
             _logInfoDelegate(string.Format(EraseCompleted, NbSchemaErased, NbSchemaToEraseSkipped));
         }
@@ -427,7 +432,13 @@ namespace Evolve
 
             try
             {
-                ManageSchemas(db);
+                ManageSchemas(db); // Ensures all schema are created before using the metadatatable
+
+                if (EnableClusterMode)
+                {
+                    WaitForMetadataTableLock(db);
+                }
+
                 ManageStartVersion(db);
 
                 commandAction(db);
@@ -521,22 +532,32 @@ namespace Evolve
 #endif
         }
 
-        /// <summary>
-        ///     Waiting for Evolve to acquire lock, using the locking mechanism provided by the database.
-        ///     Depending the database, a lock is placed on an application resource or at table level.
-        /// </summary>
         private void WaitForApplicationLock(DatabaseHelper db)
+        {
+            while (true)
+            {
+                if (db.TryAcquireApplicationLock())
+                {
+                    break;
+                }
+
+                _logInfoDelegate(CannotAcquireApplicationLock);
+                Thread.Sleep(TimeSpan.FromSeconds(3));
+            }
+        }
+
+        private void WaitForMetadataTableLock(DatabaseHelper db)
         {
             var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
 
             while (true)
             {
-                if (db.TryAcquireApplicationLock() && metadata.TryLock())
+                if (metadata.TryLock())
                 {
                     break;
                 }
 
-                _logInfoDelegate(CannotAcquireLock);
+                _logInfoDelegate(CannotAcquireMetadatatableLock);
                 Thread.Sleep(TimeSpan.FromSeconds(3));
             }
         }

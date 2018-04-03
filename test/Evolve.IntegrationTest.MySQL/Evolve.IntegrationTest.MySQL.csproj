@@ -145,7 +145,7 @@
     <Content Include="Resources\Sql_Scripts\Migration\V9_5__empty_script.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\Sql_Scripts\Migration\V8__Escape - Copier.sql">
+    <Content Include="Resources\Sql_Scripts\Migration\V8__Escape.sql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Sql_Scripts\Migration\V9_1__DoubleQuote.sql">
