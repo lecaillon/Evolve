@@ -28,7 +28,7 @@ namespace Evolve.IntegrationTest.MySQL
         [Fact(DisplayName = "Run_all_MySQL_migrations_work")]
         public void Run_all_MySQL_migrations_work()
         {
-            var cnn = new MySqlConnection($"Server=127.0.0.1;Port={_mySQLFixture.HostPort};Database={_mySQLFixture.DbName};Uid={_mySQLFixture.DbUser};Pwd={_mySQLFixture.DbPwd};");
+            var cnn = new MySqlConnection($"Server=127.0.0.1;Port={_mySQLFixture.HostPort};Database={_mySQLFixture.DbName};Uid={_mySQLFixture.DbUser};Pwd={_mySQLFixture.DbPwd};SslMode=none;");
             var evolve = new Evolve(cnn, msg => _output.WriteLine(msg))
             {
                 Locations = new List<string> { TestContext.MigrationFolder },

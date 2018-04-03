@@ -119,7 +119,7 @@ namespace Evolve.Metadata
 
         public bool TryLock() => Execute(() => InternalTryLock());
 
-        public bool ReleaseLock() => Execute(() => InternalReleaseLock());
+        public bool ReleaseLock() => Execute(() => InternalReleaseLock(), createIfNotExists: false);
 
         public bool IsExists() => Execute(() => InternalIsExists(), createIfNotExists: false);
 

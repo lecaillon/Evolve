@@ -30,7 +30,7 @@ namespace Evolve.IntegrationTest.MySQL
         public void Run_all_MySQL_integration_tests_work()
         {
             // Open a connection to the MySQL database
-            var cnn = new MySqlConnection($"Server=127.0.0.1;Port={_mySQLFixture.HostPort};Database={_mySQLFixture.DbName};Uid={_mySQLFixture.DbUser};Pwd={_mySQLFixture.DbPwd};");
+            var cnn = new MySqlConnection($"Server=127.0.0.1;Port={_mySQLFixture.HostPort};Database={_mySQLFixture.DbName};Uid={_mySQLFixture.DbUser};Pwd={_mySQLFixture.DbPwd};SslMode=none;");
             cnn.Open();
             Assert.True(cnn.State == ConnectionState.Open, "Cannot open a connection to the database.");
 

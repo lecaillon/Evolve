@@ -448,7 +448,8 @@ namespace Evolve
                 if (EnableClusterMode)
                 {
                     var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
-                    if (!db.ReleaseApplicationLock() || !metadata.ReleaseLock())
+                    if (!db.ReleaseApplicationLock() || 
+                       (Command != CommandOptions.Erase && !metadata.ReleaseLock())) // On erasing, we don't want to re-crate metadatatable, or call a schema which does not exist anymore...
                     {
                         _logInfoDelegate(CannotReleaseLock);
                     }
