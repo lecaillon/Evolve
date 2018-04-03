@@ -119,7 +119,15 @@ namespace Evolve.Metadata
 
         public bool TryLock() => Execute(() => InternalTryLock());
 
-        public bool ReleaseLock() => Execute(() => InternalReleaseLock(), createIfNotExists: false);
+        public bool ReleaseLock()
+        {
+            if (!InternalIsExists())
+            { // The metadatatable does not exist, so neither the lock
+                return true;
+            }
+
+            return Execute(() => InternalReleaseLock(), createIfNotExists: false);
+        }
 
         public bool IsExists() => Execute(() => InternalIsExists(), createIfNotExists: false);
 
