@@ -16,6 +16,7 @@ Over all Evolve embraces simplicity. Every time you build or run your project, i
 - [x] SQL Server
 - [x] MySQL / MariaDB
 - [x] SQLite
+- [x] Cassandra
 
 ## Supported Frameworks
 - [x] .NET 3.5+
