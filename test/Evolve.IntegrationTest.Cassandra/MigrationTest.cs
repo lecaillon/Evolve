@@ -1,4 +1,5 @@
 ﻿using Cassandra.Data;
+using Evolve.Dialect.Cassandra;
 using Evolve.Migration;
 using Evolve.Test.Utilities;
 using System.Collections.Generic;
@@ -102,6 +103,7 @@ namespace Evolve.IntegrationTest.Cassandra
             Assert.Equal(ConnectionState.Closed, cnn.State);
 
             // StartVersion = 3
+            evolve.Erase();
             evolve.Locations = new List<string> { TestContext.MigrationFolder }; // Migrate Cql_Scripts\Migration
             evolve.StartVersion = new MigrationVersion("3");
             evolve.Migrate();
@@ -114,6 +116,14 @@ namespace Evolve.IntegrationTest.Cassandra
             evolve.StartVersion = new MigrationVersion("3.0");
             Assert.Throws<EvolveConfigurationException>(() => evolve.Migrate());
             Assert.Equal(ConnectionState.Closed, cnn.State);
+
+            //DefaultKeyspaceReplicationStrategy
+            evolve.StartVersion = MigrationVersion.MinVersion;
+            evolve.Erase();
+            File.Copy($"_{CassandraKeyspace.DefaultReplicationStrategyFile}", CassandraKeyspace.DefaultReplicationStrategyFile);
+            var ex = Assert.Throws<EvolveSqlException>(() => evolve.Migrate());
+            Assert.Contains("Not enough replicas available for query at consistency", ex.Message);
+            File.Delete(CassandraKeyspace.DefaultReplicationStrategyFile);
         }
     }
 }

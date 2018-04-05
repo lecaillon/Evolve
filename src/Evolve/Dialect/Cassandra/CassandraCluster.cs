@@ -6,7 +6,7 @@ namespace Evolve.Dialect.Cassandra
     public sealed class CassandraCluster : DatabaseHelper
     {
         private string _currentKeyspaceName;
-
+        
         public CassandraCluster(WrappedConnection wrappedConnection) : base(wrappedConnection)
         {
             _currentKeyspaceName = _currentKeyspaceName ?? GetFirstAvailableKeyspace(wrappedConnection);

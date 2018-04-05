@@ -105,8 +105,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="_Evolve.Cassandra.DefaultKeyspaceReplicationStrategy.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config" />
-    <Content Include="Resources\Cql_Scripts\Migration\V1__Create_Keyspace_And_Table.cql">
+    <Content Include="Resources\Cql_Scripts\Migration\V1__Create_Table.cql">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Cql_Scripts\Migration\V2__Add_Column_Insert.cql">

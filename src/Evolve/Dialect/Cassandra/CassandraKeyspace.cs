@@ -1,15 +1,15 @@
 ﻿using Evolve.Connection;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace Evolve.Dialect.Cassandra
 {
     public sealed class CassandraKeyspace : Schema
     {
-        //Might want to make this configurable
-        private static ReplicationStrategy DefaultReplicationStrategy = CreateSimpleStrategy(1);
-
         private readonly ReplicationStrategy _replicationStrategy;
 
         public CassandraKeyspace(string keyspaceName, ReplicationStrategy replicationStrategy, WrappedConnection wrappedConnection)
@@ -74,9 +74,25 @@ namespace Evolve.Dialect.Cassandra
             var replication = wrappedConnection.Query<SortedDictionary<string, string>>($"select replication from system_schema.keyspaces where keyspace_name = '{keyspaceName}'");
 
             if (replication == null || !replication.Any())
-                return new CassandraKeyspace(keyspaceName, DefaultReplicationStrategy, wrappedConnection);
+                return new CassandraKeyspace(keyspaceName, GetDefaultReplicationStrategy(), wrappedConnection);
 
             return new CassandraKeyspace(keyspaceName, ReplicationStrategy.FromSortedDictionary(replication), wrappedConnection);
+        }
+
+        public const string DefaultReplicationStrategyFile = "Evolve.Cassandra.DefaultKeyspaceReplicationStrategy.json";
+
+        private static ReplicationStrategy GetDefaultReplicationStrategy()
+        {
+
+            if (File.Exists(DefaultReplicationStrategyFile))
+            {
+                var dict = new SortedDictionary<string, string>(
+                    JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(DefaultReplicationStrategyFile)));
+
+                return ReplicationStrategy.FromSortedDictionary(dict);
+            }
+            else
+                return CreateSimpleStrategy(1); //Default if the file is not present
         }
 
         public abstract class ReplicationStrategy
@@ -88,10 +104,13 @@ namespace Evolve.Dialect.Cassandra
                 var type = properties["class"];
                 switch (type)
                 {
+                    case "LocalStrategy":
                     case "org.apache.cassandra.locator.LocalStrategy":
                         return CreateLocalStrategy();
+                    case "SimpleStrategy":
                     case "org.apache.cassandra.locator.SimpleStrategy":
                         return CreateSimpleStrategy(int.Parse(properties["replication_factor"]));
+                    case "NetworkTopologyStrategy":
                     case "org.apache.cassandra.locator.NetworkTopologyStrategy":
                         return CreateNetworkTopologyStrategy(
                             properties
