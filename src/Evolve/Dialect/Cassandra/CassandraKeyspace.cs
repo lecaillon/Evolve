@@ -74,25 +74,21 @@ namespace Evolve.Dialect.Cassandra
             var replication = wrappedConnection.Query<SortedDictionary<string, string>>($"select replication from system_schema.keyspaces where keyspace_name = '{keyspaceName}'");
 
             if (replication == null || !replication.Any())
-                return new CassandraKeyspace(keyspaceName, GetReplicationStrategy(keyspaceName), wrappedConnection);
+                return new CassandraKeyspace(keyspaceName, GetReplicationStrategyFromConfiguration(keyspaceName), wrappedConnection);
 
             return new CassandraKeyspace(keyspaceName, ReplicationStrategy.FromSortedDictionary(replication), wrappedConnection);
         }
 
-        public const string DefaultReplicationStrategyFile = "Evolve.Cassandra.DefaultKeyspaceReplicationStrategy.json";
-
-        private static ReplicationStrategy GetReplicationStrategy(string keyspaceName)
+        private static ReplicationStrategy GetReplicationStrategyFromConfiguration(string keyspaceName)
         {
-            if (File.Exists(DefaultReplicationStrategyFile))
+            if (Configuration.ConfigurationFileExists())
             {
-                const string DefaultKeyspaceKey = "_default";
+                var configuration = JObject.Parse(Configuration.GetConfiguration())["keyspaces"];
 
-                var content = JObject.Parse(File.ReadAllText(DefaultReplicationStrategyFile, Encoding.UTF8));
-
-                if (content[keyspaceName] != null)
-                    return ReplicationStrategy.FromSortedDictionary(content[keyspaceName].ToObject<SortedDictionary<string, string>>());
-                else if (content[DefaultKeyspaceKey] != null)
-                    return ReplicationStrategy.FromSortedDictionary(content[DefaultKeyspaceKey].ToObject<SortedDictionary<string, string>>());
+                if (configuration[keyspaceName] != null)
+                    return ReplicationStrategy.FromSortedDictionary(configuration[keyspaceName].ToObject<SortedDictionary<string, string>>());
+                else if (configuration[Configuration.DefaultKeyspaceKey] != null)
+                    return ReplicationStrategy.FromSortedDictionary(configuration[Configuration.DefaultKeyspaceKey].ToObject<SortedDictionary<string, string>>());
                 else
                     return CreateSimpleStrategy(1); //Default if the the keyspace name is not present and there is no default
             }

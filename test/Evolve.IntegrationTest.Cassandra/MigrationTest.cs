@@ -122,10 +122,11 @@ namespace Evolve.IntegrationTest.Cassandra
             //DefaultKeyspaceReplicationStrategy
             evolve.StartVersion = MigrationVersion.MinVersion;
             evolve.Erase();
-            File.Copy($"_{CassandraKeyspace.DefaultReplicationStrategyFile}", CassandraKeyspace.DefaultReplicationStrategyFile);
+            var configurationFileName = Dialect.Cassandra.Configuration.ConfigurationFile;
+            File.Copy($"_{configurationFileName}", configurationFileName);
             var ex = Assert.Throws<EvolveSqlException>(() => evolve.Migrate());
             Assert.Contains("Not enough replicas available for query at consistency", ex.Message);
-            File.Delete(CassandraKeyspace.DefaultReplicationStrategyFile);
+            File.Delete(configurationFileName);
         }
     }
 }
