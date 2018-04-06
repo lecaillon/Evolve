@@ -2,6 +2,8 @@
 using Evolve.Dialect.Cassandra;
 using Evolve.Migration;
 using Evolve.Test.Utilities;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;

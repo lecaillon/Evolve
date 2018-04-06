@@ -1,5 +1,5 @@
 ﻿using Evolve.Connection;
-using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -74,22 +74,27 @@ namespace Evolve.Dialect.Cassandra
             var replication = wrappedConnection.Query<SortedDictionary<string, string>>($"select replication from system_schema.keyspaces where keyspace_name = '{keyspaceName}'");
 
             if (replication == null || !replication.Any())
-                return new CassandraKeyspace(keyspaceName, GetDefaultReplicationStrategy(), wrappedConnection);
+                return new CassandraKeyspace(keyspaceName, GetReplicationStrategy(keyspaceName), wrappedConnection);
 
             return new CassandraKeyspace(keyspaceName, ReplicationStrategy.FromSortedDictionary(replication), wrappedConnection);
         }
 
         public const string DefaultReplicationStrategyFile = "Evolve.Cassandra.DefaultKeyspaceReplicationStrategy.json";
 
-        private static ReplicationStrategy GetDefaultReplicationStrategy()
+        private static ReplicationStrategy GetReplicationStrategy(string keyspaceName)
         {
-
             if (File.Exists(DefaultReplicationStrategyFile))
             {
-                var dict = new SortedDictionary<string, string>(
-                    JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText(DefaultReplicationStrategyFile)));
+                const string DefaultKeyspaceKey = "_default";
 
-                return ReplicationStrategy.FromSortedDictionary(dict);
+                var content = JObject.Parse(File.ReadAllText(DefaultReplicationStrategyFile, Encoding.UTF8));
+
+                if (content[keyspaceName] != null)
+                    return ReplicationStrategy.FromSortedDictionary(content[keyspaceName].ToObject<SortedDictionary<string, string>>());
+                else if (content[DefaultKeyspaceKey] != null)
+                    return ReplicationStrategy.FromSortedDictionary(content[DefaultKeyspaceKey].ToObject<SortedDictionary<string, string>>());
+                else
+                    return CreateSimpleStrategy(1); //Default if the the keyspace name is not present and there is no default
             }
             else
                 return CreateSimpleStrategy(1); //Default if the file is not present
