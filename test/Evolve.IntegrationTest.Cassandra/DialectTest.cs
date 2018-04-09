@@ -66,8 +66,15 @@ namespace Evolve.IntegrationTest.Cassandra
             Assert.True(metadata.GetAllMigrationMetadata().Count() == 0, "No migration metadata should be found.");
 
             //Lock & Unlock
-            //..Applicaiton level: always return true
+            //..Applicaiton level: return true if the cluster lock keyspace/table is not present
             Assert.True(db.TryAcquireApplicationLock());
+            wcnn.ExecuteNonQuery("create keyspace cluster_lock with replication = { 'class' : 'SimpleStrategy','replication_factor' : '1' }; ");
+            Assert.True(db.TryAcquireApplicationLock()); //Still true, table is missing
+            wcnn.ExecuteNonQuery("create table cluster_lock.lock (locked int, primary key(locked))");
+            Assert.True(db.TryAcquireApplicationLock()); //Still true, lock is not present
+            wcnn.ExecuteNonQuery("insert into cluster_lock.lock (locked) values (1) using TTL 3600");
+            Assert.False(db.TryAcquireApplicationLock());
+            wcnn.ExecuteNonQuery("drop keyspace cluster_lock");
             Assert.True(db.TryAcquireApplicationLock());
             Assert.True(db.ReleaseApplicationLock());
             Assert.True(db.ReleaseApplicationLock());
