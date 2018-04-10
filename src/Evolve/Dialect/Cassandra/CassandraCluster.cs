@@ -39,10 +39,30 @@ namespace Evolve.Dialect.Cassandra
             new CassandraMetadataTable(schema, tableName, this);
 
         /// <summary>
-        ///     Returns always true, because the lock is granted at table level.
+        ///     Will chekc for a predefined keyspace and table to see if there is a lock.
+        ///     Otherwise, always returns true, because the lock is granted at table level.
         ///     <see cref="CassandraMetadataTable.TryLock"/>
         /// </summary>
-        public override bool TryAcquireApplicationLock() => true;
+        public override bool TryAcquireApplicationLock()
+        {
+            const string ClusterLockKeyspaceName = "cluster_lock";
+            const string ClusterLockTableName = "lock";
+
+            try
+            {
+                return WrappedConnection.QueryForLong($"select count(locked) from {ClusterLockKeyspaceName}.{ClusterLockTableName}") == 0;
+            }
+            catch (EvolveException ex)
+                when (ex?.InnerException.GetType().ToString() == "Cassandra.InvalidQueryException")
+            {
+                //These error messages are very specific to Cassandra's drivers and could change
+                if (ex.Message.StartsWith($"Keyspace {ClusterLockKeyspaceName} does not exist")
+                    || ex.Message.StartsWith($"unconfigured table {ClusterLockTableName}"))
+                    return true;
+                else
+                    return true;
+            }
+        }
 
         /// <summary>
         ///     Returns always true, because the lock is released at table level.
