@@ -1,4 +1,8 @@
 ﻿{
+  "clusterLock": {
+    "defaultClusterLockKeyspace": "my_cluster_lock_keyspace",
+    "defaultClusterLockTable": "my_lock_table"
+  },
   "keyspaces": {
     "my_keyspace": {
       "class": "NetworkTopologyStrategy",
