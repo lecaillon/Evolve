@@ -1,5 +1,6 @@
 ﻿using Evolve.Connection;
 using Evolve.Metadata;
+using Newtonsoft.Json.Linq;
 
 namespace Evolve.Dialect.Cassandra
 {
@@ -45,19 +46,31 @@ namespace Evolve.Dialect.Cassandra
         /// </summary>
         public override bool TryAcquireApplicationLock()
         {
-            const string ClusterLockKeyspaceName = "cluster_lock";
-            const string ClusterLockTableName = "lock";
+            const string DefaultClusterLockKeyspaceName = "cluster_lock";
+            const string DefaultClusterLockTableName = "lock";
+
+            var clusterLockKeyspaceName = DefaultClusterLockKeyspaceName;
+            var clusterLockTableName = DefaultClusterLockTableName;
+
+            if (Configuration.ConfigurationFileExists())
+            {
+                var configuration = JObject.Parse(Configuration.GetConfiguration())["clusterLock"];
+                clusterLockKeyspaceName = configuration["defaultClusterLockKeyspace"].ToObject<string>()
+                    ?? DefaultClusterLockKeyspaceName;
+                clusterLockTableName = configuration["defaultClusterLockTable"].ToObject<string>()
+                    ?? DefaultClusterLockTableName;
+            }
 
             try
             {
-                return WrappedConnection.QueryForLong($"select count(locked) from {ClusterLockKeyspaceName}.{ClusterLockTableName}") == 0;
+                return WrappedConnection.QueryForLong($"select count(locked) from {clusterLockKeyspaceName}.{clusterLockTableName}") == 0;
             }
             catch (EvolveException ex)
                 when (ex?.InnerException.GetType().ToString() == "Cassandra.InvalidQueryException")
             {
                 //These error messages are very specific to Cassandra's drivers and could change
-                if (ex.Message.StartsWith($"Keyspace {ClusterLockKeyspaceName} does not exist")
-                    || ex.Message.StartsWith($"unconfigured table {ClusterLockTableName}"))
+                if (ex.Message.StartsWith($"Keyspace {clusterLockKeyspaceName} does not exist")
+                    || ex.Message.StartsWith($"unconfigured table {clusterLockTableName}"))
                     return true;
                 else
                     return true;
