@@ -38,8 +38,8 @@
     <Reference Include="Cassandra, Version=3.99.0.0, Culture=neutral, PublicKeyToken=10b231fbfc8c4b4d, processorArchitecture=MSIL">
       <HintPath>..\..\packages\CassandraCSharpDriver.3.4.1\lib\net45\Cassandra.dll</HintPath>
     </Reference>
-    <Reference Include="Docker.DotNet, Version=3.125.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Docker.DotNet.3.125.1\lib\net46\Docker.DotNet.dll</HintPath>
+    <Reference Include="Docker.DotNet, Version=3.125.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Docker.DotNet.3.125.2\lib\net46\Docker.DotNet.dll</HintPath>
     </Reference>
     <Reference Include="LZ4, Version=1.0.10.93, Culture=neutral, PublicKeyToken=62e1b5ec1eec9bdd, processorArchitecture=MSIL">
       <HintPath>..\..\packages\lz4net.1.0.10.93\lib\net4-client\LZ4.dll</HintPath>

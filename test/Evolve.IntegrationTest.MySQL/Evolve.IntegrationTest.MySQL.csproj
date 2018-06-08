@@ -35,8 +35,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Docker.DotNet, Version=3.125.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Docker.DotNet.3.125.1\lib\net46\Docker.DotNet.dll</HintPath>
+    <Reference Include="Docker.DotNet, Version=3.125.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Docker.DotNet.3.125.2\lib\net46\Docker.DotNet.dll</HintPath>
     </Reference>
     <Reference Include="MySql.Data, Version=6.10.6.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <HintPath>..\..\packages\MySql.Data.6.10.6\lib\net452\MySql.Data.dll</HintPath>

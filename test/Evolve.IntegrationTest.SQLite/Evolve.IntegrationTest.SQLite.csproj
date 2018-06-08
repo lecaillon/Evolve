@@ -36,8 +36,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Docker.DotNet, Version=3.125.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Docker.DotNet.3.125.1\lib\net46\Docker.DotNet.dll</HintPath>
+    <Reference Include="Docker.DotNet, Version=3.125.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Docker.DotNet.3.125.2\lib\net46\Docker.DotNet.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
