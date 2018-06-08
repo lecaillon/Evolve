@@ -6,6 +6,8 @@ namespace Evolve.Cli
     [Verb("cassandra", HelpText = "Evolve with Cassandra")]
     internal class CassandraOptions : Options
     {
+        public override string Driver => "cassandra";
+
         [Option('k', "metadata-table-keyspace", HelpText = "The keyspace in which the metadata table is/should be", Required = true)]
         public string MetadataTableKeyspace { get; set; }
 

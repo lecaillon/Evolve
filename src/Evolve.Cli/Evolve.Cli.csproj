@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\build\common.props" />
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -6,40 +6,11 @@
     <Version>$(PackageVersion)</Version>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net452'">
-    <DefineConstants>NET;NET45</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp1.1'">
-    <DefineConstants>NETCORE;NETCORE1</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp2.0' ">
-    <DefineConstants>NETCORE;NETCORE2</DefineConstants>
-  </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.2.1" />
-    <PackageReference Include="CassandraCSharpDriver" Version="3.4.1" />
-    <PackageReference Include="Npgsql" Version="3.2.6" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp1.1'">
-    <PackageReference Include="MySql.Data" Version="7.0.7-m61" />
-    <PackageReference Include="Microsoft.Data.SQLite" Version="1.1.0" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.4.2" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
-    <PackageReference Include="MySql.Data" Version="8.0.9-dmr" />
-    <PackageReference Include="Microsoft.Data.SQLite" Version="2.0.0" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.4.2" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net452'">
-    <PackageReference Include="MySql.Data" Version="6.10.6" />
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.107.0" />
-  </ItemGroup>
-
-    <ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Evolve\Evolve.csproj" />
   </ItemGroup>
 </Project>
