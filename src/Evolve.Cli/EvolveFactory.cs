@@ -10,12 +10,14 @@ namespace Evolve.Cli
 {
     internal static class EvolveFactory
     {
-        public static Evolve Build(IDbConnection connection, Options options)
+        public static Evolve Build(Options options)
         {
-            var evolve = new Evolve(connection, Console.WriteLine)
+            var evolve = new Evolve(logInfoDelegate: Console.WriteLine)
             {
                 Command = MapToCommandOptions(options.Command),
                 CommandTimeout = options.Timeout,
+                ConnectionString = options.ConnectionString,
+                Driver = options.Driver,
                 EnableClusterMode = !options.DisableClusterMode,
                 Encoding = ParseEncoding(options.Encoding),
                 IsEraseDisabled = !options.EnableErase,
@@ -70,15 +72,15 @@ namespace Evolve.Cli
             }
         }
 
-        private static CommandOptions MapToCommandOptions(Commands command)
+        private static CommandOptions MapToCommandOptions(Command command)
         {
             switch (command)
             {
-                case Commands.migrate:
+                case Command.migrate:
                     return CommandOptions.Migrate;
-                case Commands.erase:
+                case Command.erase:
                     return CommandOptions.Erase;
-                case Commands.repair:
+                case Command.repair:
                     return CommandOptions.Repair;
                 default:
                     return CommandOptions.DoNothing;

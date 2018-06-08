@@ -5,8 +5,10 @@ namespace Evolve.Cli
 {
     internal abstract class Options
     {
+        public abstract string Driver { get; }
+
         [Value(0, MetaName = "command", HelpText = "migrate | erase | repair", Required = true)]
-        public Commands Command { get; set; }
+        public Command Command { get; set; }
 
         [Value(1, MetaName = "connection-string", HelpText = "The connection string to the target engine.", Required = true)]
         public string ConnectionString { get; set; }
