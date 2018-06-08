@@ -1,13 +1,10 @@
-﻿using Cassandra.Data;
-using Evolve.Dialect.Cassandra;
-using Evolve.Migration;
-using Evolve.Test.Utilities;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using Cassandra.Data;
+using Evolve.Migration;
+using Evolve.Test.Utilities;
 using Xunit;
 using Xunit.Abstractions;
 
