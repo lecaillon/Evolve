@@ -9,10 +9,10 @@ namespace Evolve.Driver
     {
         public const string DriverAssemblyName = "Npgsql";
         public const string ConnectionTypeName = "Npgsql.NpgsqlConnection";
-        public const string NugetPackageName = "Npgsql";
+        public const string NugetPackageId = "Npgsql";
 
         public CoreNpgsqlDriver(string depsFile, string nugetPackageDir)
-            : base(DriverAssemblyName, ConnectionTypeName, NugetPackageName, depsFile, nugetPackageDir)
+            : base(DriverAssemblyName, ConnectionTypeName, NugetPackageId, depsFile, nugetPackageDir)
         {
         }
     }
@@ -44,10 +44,10 @@ namespace Evolve.Driver
     {
         public const string DriverAssemblyName = "Npgsql";
         public const string ConnectionTypeName = "Npgsql.NpgsqlConnection";
-        public const string NugetPackageName = "Npgsql";
+        public const string NugetPackageId = "Npgsql";
 
         public CoreNpgsqlDriverForNet(string depsFile, string nugetPackageDir, string msBuildExtensionsPath) 
-            : base(DriverAssemblyName, ConnectionTypeName, NugetPackageName, depsFile, nugetPackageDir, msBuildExtensionsPath)
+            : base(DriverAssemblyName, ConnectionTypeName, NugetPackageId, depsFile, nugetPackageDir, msBuildExtensionsPath)
         {
         }
     }

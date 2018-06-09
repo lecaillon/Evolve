@@ -150,7 +150,7 @@ namespace Evolve.Driver
             ManagedDependencies = new List<string>();
             NativeDependencies = new List<string>();
 
-            RuntimeLibrary rootLib = GetRuntimeLibrary(NugetPackageName);
+            RuntimeLibrary rootLib = GetRuntimeLibrary(DriverNugetPackageId);
             FindDependencies(rootLib);
 
             string driverPath = ManagedDependencies.FirstOrDefault(x => x.Contains(DriverTypeName.Assembly));

@@ -9,10 +9,10 @@ namespace Evolve.Driver
     {
         public const string DriverAssemblyName = "MySql.Data";
         public const string ConnectionTypeName = "MySql.Data.MySqlClient.MySqlConnection";
-        public const string NugetPackageName = "MySql.Data";
+        public const string NugetPackageId = "MySql.Data";
 
         public CoreMySqlDataDriver(string depsFile, string nugetPackageDir)
-            : base(DriverAssemblyName, ConnectionTypeName, NugetPackageName, depsFile, nugetPackageDir)
+            : base(DriverAssemblyName, ConnectionTypeName, NugetPackageId, depsFile, nugetPackageDir)
         {
         }
     }
@@ -44,10 +44,10 @@ namespace Evolve.Driver
     {
         public const string DriverAssemblyName = "MySql.Data";
         public const string ConnectionTypeName = "MySql.Data.MySqlClient.MySqlConnection";
-        public const string NugetPackageName = "MySql.Data";
+        public const string NugetPackageId = "MySql.Data";
 
         public CoreMySqlDataDriverForNet(string depsFile, string nugetPackageDir, string msBuildExtensionsPath) 
-            : base(DriverAssemblyName, ConnectionTypeName, NugetPackageName, depsFile, nugetPackageDir, msBuildExtensionsPath)
+            : base(DriverAssemblyName, ConnectionTypeName, NugetPackageId, depsFile, nugetPackageDir, msBuildExtensionsPath)
         {
         }
     }

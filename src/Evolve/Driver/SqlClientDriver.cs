@@ -9,10 +9,10 @@ namespace Evolve.Driver
     {
         public const string DriverAssemblyName = "System.Data.SqlClient";
         public const string ConnectionTypeName = "System.Data.SqlClient.SqlConnection";
-        public const string NugetPackageName = "System.Data.SqlClient";
+        public const string NugetPackageId = "System.Data.SqlClient";
 
         public CoreSqlClientDriver(string depsFile, string nugetPackageDir)
-            : base(DriverAssemblyName, ConnectionTypeName, NugetPackageName, depsFile, nugetPackageDir)
+            : base(DriverAssemblyName, ConnectionTypeName, NugetPackageId, depsFile, nugetPackageDir)
         {
         }
     }
