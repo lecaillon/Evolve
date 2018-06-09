@@ -18,7 +18,7 @@ namespace Evolve.Driver
     ///     </para>
     ///     <para>
     ///         Because MSBuild does not support the .NET Core class <see cref="AssemblyLoadContext"/> (see https://github.com/Microsoft/msbuild/issues/1940)
-    ///         we can not use the <see cref="CoreReflectionBasedDriver"/> to load a driver of a .NET Standard/Core project.
+    ///         we can not use the <see cref="CoreReflectionBasedDriverEx"/> to load a driver of a .NET Standard/Core project.
     ///         We have to implement a .NET class for that.
     ///         
     ///         The idea is to locate the .NET Core driver assembly with the .deps.json file and then find its equivalent .NET version from it.

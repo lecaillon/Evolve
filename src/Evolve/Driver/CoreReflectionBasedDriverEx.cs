@@ -47,7 +47,7 @@ namespace Evolve.Driver
 #endif
 
         /// <summary>
-        ///     Initializes a new instance of <see cref="CoreReflectionBasedDriver" /> with
+        ///     Initializes a new instance of <see cref="CoreReflectionBasedDriverEx" /> with
         ///     the connection type name loaded from the specified assembly.
         /// </summary>
         /// <param name="driverAssemblyName"> Assembly to load the driver Type from. </param>
