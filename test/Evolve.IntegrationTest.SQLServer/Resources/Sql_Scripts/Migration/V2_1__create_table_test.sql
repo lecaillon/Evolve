@@ -21,3 +21,5 @@ CREATE TABLE dbo.Employee
   , PERIOD FOR SYSTEM_TIME (ValidFrom, ValidTo)  
  )    
  WITH (SYSTEM_VERSIONING = ON (HISTORY_TABLE = dbo.EmployeeHistory));
+
+SELECT * FROM CALENDRIER;
