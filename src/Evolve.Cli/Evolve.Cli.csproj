@@ -5,7 +5,15 @@
     <TargetFrameworks>netcoreapp1.1;netcoreapp2.0;net452;</TargetFrameworks>
     <Version>$(PackageVersion)</Version>
   </PropertyGroup>
-
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net452'">
+    <DefineConstants>NET;NET45</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp1.1'">
+    <DefineConstants>NETCORE;NETCORE11</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp2.0'">
+    <DefineConstants>NETCORE;NETCORE20</DefineConstants>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.2.1" />
   </ItemGroup>
