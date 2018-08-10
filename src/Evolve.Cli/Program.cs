@@ -1,4 +1,6 @@
-﻿using CommandLine;
+﻿using System;
+using System.IO;
+using CommandLine;
 
 namespace Evolve.Cli
 {
@@ -19,9 +21,24 @@ namespace Evolve.Cli
 
         static int Evolve(Options options)
         {
-            EvolveFactory.Build(options).ExecuteCommand();
+            string originalCurrentDirectory = Directory.GetCurrentDirectory();
 
-            return 0;
+            try
+            {
+                Directory.SetCurrentDirectory(options.TargetAppPath);
+                EvolveFactory.Build(options).ExecuteCommand();
+
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return 1;
+            }
+            finally
+            {
+                Directory.SetCurrentDirectory(originalCurrentDirectory);
+            }
         }
     }
 }

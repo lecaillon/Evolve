@@ -1,10 +1,9 @@
-﻿using Evolve.Configuration;
-using Evolve.Migration;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Text;
+using Evolve.Configuration;
+using Evolve.Migration;
 
 namespace Evolve.Cli
 {
@@ -15,7 +14,7 @@ namespace Evolve.Cli
             var evolve = new Evolve(logInfoDelegate: Console.WriteLine)
             {
                 Command = MapToCommandOptions(options.Command),
-                CommandTimeout = options.Timeout,
+                CommandTimeout = options.CommandTimeout,
                 ConnectionString = options.ConnectionString,
                 Driver = options.Driver,
                 EnableClusterMode = !options.DisableClusterMode,

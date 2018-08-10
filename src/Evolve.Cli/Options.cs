@@ -13,11 +13,14 @@ namespace Evolve.Cli
         [Value(1, MetaName = "connection-string", HelpText = "The connection string to the target engine.", Required = true)]
         public string ConnectionString { get; set; }
 
-        [Option('l', "scripts-locations", HelpText = "Paths to scan recursively for migration scripts.", Default = new[] { "Sql_Scripts" })]
+        [Option('p', "app-path", HelpText = "Path to the application folder to migrate.", Required = true)]
+        public string TargetAppPath { get; set; }
+
+        [Option('s', "scripts-locations", HelpText = "Paths to scan recursively for migration scripts.", Default = new[] { "Sql_Scripts" })]
         public IEnumerable<string> Locations { get; set; }
 
-        [Option("timeout", HelpText = "The timetout in seconds for Evolve execution.", Default = 30)]
-        public int Timeout { get; set; }
+        [Option("command-timeout", HelpText = "The wait time in seconds before terminating the attempt to execute a migration and generating an error.", Default = 30)]
+        public int CommandTimeout { get; set; }
 
         [Option('t', "metadata-table", HelpText = "The name of the metadata table.", Default = "evolve_change_log")]
         public string MetadataTableName { get; set; }
