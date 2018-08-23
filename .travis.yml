@@ -8,7 +8,9 @@ env:
     - DOTNET_CLI_TELEMETRY_OPTOUT: 1
 sudo: required
 mono: 5.8.0
-dotnet: 2.1.301
+dotnet:
+  - 2.1.301
+  - 2.1.4
 os: linux
 before_script:
   - sudo sh -c 'echo "deb [arch=amd64] https://apt-mo.trafficmanager.net/repos/dotnet-release/ trusty main" > /etc/apt/sources.list.d/dotnetdev.list'
