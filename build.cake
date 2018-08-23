@@ -1,3 +1,5 @@
+#tool "nuget:?package=ILRepack"
+
 ///////////////////////////////////////////////////////////////////////////////
 // ARGUMENTS
 ///////////////////////////////////////////////////////////////////////////////
@@ -75,7 +77,6 @@ Task("Test").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 
 Task("Test Core").Does(() =>
 {
-
     foreach(var project in GetFiles("./test/**/Evolve.Core*.Test.Resources.SupportedDrivers.csproj"))
     {
         DotNetCoreBuild(project.FullPath, new DotNetCoreBuildSettings 
@@ -116,6 +117,12 @@ Task("Pack").Does(() =>
     {
         NuGetPack("./src/Evolve/Evolve-Core.nuspec", settings);
     }
+});
+
+Task("PackCli").WithCriteria(() => IsRunningOnWindows()).Does(() =>
+{
+    var assemblies = GetFiles("./src/Evolve.Cli/bin/Release/net452/*.dll");
+    ILRepack("./dist/Evolve.exe", "./src/Evolve.Cli/bin/Release/net452/Evolve.Cli.exe", assemblies);
 });
 
 Task("Restore Test-Package").Does(() =>
@@ -177,6 +184,7 @@ Task("Default")
     .IsDependentOn("Test")
     .IsDependentOn("Test Core")
     .IsDependentOn("Pack")
+    .IsDependentOn("PackCli")
     .IsDependentOn("Restore Test-Package")
     .IsDependentOn("Build Test-Package")
     .IsDependentOn("Build Test-Package Core");
