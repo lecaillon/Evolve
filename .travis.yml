@@ -16,8 +16,12 @@ install:
   - wget https://dot.net/v1/dotnet-install.sh -O /tmp/dotnet-install.sh
   - chmod +x /tmp/dotnet-install.sh
   - /tmp/dotnet-install.sh -v 2.1.300
-  - /tmp/dotnet-install.sh -v 2.0.7 --shared-runtime
-  - /tmp/dotnet-install.sh -v 1.1.8 --shared-runtime
-  - /tmp/dotnet-install.sh -v 1.0.11 --shared-runtime
+  - /tmp/dotnet-install.sh -v 2.0.7 --runtime dotnet
+  - /tmp/dotnet-install.sh -v 1.1.8 --runtime dotnet
+  - /tmp/dotnet-install.sh -v 1.0.11 --runtime dotnet
   - export PATH=$DOTNETPATH:$PATH
   - dotnet --info
+before_script:
+  - chmod a+x ./build.sh
+script:
+  - ./build.sh
