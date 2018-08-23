@@ -1,0 +1,8 @@
+﻿{
+  "Evolve.Driver": "cassandra",
+  "Evolve.ConnectionString": "Contact Points=127.0.0.1;Port=9042;Cluster Name=evolve;",
+  "Evolve.Locations": "scripts",
+  "Evolve.Command": "erase",
+  "Evolve.MetadataTableSchema": "my_keyspace",
+  "Evolve.MetadataTableName": "evolve_change_log"
+}

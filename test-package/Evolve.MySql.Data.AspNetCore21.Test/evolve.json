@@ -1,0 +1,6 @@
+﻿{
+  "Evolve.Driver": "MySql.Data",
+  "Evolve.ConnectionString": "Server=127.0.0.1;Port=3306;Database=my_database;Uid=root;Pwd=Password12!;SslMode=none;",
+  "Evolve.Locations": "scripts",
+  "Evolve.Command": "erase"
+}
