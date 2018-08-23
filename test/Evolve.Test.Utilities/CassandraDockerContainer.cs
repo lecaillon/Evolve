@@ -11,7 +11,7 @@ namespace Evolve.Test.Utilities
         public string HostPort => "9042";
         public string ClusterName => "evolve";
         public string DataCenter => "dc1";
-        public TimeSpan DelayAfterStartup => TimeSpan.FromSeconds(90);
+        public TimeSpan DelayAfterStartup => TimeSpan.FromSeconds(45);
 
         public bool Start(bool fromScratch = false)
         {
