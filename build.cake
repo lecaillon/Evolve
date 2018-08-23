@@ -157,6 +157,7 @@ Task("Build Test-Package").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 Task("Build Test-Package Core").Does(() =>
 {
     foreach(var project in GetFiles("./test-package/**/Evolve.*Core*.Test.csproj").Where(x => !buildRunsInAppVeyor || !x.GetFilename().FullPath.Contains("Cassandra"))
+																			      .Where(x => !x.GetFilename().FullPath.Contains("Cassandra"))
 																				  .Where(x => !x.GetFilename().FullPath.Contains("Evolve.Cassandra.AspNetCore21.Test"))
 																				  .Where(x => !x.GetFilename().FullPath.Contains("Evolve.MySql.Data.AspNetCore21.Test"))
 																				  .Where(x => !x.GetFilename().FullPath.Contains("Evolve.SqlClient.AspNetCore21.Test")))
