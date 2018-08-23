@@ -11,7 +11,7 @@ sudo: required
 mono: 5.8.0
 dotnet: none #2.1.300
 os: linux
-install:
+install: # inspired by: https://github.com/Microsoft/vs-streamjsonrpc/blob/master/.travis.yml
   - sudo apt install libunwind8
   - wget https://dot.net/v1/dotnet-install.sh -O /tmp/dotnet-install.sh
   - chmod +x /tmp/dotnet-install.sh
