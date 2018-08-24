@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using Evolve.Utilities;
 using Microsoft.Extensions.DependencyModel;
+using Microsoft.DotNet.PlatformAbstractions;
 
 #if NETCORE
 using System.Runtime.InteropServices;
@@ -112,6 +113,11 @@ namespace Evolve.Driver
         protected List<string> ManagedDependencies { get; set; } = new List<string>();
 
         /// <summary>
+        ///     List of managed "compileOnly" libraries the driver assembly depends on.
+        /// </summary>
+        protected List<string> ManagedCompilationDependencies { get; set; } = new List<string>();
+
+        /// <summary>
         ///     Returns whether the application is a x64 or x86 or arm or arm64 process.
         /// </summary>
         protected string ProcessArchitecture =>
@@ -162,16 +168,13 @@ namespace Evolve.Driver
         protected override Type TypeFromAssembly()
         {
             ManagedDependencies = new List<string>();
+            ManagedCompilationDependencies = new List<string>();
             NativeDependencies = new List<string>();
 
-            RuntimeLibrary rootLib = GetRuntimeLibrary(DriverNugetPackageId);
+            var rootLib = GetLibrary(DriverNugetPackageId);
             FindDependencies(rootLib);
 
-            string driverPath = ManagedDependencies.FirstOrDefault(x => x.Contains(DriverTypeName.Assembly));
-            if (string.IsNullOrEmpty(driverPath))
-            {
-                throw new EvolveCoreDriverException($"Assembly {DriverTypeName.Assembly} not found.", DumpDetails());
-            }
+            string driverPath = GetDriverPath();
 
             ManagedDependencies.Where(x => !x.Equals(driverPath, StringComparison.OrdinalIgnoreCase))
                                .Where(x => !Path.GetFileName(x).Equals("System.Data.Common.dll", StringComparison.OrdinalIgnoreCase)) // .NET Core 1.1
@@ -179,6 +182,11 @@ namespace Evolve.Driver
                                .Distinct()
                                .ToList()
                                .ForEach(x => _assemblyLoader.LoadFromAssemblyPath(x));
+
+            ManagedCompilationDependencies.Where(x => !x.Equals(driverPath, StringComparison.OrdinalIgnoreCase))
+                                          .Distinct()
+                                          .ToList()
+                                          .ForEach(x => _assemblyLoader.LoadFromAssemblyPath(x));
 
             try
             {
@@ -197,7 +205,7 @@ namespace Evolve.Driver
         ///     searching for managed and native assembly files paths.
         /// </summary>
         /// <exception cref="EvolveCoreDriverException"></exception>
-        protected void FindDependencies(RuntimeLibrary lib)
+        protected void FindDependencies(Library lib)
         {
             if (lib == null)
             {
@@ -205,19 +213,16 @@ namespace Evolve.Driver
             }
 
             ManagedDependencies.AddRange(GetManagedAssembliesFullPath(lib));
+            ManagedCompilationDependencies.AddRange(GetManagedCompilationAssembliesFullPath(lib));
             NativeDependencies.AddRange(GetNativeAssembliesFullPath(lib));
 
             foreach (var dependency in lib.Dependencies)
             {
-                RuntimeLibrary depLib = GetRuntimeLibrary(dependency.Name);
-                if (depLib == null)
-                {
-                    continue; // it's a "compileOnly" assembly
-                }
-
                 if (!ManagedDependencies.Any(x => Path.GetFileNameWithoutExtension(x).Equals(dependency.Name, StringComparison.OrdinalIgnoreCase)) &&
+                    !ManagedCompilationDependencies.Any(x => Path.GetFileNameWithoutExtension(x).Equals(dependency.Name, StringComparison.OrdinalIgnoreCase)) &&
                     !NativeDependencies.Any(x => Path.GetFileNameWithoutExtension(x).Equals(dependency.Name, StringComparison.OrdinalIgnoreCase)))
                 {
+                    var depLib = GetLibrary(dependency.Name);
                     FindDependencies(depLib); // rec
                 }
             }
@@ -227,19 +232,25 @@ namespace Evolve.Driver
         ///     Returns the list of managed assemblies of a given <paramref name="lib"/>.
         /// </summary>
         /// <exception cref="EvolveCoreDriverException"></exception>
-        protected virtual List<string> GetManagedAssembliesFullPath(RuntimeLibrary lib)
+        protected virtual List<string> GetManagedAssembliesFullPath(Library lib)
         {
             Check.NotNull(lib, nameof(lib));
 
-            if (lib.RuntimeAssemblyGroups == null || lib.RuntimeAssemblyGroups.Count == 0)
+            var runtimeLib = lib as RuntimeLibrary;
+            if (runtimeLib is null)
+            {
+                return new List<string>();
+            }
+
+            if (runtimeLib.RuntimeAssemblyGroups == null || runtimeLib.RuntimeAssemblyGroups.Count == 0)
             {
                 return new List<string>();
             }
 
             var paths = new List<string>();
-            string packageDir = GetPackageFolder(lib);
-            foreach (var assemblyAssetGroup in lib.RuntimeAssemblyGroups.SelectMany(x => x.AssetPaths.Select(y => new { x.Runtime, Path = y }))
-                                                  .GroupBy(x => Path.GetFileName(x.Path)))
+            string packageDir = GetPackageFolder(runtimeLib);
+            foreach (var assemblyAssetGroup in runtimeLib.RuntimeAssemblyGroups.SelectMany(x => x.AssetPaths.Select(y => new { x.Runtime, Path = y }))
+                                                         .GroupBy(x => Path.GetFileName(x.Path)))
             {
                 paths.Add(Path.Combine(packageDir, assemblyAssetGroup.Where(x => x.Runtime == "" || IsRuntimeCompatible(x.Runtime))
                                                                      .OrderByDescending(x => x.Runtime)
@@ -251,25 +262,76 @@ namespace Evolve.Driver
         }
 
         /// <summary>
+        ///     Returns the list of managed compilation assemblies of a given <paramref name="lib"/>.
+        /// </summary>
+        protected virtual List<string> GetManagedCompilationAssembliesFullPath(Library lib)
+        {
+            Check.NotNull(lib, nameof(lib));
+
+            var emptyResult = new List<string>();
+            var compilationLib = lib as CompilationLibrary;
+            if (compilationLib is null || compilationLib.Assemblies.Count == 0)
+            {
+                return emptyResult;
+            }
+
+            string basePath = Path.Combine(NuGetFallbackDir, compilationLib.Path);
+            if (Directory.Exists(Path.Combine(basePath, "runtimes")))
+            {
+                basePath = Path.Combine(basePath, "runtimes");
+#if NETCORE
+                string platform = RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows)
+                    ? "win"
+                    : "unix";
+                basePath = Path.Combine(basePath, platform);
+#else
+                basePath = Path.Combine(basePath, "win");
+#endif
+                if (!Directory.Exists(basePath))
+                {
+                    return emptyResult;
+                }
+            }
+            string libPath = Path.Combine(basePath, compilationLib.Assemblies[0].Replace("ref/", "lib/"));
+            if (!File.Exists(libPath))
+            { // Hack for SqlServer dependencies: System.Security.AccessControl and System.Security.Principal.Windows
+              // that points to unknown netstandard folders in the runtimes directory
+                libPath = libPath.Replace("netstandard", "netcoreapp");
+                if (!File.Exists(libPath))
+                {
+                    return emptyResult;
+                }
+            }
+
+            return new List<string> { libPath };
+        }
+
+        /// <summary>
         ///     Returns the list of native libraries of a given <paramref name="lib"/>,
         ///     depending the os and the process architecture the application is running.
         /// </summary>
         /// <exception cref="EvolveCoreDriverException"></exception>
-        protected virtual List<string> GetNativeAssembliesFullPath(RuntimeLibrary lib)
+        protected virtual List<string> GetNativeAssembliesFullPath(Library lib)
         {
             Check.NotNull(lib, nameof(lib));
 
-            if (lib.NativeLibraryGroups == null || lib.NativeLibraryGroups.Count == 0)
+            RuntimeLibrary runtimeLib = lib as RuntimeLibrary;
+            if (runtimeLib is null)
+            {
+                return new List<string>();
+            }
+
+            if (runtimeLib.NativeLibraryGroups == null || runtimeLib.NativeLibraryGroups.Count == 0)
             {
                 return new List<string>();
             }
 
             var paths = new List<string>();
-            string packageDir = GetPackageFolder(lib);
+            string packageDir = GetPackageFolder(runtimeLib);
 
-            paths.AddRange(lib.NativeLibraryGroups.Where(x => IsRuntimeCompatible(x.Runtime))
-                                                  .SelectMany(x => x.AssetPaths)
-                                                  .Select(x => Path.Combine(packageDir, x)));
+            paths.AddRange(runtimeLib.NativeLibraryGroups.Where(x => IsRuntimeCompatible(x.Runtime))
+                                                         .SelectMany(x => x.AssetPaths)
+                                                         .Select(x => Path.Combine(packageDir, x)));
 
             return paths;
         }
@@ -324,16 +386,7 @@ namespace Evolve.Driver
             throw new EvolveCoreDriverException($"Package folder {lib.Name} not found. Searched location 1: {path1} - Searched location 2: {path2}", DumpDetails());
         }
 
-        /// <summary>
-        ///     Return a list of dependencies, as well as compilation context data and compilation dependencies 
-        ///     found in the deps file for a given assembly.
-        /// </summary>
-        /// <param name="assemblyName"> The name of the assembly to find in the deps file. </param>
-        /// <returns> The runtime library or null if its a "compileOnly" assembly. </returns>
-        /// <exception cref="EvolveCoreDriverException">
-        ///     Throws an EvolveCoreDriverException when data of the given assembly name is not found in deps file.
-        /// </exception>
-        protected RuntimeLibrary GetRuntimeLibrary(string assemblyName)
+        private RuntimeLibrary GetRuntimeLibrary(string assemblyName)
         {
             RuntimeLibrary lib = ProjectDependencyContext.RuntimeLibraries.SingleOrDefault(x => x.Name.Equals(assemblyName, StringComparison.OrdinalIgnoreCase));
             if (lib != null)
@@ -351,6 +404,40 @@ namespace Evolve.Driver
                 {
                     throw new EvolveCoreDriverException($"Failed to load assembly {assemblyName} from deps file at {_depsFile}.", DumpDetails(), ex);
                 }
+            }
+        }
+
+        private string GetDriverPath()
+        {
+            try
+            {
+                return ManagedDependencies.FirstOrDefault(x => x.Contains(DriverTypeName.Assembly)) ??
+                       ManagedCompilationDependencies.First(x => x.Contains(DriverTypeName.Assembly));
+            }
+            catch
+            {
+                throw new EvolveCoreDriverException($"Assembly {DriverTypeName.Assembly} not found.", DumpDetails());
+            }
+        }
+
+        /// <summary>
+        ///     Returns a library from the deps file, given an <paramref name="assemblyName"/>.
+        /// </summary>
+        /// <param name="assemblyName"> The name of the assembly to find in the deps file. </param>
+        /// <returns> The runtime or the compilation library. </returns>
+        /// <exception cref="EvolveCoreDriverException">
+        ///     Throws an EvolveCoreDriverException when the given assembly name is not found in deps file.
+        /// </exception>
+        protected Library GetLibrary(string assemblyName)
+        {
+            try
+            {
+                return ProjectDependencyContext.RuntimeLibraries.SingleOrDefault(x => x.Name.Equals(assemblyName, StringComparison.OrdinalIgnoreCase)) ??
+                       ProjectDependencyContext.CompileLibraries.Single(x => x.Name.Equals(assemblyName, StringComparison.OrdinalIgnoreCase)) as Library;
+            }
+            catch (Exception ex)
+            {
+                throw new EvolveCoreDriverException($"Failed to load assembly {assemblyName} from deps file at {_depsFile}.", DumpDetails(), ex);
             }
         }
 
@@ -463,7 +550,16 @@ namespace Evolve.Driver
 
             private Assembly CustomAssemblyLoader_Resolving(AssemblyLoadContext context, AssemblyName assemblyName)
             {
-                RuntimeLibrary lib = _driverLoader.GetRuntimeLibrary(assemblyName.Name);
+                Library lib = null;
+
+                if (assemblyName.Name == "System.Text.Encoding.CodePages")
+                { // Hack netcoreapp21 for SqlServer
+                    lib = _driverLoader.ProjectDependencyContext.CompileLibraries.FirstOrDefault(x => x.Name == "System.Text.Encoding.CodePages");
+                    string basePath = Path.Combine(_driverLoader.NuGetFallbackDir, lib.Path);
+                    return context.LoadFromAssemblyPath(Path.Combine(basePath, "runtimes/win/lib/netstandard2.0/System.Text.Encoding.CodePages.dll"));
+                }
+
+                lib = _driverLoader.GetRuntimeLibrary(assemblyName.Name); // not sure if it's necessary since we load all driver's dependencies
                 var assemblies = _driverLoader.GetManagedAssembliesFullPath(lib);
                 if (assemblies.Count == 0)
                 {
@@ -497,6 +593,28 @@ namespace Evolve.Driver
                         throw new EvolveCoreDriverException($"Error loading native assembly at {unmanagedDllPath}.", _driverLoader.DumpDetails(), ex);
                     }
                 }
+                
+                if (unmanagedDllName == "sni.dll")
+                { // Hack netcoreapp21 for SqlServer
+                    string sniLibSuffix = ".runtime.native.System.Data.SqlClient.sni";
+                    foreach (var lib in _driverLoader.ProjectDependencyContext.CompileLibraries.Where(x => x.Name.Contains(sniLibSuffix)))
+                    {
+                        string rid = lib.Name.Replace(sniLibSuffix, "").Replace("runtime.", "");
+                        if (_driverLoader.IsRuntimeCompatible(rid))
+                        {
+                            string basePath = Path.Combine(_driverLoader.NuGetFallbackDir, lib.Path);
+                            unmanagedDllPath = Directory.GetFiles(basePath, "sni.dll", SearchOption.AllDirectories).FirstOrDefault();
+                            try
+                            {
+                                return LoadUnmanagedDllFromPath(unmanagedDllPath);
+                            }
+                            catch (Exception ex)
+                            {
+                                throw new EvolveCoreDriverException($"Error loading native assembly at {unmanagedDllPath}.", _driverLoader.DumpDetails(), ex);
+                            }
+                        }
+                    }
+                }
 
                 try
                 {
@@ -504,7 +622,7 @@ namespace Evolve.Driver
                 }
                 catch (Exception ex)
                 {
-                    throw new EvolveCoreDriverException($"Managed assembly {unmanagedDllName} not found.", _driverLoader.DumpDetails(), ex);
+                    throw new EvolveCoreDriverException($"Native assembly {unmanagedDllName} not found.", _driverLoader.DumpDetails(), ex);
                 }
             }
         }
