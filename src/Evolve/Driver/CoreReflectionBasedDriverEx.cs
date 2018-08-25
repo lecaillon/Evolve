@@ -529,11 +529,45 @@ namespace Evolve.Driver
 
             private Assembly CustomAssemblyLoader_Resolving(AssemblyLoadContext context, AssemblyName assemblyName)
             {
-                if (assemblyName.Name == "System.Text.Encoding.CodePages")
-                { // Hack netcoreapp21 for SqlServer
-                    var lib = _driverLoader.ProjectDependencyContext.CompileLibraries.FirstOrDefault(x => x.Name == "System.Text.Encoding.CodePages");
+                // Even if the assembly has been previously loaded, the ALC seems to need to load it again ...? (Cf. the MicrosoftDataSqliteDriver)
+                var managedAssemblyPaths = _driverLoader.ManagedDependencies.Union(_driverLoader.ManagedCompilationDependencies).ToList();
+                string assemblyPath = managedAssemblyPaths.FirstOrDefault(x => x.Contains(assemblyName.Name));
+                if (assemblyPath != null)
+                {
+                    return context.LoadFromAssemblyPath(assemblyPath);
+                }
+
+                // The needed assembly has not been loaded before, try to find it now in the deps file, making educated guess.
+                Library lib = _driverLoader.ProjectDependencyContext.RuntimeLibraries.FirstOrDefault(x => x.Name == assemblyName.Name) ?? 
+                              _driverLoader.ProjectDependencyContext.CompileLibraries.FirstOrDefault(x => x.Name == assemblyName.Name) as Library;
+
+                if (lib != null)
+                {
                     string basePath = Path.Combine(_driverLoader.NuGetFallbackDir, lib.Path);
-                    return context.LoadFromAssemblyPath(Path.Combine(basePath, "runtimes/win/lib/netstandard2.0/System.Text.Encoding.CodePages.dll"));
+                    if (Directory.Exists(Path.Combine(basePath, "runtimes")))
+                    {
+                        basePath = Path.Combine(basePath, "runtimes");
+                        string platform = RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows)
+                            ? "win"
+                            : "unix";
+                        basePath = Path.Combine(basePath, platform);
+                        if (!Directory.Exists(basePath))
+                        {
+                            return null;
+                        }
+                    }
+
+                    basePath = Path.Combine(basePath, "lib/netstandard2.0"); // That part should be improved...
+                    if (!Directory.Exists(basePath))
+                    {
+                        return null;
+                    }
+
+                    var files = Directory.GetFiles(basePath, $"*{assemblyName.Name}*");
+                    if (files.Any())
+                    {
+                        return context.LoadFromAssemblyPath(files[0]);
+                    }
                 }
 
                 return null;
