@@ -13,7 +13,7 @@
   <ItemGroup>
     <PackageReference Include="Evolve" Version="$(PackageVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="MySql.Data" Version="6.10.6" />
+    <PackageReference Include="MySql.Data" Version="8.0.12" />
   </ItemGroup>
 
 </Project>

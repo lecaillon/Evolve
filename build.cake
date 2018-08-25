@@ -158,8 +158,7 @@ Task("Build Test-Package").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 Task("Build Test-Package Core").Does(() =>
 {
     foreach(var project in GetFiles("./test-package/**/Evolve.*Core*.Test.csproj").Where(x => !buildRunsInAppVeyor || !x.GetFilename().FullPath.Contains("Cassandra"))
-																			      .Where(x => !x.GetFilename().FullPath.Contains("Cassandra"))
-																				  .Where(x => !x.GetFilename().FullPath.Contains("MySql")))
+																			      .Where(x => !x.GetFilename().FullPath.Contains("Cassandra")))
     {
         DotNetCoreBuild(project.FullPath, new DotNetCoreBuildSettings 
         {
