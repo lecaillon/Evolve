@@ -560,6 +560,11 @@ namespace Evolve.Driver
                 }
 
                 lib = _driverLoader.GetRuntimeLibrary(assemblyName.Name); // not sure if it's necessary since we load all driver's dependencies
+                if (lib == null)
+                {
+                    return Default.LoadFromAssemblyName(assemblyName); // hack test
+                }
+
                 var assemblies = _driverLoader.GetManagedAssembliesFullPath(lib);
                 if (assemblies.Count == 0)
                 {

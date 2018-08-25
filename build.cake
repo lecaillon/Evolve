@@ -86,7 +86,8 @@ Task("Test Core").Does(() =>
         });
     }
 
-    foreach(var project in GetFiles("./test/**/Evolve.Core*.Test*.csproj").Where(x => !x.GetFilename().FullPath.Contains("Resources")))
+    foreach(var project in GetFiles("./test/**/Evolve.Core*.Test*.csproj").Where(x => !x.GetFilename().FullPath.Contains("Resources"))
+																		  .Where(x => x.GetFilename().FullPath.Contains("MySql")))
     {
         DotNetCoreTest(project.FullPath, new DotNetCoreTestSettings 
         {
@@ -158,7 +159,8 @@ Task("Build Test-Package").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 Task("Build Test-Package Core").Does(() =>
 {
     foreach(var project in GetFiles("./test-package/**/Evolve.*Core*.Test.csproj").Where(x => !buildRunsInAppVeyor || !x.GetFilename().FullPath.Contains("Cassandra"))
-																			      .Where(x => !x.GetFilename().FullPath.Contains("Cassandra")))
+																			      .Where(x => !x.GetFilename().FullPath.Contains("Cassandra"))
+																				  .Where(x => x.GetFilename().FullPath.Contains("MySql")))
     {
         DotNetCoreBuild(project.FullPath, new DotNetCoreBuildSettings 
         {
