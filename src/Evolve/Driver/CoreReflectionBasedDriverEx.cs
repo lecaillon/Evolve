@@ -8,7 +8,6 @@ using System.Linq;
 using System.Reflection;
 using Evolve.Utilities;
 using Microsoft.Extensions.DependencyModel;
-using Microsoft.DotNet.PlatformAbstractions;
 
 #if NETCORE
 using System.Runtime.InteropServices;
@@ -537,7 +536,7 @@ namespace Evolve.Driver
                     return context.LoadFromAssemblyPath(assemblyPath);
                 }
 
-                // The needed assembly has not been loaded before, try to find it now in the deps file, making educated guess.
+                // The needed assembly has not been loaded before, try to find it now in the deps file, making educated guess. (Cf. System.Text.Encoding.CodePages for the CoreSqlClientDriver)
                 Library lib = _driverLoader.ProjectDependencyContext.RuntimeLibraries.FirstOrDefault(x => x.Name == assemblyName.Name) ?? 
                               _driverLoader.ProjectDependencyContext.CompileLibraries.FirstOrDefault(x => x.Name == assemblyName.Name) as Library;
 
