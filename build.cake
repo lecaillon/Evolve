@@ -86,8 +86,7 @@ Task("Test Core").Does(() =>
         });
     }
 
-    foreach(var project in GetFiles("./test/**/Evolve.Core*.Test*.csproj").Where(x => !x.GetFilename().FullPath.Contains("Resources"))
-																		  .Where(x => x.GetFilename().FullPath.Contains("MySql")))
+    foreach(var project in GetFiles("./test/**/Evolve.Core*.Test*.csproj").Where(x => !x.GetFilename().FullPath.Contains("Resources")))
     {
         DotNetCoreTest(project.FullPath, new DotNetCoreTestSettings 
         {
