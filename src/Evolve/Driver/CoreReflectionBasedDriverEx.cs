@@ -183,6 +183,12 @@ namespace Evolve.Driver
                                .ToList()
                                .ForEach(x => _assemblyLoader.LoadFromAssemblyPath(x));
 
+            if (DriverNugetPackageId == "MySql.Data")
+            {
+                string newPath = Path.Combine(NugetPackageDir, "system.security.permissions/4.4.0/lib/netstandard2.0/System.Security.Permissions.dll");
+                ManagedCompilationDependencies = ManagedCompilationDependencies.Select(x => x.Contains("System.Security.Permissions") ? newPath : x).ToList();
+            }
+
             ManagedCompilationDependencies.Where(x => !x.Equals(driverPath, StringComparison.OrdinalIgnoreCase))
                                           .Distinct()
                                           .ToList()
