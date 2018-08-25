@@ -195,6 +195,8 @@ namespace Evolve.Driver
                         throw new FieldAccessException(item);
                     }
                 }
+
+                throw new InvalidOleVariantTypeException("COUCOU PSG");
             }
 
             ManagedCompilationDependencies.Where(x => !x.Equals(driverPath, StringComparison.OrdinalIgnoreCase))
