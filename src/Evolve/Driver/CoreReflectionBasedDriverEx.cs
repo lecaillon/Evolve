@@ -188,15 +188,19 @@ namespace Evolve.Driver
                 string newPath = Path.Combine(NugetPackageDir, "system.security.permissions/4.4.1/lib/netstandard2.0/System.Security.Permissions.dll");
                 ManagedCompilationDependencies = ManagedCompilationDependencies.Select(x => x.Contains("System.Security.Permissions") ? newPath : x).ToList();
 
-                foreach (var item in ManagedCompilationDependencies)
+                if (ManagedCompilationDependencies.Count > 0)
                 {
-                    if (item.Contains("System.Security.Permissions"))
+                    foreach (var item in ManagedCompilationDependencies)
                     {
-                        throw new FieldAccessException(item);
+                        if (item.Contains("System.Security.Permissions"))
+                        {
+                            throw new FieldAccessException(item);
+                        }
                     }
+
+                    throw new InvalidOleVariantTypeException("COUCOU PSG");
                 }
 
-                throw new InvalidOleVariantTypeException("COUCOU PSG");
             }
 
             ManagedCompilationDependencies.Where(x => !x.Equals(driverPath, StringComparison.OrdinalIgnoreCase))
