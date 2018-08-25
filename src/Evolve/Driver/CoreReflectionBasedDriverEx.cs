@@ -185,8 +185,16 @@ namespace Evolve.Driver
 
             if (DriverNugetPackageId == "MySql.Data")
             {
-                string newPath = Path.Combine(NugetPackageDir, "system.security.permissions/4.4.0/lib/netstandard2.0/System.Security.Permissions.dll");
+                string newPath = Path.Combine(NugetPackageDir, "system.security.permissions/4.4.1/lib/netstandard2.0/System.Security.Permissions.dll");
                 ManagedCompilationDependencies = ManagedCompilationDependencies.Select(x => x.Contains("System.Security.Permissions") ? newPath : x).ToList();
+
+                foreach (var item in ManagedCompilationDependencies)
+                {
+                    if (item.Contains("System.Security.Permissions"))
+                    {
+                        throw new FieldAccessException(item);
+                    }
+                }
             }
 
             ManagedCompilationDependencies.Where(x => !x.Equals(driverPath, StringComparison.OrdinalIgnoreCase))
