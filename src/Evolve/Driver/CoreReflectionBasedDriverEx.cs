@@ -183,26 +183,6 @@ namespace Evolve.Driver
                                .ToList()
                                .ForEach(x => _assemblyLoader.LoadFromAssemblyPath(x));
 
-            if (DriverNugetPackageId == "MySql.Data")
-            {
-                string newPath = Path.Combine(NugetPackageDir, "system.security.permissions/4.4.1/lib/netstandard2.0/System.Security.Permissions.dll");
-                ManagedCompilationDependencies = ManagedCompilationDependencies.Select(x => x.Contains("System.Security.Permissions") ? newPath : x).ToList();
-
-                if (ManagedCompilationDependencies.Count > 0)
-                {
-                    foreach (var item in ManagedCompilationDependencies)
-                    {
-                        if (item.Contains("System.Security.Permissions"))
-                        {
-                            throw new FieldAccessException(item);
-                        }
-                    }
-
-                    throw new InvalidOleVariantTypeException("COUCOU PSG");
-                }
-
-            }
-
             ManagedCompilationDependencies.Where(x => !x.Equals(driverPath, StringComparison.OrdinalIgnoreCase))
                                           .Distinct()
                                           .ToList()
@@ -406,27 +386,6 @@ namespace Evolve.Driver
             throw new EvolveCoreDriverException($"Package folder {lib.Name} not found. Searched location 1: {path1} - Searched location 2: {path2}", DumpDetails());
         }
 
-        private RuntimeLibrary GetRuntimeLibrary(string assemblyName)
-        {
-            RuntimeLibrary lib = ProjectDependencyContext.RuntimeLibraries.SingleOrDefault(x => x.Name.Equals(assemblyName, StringComparison.OrdinalIgnoreCase));
-            if (lib != null)
-            {
-                return lib;
-            }
-            else
-            {
-                try
-                {
-                    ProjectDependencyContext.CompileLibraries.Single(x => x.Name.Equals(assemblyName, StringComparison.OrdinalIgnoreCase));
-                    return null;
-                }
-                catch (Exception ex)
-                {
-                    throw new EvolveCoreDriverException($"Failed to load assembly {assemblyName} from deps file at {_depsFile}.", DumpDetails(), ex);
-                }
-            }
-        }
-
         private string GetDriverPath()
         {
             try
@@ -570,35 +529,14 @@ namespace Evolve.Driver
 
             private Assembly CustomAssemblyLoader_Resolving(AssemblyLoadContext context, AssemblyName assemblyName)
             {
-                Library lib = null;
-
                 if (assemblyName.Name == "System.Text.Encoding.CodePages")
                 { // Hack netcoreapp21 for SqlServer
-                    lib = _driverLoader.ProjectDependencyContext.CompileLibraries.FirstOrDefault(x => x.Name == "System.Text.Encoding.CodePages");
+                    var lib = _driverLoader.ProjectDependencyContext.CompileLibraries.FirstOrDefault(x => x.Name == "System.Text.Encoding.CodePages");
                     string basePath = Path.Combine(_driverLoader.NuGetFallbackDir, lib.Path);
                     return context.LoadFromAssemblyPath(Path.Combine(basePath, "runtimes/win/lib/netstandard2.0/System.Text.Encoding.CodePages.dll"));
                 }
 
-                lib = _driverLoader.GetRuntimeLibrary(assemblyName.Name); // not sure if it's necessary since we load all driver's dependencies
-                if (lib == null)
-                {
-                    return Default.LoadFromAssemblyName(assemblyName); // hack test
-                }
-
-                var assemblies = _driverLoader.GetManagedAssembliesFullPath(lib);
-                if (assemblies.Count == 0)
-                {
-                    throw new EvolveCoreDriverException($"Managed assembly {assemblyName} not found.", _driverLoader.DumpDetails());
-                }
-
-                try
-                {
-                    return context.LoadFromAssemblyPath(assemblies[0]);
-                }
-                catch (Exception ex)
-                {
-                    throw new EvolveCoreDriverException($"Error loading managed assembly {assemblyName}.", _driverLoader.DumpDetails(), ex);
-                }
+                return null;
             }
 
             protected override Assembly Load(AssemblyName assemblyName) => null;
