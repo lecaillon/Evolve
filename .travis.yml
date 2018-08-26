@@ -25,3 +25,5 @@ before_script:
   - chmod a+x ./build.sh
 script:
   - ./build.sh
+after_failure:
+  - cat /home/travis/build/lecaillon/Evolve/test-package/Evolve.SqlClient.AspNetCore21.Test/bin/Release/netcoreapp2.1/Evolve.SqlClient.AspNetCore21.Test.deps.json
