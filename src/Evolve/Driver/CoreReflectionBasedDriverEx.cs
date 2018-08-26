@@ -274,7 +274,10 @@ namespace Evolve.Driver
                 return emptyResult;
             }
 
-            string basePath = Path.Combine(NuGetFallbackDir, compilationLib.Path);
+            string basePath = Directory.Exists(Path.Combine(NugetPackageDir, compilationLib.Path))
+                ? Path.Combine(NugetPackageDir, compilationLib.Path)
+                : Path.Combine(NuGetFallbackDir, compilationLib.Path);
+
             if (Directory.Exists(Path.Combine(basePath, "runtimes")))
             {
                 basePath = Path.Combine(basePath, "runtimes");
@@ -426,7 +429,10 @@ namespace Evolve.Driver
                 var rootLib = GetLibrary(DriverNugetPackageId) as CompilationLibrary;
                 var libPath = GetManagedCompilationAssembliesFullPath(rootLib);
 
-                string basePath1 = Path.Combine(NuGetFallbackDir, rootLib.Path);
+                string basePath1 = Directory.Exists(Path.Combine(NugetPackageDir, rootLib.Path))
+                    ? Path.Combine(NugetPackageDir, rootLib.Path)
+                    : Path.Combine(NuGetFallbackDir, rootLib.Path);
+
                 string basePath2 = "";
                 string basePath3 = "";
                 string basePath4 = "";
@@ -467,8 +473,8 @@ namespace Evolve.Driver
                 return
                 $"Driver details: " +
                 $"@b1: {b1} - " +
-                $"@b1: {b2} - " +
-                $"@b1: {b3} - " +
+                $"@b2: {b2} - " +
+                $"@b3: {b3} - " +
                 $"@Extra1: rootLibPath1={rootLib.Path} rootLibPath2={rootLib.Assemblies[0]} libPathCount={libPath.Count} libPath={(libPath.Count>0 ? libPath[0] : string.Empty)}  - " +
                 $"@basePath1: {basePath1} - " +
                 $"@basePath2: {basePath2} - " +
