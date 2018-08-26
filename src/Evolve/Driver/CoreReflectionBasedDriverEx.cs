@@ -460,8 +460,15 @@ namespace Evolve.Driver
                     }
                 }
 
+                bool b1 = Directory.Exists(NuGetFallbackDir);
+                bool b2 = Directory.Exists(basePath1);
+                bool b3 = Directory.Exists(Path.Combine(basePath1, "runtimes"));
+
                 return
                 $"Driver details: " +
+                $"@b1: {b1} - " +
+                $"@b1: {b2} - " +
+                $"@b1: {b3} - " +
                 $"@Extra1: rootLibPath1={rootLib.Path} rootLibPath2={rootLib.Assemblies[0]} libPathCount={libPath.Count} libPath={(libPath.Count>0 ? libPath[0] : string.Empty)}  - " +
                 $"@basePath1: {basePath1} - " +
                 $"@basePath2: {basePath2} - " +
