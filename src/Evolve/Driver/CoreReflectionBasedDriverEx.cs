@@ -424,10 +424,11 @@ namespace Evolve.Driver
             try
             {
                 var rootLib = GetLibrary(DriverNugetPackageId) as CompilationLibrary;
+                var libPath = GetManagedCompilationAssembliesFullPath(rootLib);
 
                 return
                 $"Driver details: " +
-                $"@Extra: {rootLib.Path}   {rootLib.Assemblies[0]} - " +
+                $"@Extra: {rootLib.Path}   {rootLib.Assemblies[0]}   libPathCount={libPath.Count}   libPath={(libPath.Count>0 ? libPath[0] : string.Empty)}  - " +
                 $"@Assembly: {DriverTypeName.Assembly} - " +
                 $"@Type: {DriverTypeName.Type} - " +
                 $"@OS platform: {string.Join(", ", OSPlatform)} - " +
