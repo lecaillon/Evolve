@@ -430,8 +430,9 @@ namespace Evolve.Driver
                 $"[OS platform]: {string.Join(", ", OSPlatform)} " +
                 $"[Process architecture]: {ProcessArchitecture} " +
                 $"[Deps file]: {_depsFile} " +
-                $"[Managed dependencies found]: " + $"{string.Join("; ", ManagedDependencies.Select(x => x))} " +
-                $"[Native dependencies found]: " + $"{string.Join("; ", NativeDependencies.Select(x => x))}.";
+                $"[Managed lib]: " + $"{string.Join("; ", ManagedDependencies.Select(x => x))} " +
+                $"[Managed compilation lib]: " + $"{string.Join("; ", ManagedCompilationDependencies.Select(x => x))} " +
+                $"[Native lib]: " + $"{string.Join("; ", NativeDependencies.Select(x => x))}.";
             }
             catch
             {
