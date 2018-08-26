@@ -595,7 +595,7 @@ namespace Evolve.Driver
 
                 if (lib != null)
                 {
-                    string basePath = Path.Combine(_driverLoader.NuGetFallbackDir, lib.Path);
+                    string basePath = _driverLoader.GetPackageFolder(lib);
                     if (Directory.Exists(Path.Combine(basePath, "runtimes")))
                     {
                         basePath = Path.Combine(basePath, "runtimes");
