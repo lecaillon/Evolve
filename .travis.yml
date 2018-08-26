@@ -15,10 +15,10 @@ install: # inspired by: https://github.com/Microsoft/vs-streamjsonrpc/blob/maste
   - sudo apt install libunwind8
   - wget https://dot.net/v1/dotnet-install.sh -O /tmp/dotnet-install.sh
   - chmod +x /tmp/dotnet-install.sh
-  - /tmp/dotnet-install.sh -v 2.1.300
-  - /tmp/dotnet-install.sh -v 2.0.7 --runtime dotnet
-  - /tmp/dotnet-install.sh -v 1.1.8 --runtime dotnet
-  - /tmp/dotnet-install.sh -v 1.0.11 --runtime dotnet
+  - /tmp/dotnet-install.sh -v 2.1.401
+  - /tmp/dotnet-install.sh -v 2.0.9 --runtime dotnet
+  - /tmp/dotnet-install.sh -v 1.1.9 --runtime dotnet
+  - /tmp/dotnet-install.sh -v 1.0.12 --runtime dotnet
   - export PATH=$DOTNETPATH:$PATH
   - dotnet --info
 before_script:
