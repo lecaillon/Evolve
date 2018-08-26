@@ -591,7 +591,12 @@ namespace Evolve.Driver
                 // Hack for SqlServer on netcoreapp21
                 if (assemblyName.Name == "System.Text.Encoding.CodePages")
                 {
-                    assemblyPath = Path.Combine(_driverLoader.NuGetFallbackDir, "system.text.encoding.codepages/4.5.0/lib/netstandard2.0/System.Text.Encoding.CodePages.dll");
+                    Library lib = _driverLoader.ProjectDependencyContext.RuntimeLibraries.FirstOrDefault(x => x.Name == assemblyName.Name) ??
+                                  _driverLoader.ProjectDependencyContext.CompileLibraries.FirstOrDefault(x => x.Name == assemblyName.Name) as Library;
+
+                    string basePath = _driverLoader.GetPackageFolder(lib);
+                    basePath = Path.Combine(basePath, lib.Path);
+                    assemblyPath = Path.Combine(basePath, "lib/netstandard2.0/System.Text.Encoding.CodePages.dll");
                     return context.LoadFromAssemblyPath(assemblyPath);
                 }
 
