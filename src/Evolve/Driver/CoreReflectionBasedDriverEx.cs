@@ -595,7 +595,6 @@ namespace Evolve.Driver
                                   _driverLoader.ProjectDependencyContext.CompileLibraries.FirstOrDefault(x => x.Name == assemblyName.Name) as Library;
 
                     string basePath = _driverLoader.GetPackageFolder(lib);
-                    basePath = Path.Combine(basePath, lib.Path);
                     assemblyPath = Path.Combine(basePath, "lib/netstandard2.0/System.Text.Encoding.CodePages.dll");
                     return context.LoadFromAssemblyPath(assemblyPath);
                 }
