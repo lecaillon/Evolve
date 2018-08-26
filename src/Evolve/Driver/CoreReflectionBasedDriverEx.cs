@@ -588,39 +588,12 @@ namespace Evolve.Driver
                     return context.LoadFromAssemblyPath(assemblyPath);
                 }
 
-                //// The needed assembly has not been loaded before, try to find it now in the deps file, making educated guess. (Cf. System.Text.Encoding.CodePages for the CoreSqlClientDriver)
-                //// Not sure this part is really used. Maybe on Linux.
-                //Library lib = _driverLoader.ProjectDependencyContext.RuntimeLibraries.FirstOrDefault(x => x.Name == assemblyName.Name) ?? 
-                //              _driverLoader.ProjectDependencyContext.CompileLibraries.FirstOrDefault(x => x.Name == assemblyName.Name) as Library;
-
-                //if (lib != null)
-                //{
-                //    string basePath = _driverLoader.GetPackageFolder(lib);
-                //    if (Directory.Exists(Path.Combine(basePath, "runtimes")))
-                //    {
-                //        basePath = Path.Combine(basePath, "runtimes");
-                //        string platform = RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows)
-                //            ? "win"
-                //            : "unix";
-                //        basePath = Path.Combine(basePath, platform);
-                //        if (!Directory.Exists(basePath))
-                //        {
-                //            return null;
-                //        }
-                //    }
-
-                //    basePath = Path.Combine(basePath, "lib/netstandard2.0"); // That part should be improved...
-                //    if (!Directory.Exists(basePath))
-                //    {
-                //        return null;
-                //    }
-
-                //    var files = Directory.GetFiles(basePath, $"*{assemblyName.Name}*");
-                //    if (files.Any())
-                //    {
-                //        return context.LoadFromAssemblyPath(files[0]);
-                //    }
-                //}
+                // Hack for SqlServer on netcoreapp21
+                if (assemblyName.Name == "System.Text.Encoding.CodePages")
+                {
+                    assemblyPath = Path.Combine(_driverLoader.NuGetFallbackDir, "system.text.encoding.codepages/4.5.0/lib/netstandard2.0/System.Text.Encoding.CodePages.dll");
+                    return context.LoadFromAssemblyPath(assemblyPath);
+                }
 
                 return null;
             }
