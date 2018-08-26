@@ -10,7 +10,7 @@ var distDir = MakeAbsolute(Directory("./dist"));
 var version = XmlPeek(File("./build/common.props"), "/Project/PropertyGroup/PackageVersion/text()");
 var envHome = Environment.GetEnvironmentVariable("USERPROFILE") ?? Environment.GetEnvironmentVariable("HOME");
 var buildRunsInAppVeyor = Environment.GetEnvironmentVariable("APPVEYOR") == "True";
-var buildRunsInTravisCI = Environment.GetEnvironmentVariable("TRAVIS") == "True";
+var buildRunsInTravisCI = Environment.GetEnvironmentVariable("TRAVIS") == "true";
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP / TEARDOWN
