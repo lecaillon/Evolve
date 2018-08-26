@@ -427,13 +427,11 @@ namespace Evolve.Driver
                 $"Driver details: " + Environment.NewLine +
                 $"- Assembly: {DriverTypeName.Assembly}" + Environment.NewLine +
                 $"- Type: {DriverTypeName.Type}" + Environment.NewLine +
-                $"- OS platform: {String.Join(", ", OSPlatform)}" + Environment.NewLine +
+                $"- OS platform: {string.Join(", ", OSPlatform)}" + Environment.NewLine +
                 $"- Process architecture: {ProcessArchitecture}" + Environment.NewLine +
                 $"- Deps file: {_depsFile}" + Environment.NewLine +
-                $"- Managed dependencies found: " + Environment.NewLine +
-                $"{String.Join(Environment.NewLine, ManagedDependencies.Select(x => "    " + x))}" + Environment.NewLine +
-                $"- Native dependencies found: " + Environment.NewLine +
-                $"{String.Join(Environment.NewLine, NativeDependencies.Select(x => "    " + x))}" + Environment.NewLine + Environment.NewLine;
+                $"- Managed dependencies found: " + $"{string.Join("; ", ManagedDependencies.Select(x => x))}" + Environment.NewLine +
+                $"- Native dependencies found: " + $"{string.Join("; ", NativeDependencies.Select(x => x))}" + Environment.NewLine + Environment.NewLine;
             }
             catch
             {
