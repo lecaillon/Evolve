@@ -424,60 +424,8 @@ namespace Evolve.Driver
         {
             try
             {
-                var rootLib = GetLibrary(DriverNugetPackageId) as CompilationLibrary;
-                var libPath = GetManagedCompilationAssembliesFullPath(rootLib);
-
-                string basePath1 = GetPackageFolder(rootLib);
-
-                string basePath2 = "";
-                string basePath3 = "";
-                string basePath4 = "";
-                string basePath5 = "";
-                string basePath6 = "";
-
-                if (Directory.Exists(Path.Combine(basePath1, "runtimes")))
-                {
-                    basePath2 = Path.Combine(basePath1, "runtimes");
-#if NETCORE
-                    string platform = RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows)
-                        ? "win"
-                        : "unix";
-                    basePath3 = Path.Combine(basePath2, platform);
-#else
-                basePath3 = Path.Combine(basePath2, "win");
-#endif
-                    if (Directory.Exists(basePath3))
-                    {
-                        basePath4 = Path.Combine(basePath3, rootLib.Assemblies[0].Replace("ref/", "lib/"));
-                    }
-                }
-
-                if (!File.Exists(basePath4))
-                { // Hack for SqlServer dependencies: System.Security.AccessControl and System.Security.Principal.Windows
-                  // that points to unknown netstandard folders in the runtimes directory. We use the netcoreapp version instead.
-                    basePath5 = basePath4.Replace("netstandard", "netcoreapp");
-                    if (!File.Exists(basePath5))
-                    {
-                        basePath6 = basePath5;
-                    }
-                }
-
-                bool b1 = Directory.Exists(NuGetFallbackDir);
-                bool b2 = Directory.Exists(basePath1);
-                bool b3 = Directory.Exists(Path.Combine(basePath1, "runtimes"));
-
                 return
                 $"Driver details: " +
-                $"@b1: {b1} - " +
-                $"@b2: {b2} - " +
-                $"@b3: {b3} - " +
-                $"@Extra1: rootLibPath1={rootLib.Path} rootLibPath2={rootLib.Assemblies[0]} libPathCount={libPath.Count} libPath={(libPath.Count>0 ? libPath[0] : string.Empty)}  - " +
-                $"@basePath1: {basePath1} - " +
-                $"@basePath2: {basePath2} - " +
-                $"@basePath3: {basePath3} - " +
-                $"@basePath4: {basePath4} - " +
-                $"@basePath5: {basePath5} - " +
-                $"@basePath6: {basePath6} - " +
                 $"@Assembly: {DriverTypeName.Assembly} - " +
                 $"@Type: {DriverTypeName.Type} - " +
                 $"@OS platform: {string.Join(", ", OSPlatform)} - " +
@@ -588,15 +536,14 @@ namespace Evolve.Driver
                     return context.LoadFromAssemblyPath(assemblyPath);
                 }
 
-                // Hack for SqlServer on netcoreapp21
+                // Hack for SqlServer on netcoreapp21: System.Text.Encoding.CodePages.dll has no path declared in the deps file.
                 if (assemblyName.Name == "System.Text.Encoding.CodePages")
                 {
                     Library lib = _driverLoader.ProjectDependencyContext.RuntimeLibraries.FirstOrDefault(x => x.Name == assemblyName.Name) ??
                                   _driverLoader.ProjectDependencyContext.CompileLibraries.FirstOrDefault(x => x.Name == assemblyName.Name) as Library;
-
-                    string basePath = _driverLoader.GetPackageFolder(lib);
-                    assemblyPath = Path.Combine(basePath, "lib/netstandard2.0/System.Text.Encoding.CodePages.dll");
-                    return context.LoadFromAssemblyPath(assemblyPath);
+                    
+                    assemblyPath = Path.Combine(_driverLoader.GetPackageFolder(lib), "lib/netstandard2.0/System.Text.Encoding.CodePages.dll");
+                    return context.LoadFromAssemblyPath(assemblyPath); // Located in NuGetFallbackDir on Windows, NugetPackageDir on Linux
                 }
 
                 return null;
