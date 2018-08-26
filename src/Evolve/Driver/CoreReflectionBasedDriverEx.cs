@@ -426,9 +426,49 @@ namespace Evolve.Driver
                 var rootLib = GetLibrary(DriverNugetPackageId) as CompilationLibrary;
                 var libPath = GetManagedCompilationAssembliesFullPath(rootLib);
 
+                string basePath1 = Path.Combine(NuGetFallbackDir, rootLib.Path);
+                string basePath2 = "";
+                string basePath3 = "";
+                string basePath4 = "";
+                string basePath5 = "";
+                string basePath6 = "";
+
+                if (Directory.Exists(Path.Combine(basePath1, "runtimes")))
+                {
+                    basePath2 = Path.Combine(basePath1, "runtimes");
+#if NETCORE
+                    string platform = RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows)
+                        ? "win"
+                        : "unix";
+                    basePath3 = Path.Combine(basePath2, platform);
+#else
+                basePath3 = Path.Combine(basePath2, "win");
+#endif
+                    if (Directory.Exists(basePath3))
+                    {
+                        basePath4 = Path.Combine(basePath3, rootLib.Assemblies[0].Replace("ref/", "lib/"));
+                    }
+                }
+
+                if (!File.Exists(basePath4))
+                { // Hack for SqlServer dependencies: System.Security.AccessControl and System.Security.Principal.Windows
+                  // that points to unknown netstandard folders in the runtimes directory. We use the netcoreapp version instead.
+                    basePath5 = basePath4.Replace("netstandard", "netcoreapp");
+                    if (!File.Exists(basePath5))
+                    {
+                        basePath6 = basePath5;
+                    }
+                }
+
                 return
                 $"Driver details: " +
-                $"@Extra: {rootLib.Path}   {rootLib.Assemblies[0]}   libPathCount={libPath.Count}   libPath={(libPath.Count>0 ? libPath[0] : string.Empty)}  - " +
+                $"@Extra1: rootLibPath1={rootLib.Path} rootLibPath2={rootLib.Assemblies[0]} libPathCount={libPath.Count} libPath={(libPath.Count>0 ? libPath[0] : string.Empty)}  - " +
+                $"@basePath1: {basePath1} - " +
+                $"@basePath2: {basePath2} - " +
+                $"@basePath3: {basePath3} - " +
+                $"@basePath4: {basePath4} - " +
+                $"@basePath5: {basePath5} - " +
+                $"@basePath6: {basePath6} - " +
                 $"@Assembly: {DriverTypeName.Assembly} - " +
                 $"@Type: {DriverTypeName.Type} - " +
                 $"@OS platform: {string.Join(", ", OSPlatform)} - " +
