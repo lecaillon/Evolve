@@ -274,9 +274,7 @@ namespace Evolve.Driver
                 return emptyResult;
             }
 
-            string basePath = Directory.Exists(Path.Combine(NugetPackageDir, compilationLib.Path))
-                ? Path.Combine(NugetPackageDir, compilationLib.Path)
-                : Path.Combine(NuGetFallbackDir, compilationLib.Path);
+            string basePath = GetPackageFolder(compilationLib);
 
             if (Directory.Exists(Path.Combine(basePath, "runtimes")))
             {
@@ -371,7 +369,7 @@ namespace Evolve.Driver
         ///     whereas its located in the <see cref="NugetPackageDir"/> or the <see cref="NuGetFallbackDir"/>.
         /// </summary>
         /// <exception cref="EvolveCoreDriverException">PackageFolderNotFound</exception>
-        private string GetPackageFolder(RuntimeLibrary lib)
+        private string GetPackageFolder(Library lib)
         {
             string path1 = Path.Combine(NugetPackageDir, lib.Path);
             if (Directory.Exists(path1))
@@ -429,9 +427,7 @@ namespace Evolve.Driver
                 var rootLib = GetLibrary(DriverNugetPackageId) as CompilationLibrary;
                 var libPath = GetManagedCompilationAssembliesFullPath(rootLib);
 
-                string basePath1 = Directory.Exists(Path.Combine(NugetPackageDir, rootLib.Path))
-                    ? Path.Combine(NugetPackageDir, rootLib.Path)
-                    : Path.Combine(NuGetFallbackDir, rootLib.Path);
+                string basePath1 = GetPackageFolder(rootLib);
 
                 string basePath2 = "";
                 string basePath3 = "";
@@ -655,7 +651,7 @@ namespace Evolve.Driver
                         string rid = lib.Name.Replace(sniLibSuffix, "").Replace("runtime.", "");
                         if (_driverLoader.IsRuntimeCompatible(rid))
                         {
-                            string basePath = Path.Combine(_driverLoader.NuGetFallbackDir, lib.Path);
+                            string basePath = _driverLoader.GetPackageFolder(lib);
                             unmanagedDllPath = Directory.GetFiles(basePath, "sni.dll", SearchOption.AllDirectories).FirstOrDefault();
                             try
                             {
