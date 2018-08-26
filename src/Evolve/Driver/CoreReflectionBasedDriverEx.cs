@@ -424,18 +424,18 @@ namespace Evolve.Driver
             try
             {
                 return
-                $"Driver details: " + Environment.NewLine +
-                $"- Assembly: {DriverTypeName.Assembly}" + Environment.NewLine +
-                $"- Type: {DriverTypeName.Type}" + Environment.NewLine +
-                $"- OS platform: {string.Join(", ", OSPlatform)}" + Environment.NewLine +
-                $"- Process architecture: {ProcessArchitecture}" + Environment.NewLine +
-                $"- Deps file: {_depsFile}" + Environment.NewLine +
-                $"- Managed dependencies found: " + $"{string.Join("; ", ManagedDependencies.Select(x => x))}" + Environment.NewLine +
-                $"- Native dependencies found: " + $"{string.Join("; ", NativeDependencies.Select(x => x))}" + Environment.NewLine + Environment.NewLine;
+                $"Driver details: " +
+                $"[Assembly]: {DriverTypeName.Assembly} " +
+                $"[Type]: {DriverTypeName.Type} " +
+                $"[OS platform]: {string.Join(", ", OSPlatform)} " +
+                $"[Process architecture]: {ProcessArchitecture} " +
+                $"[Deps file]: {_depsFile} " +
+                $"[Managed dependencies found]: " + $"{string.Join("; ", ManagedDependencies.Select(x => x))} " +
+                $"[Native dependencies found]: " + $"{string.Join("; ", NativeDependencies.Select(x => x))}.";
             }
             catch
             {
-                return "Driver details: Error retrieving driver details." + Environment.NewLine + Environment.NewLine;
+                return "Driver details: Error retrieving driver details.";
             }
         }
 
