@@ -425,14 +425,15 @@ namespace Evolve.Driver
             {
                 return
                 $"Driver details: " +
-                $"[Assembly]: {DriverTypeName.Assembly} " +
-                $"[Type]: {DriverTypeName.Type} " +
-                $"[OS platform]: {string.Join(", ", OSPlatform)} " +
-                $"[Process architecture]: {ProcessArchitecture} " +
-                $"[Deps file]: {_depsFile} " +
-                $"[Managed lib]: " + $"{string.Join("; ", ManagedDependencies.Select(x => x))} " +
-                $"[Managed compilation lib]: " + $"{string.Join("; ", ManagedCompilationDependencies.Select(x => x))} " +
-                $"[Native lib]: " + $"{string.Join("; ", NativeDependencies.Select(x => x))}.";
+                $"@Extra: {ManagedDependencies.Count}-{ManagedCompilationDependencies.Count}-{NativeDependencies.Count} " +
+                $"@Assembly: {DriverTypeName.Assembly} " +
+                $"@Type: {DriverTypeName.Type} " +
+                $"@OS platform: {string.Join(", ", OSPlatform)} " +
+                $"@Process architecture: {ProcessArchitecture} " +
+                $"@Deps file: {_depsFile} " +
+                $"@Managed lib: " + $"{string.Join("; ", ManagedDependencies)} " +
+                $"@Managed compilation lib: " + $"{string.Join("; ", ManagedCompilationDependencies)} " +
+                $"@Native lib: " + $"{string.Join("; ", NativeDependencies)}.";
             }
             catch
             {
