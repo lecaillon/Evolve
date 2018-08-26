@@ -53,7 +53,7 @@ namespace Evolve.Core.Test.Driver
         public void MySqlDriver_NET_Core_1_1_works()
         {
             var driver = new CoreMySqlDataDriver(TestContext.NetCore11DepsFile, TestContext.NugetPackageFolder);
-            var cnn = driver.CreateConnection($"Server=127.0.0.1;Port={_mySqlfixture.HostPort};Database={_mySqlfixture.DbName};Uid={_mySqlfixture.DbUser};Pwd={_mySqlfixture.DbPwd};");
+            var cnn = driver.CreateConnection($"Server=127.0.0.1;Port={_mySqlfixture.HostPort};Database={_mySqlfixture.DbName};Uid={_mySqlfixture.DbUser};Pwd={_mySqlfixture.DbPwd};SslMode=none;");
             cnn.Open();
 
             Assert.True(cnn.State == ConnectionState.Open);
