@@ -10,6 +10,7 @@ var distDir = MakeAbsolute(Directory("./dist"));
 var version = XmlPeek(File("./build/common.props"), "/Project/PropertyGroup/PackageVersion/text()");
 var envHome = Environment.GetEnvironmentVariable("USERPROFILE") ?? Environment.GetEnvironmentVariable("HOME");
 var buildRunsInAppVeyor = Environment.GetEnvironmentVariable("APPVEYOR") == "True";
+var buildRunsInTravisCI = Environment.GetEnvironmentVariable("TRAVIS") == "True";
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP / TEARDOWN
@@ -158,7 +159,8 @@ Task("Build Test-Package").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 Task("Build Test-Package Core").Does(() =>
 {
     foreach(var project in GetFiles("./test-package/**/Evolve.*Core*.Test.csproj").Where(x => !buildRunsInAppVeyor || !x.GetFilename().FullPath.Contains("Cassandra"))
-																			      .Where(x => !x.GetFilename().FullPath.Contains("Cassandra"))) // Travis CI: SocketException 'Connection timed out'
+																			      .Where(x => !x.GetFilename().FullPath.Contains("Cassandra"))  // Travis CI: SocketException 'Connection timed out'
+																				  .Where(x => !buildRunsInTravisCI || !x.GetFilename().FullPath.Contains("MySql.Data.AspNetCore21"))) // 
     {
         DotNetCoreBuild(project.FullPath, new DotNetCoreBuildSettings 
         {
