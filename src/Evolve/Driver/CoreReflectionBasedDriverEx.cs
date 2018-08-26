@@ -294,7 +294,7 @@ namespace Evolve.Driver
             string libPath = Path.Combine(basePath, compilationLib.Assemblies[0].Replace("ref/", "lib/"));
             if (!File.Exists(libPath))
             { // Hack for SqlServer dependencies: System.Security.AccessControl and System.Security.Principal.Windows
-              // that points to unknown netstandard folders in the runtimes directory
+              // that points to unknown netstandard folders in the runtimes directory. We use the netcoreapp version instead.
                 libPath = libPath.Replace("netstandard", "netcoreapp");
                 if (!File.Exists(libPath))
                 {
@@ -537,6 +537,7 @@ namespace Evolve.Driver
                 }
 
                 // The needed assembly has not been loaded before, try to find it now in the deps file, making educated guess. (Cf. System.Text.Encoding.CodePages for the CoreSqlClientDriver)
+                // Not sure this part is really used. Maybe on Linux.
                 Library lib = _driverLoader.ProjectDependencyContext.RuntimeLibraries.FirstOrDefault(x => x.Name == assemblyName.Name) ?? 
                               _driverLoader.ProjectDependencyContext.CompileLibraries.FirstOrDefault(x => x.Name == assemblyName.Name) as Library;
 
@@ -591,7 +592,7 @@ namespace Evolve.Driver
                 }
                 
                 if (unmanagedDllName == "sni.dll")
-                { // Hack netcoreapp21 for SqlServer
+                { // Hack for SqlServer on netcoreapp21: load the compatible version of sni.dll
                     string sniLibSuffix = ".runtime.native.System.Data.SqlClient.sni";
                     foreach (var lib in _driverLoader.ProjectDependencyContext.CompileLibraries.Where(x => x.Name.Contains(sniLibSuffix)))
                     {
