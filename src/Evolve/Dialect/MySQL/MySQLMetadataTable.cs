@@ -4,14 +4,14 @@ using Evolve.Migration;
 
 namespace Evolve.Dialect.MySQL
 {
-    /// <summary>
-    ///     Constructor.
-    /// </summary>
-    /// <param name="schema"> Existing database schema name. </param>
-    /// <param name="tableName"> Metadata table name. </param>
-    /// <param name="database"> A database helper used to change and restore schema of the metadata table. </param>
     public class MySQLMetadataTable : MetadataTable
     {
+        /// <summary>
+        ///     Constructor.
+        /// </summary>
+        /// <param name="schema"> Existing database schema name. </param>
+        /// <param name="tableName"> Metadata table name. </param>
+        /// <param name="database"> A database helper used to change and restore schema of the metadata table. </param>
         public MySQLMetadataTable(string schema, string tableName, DatabaseHelper database) 
             : base(schema, tableName, database)
         {
@@ -39,7 +39,7 @@ namespace Evolve.Dialect.MySQL
             string sql = $"CREATE TABLE `{Schema}`.`{TableName}` " +
              "( " +
                  "id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
-                 "type TINYINT, " +
+                 "type TINYINT UNSIGNED, " +
                  "version VARCHAR(50), " +
                  "description VARCHAR(200) NOT NULL, " +
                  "name VARCHAR(300) NOT NULL, " +
