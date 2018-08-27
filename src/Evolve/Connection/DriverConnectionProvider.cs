@@ -33,6 +33,7 @@ namespace Evolve.Connection
             ["mysql"]               = () => new MySqlDataDriver(),
             ["mariadb"]             = () => new MySqlDataDriver(),
             ["mysqldata"]           = () => new MySqlDataDriver(),
+            ["mysqlconnector"]      = () => new MySqlConnectorDriver(),
 
             ["npgsql"]              = () => new NpgsqlDriver(),
             ["postgresql"]          = () => new NpgsqlDriver(),

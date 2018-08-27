@@ -25,6 +25,7 @@ namespace Evolve.Connection
             ["mysql"]               = (depsFile, nugetPackageDir, _) => new CoreMySqlDataDriver(depsFile, nugetPackageDir),
             ["mariadb"]             = (depsFile, nugetPackageDir, _) => new CoreMySqlDataDriver(depsFile, nugetPackageDir),
             ["mysqldata"]           = (depsFile, nugetPackageDir, _) => new CoreMySqlDataDriver(depsFile, nugetPackageDir),
+            ["mysqlconnector"]      = (depsFile, nugetPackageDir, _) => new CoreMySqlConnectorDriver(depsFile, nugetPackageDir),
 
             ["sqlserver"]           = (depsFile, nugetPackageDir, _) => new CoreSqlClientDriver(depsFile, nugetPackageDir),
             ["sqlclient"]           = (depsFile, nugetPackageDir, _) => new CoreSqlClientDriver(depsFile, nugetPackageDir),
