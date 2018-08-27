@@ -77,6 +77,7 @@
     <Compile Include="Configuration\AppConfigConfigurationProviderTest.cs" />
     <Compile Include="Configuration\JsonConfigurationProviderTest.cs" />
     <Compile Include="Driver\NetDriverTest.cs" />
+    <Compile Include="Driver\NetDriverTest.NetCore.2.1.cs" />
     <Compile Include="Driver\NetDriverTest.NetCore.2.0.cs" />
     <Compile Include="Driver\NetDriverTest.NetCore.1.1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

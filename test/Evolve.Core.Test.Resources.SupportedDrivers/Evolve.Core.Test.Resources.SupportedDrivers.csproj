@@ -7,6 +7,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.SQLite" Version="1.1.1" />
     <PackageReference Include="MySql.Data" Version="8.0.12" />
+    <PackageReference Include="MySqlConnector" Version="0.44.1" />
     <PackageReference Include="Npgsql" Version="3.2.7" />
     <PackageReference Include="sqlite" Version="3.13.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.5.1" />

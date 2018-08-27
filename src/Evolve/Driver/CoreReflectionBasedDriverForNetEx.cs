@@ -8,7 +8,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Evolve.Utilities;
-using Microsoft.Extensions.DependencyModel;
 
 namespace Evolve.Driver
 {
@@ -260,7 +259,7 @@ namespace Evolve.Driver
                                                   .Where(x => Regex.IsMatch(x.Name, "^[0-9]+(?:.[0-9]+)*")) // guard
                                                   .ToLookup(x => new AssemblyVersion(Regex.Match(x.Name, "^[0-9]+(?:.[0-9]+)*").Value), x => x) // extract the version of the available packages
                                                   .Where(x => x.Key >= assemblyVersion) // keep only versions equal or higher than the requested
-                                                  .OrderBy(x => x.Key).First().ToList().First() // take the closest
+                                                  .OrderBy(x => x.Key).Last().ToList().First() // take the highest version
                                                   .FullName;
 
                 if (string.IsNullOrEmpty(versionedPackageFolder))

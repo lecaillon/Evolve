@@ -59,6 +59,17 @@ namespace Evolve.Core.Test.Driver
             Assert.True(cnn.State == ConnectionState.Open);
         }
 
+        [Fact(DisplayName = "MySqlConnectorDriver_NET_Core_1_1_works")]
+        public void MySqlConnectorDriver_NET_Core_1_1_works()
+        {
+
+            var driver = new CoreMySqlConnectorDriver(TestContext.NetCore11DepsFile, TestContext.NugetPackageFolder);
+            var cnn = driver.CreateConnection($"Server=127.0.0.1;Port={_mySqlfixture.HostPort};Database={_mySqlfixture.DbName};Uid={_mySqlfixture.DbUser};Pwd={_mySqlfixture.DbPwd};SslMode=none;");
+            cnn.Open();
+
+            Assert.True(cnn.State == ConnectionState.Open);
+        }
+
         [Fact(DisplayName = "SqlClientDriver_NET_Core_1_1_works")]
         public void SqlClientDriver_NET_Core_1_1_works()
         {
