@@ -56,6 +56,7 @@ Task("Test").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 {
     foreach(var project in GetFiles("./test/**/Evolve.*Test*.csproj").Where(x => !x.GetFilename().FullPath.Contains("Core"))
                                                                      .Where(x => !x.GetFilename().FullPath.Contains("Utilities"))
+																	 .Where(x => !x.GetFilename().FullPath.Contains("Cassandra"))
                                                                      .OrderBy(x => x.GetFilename().ToString())) // integrationTest first !
     {
         DotNetCoreTest(project.FullPath, new DotNetCoreTestSettings 

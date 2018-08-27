@@ -81,6 +81,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evolve.Cassandra.AspNetCore
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evolve.Void.AspNetCore21.Test", "test-package\Evolve.Void.AspNetCore21.Test\Evolve.Void.AspNetCore21.Test.csproj", "{0903A0ED-6662-4891-965E-2FE88BD5EE2B}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evolve.MySqlConnector.AspNetCore21.Test", "test-package\Evolve.MySqlConnector.AspNetCore21.Test\Evolve.MySqlConnector.AspNetCore21.Test.csproj", "{D8EB69FD-1EA4-45F9-AE86-9B695EAD75C4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evolve.MySqlConnector.AspNetCore20.Test", "test-package\Evolve.MySqlConnector.AspNetCore20.Test\Evolve.MySqlConnector.AspNetCore20.Test.csproj", "{A1667343-0329-405B-8CD2-972D7E4E0F9B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evolve.MySqlConnector.AspNetCore11.Test", "test-package\Evolve.MySqlConnector.AspNetCore11.Test\Evolve.MySqlConnector.AspNetCore11.Test.csproj", "{F6B842F3-3264-4C7C-871C-A15FF47EF619}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.MySqlConnector.ConsoleApp452.Test", "test-package\Evolve.MySqlConnector.ConsoleApp452.Test\Evolve.MySqlConnector.ConsoleApp452.Test.csproj", "{59854722-2659-4E8D-BD19-357F57EAAF45}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.MySqlConnector.ConsoleApp471.Test", "test-package\Evolve.MySqlConnector.ConsoleApp471.Test\Evolve.MySqlConnector.ConsoleApp471.Test.csproj", "{4B02F6AF-6B3C-4DCE-B5FE-ED9000265D01}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		AppVeyor|Any CPU = AppVeyor|Any CPU
@@ -285,6 +295,36 @@ Global
 		{0903A0ED-6662-4891-965E-2FE88BD5EE2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0903A0ED-6662-4891-965E-2FE88BD5EE2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0903A0ED-6662-4891-965E-2FE88BD5EE2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D8EB69FD-1EA4-45F9-AE86-9B695EAD75C4}.AppVeyor|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8EB69FD-1EA4-45F9-AE86-9B695EAD75C4}.AppVeyor|Any CPU.Build.0 = Debug|Any CPU
+		{D8EB69FD-1EA4-45F9-AE86-9B695EAD75C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8EB69FD-1EA4-45F9-AE86-9B695EAD75C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8EB69FD-1EA4-45F9-AE86-9B695EAD75C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8EB69FD-1EA4-45F9-AE86-9B695EAD75C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1667343-0329-405B-8CD2-972D7E4E0F9B}.AppVeyor|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1667343-0329-405B-8CD2-972D7E4E0F9B}.AppVeyor|Any CPU.Build.0 = Debug|Any CPU
+		{A1667343-0329-405B-8CD2-972D7E4E0F9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1667343-0329-405B-8CD2-972D7E4E0F9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1667343-0329-405B-8CD2-972D7E4E0F9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1667343-0329-405B-8CD2-972D7E4E0F9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F6B842F3-3264-4C7C-871C-A15FF47EF619}.AppVeyor|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6B842F3-3264-4C7C-871C-A15FF47EF619}.AppVeyor|Any CPU.Build.0 = Debug|Any CPU
+		{F6B842F3-3264-4C7C-871C-A15FF47EF619}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6B842F3-3264-4C7C-871C-A15FF47EF619}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6B842F3-3264-4C7C-871C-A15FF47EF619}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6B842F3-3264-4C7C-871C-A15FF47EF619}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59854722-2659-4E8D-BD19-357F57EAAF45}.AppVeyor|Any CPU.ActiveCfg = Release|Any CPU
+		{59854722-2659-4E8D-BD19-357F57EAAF45}.AppVeyor|Any CPU.Build.0 = Release|Any CPU
+		{59854722-2659-4E8D-BD19-357F57EAAF45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59854722-2659-4E8D-BD19-357F57EAAF45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59854722-2659-4E8D-BD19-357F57EAAF45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59854722-2659-4E8D-BD19-357F57EAAF45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B02F6AF-6B3C-4DCE-B5FE-ED9000265D01}.AppVeyor|Any CPU.ActiveCfg = Release|Any CPU
+		{4B02F6AF-6B3C-4DCE-B5FE-ED9000265D01}.AppVeyor|Any CPU.Build.0 = Release|Any CPU
+		{4B02F6AF-6B3C-4DCE-B5FE-ED9000265D01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B02F6AF-6B3C-4DCE-B5FE-ED9000265D01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B02F6AF-6B3C-4DCE-B5FE-ED9000265D01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B02F6AF-6B3C-4DCE-B5FE-ED9000265D01}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -318,6 +358,11 @@ Global
 		{AE1E90D3-7216-4A94-B17B-16459504C752} = {3D88DCC8-AFAA-4734-BF76-D0E46D67B56A}
 		{C80C8C83-7B17-4CE2-8EB4-C8CF2DE29C18} = {7420B649-9F67-423C-BDBE-9198A5DA4029}
 		{AC32FC1A-E9E6-48A5-B308-3C325991B962} = {4AC7F2EB-34F3-4BA8-BAF5-C0670FE8B988}
+		{D8EB69FD-1EA4-45F9-AE86-9B695EAD75C4} = {6D80708C-0287-4754-8ACA-DBF3240AB880}
+		{A1667343-0329-405B-8CD2-972D7E4E0F9B} = {6D80708C-0287-4754-8ACA-DBF3240AB880}
+		{F6B842F3-3264-4C7C-871C-A15FF47EF619} = {6D80708C-0287-4754-8ACA-DBF3240AB880}
+		{59854722-2659-4E8D-BD19-357F57EAAF45} = {6D80708C-0287-4754-8ACA-DBF3240AB880}
+		{4B02F6AF-6B3C-4DCE-B5FE-ED9000265D01} = {6D80708C-0287-4754-8ACA-DBF3240AB880}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D1A92AB0-3CBC-4174-A7D1-E6B53B0EAF73}
