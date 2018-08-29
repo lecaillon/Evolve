@@ -8,15 +8,22 @@ namespace Evolve.Cli
     {
         static void Main(string[] args)
         {
-            Parser.Default
-                .ParseArguments<CassandraOptions, MySqlOptions, PostgreSqlOptions, SQLiteOptions, SqlServerOptions>(args)
-                .MapResult(
-                    (CassandraOptions o) => Evolve(o),
-                    (MySqlOptions o) => Evolve(o),
-                    (PostgreSqlOptions o) => Evolve(o),
-                    (SqlServerOptions o) => Evolve(o),
-                    (SQLiteOptions o) => Evolve(o),
-                    _ => 1);
+            var parser = new Parser(options =>
+            {
+                options.CaseSensitive = false;
+                options.HelpWriter = Console.Error;
+            });
+
+            parser.ParseArguments<CassandraOptions, MySqlOptions, PostgreSqlOptions, SQLiteOptions, SqlServerOptions>(args)
+                  .MapResult
+                  (
+                      (CassandraOptions options) => Evolve(options),
+                      (MySqlOptions options) => Evolve(options),
+                      (PostgreSqlOptions options) => Evolve(options),
+                      (SqlServerOptions options) => Evolve(options),
+                      (SQLiteOptions options) => Evolve(options),
+                      _ => 1
+                  );
         }
 
         static int Evolve(Options options)
@@ -25,8 +32,9 @@ namespace Evolve.Cli
 
             try
             {
-                Directory.SetCurrentDirectory(options.TargetAppPath);
-                EvolveFactory.Build(options).ExecuteCommand();
+                Directory.SetCurrentDirectory(options.TargetAppPath ?? originalCurrentDirectory);
+                EvolveFactory.Build(options)
+                             .ExecuteCommand();
 
                 return 0;
             }

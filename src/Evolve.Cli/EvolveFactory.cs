@@ -19,14 +19,14 @@ namespace Evolve.Cli
                 Driver = options.Driver,
                 EnableClusterMode = !options.DisableClusterMode,
                 Encoding = ParseEncoding(options.Encoding),
-                IsEraseDisabled = !options.EnableErase,
+                IsEraseDisabled = options.EraseDisabled,
                 Locations = options.Locations,
                 MetadataTableName = options.MetadataTableName,
                 OutOfOrder = options.OutOfOrder,
                 SqlMigrationSuffix = options.ScriptsSuffix,
                 PlaceholderPrefix = options.PlaceholderPrefix,
                 PlaceholderSuffix = options.PlaceholderSuffix,
-                Placeholders = MapPlaceholders(options.Placeholders),
+                Placeholders = MapPlaceholders(options.Placeholders, options.PlaceholderPrefix, options.PlaceholderSuffix),
                 SqlMigrationPrefix = options.MigrationScriptsPrefix,
                 SqlMigrationSeparator = options.MigrationScriptsSeparator,
                 StartVersion = ParseVersion(options.StartVersion, MigrationVersion.MinVersion),
@@ -43,21 +43,29 @@ namespace Evolve.Cli
                     evolve.MetadataTableSchema = cassandraOptions.MetadataTableKeyspace;
                     evolve.Locations = cassandraOptions.Locations;
                     evolve.Schemas = cassandraOptions.Keyspaces;
-                    evolve.IsEraseDisabled = !cassandraOptions.EnableErase;
+                    evolve.IsEraseDisabled = cassandraOptions.EraseDisabled;
                     evolve.MustEraseOnValidationError = cassandraOptions.EraseOnValidationError;
                     evolve.SqlMigrationSuffix = cassandraOptions.ScriptsSuffix;
                     break;
-
             }
 
             return evolve;
         }
 
         private static MigrationVersion ParseVersion(string version, MigrationVersion defaultIfEmpty) =>
-            !String.IsNullOrEmpty(version) ? new MigrationVersion(version) : defaultIfEmpty;
+            !string.IsNullOrEmpty(version) ? new MigrationVersion(version) : defaultIfEmpty;
 
-        private static Dictionary<string, string> MapPlaceholders(IEnumerable<string> placeholders) =>
-            placeholders.Select(i => i.Split(':')).ToDictionary(i => i[0], i => i[1]);
+        private static Dictionary<string, string> MapPlaceholders(IEnumerable<string> placeholders, string prefix, string suffix)
+        {
+            try
+            {
+                return placeholders.Select(i => i.Split(':')).ToDictionary(i => prefix + i[0] + suffix, i => i[1]);
+            }
+            catch
+            {
+                throw new EvolveConfigurationException("Error parsing --placeholders. Format is \"key:value\"");
+            }
+        }
 
         private static Encoding ParseEncoding(string encoding)
         {

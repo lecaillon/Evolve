@@ -17,8 +17,8 @@ namespace Evolve.Cli
         [Option("keyspaces", HelpText = "A list of keyspaces managed by Evolve. If empty, the default schema for the datasource connection is used.")]
         public IEnumerable<string> Keyspaces { get; set; }
 
-        [Option("enable-erase", HelpText = "Allows Evolve to erase keyspaces and tables. Intended to be used in development only.", Default = false)]
-        public new bool EnableErase { get; set; }
+        [Option("erase-disabled", HelpText = "When set, ensures that Evolve will never erase schemas. Highly recommended in production.", Default = false)]
+        public new bool EraseDisabled { get; set; }
 
         [Option("erase-on-validation-error", HelpText = "When set, if validation phase fails, Evolve will erase the keyspaces and will re-execute migration scripts from scratch. Intended to be used in development only.", Default = false)]
         public new bool EraseOnValidationError { get; set; }

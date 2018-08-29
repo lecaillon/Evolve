@@ -165,7 +165,7 @@ Task("Build Test-Package").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 Task("Build Test-Package Core").Does(() =>
 {
     foreach(var project in GetFiles("./test-package/**/Evolve.*Core*.Test.csproj").Where(x => !buildRunsInAppVeyor || !x.GetFilename().FullPath.Contains("Cassandra"))
-																			      .Where(x => !x.GetFilename().FullPath.Contains("Cassandra")))  // Travis CI: SocketException 'Connection timed out'
+                                                                                  .Where(x => !x.GetFilename().FullPath.Contains("Cassandra")))  // Travis CI: SocketException 'Connection timed out'
     {
         DotNetCoreBuild(project.FullPath, new DotNetCoreBuildSettings 
         {
@@ -186,6 +186,13 @@ Task("Default")
     .IsDependentOn("Restore Test-Package")
     .IsDependentOn("Build Test-Package")
     .IsDependentOn("Build Test-Package Core");
+
+Task("BuildOnly")
+    .IsDependentOn("Clean")
+    .IsDependentOn("Restore")
+    .IsDependentOn("Build")
+    .IsDependentOn("Pack")
+    .IsDependentOn("PackCli");
 
 Task("Test-Package")
     .IsDependentOn("Restore Test-Package")

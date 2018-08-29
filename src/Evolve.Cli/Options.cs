@@ -1,5 +1,5 @@
-﻿using CommandLine;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using CommandLine;
 
 namespace Evolve.Cli
 {
@@ -7,61 +7,61 @@ namespace Evolve.Cli
     {
         public abstract string Driver { get; }
 
-        [Value(0, MetaName = "command", HelpText = "migrate | erase | repair", Required = true)]
+        [Value(0, MetaName = "command", Required = true, HelpText = "migrate | erase | repair")]
         public Command Command { get; set; }
 
-        [Value(1, MetaName = "connection-string", HelpText = "The connection string to the target engine.", Required = true)]
+        [Option('c', "connection-string", Required = true, HelpText = "The connection string to the target database engine. Must have the necessary privileges to execute ddl.")]
         public string ConnectionString { get; set; }
 
-        [Option('p', "app-path", HelpText = "Path to the application folder to migrate.", Required = true)]
+        [Option('p', "app-path", Required = true, HelpText = "Path to the application folder to migrate.")]
         public string TargetAppPath { get; set; }
 
-        [Option('s', "scripts-locations", HelpText = "Paths to scan recursively for migration scripts.", Default = new[] { "Sql_Scripts" })]
+        [Option('l', "locations", Default = new[] { "Sql_Scripts" }, HelpText = "Paths to scan recursively for migration scripts.")]
         public IEnumerable<string> Locations { get; set; }
 
-        [Option("command-timeout", HelpText = "The wait time in seconds before terminating the attempt to execute a migration and generating an error.", Default = 30)]
-        public int CommandTimeout { get; set; }
-
-        [Option('t', "metadata-table", HelpText = "The name of the metadata table.", Default = "evolve_change_log")]
+        [Option('t', "metadata-table", Default = "changelog", HelpText = "The name of the metadata table.")]
         public string MetadataTableName { get; set; }
 
-        [Option("enable-erase", HelpText = "Allows Evolve to erase schema and tables. Intended to be used in development only.", Default = false)]
-        public bool EnableErase { get; set; }
-
-        [Option("erase-on-validation-error", HelpText = "When set, if validation phase fails, Evolve will erase the database schemas and will re-execute migration scripts from scratch. Intended to be used in development only.", Default = false)]
-        public bool EraseOnValidationError { get; set; }
-
-        [Option('v', "target-version", HelpText = "Target version to reach. If empty it evolves all the way up.", Required = false)]
+        [Option('v', "target-version", Required = false, HelpText = "Target version to reach. If empty it evolves all the way up.")]
         public string TargetVersion { get; set; }
 
-        [Option("start-version", HelpText = "Version used as starting point for already existing databases.", Default = "0")]
+        [Option("start-version", Default = "0", HelpText = "Version used as starting point for already existing databases.")]
         public string StartVersion { get; set; }
 
-        [Option("out-of-order", HelpText = "Allows migration scripts to be run “out of order”. If you already have versions 1 and 3 applied, and now a version 2 is found, it will be applied too instead of being ignored.", Default = false)]
+        [Option("out-of-order", Default = false, HelpText = "Allows migration scripts to be run “out of order”. If you already have versions 1 and 3 applied, and now a version 2 is found, it will be applied too instead of being ignored.")]
         public bool OutOfOrder { get; set; }
 
-        [Option("encoding", HelpText = "The encoding of migration scripts.", Default = "UTF-8")]
+        [Option("erase-disabled", Default = false, HelpText = "When set, ensures that Evolve will never erase schemas. Highly recommended in production.")]
+        public bool EraseDisabled { get; set; }
+
+        [Option("erase-on-validation-error", Default = false, HelpText = "When set, if validation phase fails, Evolve will erase the database schemas and will re-execute migration scripts from scratch. Intended to be used in development only.")]
+        public bool EraseOnValidationError { get; set; }
+
+        [Option("command-timeout", Default = 30, HelpText = "The wait time in seconds before terminating the attempt to execute a migration and generating an error.")]
+        public int CommandTimeout { get; set; }
+
+        [Option("encoding", Default = "UTF-8", HelpText = "The encoding of migration scripts.")]
         public string Encoding { get; set; }
 
-        [Option("scripts-prefix", HelpText = "Migration scripts file names prefix", Default = "V")]
+        [Option("scripts-prefix", Default = "V", HelpText = "Migration scripts file names prefix")]
         public string MigrationScriptsPrefix { get; set; }
 
-        [Option("scripts-separator", HelpText = "Migration scripts file names separator", Default = "__")]
+        [Option("scripts-separator", Default = "__", HelpText = "Migration scripts file names separator")]
         public string MigrationScriptsSeparator { get; set; }
 
-        [Option("scripts-suffix", HelpText = "Migration scripts files extension.", Default = ".sql")]
+        [Option("scripts-suffix", Default = ".sql", HelpText = "Migration scripts files extension.")]
         public string ScriptsSuffix { get; set; }
 
-        [Option("placeholder-prefix", HelpText = "The prefix of the placeholders.", Default = "${")]
+        [Option("placeholder-prefix", Default = "${", HelpText = "The prefix of the placeholders.")]
         public string PlaceholderPrefix { get; set; }
 
-        [Option("placeholder-suffix", HelpText = "The suffix of the placeholders.", Default = "}")]
+        [Option("placeholder-suffix", Default = "}", HelpText = "The suffix of the placeholders.")]
         public string PlaceholderSuffix { get; set; }
 
-        [Option("placeholders", HelpText = "Placeholders are strings prefixed by: “Evolve.Placeholder.” to replace in migration scripts. Format for commandline is \"key:value\".", Required = false)]
+        [Option("placeholders", Required = false, HelpText = "Placeholders are strings to replace in migration scripts. Format for commandline is \"key:value\".")]
         public IEnumerable<string> Placeholders { get; set; }
 
-        [Option("disable-cluster-mode", HelpText = "By default, Evolve will use a session level lock to coordinate the migration on multiple nodes. This prevents two distinct Evolve executions from executing an Evolve command on the same database at the same time. If this flag is set, it will not be the case.", Default = false)]
+        [Option("disable-cluster-mode", Default = false, HelpText = "By default, Evolve will use a session level lock to coordinate the migration on multiple nodes. This prevents two distinct Evolve executions from executing an Evolve command on the same database at the same time. If this flag is set, it will not be the case.")]
         public bool DisableClusterMode { get; set; }
     }
 }

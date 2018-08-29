@@ -2,7 +2,7 @@
   "profiles": {
     "Evolve.Cli": {
       "commandName": "Project",
-      "commandLineArgs": "postgresql erase \"Server=127.0.0.1;Port=5432;Database=my_database;User Id=postgres;Password=Password12!;\" -p \"..\\..\\..\\..\\..\\test-package\\Evolve.Npgsql.AspNet471.Test\\bin\" --enable-erase=true"
+      "commandLineArgs": "postgresql erase -c \"Server=127.0.0.1;Port=5432;Database=my_database;User Id=postgres;Password=Password12!\" -p C:\\projets\\Evolve\\test\\Evolve.IntegrationTest.PostgreSQL\\bin\\Debug -l Resources/Sql_Scripts/Migration --schemas public unittest -s unittest --placeholders schema1:unittest"
     }
   }
 }
