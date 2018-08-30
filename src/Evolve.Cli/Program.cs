@@ -14,14 +14,32 @@ namespace Evolve.Cli
                 options.HelpWriter = Console.Error;
             });
 
-            parser.ParseArguments<CassandraOptions, MySqlOptions, PostgreSqlOptions, SQLiteOptions, SqlServerOptions>(args)
+            parser.ParseArguments<CassandraOptions, 
+                                  MySqlOptions, MariaDbOptions, MySqlDataOptions, MySqlConnectorOptions, 
+                                  PostgreSqlOptions, NpgsqlOptions,
+                                  SQLiteOptions, SytemDataSQLiteOptions, MicrosoftSqliteOptions, MicrosoftDataSqliteOptions,
+                                  SqlServerOptions, SqlClientOptions>(args)
                   .MapResult
                   (
                       (CassandraOptions options) => Evolve(options),
+
                       (MySqlOptions options) => Evolve(options),
+                      (MariaDbOptions options) => Evolve(options),
+                      (MySqlDataOptions options) => Evolve(options),
+                      (MySqlConnectorOptions options) => Evolve(options),
+
                       (PostgreSqlOptions options) => Evolve(options),
+                      (NpgsqlOptions options) => Evolve(options),
+
+
                       (SqlServerOptions options) => Evolve(options),
+                      (SqlClientOptions options) => Evolve(options),
+
                       (SQLiteOptions options) => Evolve(options),
+                      (SytemDataSQLiteOptions options) => Evolve(options),
+                      (MicrosoftSqliteOptions options) => Evolve(options),
+                      (MicrosoftDataSqliteOptions options) => Evolve(options),
+
                       _ => 1
                   );
         }

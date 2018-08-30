@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Evolve.Cli
 {
-    [Verb("cassandra", HelpText = "Evolve with Cassandra")]
+    [Verb("cassandra", HelpText = "Evolve with Cassandra (driver: CassandraCSharpDriver)")]
     internal class CassandraOptions : Options
     {
         public override string Driver => "cassandra";
