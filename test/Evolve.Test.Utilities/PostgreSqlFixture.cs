@@ -19,6 +19,7 @@ namespace Evolve.Test.Utilities
         public string DbName => Pg.DbName;
         public string DbPwd => Pg.DbPwd;
         public string DbUser => Pg.DbUser;
+        public string CnxStr => Pg.CnxStr;
 
         public void Dispose()
         {

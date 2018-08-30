@@ -59,6 +59,7 @@ namespace Evolve.Cli
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
+                Console.Error.WriteLine(ex);
                 return 1;
             }
             finally

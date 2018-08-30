@@ -126,6 +126,14 @@ Task("PackCli").WithCriteria(() => IsRunningOnWindows()).Does(() =>
     ILRepack("./dist/Evolve.exe", "./src/Evolve.Cli/bin/Release/net452/Evolve.Cli.exe", assemblies);
 });
 
+Task("Test CLI").Does(() =>
+{
+    DotNetCoreTest("./test-cli/Evolve.Cli.IntegrationTest/Evolve.Cli.IntegrationTest.csproj", new DotNetCoreTestSettings 
+    {
+        Configuration = configuration,
+    });
+});
+
 Task("Restore Test-Package").Does(() =>
 {
     foreach(var file in GetFiles("./test-package/**/packages.config"))
@@ -183,6 +191,7 @@ Task("Default")
     .IsDependentOn("Test Core")
     .IsDependentOn("Pack")
     .IsDependentOn("PackCli")
+	.IsDependentOn("Test CLI")
     .IsDependentOn("Restore Test-Package")
     .IsDependentOn("Build Test-Package")
     .IsDependentOn("Build Test-Package Core");
