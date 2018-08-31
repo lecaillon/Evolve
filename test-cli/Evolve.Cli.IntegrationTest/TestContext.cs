@@ -28,6 +28,7 @@ namespace Evolve.Cli.IntegrationTest
             IntegrationTestSqlServerFolder = Path.GetFullPath(Path.Combine(ProjectFolder, "../../test/Evolve.IntegrationTest.SQLServer/bin/Release"));
             IntegrationTestMySqlFolder = Path.GetFullPath(Path.Combine(ProjectFolder, "../../test/Evolve.IntegrationTest.MySQL/bin/Release"));
             IntegrationTestMySqlConnectorFolder = Path.GetFullPath(Path.Combine(ProjectFolder, "../../test-package/Evolve.MySqlConnector.ConsoleApp471.Test/bin/Release"));
+            IntegrationTestMySqlConnectorResourcesFolder = "../../../../test/Evolve.IntegrationTest.MySQL/bin/Release/Resources/Sql_Scripts/Migration";
             IntegrationTestSQLiteFolder = Path.GetFullPath(Path.Combine(ProjectFolder, "../../test/Evolve.IntegrationTest.SQLite/bin/Release"));
             IntegrationTestMicrosoftSQLiteFolder = Path.GetFullPath(Path.Combine(ProjectFolder, "../../test-package/Evolve.Microsoft.Data.SQLite.AspNet471.Test/bin"));
             IntegrationTestMicrosoftSQLiteResourcesFolder = "../../../test/Evolve.IntegrationTest.SQLite/bin/Release/Resources/Sql_Scripts/Migration";
