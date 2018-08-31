@@ -192,10 +192,10 @@ Task("Default")
     .IsDependentOn("Test Core")
     .IsDependentOn("Pack")
     .IsDependentOn("PackCli")
-	.IsDependentOn("Test CLI")
     .IsDependentOn("Restore Test-Package")
     .IsDependentOn("Build Test-Package")
-    .IsDependentOn("Build Test-Package Core");
+    .IsDependentOn("Build Test-Package Core")
+	.IsDependentOn("Test CLI");
 
 Task("BuildOnly")
     .IsDependentOn("Clean")
