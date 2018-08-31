@@ -131,7 +131,7 @@ Task("Test CLI").Does(() =>
     DotNetCoreTest("./test-cli/Evolve.Cli.IntegrationTest/Evolve.Cli.IntegrationTest.csproj", new DotNetCoreTestSettings 
     {
         Configuration = configuration,
-		ArgumentCustomization = args => args.Append("--no-restore),
+		ArgumentCustomization = args => args.Append("--no-restore"),
     });
 });
 
