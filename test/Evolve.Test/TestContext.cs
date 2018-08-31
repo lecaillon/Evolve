@@ -18,10 +18,18 @@ namespace Evolve.Test
             NetCore11DepsFile = Path.Combine(NetCore11DriverResourcesProjectFolder, @"bin/Debug/netcoreapp1.1/Evolve.Core.Test.Resources.SupportedDrivers.deps.json");
             NetCore20DepsFile = Path.Combine(NetCore20DriverResourcesProjectFolder, @"bin/Debug/netcoreapp2.0/Evolve.Core2.Test.Resources.SupportedDrivers.deps.json");
             NetCore21DepsFile = Path.Combine(NetCore21DriverResourcesProjectFolder, @"bin/Debug/netcoreapp2.1/Evolve.Core21.Test.Resources.SupportedDrivers.deps.json");
+            IntegrationTestPostgreSqlFolder = Path.GetFullPath(Path.Combine(ProjectFolder, "../../test/Evolve.IntegrationTest.PostgreSQL/bin/Debug"));
+            IntegrationTestMySqlFolder = Path.GetFullPath(Path.Combine(ProjectFolder, "../../test/Evolve.IntegrationTest.MySQL/bin/Debug"));
+            IntegrationTestMySqlConnectorFolder = Path.GetFullPath(Path.Combine(ProjectFolder, "../../test-package/Evolve.MySqlConnector.ConsoleApp471.Test/bin/Debug"));
+            IntegrationTestCassandraFolder = Path.GetFullPath(Path.Combine(ProjectFolder, "../../test/Evolve.IntegrationTest.Cassandra/bin/Debug"));
 #else
             NetCore11DepsFile = Path.Combine(NetCore11DriverResourcesProjectFolder, @"bin/Release/netcoreapp1.1/Evolve.Core.Test.Resources.SupportedDrivers.deps.json");
             NetCore20DepsFile = Path.Combine(NetCore20DriverResourcesProjectFolder, @"bin/Release/netcoreapp2.0/Evolve.Core2.Test.Resources.SupportedDrivers.deps.json");
             NetCore21DepsFile = Path.Combine(NetCore21DriverResourcesProjectFolder, @"bin/Release/netcoreapp2.1/Evolve.Core21.Test.Resources.SupportedDrivers.deps.json");
+            IntegrationTestPostgreSqlFolder = Path.GetFullPath(Path.Combine(ProjectFolder, "../../test/Evolve.IntegrationTest.PostgreSQL/bin/Release"));
+            IntegrationTestMySqlFolder = Path.GetFullPath(Path.Combine(ProjectFolder, "../../test/Evolve.IntegrationTest.MySQL/bin/Release"));
+            IntegrationTestMySqlConnectorFolder = Path.GetFullPath(Path.Combine(ProjectFolder, "../../test-package/Evolve.MySqlConnector.ConsoleApp471.Test/bin/Release"));
+            IntegrationTestCassandraFolder = Path.GetFullPath(Path.Combine(ProjectFolder, "../../test/Evolve.IntegrationTest.Cassandra/bin/Release"));
 #endif
             ResourcesFolder = Path.Combine(Path.GetDirectoryName(new Uri(Assembly.GetExecutingAssembly().CodeBase).AbsolutePath), "Resources");
             AppConfigPath = Path.Combine(ResourcesFolder, "App.config");
@@ -48,6 +56,10 @@ namespace Evolve.Test
         public static string WebConfigPath { get; }
         public static string JsonConfigPath { get; }
         public static string Json2ConfigPath { get; }
+        public static string IntegrationTestPostgreSqlFolder { get; }
+        public static string IntegrationTestMySqlFolder { get; }
+        public static string IntegrationTestMySqlConnectorFolder { get; }
+        public static string IntegrationTestCassandraFolder { get; }
         public static bool AppVeyor => Environment.GetEnvironmentVariable("APPVEYOR") == "True";
         public static bool Travis => Environment.GetEnvironmentVariable("TRAVIS") == "True";
 

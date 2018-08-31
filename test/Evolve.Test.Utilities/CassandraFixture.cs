@@ -15,6 +15,7 @@ namespace Evolve.Test.Utilities
         }
 
         public CassandraDockerContainer Cassandra { get; }
+        public string CnxStr => Cassandra.CnxStr;
 
         public void Dispose() => Cassandra.Dispose();
     }

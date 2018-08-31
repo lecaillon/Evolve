@@ -9,9 +9,9 @@ namespace Evolve.Test.Utilities
         public string Id => _container.Id;
         public string ExposedPort => "1433";
         public string HostPort => "1433";
-        public string DbName => "my_database";
         public string DbPwd => "Password12!"; // AppVeyor
         public string DbUser => "sa";
+        public string CnxStr => $"Server=127.0.0.1;Database=master;User Id={DbUser};Password={DbPwd};";
         public TimeSpan DelayAfterStartup => TimeSpan.FromMinutes(1);
 
         public bool Start(bool fromScratch = false)
