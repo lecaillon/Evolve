@@ -39,7 +39,7 @@ namespace Evolve.Dialect.MySQL
             string sql = $"CREATE TABLE `{Schema}`.`{TableName}` " +
              "( " +
                  "id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, " +
-                 "type TINYINT UNSIGNED, " +
+                 "type TINYINT, " +
                  "version VARCHAR(50), " +
                  "description VARCHAR(200) NOT NULL, " +
                  "name VARCHAR(300) NOT NULL, " +
@@ -82,7 +82,7 @@ namespace Evolve.Dialect.MySQL
             string sql = $"SELECT id, type, version, description, name, checksum, installed_by, installed_on, success FROM `{Schema}`.`{TableName}`";
             return _database.WrappedConnection.QueryForList(sql, r =>
             {
-                return new MigrationMetadata(r.GetString(2), r.GetString(3), r.GetString(4), (MetadataType)r.GetByte(1))
+                return new MigrationMetadata(r.GetString(2), r.GetString(3), r.GetString(4), (MetadataType)(sbyte)r.GetValue(1))
                 {
                     Id = r.GetInt32(0),
                     Checksum = r.GetString(5),
