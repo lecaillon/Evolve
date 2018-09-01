@@ -1,6 +1,6 @@
 ﻿{
   "Evolve.Driver": "Npgsql",
-  "Evolve.ConnectionString": "Server=127.0.0.1;Port=${PG_PORT};Database=my_database;User Id=postgres;Password=Password12!;",
+  "Evolve.ConnectionString": "Server=127.0.0.1;Port=5432;Database=my_database;User Id=postgres;Password=Password12!;",
   "Evolve.Locations": "scripts",
   "Evolve.Command": "erase"
 }
