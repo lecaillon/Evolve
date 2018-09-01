@@ -17,6 +17,7 @@ namespace Evolve.Test.Utilities
         public SQLServerDockerContainer MsSql { get; }
         public string DbPwd => MsSql.DbPwd;
         public string DbUser => MsSql.DbUser;
+        public string CnxStr => MsSql.CnxStr;
 
         public void Dispose()
         {

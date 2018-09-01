@@ -1,3 +1,5 @@
+#tool "nuget:?package=ILRepack"
+
 ///////////////////////////////////////////////////////////////////////////////
 // ARGUMENTS
 ///////////////////////////////////////////////////////////////////////////////
@@ -76,7 +78,6 @@ Task("Test").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 
 Task("Test Core").Does(() =>
 {
-
     foreach(var project in GetFiles("./test/**/Evolve.Core*.Test.Resources.SupportedDrivers.csproj"))
     {
         DotNetCoreBuild(project.FullPath, new DotNetCoreBuildSettings 
@@ -119,6 +120,21 @@ Task("Pack").Does(() =>
     }
 });
 
+Task("PackCli").WithCriteria(() => IsRunningOnWindows()).Does(() =>
+{
+    var assemblies = GetFiles("./src/Evolve.Cli/bin/Release/net452/*.dll");
+    ILRepack("./dist/Evolve.exe", "./src/Evolve.Cli/bin/Release/net452/Evolve.Cli.exe", assemblies);
+});
+
+Task("Test CLI").Does(() =>
+{
+    DotNetCoreTest("./test-cli/Evolve.Cli.IntegrationTest/Evolve.Cli.IntegrationTest.csproj", new DotNetCoreTestSettings 
+    {
+        Configuration = configuration,
+		ArgumentCustomization = args => args.Append("--no-restore"),
+    });
+});
+
 Task("Restore Test-Package").Does(() =>
 {
     foreach(var file in GetFiles("./test-package/**/packages.config"))
@@ -158,7 +174,7 @@ Task("Build Test-Package").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 Task("Build Test-Package Core").Does(() =>
 {
     foreach(var project in GetFiles("./test-package/**/Evolve.*Core*.Test.csproj").Where(x => !buildRunsInAppVeyor || !x.GetFilename().FullPath.Contains("Cassandra"))
-																			      .Where(x => !x.GetFilename().FullPath.Contains("Cassandra")))  // Travis CI: SocketException 'Connection timed out'
+                                                                                  .Where(x => !x.GetFilename().FullPath.Contains("Cassandra")))  // Travis CI: SocketException 'Connection timed out'
     {
         DotNetCoreBuild(project.FullPath, new DotNetCoreBuildSettings 
         {
@@ -175,9 +191,18 @@ Task("Default")
     .IsDependentOn("Test")
     .IsDependentOn("Test Core")
     .IsDependentOn("Pack")
+    .IsDependentOn("PackCli")
     .IsDependentOn("Restore Test-Package")
     .IsDependentOn("Build Test-Package")
-    .IsDependentOn("Build Test-Package Core");
+    .IsDependentOn("Build Test-Package Core")
+	.IsDependentOn("Test CLI");
+
+Task("BuildOnly")
+    .IsDependentOn("Clean")
+    .IsDependentOn("Restore")
+    .IsDependentOn("Build")
+    .IsDependentOn("Pack")
+    .IsDependentOn("PackCli");
 
 Task("Test-Package")
     .IsDependentOn("Restore Test-Package")

@@ -201,7 +201,7 @@ namespace Evolve
         public string SqlMigrationPrefix { get; set; } = "V";
         public string SqlMigrationSeparator { get; set; } = "__";
         public string SqlMigrationSuffix { get; set; } = ".sql";
-        public MigrationVersion TargetVersion { get; set; } = new MigrationVersion(long.MaxValue.ToString());
+        public MigrationVersion TargetVersion { get; set; } = MigrationVersion.MaxVersion;
         public MigrationVersion StartVersion { get; set; } = MigrationVersion.MinVersion;
         public bool EnableClusterMode { get; set; } = true;
         public bool OutOfOrder { get; set; } = false;

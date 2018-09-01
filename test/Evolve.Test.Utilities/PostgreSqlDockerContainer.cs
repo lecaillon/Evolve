@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 
 namespace Evolve.Test.Utilities
 {
@@ -13,6 +12,7 @@ namespace Evolve.Test.Utilities
         public string DbName => "my_database";
         public string DbPwd => "Password12!"; // AppVeyor
         public string DbUser => "postgres";
+        public string CnxStr => $"Server=127.0.0.1;Port={HostPort};Database={DbName};User Id={DbUser};Password={DbPwd};";
         public TimeSpan DelayAfterStartup => TimeSpan.FromSeconds(5);
 
         public bool Start(bool fromScratch = false)

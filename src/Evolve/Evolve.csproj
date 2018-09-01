@@ -10,11 +10,11 @@
   <PropertyGroup Condition="'$(TargetFramework)' == 'net452'">
     <DefineConstants>NET;NET45</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp1.0|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)'=='Debug|netcoreapp1.0'">
     <DefineConstants>DEBUG;TRACE;NETCORE</DefineConstants>
     <NoWarn>1701;1702;1705</NoWarn>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp1.0|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)'=='Release|netcoreapp1.0'">
     <DefineConstants>TRACE;NETCORE</DefineConstants>
     <NoWarn>1701;1702;1705</NoWarn>
   </PropertyGroup>

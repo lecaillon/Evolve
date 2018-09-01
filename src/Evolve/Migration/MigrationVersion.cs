@@ -35,6 +35,8 @@ namespace Evolve.Migration
 
         public static MigrationVersion MinVersion => new MigrationVersion("0");
 
+        public static MigrationVersion MaxVersion => new MigrationVersion(long.MaxValue.ToString());
+
         #region IComparable
 
         public int CompareTo(MigrationVersion other)

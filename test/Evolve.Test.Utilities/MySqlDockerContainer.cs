@@ -12,6 +12,7 @@ namespace Evolve.Test.Utilities
         public string DbName => "my_database";
         public string DbPwd => "Password12!"; // AppVeyor
         public string DbUser => "root";
+        public string CnxStr => $"Server=127.0.0.1;Port={HostPort};Database={DbName};Uid={DbUser};Pwd={DbPwd};SslMode=none;";
         public TimeSpan DelayAfterStartup => TimeSpan.FromSeconds(10);
 
         public bool Start(bool fromScratch = false)

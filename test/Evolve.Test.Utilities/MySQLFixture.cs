@@ -19,6 +19,7 @@ namespace Evolve.Test.Utilities
         public string DbName => MySql.DbName;
         public string DbPwd => MySql.DbPwd;
         public string DbUser => MySql.DbUser;
+        public string CnxStr => MySql.CnxStr;
 
         public void Dispose()
         {
