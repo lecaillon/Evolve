@@ -50,7 +50,7 @@ namespace Evolve.Cli
 
             try
             {
-                Directory.SetCurrentDirectory(options.TargetAppPath ?? originalCurrentDirectory);
+                Directory.SetCurrentDirectory(options.DriverAssemblyPath ?? originalCurrentDirectory);
                 EvolveFactory.Build(options)
                              .ExecuteCommand();
 
