@@ -40,7 +40,7 @@ namespace Evolve.Cli.IntegrationTest
                     cnxStr: _pgFixture.CnxStr,
                     driver: "postgresql",
                     command: command,
-                    appPath: TestContext.IntegrationTestPostgreSqlFolder,
+                    driverAssemblyPath: TestContext.IntegrationTestPostgreSqlFolder,
                     args: $"-l Resources/Sql_Scripts/Migration --schemas public unittest -s unittest --placeholders schema1:unittest");
 
                 Assert.True(stderr == string.Empty, stderr);
@@ -56,7 +56,7 @@ namespace Evolve.Cli.IntegrationTest
                     cnxStr: _sqlServerFixture.CnxStr.Replace("master", "my_database_2"),
                     driver: "sqlserver",
                     command: command,
-                    appPath: TestContext.IntegrationTestSqlServerFolder,
+                    driverAssemblyPath: TestContext.IntegrationTestSqlServerFolder,
                     args: $"-l Resources/Sql_Scripts/Migration --placeholders db:my_database_2 schema2:dbo --v 8_9");
 
                 Assert.True(stderr == string.Empty, stderr);
@@ -72,7 +72,7 @@ namespace Evolve.Cli.IntegrationTest
                     cnxStr: _mySqlfixture.CnxStr,
                     driver: "mysql",
                     command: command,
-                    appPath: TestContext.IntegrationTestMySqlFolder,
+                    driverAssemblyPath: TestContext.IntegrationTestMySqlFolder,
                     args: $"-l Resources/Sql_Scripts/Migration --command-timeout 25");
 
                 Assert.True(stderr == string.Empty, stderr);
@@ -88,7 +88,7 @@ namespace Evolve.Cli.IntegrationTest
                     cnxStr: _mySqlfixture.CnxStr,
                     driver: "mysqlconnector",
                     command: command,
-                    appPath: TestContext.IntegrationTestMySqlConnectorFolder,
+                    driverAssemblyPath: TestContext.IntegrationTestMySqlConnectorFolder,
                     args: $"-l {TestContext.IntegrationTestMySqlConnectorResourcesFolder} --command-timeout 25");
 
                 Assert.True(stderr == string.Empty, stderr);
@@ -106,7 +106,7 @@ namespace Evolve.Cli.IntegrationTest
                     cnxStr: cnxStr,
                     driver: "sqlite",
                     command: command,
-                    appPath: TestContext.IntegrationTestSQLiteFolder,
+                    driverAssemblyPath: TestContext.IntegrationTestSQLiteFolder,
                     args: $"-l Resources/Sql_Scripts/Migration --placeholders table4:table_4");
 
                 Assert.True(stderr == string.Empty, stderr);
@@ -124,7 +124,7 @@ namespace Evolve.Cli.IntegrationTest
                     cnxStr: cnxStr,
                     driver: "microsoftsqlite",
                     command: command,
-                    appPath: TestContext.IntegrationTestMicrosoftSQLiteFolder,
+                    driverAssemblyPath: TestContext.IntegrationTestMicrosoftSQLiteFolder,
                     args: $"-l {TestContext.IntegrationTestMicrosoftSQLiteResourcesFolder} --placeholders table4:table_4");
 
                 Assert.True(stderr == string.Empty, stderr);
@@ -140,21 +140,21 @@ namespace Evolve.Cli.IntegrationTest
                     cnxStr: _cassandraFixture.CnxStr,
                     driver: "cassandra",
                     command: command,
-                    appPath: TestContext.IntegrationTestCassandraFolder,
+                    driverAssemblyPath: TestContext.IntegrationTestCassandraFolder,
                     args: $"-l Resources/Sql_Scripts/Migration -k my_keyspace -t evolve_change_log --scripts-suffix .cql --command-timeout 25 ");
 
                 Assert.True(stderr == string.Empty, stderr);
             }
         }
 
-        private string RunCliExe(string cnxStr, string driver, string command, string appPath, string args)
+        private string RunCliExe(string cnxStr, string driver, string command, string driverAssemblyPath, string args)
         {
             var proc = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = TestContext.CliExe,
-                    Arguments = $"{driver} {command} -c \"{cnxStr}\" -p {appPath} {args}",
+                    Arguments = $"{driver} {command} -c \"{cnxStr}\" -p {driverAssemblyPath} {args}",
                     UseShellExecute = false,
                     CreateNoWindow = true,
                     RedirectStandardError = true,

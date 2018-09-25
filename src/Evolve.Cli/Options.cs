@@ -13,8 +13,8 @@ namespace Evolve.Cli
         [Option('c', "connection-string", Required = true, HelpText = "The connection string to the target database engine. Must have the necessary privileges to execute ddl.")]
         public string ConnectionString { get; set; }
 
-        [Option('p', "app-path", Required = true, HelpText = "Path to the application folder to migrate.")]
-        public string TargetAppPath { get; set; }
+        [Option('p', "driver-assembly-path", Required = true, HelpText = "Path to the application folder to migrate or to any folder that contains database driver assemblies.")]
+        public string DriverAssemblyPath { get; set; }
 
         [Option('l', "locations", Default = new[] { "Sql_Scripts" }, HelpText = "Paths to scan recursively for migration scripts.")]
         public IEnumerable<string> Locations { get; set; }
