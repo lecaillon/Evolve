@@ -23,6 +23,7 @@ Over all Evolve embraces simplicity. Every time you build or run your project, i
 - [x] .NET 4.5.2+
 - [x] .NET Core 1.0+
 - [x] .NET Core 2.0+
+- [x] .NET Core 2.1+
 
 ## Feedback and issues
 Feedback, improvements, ideas are welcomed.
