@@ -1,5 +1,5 @@
 <Project>
   <PropertyGroup>
-    <PackageVersion>1.9.0-alpha</PackageVersion>
+    <PackageVersion>1.9.0</PackageVersion>
   </PropertyGroup>
 </Project>
