@@ -2,7 +2,7 @@
   "profiles": {
     "Evolve.Cli": {
       "commandName": "Project",
-      "commandLineArgs": "postgresql erase -c \"Server=127.0.0.1;Port=5432;Database=my_database;User Id=postgres;Password=Password12!\" -p C:\\projets\\Evolve\\test\\Evolve.IntegrationTest.PostgreSQL\\bin\\Debug -l Resources/Sql_Scripts/Migration --schemas public unittest -s unittest --placeholders schema1:unittest"
+      "commandLineArgs": "sqlite erase --connection-string=\"Data Source=C:\\Users\\lecai\\Downloads\\my_database.db\" --location=\"C:\\Projets\\Evolve\\test\\Evolve.IntegrationTest\\SQLite\\Resources\\Sql_Scripts\\Migration\" --placeholder table4:table_4"
     }
   }
 }

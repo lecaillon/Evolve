@@ -1,61 +1,73 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Evolve.Configuration;
-using Evolve.Migration;
-
-namespace Evolve.Cli
+﻿namespace Evolve.Cli
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Data.SqlClient;
+    using System.Data.SQLite;
+    using System.Linq;
+    using Cassandra.Data;
+    using Dialect;
+    using Migration;
+    using MySql.Data.MySqlClient;
+    using Npgsql;
+
     internal static class EvolveFactory
     {
-        public static Evolve Build(Options options)
+        public static Evolve Build(Program options, Action<string> logInfoDelegate = null)
         {
-            var evolve = new Evolve(logInfoDelegate: Console.WriteLine)
+            IDbConnection cnn = null;
+
+            switch (options.Database)
             {
-                Command = MapToCommandOptions(options.Command),
-                CommandTimeout = options.CommandTimeout,
-                ConnectionString = options.ConnectionString,
-                Driver = options.Driver,
-                EnableClusterMode = !options.DisableClusterMode,
-                Encoding = ParseEncoding(options.Encoding),
-                IsEraseDisabled = options.EraseDisabled,
+                case DBMS.MySQL:
+                    cnn = new MySqlConnection(options.ConnectionString);
+                    break;
+                case DBMS.MariaDB:
+                    cnn = new MySqlConnection(options.ConnectionString);
+                    break;
+                case DBMS.PostgreSQL:
+                    cnn = new NpgsqlConnection(options.ConnectionString);
+                    break;
+                case DBMS.SQLite:
+                    cnn = new SQLiteConnection(options.ConnectionString);
+                    break;
+                case DBMS.SQLServer:
+                    cnn = new SqlConnection(options.ConnectionString);
+                    break;
+                case DBMS.Cassandra:
+                    cnn = new CqlConnection(options.ConnectionString);
+                    break;
+                default:
+                    break;
+            }
+
+            var evolve = new Evolve(cnn, logInfoDelegate)
+            {
+                Command = options.Command,
                 Locations = options.Locations,
+                Schemas = options.Schemas,
+                MetadataTableSchema = options.MetadataTableSchema,
                 MetadataTableName = options.MetadataTableName,
-                OutOfOrder = options.OutOfOrder,
-                SqlMigrationSuffix = options.ScriptsSuffix,
-                PlaceholderPrefix = options.PlaceholderPrefix,
-                PlaceholderSuffix = options.PlaceholderSuffix,
-                Placeholders = MapPlaceholders(options.Placeholders, options.PlaceholderPrefix, options.PlaceholderSuffix),
-                SqlMigrationPrefix = options.MigrationScriptsPrefix,
-                SqlMigrationSeparator = options.MigrationScriptsSeparator,
-                StartVersion = ParseVersion(options.StartVersion, MigrationVersion.MinVersion),
-                TargetVersion = ParseVersion(options.TargetVersion, MigrationVersion.MaxVersion)
+                TargetVersion = ParseVersion(options.TargetVersion, MigrationVersion.MaxVersion),
+                SqlMigrationSuffix = options.ScriptsSuffix
             };
 
-            switch (options)
+            if (options.Placeholders != null)
             {
-                case SqlOptions sqlOptions:
-                    evolve.MetadataTableSchema = sqlOptions.MetadataTableSchema;
-                    evolve.Schemas = sqlOptions.Schemas;
-                    break;
-                case CassandraOptions cassandraOptions:
-                    evolve.MetadataTableSchema = cassandraOptions.MetadataTableKeyspace;
-                    evolve.Locations = cassandraOptions.Locations;
-                    evolve.Schemas = cassandraOptions.Keyspaces;
-                    evolve.IsEraseDisabled = cassandraOptions.EraseDisabled;
-                    evolve.MustEraseOnValidationError = cassandraOptions.EraseOnValidationError;
-                    evolve.SqlMigrationSuffix = cassandraOptions.ScriptsSuffix;
-                    break;
+                evolve.Placeholders = MapPlaceholders(options.Placeholders, "${", "}");
+            }
+
+            if (options.Database == DBMS.Cassandra)
+            {
+                evolve.Schemas = options.Keyspaces;
+                evolve.MetadataTableSchema = options.MetadataTableKeyspace;
             }
 
             return evolve;
         }
 
-        private static MigrationVersion ParseVersion(string version, MigrationVersion defaultIfEmpty) =>
-            !string.IsNullOrEmpty(version) ? new MigrationVersion(version) : defaultIfEmpty;
-
-        private static Dictionary<string, string> MapPlaceholders(IEnumerable<string> placeholders, string prefix, string suffix)
+        private static Dictionary<string, string> MapPlaceholders(string[] placeholders, string prefix, string suffix)
         {
             try
             {
@@ -63,35 +75,11 @@ namespace Evolve.Cli
             }
             catch
             {
-                throw new EvolveConfigurationException("Error parsing --placeholders. Format is \"key:value\"");
+                throw new EvolveConfigurationException("Error parsing --placeholder. Format is \"key:value\"");
             }
         }
 
-        private static Encoding ParseEncoding(string encoding)
-        {
-            try
-            {
-                return Encoding.GetEncoding(encoding);
-            }
-            catch
-            {
-                return Encoding.UTF8;
-            }
-        }
-
-        private static CommandOptions MapToCommandOptions(Command command)
-        {
-            switch (command)
-            {
-                case Command.migrate:
-                    return CommandOptions.Migrate;
-                case Command.erase:
-                    return CommandOptions.Erase;
-                case Command.repair:
-                    return CommandOptions.Repair;
-                default:
-                    return CommandOptions.DoNothing;
-            }
-        }
+        private static MigrationVersion ParseVersion(string version, MigrationVersion defaultIfEmpty) =>
+            !string.IsNullOrEmpty(version) ? new MigrationVersion(version) : defaultIfEmpty;
     }
 }

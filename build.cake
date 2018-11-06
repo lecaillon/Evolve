@@ -1,219 +1,90 @@
-#tool "nuget:?package=ILRepack"
-
 ///////////////////////////////////////////////////////////////////////////////
 // ARGUMENTS
 ///////////////////////////////////////////////////////////////////////////////
 
-var target = Argument("target", "Default");
+var target = Argument("target", "default");
 var configuration = Argument("configuration", "Release");
-var sln = GetFiles("./Evolve.sln").First();
-var slnTest = GetFiles("./Evolve.Test.Package.sln").First();
-var distDir = MakeAbsolute(Directory("./dist"));
-var version = XmlPeek(File("./build/common.props"), "/Project/PropertyGroup/PackageVersion/text()");
-var envHome = Environment.GetEnvironmentVariable("USERPROFILE") ?? Environment.GetEnvironmentVariable("HOME");
-var buildRunsInAppVeyor = Environment.GetEnvironmentVariable("APPVEYOR") == "True";
-var buildRunsInTravisCI = Environment.GetEnvironmentVariable("TRAVIS") == "true";
+var version = Argument("productversion", "2.0.0");
 
-///////////////////////////////////////////////////////////////////////////////
-// SETUP / TEARDOWN
-///////////////////////////////////////////////////////////////////////////////
-
-Setup(ctx => 
-{ 
-    Information($"Building Evolve {version}");
-    if(IsRunningOnWindows())
-    { // AppVeyor
-        Environment.SetEnvironmentVariable("PG_PORT", "5432");
-        Environment.SetEnvironmentVariable("MYSQL_PORT", "3306");
-    }
-    else
-    { // Travis CI
-        Environment.SetEnvironmentVariable("PG_PORT", "5433");
-        Environment.SetEnvironmentVariable("MYSQL_PORT", "3307");
-    }
-});
+var sln = "./Evolve.sln";
+var distDir = "./dist";
+var publishDir = "./publish";
+var winWarpPacker = "./warp/windows-x64.warp-packer.exe";
+var linuxWarpPacker = "./warp/linux-x64.warp-packer";
+var framework = "netcoreapp2.1";
 
 ///////////////////////////////////////////////////////////////////////////////
 // TASKS
 ///////////////////////////////////////////////////////////////////////////////
 
-Task("Clean").Does(() =>
+Task("clean").Does(() =>
 { 
-    CleanDirectory($@"{envHome}/.nuget/packages/evolve/{version}");
+    CleanDirectories(distDir);
+    CleanDirectories(publishDir);
+    CleanDirectories($"./**/obj/{framework}");
+    CleanDirectories(string.Format("./**/obj/{0}", configuration));
+    CleanDirectories(string.Format("./**/bin/{0}", configuration));
 });
 
-Task("Restore").Does(() =>
+Task("build").Does(() =>
 {
-    if(IsRunningOnWindows()) NuGetRestore(sln);
-    DotNetCoreRestore(sln.ToString());
-});
-
-Task("Build").WithCriteria(() => IsRunningOnWindows()).Does(() =>
-{
-    MSBuild(sln, settings => settings.SetConfiguration(configuration)
-                                     .SetVerbosity(Verbosity.Minimal));
-});
-
-Task("Test").WithCriteria(() => IsRunningOnWindows()).Does(() =>
-{
-    foreach(var project in GetFiles("./test/**/Evolve.*Test*.csproj").Where(x => !x.GetFilename().FullPath.Contains("Core"))
-                                                                     .Where(x => !x.GetFilename().FullPath.Contains("Utilities"))
-                                                                     .OrderBy(x => x.GetFilename().ToString())) // integrationTest first !
+    DotNetCoreBuild(sln, new DotNetCoreBuildSettings
     {
-        DotNetCoreTest(project.FullPath, new DotNetCoreTestSettings 
-        {
-            Configuration = configuration,
-            NoBuild = true,
-            ArgumentCustomization = args => args.Append($"--no-restore --filter \"Category!=Standalone\""),
-        });
-
-        DotNetCoreTest(project.FullPath, new DotNetCoreTestSettings 
-        {
-            Configuration = configuration,
-            NoBuild = true,
-            ArgumentCustomization = args => args.Append($"--no-restore --filter \"Category=Standalone\""), // standalone tests !
-        });
-    }
+        Configuration = configuration, 
+        ArgumentCustomization = args => args.Append($"/p:Version={version}")
+    });
 });
 
-Task("Test Core").Does(() =>
+Task("test").Does(() =>
 {
-    foreach(var project in GetFiles("./test/**/Evolve.Core*.Test.Resources.SupportedDrivers.csproj"))
-    {
-        DotNetCoreBuild(project.FullPath, new DotNetCoreBuildSettings 
-        {
-            Configuration = configuration,
-            ArgumentCustomization = args => args.Append($"--no-restore"),
-        });
-    }
-
-    foreach(var project in GetFiles("./test/**/Evolve.Core*.Test*.csproj").Where(x => !x.GetFilename().FullPath.Contains("Resources")))
-    {
-        DotNetCoreTest(project.FullPath, new DotNetCoreTestSettings 
-        {
-            Configuration = configuration,
-            NoBuild = IsRunningOnWindows(),
-            ArgumentCustomization = args => args.Append($"--no-restore --filter \"Category!=Standalone\""),
-        });
-    }
-});
-
-Task("Pack").Does(() => 
-{
-    var settings = new NuGetPackSettings
-    {
-        OutputDirectory = distDir.FullPath,
-        Version = version,
-        Properties = new Dictionary<string, string> 
-        {
-            { "Configuration", configuration }
-        }
-    };
-
-    if (IsRunningOnWindows())
-    {
-        NuGetPack("./src/Evolve/Evolve.nuspec", settings);
-    }
-    else
-    {
-        NuGetPack("./src/Evolve/Evolve-Core.nuspec", settings);
-    }
-});
-
-Task("PackCli").WithCriteria(() => IsRunningOnWindows()).Does(() =>
-{
-    var assemblies = GetFiles("./src/Evolve.Cli/bin/Release/net452/*.dll");
-    ILRepack("./dist/Evolve.exe", "./src/Evolve.Cli/bin/Release/net452/Evolve.Cli.exe", assemblies);
-});
-
-Task("Test CLI").Does(() =>
-{
-    DotNetCoreTest("./test-cli/Evolve.Cli.IntegrationTest/Evolve.Cli.IntegrationTest.csproj", new DotNetCoreTestSettings 
+    DotNetCoreTest("./test/Evolve.Tests", new DotNetCoreTestSettings
     {
         Configuration = configuration,
-		ArgumentCustomization = args => args.Append("--no-restore"),
+        NoRestore = true,
+        NoBuild = true
     });
 });
 
-Task("Restore Test-Package").Does(() =>
+Task("win-publish").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 {
-    foreach(var file in GetFiles("./test-package/**/packages.config"))
+    DotNetCorePublish("./src/Evolve.Cli", new DotNetCorePublishSettings
     {
-        XmlPoke(file, "/packages/package[@id = 'Evolve']/@version", version);
-    }
-  
-    var feed = new 
-    {
-        Name = "Localhost",
-        Source = IsRunningOnWindows() ? distDir.FullPath.Replace('/', '\\') : distDir.FullPath
-    };
-
-    if (!NuGetHasSource(feed.Source))
-    {
-        NuGetAddSource(feed.Name, feed.Source);
-    }
-
-    if(IsRunningOnWindows()) NuGetRestore(slnTest);
-    DotNetCoreRestore(slnTest.ToString(), new DotNetCoreRestoreSettings
-    {
-        Sources = new[] { "https://api.nuget.org/v3/index.json", feed.Source }
+        Configuration = configuration,
+        OutputDirectory = publishDir + "/cli/win-x64",
+        Runtime = "win-x64",
+        ArgumentCustomization = args => args.Append($"/p:Version={version}")
     });
-
-    if (!NuGetHasSource(feed.Source))
-    {
-        NuGetRemoveSource(feed.Name, feed.Source);
-    }
 });
 
-Task("Build Test-Package").WithCriteria(() => IsRunningOnWindows()).Does(() =>
+Task("win-warp").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 {
-    MSBuild(slnTest, settings => settings.SetConfiguration(buildRunsInAppVeyor ? "AppVeyor" : configuration) // AppVeyor does not support Cassandra yet
-                                         .SetVerbosity(Verbosity.Minimal));
+    StartProcess(winWarpPacker, new ProcessSettings().WithArguments
+    (
+        args => args.Append($"--arch windows-x64")
+                    .Append($"--input_dir {publishDir}/cli/win-x64")
+                    .Append($"--exec Evolve.Cli.exe")
+                    .Append($"--output {distDir}/evolve.exe")
+    ));
 });
 
-Task("Build Test-Package Core").Does(() =>
+Task("pack-evolve").Does(() =>
 {
-    foreach(var project in GetFiles("./test-package/**/Evolve.*Core*.Test.csproj").Where(x => !buildRunsInAppVeyor || !x.GetFilename().FullPath.Contains("Cassandra"))
-                                                                                  .Where(x => !x.GetFilename().FullPath.Contains("Cassandra")))  // Travis CI: SocketException 'Connection timed out'
+    DotNetCorePack("./src/Evolve", new DotNetCorePackSettings 
     {
-        DotNetCoreBuild(project.FullPath, new DotNetCoreBuildSettings 
-        {
-            Configuration = configuration,
-            ArgumentCustomization = args => args.Append($"--no-restore"),
-        });
-    }
+        Configuration = configuration,
+        NoRestore = true,
+        NoBuild = true,
+        OutputDirectory = distDir,
+        ArgumentCustomization = args => args.Append($"/p:Version={version}")
+    });
 });
 
-Task("Default")
-    .IsDependentOn("Clean")
-    .IsDependentOn("Restore")
-    .IsDependentOn("Build")
-    .IsDependentOn("Test")
-    .IsDependentOn("Test Core")
-    .IsDependentOn("Pack")
-    .IsDependentOn("PackCli")
-    .IsDependentOn("Restore Test-Package")
-    .IsDependentOn("Build Test-Package")
-    .IsDependentOn("Build Test-Package Core")
-	.IsDependentOn("Test CLI");
-
-Task("BuildOnly")
-    .IsDependentOn("Clean")
-    .IsDependentOn("Restore")
-    .IsDependentOn("Build")
-    .IsDependentOn("Pack")
-    .IsDependentOn("PackCli");
-
-Task("Test-Package")
-    .IsDependentOn("Restore Test-Package")
-    .IsDependentOn("Build Test-Package")
-    .IsDependentOn("Build Test-Package Core");
-
-Task("TestsOnly")
-    .IsDependentOn("Clean")
-    .IsDependentOn("Restore")
-    .IsDependentOn("Build")
-    .IsDependentOn("Test")
-    .IsDependentOn("Test Core");
+Task("default")
+    .IsDependentOn("clean")
+    .IsDependentOn("build")
+    .IsDependentOn("test")
+    .IsDependentOn("win-publish")
+    .IsDependentOn("win-warp")
+    .IsDependentOn("pack-evolve");
 
 RunTarget(target);

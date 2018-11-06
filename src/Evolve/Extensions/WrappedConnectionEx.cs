@@ -9,7 +9,7 @@ namespace Evolve
 {
     public static class WrappedConnectionEx
     {
-        private const string DBMSNotSUpported = "Connection to this DBMS is not supported.";
+        private const string DBMSNotSupported = "Connection to this DBMS is not supported.";
 
         public static DBMS GetDatabaseServerType(this WrappedConnection wrappedConnection)
         {
@@ -20,7 +20,7 @@ namespace Evolve
                 dbVersion = QueryForString(wrappedConnection, "SHOW VARIABLES LIKE '%version%';");
                 if (!dbVersion.IsNullOrWhiteSpace())
                 {
-                    return DBMS.MySQL_MariaDB;
+                    return DBMS.MySQL;
                 }
             }
             catch { }
@@ -63,7 +63,7 @@ namespace Evolve
             }
             catch { }
 
-            throw new EvolveException(DBMSNotSUpported);
+            throw new EvolveException(DBMSNotSupported);
         }
 
         public static bool TryBeginTransaction(this WrappedConnection wrappedConnection)

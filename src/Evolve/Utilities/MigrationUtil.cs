@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace Evolve.Utilities
 {
@@ -32,7 +30,7 @@ namespace Evolve.Utilities
 
             version = new string(migrationName.Take(indexOfSeparator).ToArray());
             description = migrationName.Substring(indexOfSeparator + separator.Length)
-                                              .Replace("_", " ");
+                                       .Replace("_", " ");
 
             // Check version
             if (version.IsNullOrWhiteSpace())

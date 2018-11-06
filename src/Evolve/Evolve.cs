@@ -74,20 +74,12 @@ namespace Evolve
 
         #region Fields
 
-        private string _configurationPath;
         private IDbConnection _userDbConnection;
         private IMigrationLoader _loader = new FileMigrationLoader();
         private Action<string> _logInfoDelegate;
-        private string _environmentName;
         private readonly string _depsFile = "";
-#if NETCORE || NET45
-        private readonly string _nugetPackageDir;
-        private readonly string _msBuildExtensionsPath;
-#endif
 
         #endregion
-
-        #region Constructors
 
         /// <summary>
         ///     <para>
@@ -99,82 +91,11 @@ namespace Evolve
         /// </summary>
         /// <param name="dbConnection"> Optional database connection. </param>
         /// <param name="logInfoDelegate"> Optional logger. </param>
-        public Evolve(IDbConnection dbConnection = null,
-                      Action<string> logInfoDelegate = null)
+        public Evolve(IDbConnection dbConnection, Action<string> logInfoDelegate = null)
         {
             _userDbConnection = dbConnection;
             _logInfoDelegate = logInfoDelegate ?? new Action<string>((msg) => { });
         }
-
-        /// <summary>
-        ///     <para>
-        ///         Initializes a new instance of a <see cref="Evolve"/> with the given <paramref name="evolveConfigurationPath"/>.
-        ///     </para>
-        ///     <para>
-        ///         This constructor is used to evolve .NET projects.
-        ///     </para>
-        /// </summary>
-        /// <param name="evolveConfigurationPath"> Evolve configuration file (can be relative). </param>
-        /// <param name="dbConnection"> Optional database connection. </param>
-        /// <param name="logInfoDelegate"> Optional logger. </param>
-        /// <param name="environmentName"> The environment is typically set to one of Development, Staging, or Production. Optional. </param>
-        public Evolve(string evolveConfigurationPath,
-                      IDbConnection dbConnection = null,
-                      Action<string> logInfoDelegate = null,
-                      string environmentName = "")
-        {
-            _configurationPath = Check.FileExists(ResolveConfigurationFileLocation(evolveConfigurationPath), nameof(evolveConfigurationPath));
-            _userDbConnection = dbConnection;
-            _logInfoDelegate = logInfoDelegate ?? new Action<string>((msg) => { });
-            _environmentName = environmentName;
-
-            // Configure Evolve
-            var configurationProvider = ConfigurationFactoryProvider.GetProvider(evolveConfigurationPath);
-            configurationProvider.Configure(evolveConfigurationPath, this, environmentName);
-        }
-
-#if NETCORE || NET45
-
-        /// <summary>
-        ///     <para>
-        ///         Initializes a new instance of a <see cref="Evolve"/> with the given 
-        ///         <paramref name="evolveConfigurationPath"/>, <paramref name="depsFile"/> and <paramref name="nugetPackageDir"/>
-        ///     </para>
-        ///     <para>
-        ///         This constructor is used to evolve .NET Standard/Core projects.
-        ///     </para>
-        /// </summary>
-        /// <param name="evolveConfigurationPath"> Evolve configuration file (can be relative). </param>
-        /// <param name="depsFile"> Dependency file of the project to migrate (can be relative). </param>
-        /// <param name="nugetPackageDir"> Path to the NuGet package folder. </param>
-        /// <param name="msBuildExtensionsPath"> Path to the MSBuild extension folder, used by Evolve when loading .NET Core 2 driver via .NET MSBuild. </param>
-        /// <param name="dbConnection"> Optional database connection. </param>
-        /// <param name="logInfoDelegate"> Optional logger. </param>
-        /// <param name="environmentName"> The environment is typically set to one of Development, Staging, or Production. Optional. </param>
-        public Evolve(string evolveConfigurationPath,
-                      string depsFile,
-                      string nugetPackageDir,
-                      string msBuildExtensionsPath = null,
-                      IDbConnection dbConnection = null,
-                      Action<string> logInfoDelegate = null,
-                      string environmentName = "")
-        {
-            _configurationPath = Check.FileExists(ResolveConfigurationFileLocation(evolveConfigurationPath), nameof(evolveConfigurationPath));
-            _depsFile = Check.FileExists(ResolveConfigurationFileLocation(depsFile), nameof(depsFile));
-            _nugetPackageDir = Check.DirectoryExists(nugetPackageDir, nameof(nugetPackageDir));
-            _msBuildExtensionsPath = msBuildExtensionsPath;
-            _userDbConnection = dbConnection;
-            _logInfoDelegate = logInfoDelegate ?? new Action<string>((msg) => { });
-            _environmentName = environmentName;
-
-            // Configure Evolve
-            var configurationProvider = ConfigurationFactoryProvider.GetProvider(evolveConfigurationPath);
-            configurationProvider.Configure(evolveConfigurationPath, this, environmentName);
-        }
-
-#endif
-
-        #endregion
 
         #region IEvolveConfiguration
 
@@ -514,22 +435,7 @@ namespace Evolve
 
         private IConnectionProvider GetConnectionProvider()
         {
-            if (_userDbConnection != null)
-            {
-                return new ConnectionProvider(_userDbConnection);
-            }
-
-#if NETCORE
-            return new CoreDriverConnectionProvider(Driver, ConnectionString, _depsFile, _nugetPackageDir);
-#else
-#if NET45
-            if(IsDotNetStandardProject)
-            {
-                return new CoreDriverConnectionProviderForNet(Driver, ConnectionString, _depsFile, _nugetPackageDir, _msBuildExtensionsPath);
-            }
-#endif
-            return new DriverConnectionProvider(Driver, ConnectionString);
-#endif
+            return new ConnectionProvider(_userDbConnection);
         }
 
         private void WaitForApplicationLock(DatabaseHelper db)

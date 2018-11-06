@@ -1,7 +1,0 @@
-﻿{
-  "Evolve.Driver": "Microsoft.Data.Sqlite",
-  "Evolve.ConnectionString": "Data Source=C:\\Windows\\Temp\\mydb.dev.db;", // "Data Source=:memory:"
-  "Evolve.Locations": "db",
-  "Evolve.Command": "migrate",
-  "Evolve.Placeholder.table4": "table_4"
-}

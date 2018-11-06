@@ -1,6 +1,0 @@
-﻿{
-  "Evolve.Driver": "Microsoft.Data.Sqlite",
-  "Evolve.ConnectionString": "Data Source=:memory:",
-  "Evolve.Locations": "scripts",
-  "Evolve.Command": "erase"
-}
