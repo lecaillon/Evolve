@@ -6,6 +6,7 @@
     using System.Data.SqlClient;
     using System.Data.SQLite;
     using System.Linq;
+    using System.Text;
     using Cassandra.Data;
     using Dialect;
     using Migration;
@@ -16,32 +17,7 @@
     {
         public static Evolve Build(Program options, Action<string> logInfoDelegate = null)
         {
-            IDbConnection cnn = null;
-
-            switch (options.Database)
-            {
-                case DBMS.MySQL:
-                    cnn = new MySqlConnection(options.ConnectionString);
-                    break;
-                case DBMS.MariaDB:
-                    cnn = new MySqlConnection(options.ConnectionString);
-                    break;
-                case DBMS.PostgreSQL:
-                    cnn = new NpgsqlConnection(options.ConnectionString);
-                    break;
-                case DBMS.SQLite:
-                    cnn = new SQLiteConnection(options.ConnectionString);
-                    break;
-                case DBMS.SQLServer:
-                    cnn = new SqlConnection(options.ConnectionString);
-                    break;
-                case DBMS.Cassandra:
-                    cnn = new CqlConnection(options.ConnectionString);
-                    break;
-                default:
-                    break;
-            }
-
+            var cnn = CreateConnection(options.Database, options.ConnectionString);
             var evolve = new Evolve(cnn, logInfoDelegate)
             {
                 Command = options.Command,
@@ -49,13 +25,24 @@
                 Schemas = options.Schemas,
                 MetadataTableSchema = options.MetadataTableSchema,
                 MetadataTableName = options.MetadataTableName,
+                StartVersion = ParseVersion(options.StartVersion, MigrationVersion.MinVersion),
                 TargetVersion = ParseVersion(options.TargetVersion, MigrationVersion.MaxVersion),
-                SqlMigrationSuffix = options.ScriptsSuffix
+                SqlMigrationPrefix = options.ScriptsPrefix,
+                SqlMigrationSuffix = options.ScriptsSuffix,
+                SqlMigrationSeparator = options.ScriptsSeparator,
+                PlaceholderPrefix = options.PlaceholderPrefix,
+                PlaceholderSuffix = options.PlaceholderSuffix,
+                Encoding = ParseEncoding(options.Encoding),
+                CommandTimeout = options.CommandTimeout,
+                OutOfOrder = options.OutOfOrder,
+                IsEraseDisabled = options.EraseDisabled,
+                MustEraseOnValidationError = options.EraseOnValidationError,
+                EnableClusterMode = !options.DisableClusterMode
             };
 
             if (options.Placeholders != null)
             {
-                evolve.Placeholders = MapPlaceholders(options.Placeholders, "${", "}");
+                evolve.Placeholders = MapPlaceholders(options.Placeholders, options.PlaceholderPrefix, options.PlaceholderSuffix);
             }
 
             if (options.Database == DBMS.Cassandra)
@@ -65,6 +52,37 @@
             }
 
             return evolve;
+        }
+
+        private static IDbConnection CreateConnection(DBMS database, string cnnStr)
+        {
+            IDbConnection cnn = null;
+
+            switch (database)
+            {
+                case DBMS.MySQL:
+                    cnn = new MySqlConnection(cnnStr);
+                    break;
+                case DBMS.MariaDB:
+                    cnn = new MySqlConnection(cnnStr);
+                    break;
+                case DBMS.PostgreSQL:
+                    cnn = new NpgsqlConnection(cnnStr);
+                    break;
+                case DBMS.SQLite:
+                    cnn = new SQLiteConnection(cnnStr);
+                    break;
+                case DBMS.SQLServer:
+                    cnn = new SqlConnection(cnnStr);
+                    break;
+                case DBMS.Cassandra:
+                    cnn = new CqlConnection(cnnStr);
+                    break;
+                default:
+                    break;
+            }
+
+            return cnn;
         }
 
         private static Dictionary<string, string> MapPlaceholders(string[] placeholders, string prefix, string suffix)
@@ -81,5 +99,17 @@
 
         private static MigrationVersion ParseVersion(string version, MigrationVersion defaultIfEmpty) =>
             !string.IsNullOrEmpty(version) ? new MigrationVersion(version) : defaultIfEmpty;
+
+        private static Encoding ParseEncoding(string encoding)
+        {
+            try
+            {
+                return Encoding.GetEncoding(encoding);
+            }
+            catch
+            {
+                return Encoding.UTF8;
+            }
+        }
     }
 }
