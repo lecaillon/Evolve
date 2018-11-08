@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Evolve</id>
+    <authors>Philippe Lécaillon</authors>
+    <owners>Philippe Lécaillon</owners>
+    <summary>Database migration tool for .NET. Inspired by Flyway.</summary>
+    <description>Evolve is an easy migration tool that uses plain old sql scripts. Its purpose is to automate your database changes, and help keep those changes synchronized through all your environments and developpement teams.
+Every time you build your project, it will automatically ensure that your database is up-to-date, without having to do anything other than build. Install it and forget it !</description>
+    <copyright>Copyright © P.Lécaillon 2018</copyright>
+    <licenseUrl>https://github.com/lecaillon/Evolve/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://evolve-db.netlify.com</projectUrl>
+    <repository type="git" url="https://github.com/lecaillon/Evolve.git" />
+    <iconUrl>https://github.com/lecaillon/Evolve/raw/master/logo128.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <releaseNotes></releaseNotes>
+    <tags>Evolve Flyway sql database migration database-migration continuous-integration continuous-delivery</tags>
+    <dependencies>
+      <group targetFramework="net35">
+        <dependency id="Newtonsoft.Json" version="11.0.2" />
+      </group>
+      <group targetFramework="net461">
+        <dependency id="Newtonsoft.Json" version="11.0.2" />
+      </group>
+      <group targetFramework="netstandard1.6">
+        <dependency id="Newtonsoft.Json" version="11.0.2" />
+        <dependency id="System.Data.Common" version="4.3.0" />
+        <dependency id="System.Threading.Thread" version="4.3.0" />
+      </group>
+      <group targetFramework="netstandard2.0">
+        <dependency id="Newtonsoft.Json" version="11.0.2" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="bin\Release\net35\Evolve.dll" target="lib\net35" />
+    <file src="bin\Release\net35\Evolve.pdb" target="lib\net35" />
+    <file src="bin\Release\net461\Evolve.dll" target="lib\net461" />
+    <file src="bin\Release\net461\Evolve.pdb" target="lib\net461" />
+    <file src="bin\Release\netstandard1.6\Evolve.dll" target="lib\netstandard1.6" />
+    <file src="bin\Release\netstandard1.6\Evolve.pdb" target="lib\netstandard1.6" />
+    <file src="bin\Release\netstandard2.0\Evolve.dll" target="lib\netstandard2.0" />
+    <file src="bin\Release\netstandard2.0\Evolve.pdb" target="lib\netstandard2.0" />
+  </files>
+</package>

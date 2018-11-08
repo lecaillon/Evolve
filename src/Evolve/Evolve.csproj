@@ -1,20 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <Version>2.0.0</Version>
-    <Authors>Philippe Lécaillon</Authors>
-    <summary>Database migration tool for .NET. Inspired by Flyway.</summary>
-    <Description>Evolve is an easy migration tool that uses plain old sql scripts. Its purpose is to automate your database changes, and help keep those changes synchronized through all your environments and developpement teams.
-Every time you build your project, it will automatically ensure that your database is up-to-date, without having to do anything other than build. Install it and forget it !</Description>
-    <Copyright>Copyright © P.Lécaillon 2018</Copyright>
-    <PackageLicenseUrl>https://github.com/lecaillon/Evolve/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>https://evolve-db.netlify.com/</PackageProjectUrl>
-    <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/lecaillon/Evolve.git</RepositoryUrl>
+    <TargetFrameworks>net35;net461;netstandard1.6;netstandard2.0</TargetFrameworks>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
-    <PackageTags>Evolve Flyway sql database migration database-migration continuous-integration continuous-delivery</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,4 +14,8 @@ Every time you build your project, it will automatically ensure that your databa
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.6'">
+    <PackageReference Include="System.Data.Common" Version="4.3.0" />
+    <PackageReference Include="System.Threading.Thread" Version="4.3.0" />
+  </ItemGroup>
 </Project>

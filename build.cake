@@ -26,11 +26,13 @@ Task("clean").Does(() =>
     CleanDirectories(string.Format("./**/bin/{0}", configuration));
 });
 
-Task("build").Does(() =>
+Task("build").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 {
-    DotNetCoreBuild(sln, new DotNetCoreBuildSettings
+    MSBuild(sln, new MSBuildSettings
     {
-        Configuration = configuration, 
+        Configuration = configuration,
+        Verbosity = Verbosity.Minimal,
+        Restore = true,
         ArgumentCustomization = args => args.Append($"/p:Version={version}")
     });
 });
@@ -69,13 +71,10 @@ Task("win-warp").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 
 Task("pack-evolve").Does(() =>
 {
-    DotNetCorePack("./src/Evolve", new DotNetCorePackSettings 
+    NuGetPack("./src/Evolve/Evolve.nuspec", new NuGetPackSettings 
     {
-        Configuration = configuration,
-        NoRestore = true,
-        NoBuild = true,
         OutputDirectory = distDir,
-        ArgumentCustomization = args => args.Append($"/p:Version={version}")
+        Version = version
     });
 });
 
