@@ -37,13 +37,22 @@ Task("clean").Does(() =>
     CleanDirectories(string.Format("./**/bin/{0}", configuration));
 });
 
-Task("build").WithCriteria(() => IsRunningOnWindows()).Does(() =>
+Task("win-build").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 {
     MSBuild(sln, new MSBuildSettings
     {
         Configuration = configuration,
         Verbosity = Verbosity.Minimal,
         Restore = true
+    });
+});
+
+Task("linux-build").WithCriteria(() => IsRunningOnUnix()).Does(() =>
+{
+    DotNetCoreBuild("./src/*", new DotNetCoreBuildSettings
+    {
+        Configuration = configuration,
+        Verbosity = Verbosity.Minimal
     });
 });
 
@@ -111,7 +120,7 @@ Task("linux-warp-cli").WithCriteria(() => IsRunningOnUnix()).Does(() =>
     ));
 });
 
-Task("pack-evolve").Does(() =>
+Task("pack-evolve").WithCriteria(() => IsRunningOnUnix()).Does(() =>
 {
     NuGetPack("./src/Evolve/Evolve.nuspec", new NuGetPackSettings 
     {
@@ -122,7 +131,8 @@ Task("pack-evolve").Does(() =>
 
 Task("default")
     .IsDependentOn("clean")
-    .IsDependentOn("build")
+    .IsDependentOn("win-build")
+    .IsDependentOn("linux-build")
     .IsDependentOn("test")
     .IsDependentOn("win-publish-cli")
     .IsDependentOn("win-warp-cli")
