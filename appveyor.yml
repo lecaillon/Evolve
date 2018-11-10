@@ -27,6 +27,7 @@ init:
 before_build:
 - cmd: SET PGUSER=postgres
 - cmd: SET PGPASSWORD=Password12!
+- cmd: SET MYSQL_PWD=Password12!
 - cmd: createdb my_database
 - cmd: mysql -e "create database my_database;" --user=root
 
