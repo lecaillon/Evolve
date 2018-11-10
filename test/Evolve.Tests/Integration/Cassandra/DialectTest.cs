@@ -11,26 +11,20 @@ using Xunit;
 
 namespace Evolve.Tests.Integration.Cassandra
 {
-    [Collection("Cassandra collection")]
     public class DialectTest
     {
-        private readonly CassandraFixture _cassandraContainer;
-
-        public DialectTest(CassandraFixture cassandraContainer)
-        {
-            _cassandraContainer = cassandraContainer;
-
-            if (TestContext.Local || TestContext.AzureDevOps)
-            {
-                cassandraContainer.Run(fromScratch: true);
-            }
-        }
-
-        [FactSkippedOnAppVeyor]
-        public void Run_all_Cassandra_integration_tests_work()
+        /// <summary>
+        ///     Second part of the integration test.
+        /// </summary>
+        /// <remarks>
+        ///     Due to some issues running 2 Cassandra containers, one after the other, 
+        ///     in the same test context, we merge the integration tests to only use one container.
+        ///     My guess, a possible Cassandra driver issue.
+        /// </remarks>
+        public static void Run_all_Cassandra_integration_tests_work(CassandraFixture cassandraContainer)
         {
             // Open a connection to Cassandra
-            var cnn = _cassandraContainer.CreateDbConnection();
+            var cnn = cassandraContainer.CreateDbConnection();
             cnn.Open();
             Assert.True(cnn.State == ConnectionState.Open, "Cannot open a connection to Cassandra.");
 
@@ -44,14 +38,14 @@ namespace Evolve.Tests.Integration.Cassandra
             var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.Cassandra, wcnn);
 
             // Create schema
-            string metadataKeyspaceName = "my_keyspace";
+            string metadataKeyspaceName = "my_keyspace_2";
             Schema metadataSchema = new CassandraKeyspace(metadataKeyspaceName, CassandraKeyspace.CreateSimpleStrategy(1), wcnn);
             Assert.False(metadataSchema.IsExists(), $"The schema [{metadataKeyspaceName}] should not already exist.");
             Assert.True(metadataSchema.Create(), $"Creation of the schema [{metadataKeyspaceName}] failed.");
             Assert.True(metadataSchema.IsExists(), $"The schema [{metadataKeyspaceName}] should be created.");
             Assert.True(metadataSchema.IsEmpty(), $"The schema [{metadataKeyspaceName}] should be empty.");
 
-            var s = db.GetSchema("my_keyspace");
+            var s = db.GetSchema(metadataKeyspaceName);
 
             // Get MetadataTable
             string metadataTableName = "evolve_change_log";

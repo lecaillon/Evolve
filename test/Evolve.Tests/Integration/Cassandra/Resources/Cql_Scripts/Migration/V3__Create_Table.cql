@@ -1,4 +1,4 @@
-﻿create table my_keyspace.my_other_table (
+﻿create table ${keyspace}.my_other_table (
 	id uuid,
 	timestamp_unixepoch_ticks bigint,
 	content text,

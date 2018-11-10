@@ -37,6 +37,8 @@ namespace Evolve.Tests.Cli.Win
         [Trait("Category", "Cli")]
         public void Erase_And_Migrate_Cassandra()
         {
+            string metadataKeyspaceName = "my_keyspace_3";
+
             foreach (var command in new[] { "erase", "migrate" })
             {
                 string stderr = RunCliExe(
@@ -44,7 +46,7 @@ namespace Evolve.Tests.Cli.Win
                     command: command,
                     cnxStr: _cassandraContainer.CnxStr,
                     location: TestContext.Cassandra.MigrationFolder,
-                    args: "--scripts-suffix .cql --keyspace my_keyspace --metadata-table-keyspace evolve_change_log");
+                    args: $"--scripts-suffix .cql -p keyspace:{metadataKeyspaceName} --keyspace {metadataKeyspaceName} --metadata-table-keyspace evolve_change_log");
 
                 Assert.True(stderr == string.Empty, stderr);
             }

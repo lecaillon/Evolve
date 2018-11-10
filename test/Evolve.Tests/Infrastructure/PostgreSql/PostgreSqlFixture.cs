@@ -12,7 +12,7 @@ namespace Evolve.Tests.Infrastructure
             // Extra margin before executing queries
             if (fromScratch)
             {
-                Thread.Sleep(TimeSpan.FromSeconds(2));
+                Thread.Sleep(TimeSpan.FromSeconds(3));
             }
         }
     }

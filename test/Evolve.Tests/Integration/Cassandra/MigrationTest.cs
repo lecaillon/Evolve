@@ -29,15 +29,17 @@ namespace Evolve.Tests.Integration.Cassandra
         }
 
         [FactSkippedOnAppVeyor]
-        public void Run_all_Cassandra_migrations_work()
+        public void Run_all_Cassandra_integration_tests_work()
         {
+            string metadataKeyspaceName = "my_keyspace_1"; // this name must also be declared in _evolve.cassandra.json
             var cnn = _cassandraContainer.CreateDbConnection();
             var evolve = new Evolve(cnn, msg => _output.WriteLine(msg))
             {
                 Locations = new List<string> { TestContext.Cassandra.MigrationFolder },
                 CommandTimeout = 25,
-                MetadataTableSchema = "my_keyspace",
+                MetadataTableSchema = metadataKeyspaceName,
                 MetadataTableName = "evolve_change_log",
+                Placeholders = new Dictionary<string, string> { ["${keyspace}"] = metadataKeyspaceName },
                 SqlMigrationSuffix = ".cql"
             };
 
@@ -125,6 +127,9 @@ namespace Evolve.Tests.Integration.Cassandra
             var ex = Assert.Throws<EvolveSqlException>(() => evolve.Migrate());
             Assert.Contains("Not enough replicas available for query at consistency", ex.Message);
             File.Delete(configurationFileName);
+
+            // Call the second part of the Cassandra integration tests
+            DialectTest.Run_all_Cassandra_integration_tests_work(_cassandraContainer);
         }
     }
 }

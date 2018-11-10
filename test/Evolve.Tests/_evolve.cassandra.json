@@ -4,7 +4,7 @@
     "defaultClusterLockTable": "my_lock_table"
   },
   "keyspaces": {
-    "my_keyspace": {
+    "my_keyspace_1": {
       "class": "NetworkTopologyStrategy",
       "dc1": "1"
     },
