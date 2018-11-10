@@ -8,7 +8,7 @@ namespace Evolve.Tests.Infrastructure
         public const string ExposedPort = "3306";
         public const string HostPort = "3306";
         public const string DbName = "my_database";
-        public const string DbPwd = "Password12!";
+        public static string DbPwd = TestContext.AzureDevOps ? "root" : "Password12!";
         public const string DbUser = "root";
 
         private DockerContainer _container;

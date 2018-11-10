@@ -19,7 +19,7 @@ namespace Evolve.Tests.Integration.MySQL
             _mySQLFixture = mySQLFixture;
             _output = output;
 
-            if (TestContext.Local || TestContext.AzureDevOps)
+            if (TestContext.Local)
             {
                 mySQLFixture.Run(fromScratch: true);
             }

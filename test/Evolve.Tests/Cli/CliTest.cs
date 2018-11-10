@@ -28,9 +28,12 @@ namespace Evolve.Tests.Cli
             if (TestContext.Local || TestContext.AzureDevOps)
             {
                 pgContainer.Run();
-                mySQLContainer.Run();
                 sqlServerContainer.Run();
                 cassandraContainer.Run();
+                if (TestContext.Local)
+                {
+                    mySQLContainer.Run();
+                }
             }
         }
 

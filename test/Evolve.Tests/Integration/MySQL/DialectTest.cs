@@ -20,7 +20,7 @@ namespace Evolve.Tests.Integration.MySQL
         {
             _mySQLContainer = mySQLContainer;
 
-            if (TestContext.Local || TestContext.AzureDevOps)
+            if (TestContext.Local)
             {
                 mySQLContainer.Run(fromScratch: true);
             }
