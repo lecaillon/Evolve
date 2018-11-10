@@ -52,7 +52,7 @@ Task("linux-build").WithCriteria(() => IsRunningOnUnix()).Does(() =>
     DotNetCoreBuild("./src/*", new DotNetCoreBuildSettings
     {
         Configuration = configuration,
-        Verbosity = Verbosity.Minimal
+        Verbosity = DotNetCoreVerbosity.Minimal
     });
 });
 
