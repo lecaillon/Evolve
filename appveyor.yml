@@ -25,6 +25,7 @@ init:
 
 # scripts to run before build
 before_build:
+- cmd: SET PGPASSWORD=Password12!
 - cmd: createdb my_database
 - cmd: mysql -e "create database my_database;" --user=root
 
