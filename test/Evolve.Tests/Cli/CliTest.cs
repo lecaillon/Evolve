@@ -34,7 +34,7 @@ namespace Evolve.Tests.Cli
             }
         }
 
-        [Fact]
+        [FactSkippedOnAppVeyor]
         [Trait("Category", "Cli")]
         public void Erase_And_Migrate_Cassandra()
         {
