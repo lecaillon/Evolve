@@ -4,7 +4,7 @@
 
 var target = Argument("target", "default");
 var configuration = Argument("configuration", "Release");
-var version = Argument("productversion", "2.0.0");
+var version = XmlPeek(File("./build/common.props"), "/Project/PropertyGroup/Version/text()");
 
 var sln = "./Evolve.sln";
 var distDir = "./dist";
@@ -12,6 +12,15 @@ var publishDir = "./publish";
 var winWarpPacker = "./warp/windows-x64.warp-packer.exe";
 var linuxWarpPacker = "./warp/linux-x64.warp-packer";
 var framework = "netcoreapp2.1";
+
+///////////////////////////////////////////////////////////////////////////////
+// SETUP / TEARDOWN
+///////////////////////////////////////////////////////////////////////////////
+
+Setup(ctx => 
+{ 
+    Information($"Building Evolve {version}");
+});
 
 ///////////////////////////////////////////////////////////////////////////////
 // TASKS
@@ -32,8 +41,7 @@ Task("build").WithCriteria(() => IsRunningOnWindows()).Does(() =>
     {
         Configuration = configuration,
         Verbosity = Verbosity.Minimal,
-        Restore = true,
-        ArgumentCustomization = args => args.Append($"/p:Version={version}")
+        Restore = true
     });
 });
 
@@ -65,8 +73,7 @@ Task("win-publish-cli").WithCriteria(() => IsRunningOnWindows()).Does(() =>
     {
         Configuration = configuration,
         OutputDirectory = publishDir + "/cli/win-x64",
-        Runtime = "win-x64",
-        ArgumentCustomization = args => args.Append($"/p:Version={version}")
+        Runtime = "win-x64"
     });
 });
 
@@ -76,8 +83,7 @@ Task("linux-publish-cli").WithCriteria(() => IsRunningOnUnix()).Does(() =>
     {
         Configuration = configuration,
         OutputDirectory = publishDir + "/cli/linux-x64",
-        Runtime = "linux-x64",
-        ArgumentCustomization = args => args.Append($"/p:Version={version}")
+        Runtime = "linux-x64"
     });
 });
 
