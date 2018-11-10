@@ -17,7 +17,7 @@ namespace Evolve.Tests.Infrastructure
 
             _container.Start(fromScratch);
 
-            if (typeof(T) == typeof(CassandraContainer))
+            if (typeof(T) == typeof(CassandraContainer) && fromScratch)
             {
                 Thread.Sleep(TimeSpan.FromSeconds(_container.TimeOutInSec));
             }

@@ -43,7 +43,19 @@ Task("test").Does(() =>
     {
         Configuration = configuration,
         NoRestore = true,
-        NoBuild = true
+        NoBuild = true,
+        ArgumentCustomization = args => args.AppendSwitchQuoted("--filter", "Category!=Cli")
+    });
+});
+
+Task("win-test-cli").Does(() =>
+{
+    DotNetCoreTest("./test/Evolve.Tests", new DotNetCoreTestSettings
+    {
+        Configuration = configuration,
+        NoRestore = true,
+        NoBuild = true,
+        ArgumentCustomization = args => args.AppendSwitchQuoted("--filter", "Category=Cli")
     });
 });
 
@@ -84,6 +96,7 @@ Task("default")
     .IsDependentOn("test")
     .IsDependentOn("win-publish")
     .IsDependentOn("win-warp")
+    .IsDependentOn("win-test-cli")
     .IsDependentOn("pack-evolve");
 
 RunTarget(target);

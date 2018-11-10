@@ -10,7 +10,7 @@
     <PackageReference Include="CassandraCSharpDriver" Version="3.6.0" />
     <PackageReference Include="Docker.DotNet" Version="3.125.2" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
-    <PackageReference Include="MySqlConnector" Version="0.46.2" />
+    <PackageReference Include="MySqlConnector" Version="0.47.1" />
     <PackageReference Include="Npgsql" Version="4.0.3" />
     <PackageReference Include="System.Data.SqlClient" Version="4.5.1" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.109.2" />

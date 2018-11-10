@@ -1,5 +1,6 @@
 ﻿namespace Evolve.Cli
 {
+    using System;
     using System.ComponentModel.DataAnnotations;
     using Configuration;
     using Dialect;
@@ -11,10 +12,18 @@
 
         private int OnExecute(CommandLineApplication app, IConsole console)
         {
-            var evolve = EvolveFactory.Build(this, msg => console.WriteLine(msg));
-            evolve.ExecuteCommand();
-
-            return 1;
+            try
+            {
+                var evolve = EvolveFactory.Build(this, msg => console.WriteLine(msg));
+                evolve.ExecuteCommand();
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                Console.Error.WriteLine(ex);
+                return 1;
+            }
         }
 
         [Argument(0, Description = "postgresql | sqlite | sqlserver | mysql | mariadb | cassandra")]

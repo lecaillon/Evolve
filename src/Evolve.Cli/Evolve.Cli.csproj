@@ -14,7 +14,7 @@
     <PackageReference Include="ILLink.Tasks" Version="0.1.5-preview-1841731" />
     <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.2.5" />
     <PackageReference Include="Microsoft.Packaging.Tools.Trimming" Version="1.1.0-preview1-26619-01" />
-    <PackageReference Include="MySqlConnector" Version="0.46.2" />
+    <PackageReference Include="MySqlConnector" Version="0.47.1" />
     <PackageReference Include="Npgsql" Version="4.0.3" />
     <PackageReference Include="System.Data.SqlClient" Version="4.5.1" />
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.109.2" />

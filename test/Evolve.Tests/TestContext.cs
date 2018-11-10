@@ -12,6 +12,8 @@ namespace Evolve.Tests
         public static bool AppVeyor => Environment.GetEnvironmentVariable("APPVEYOR") == "True";
         public static bool AzureDevOps => Environment.GetEnvironmentVariable("TF_BUILD") == "True";
         public static bool Local => !AppVeyor && !AzureDevOps;
+        public static string DistFolder => Path.GetFullPath(Path.Combine(ProjectFolder, "../../../../../dist"));
+        public static string CliExe => Path.Combine(DistFolder, "evolve.exe");
         public static string ResourcesFolder => Path.Combine(ProjectFolder, "Resources");
         public static string CrLfScriptPath => Path.Combine(ResourcesFolder, "LF_CRLF/V2_3_1__Migration_description.sql");
         public static string LfScriptPath => Path.Combine(ResourcesFolder, "LF_CRLF/V2_3_2__Migration_description_lf.sql");
@@ -78,4 +80,10 @@ namespace Evolve.Tests
 
     [CollectionDefinition("SQLServer collection")]
     public class SQLServerCollection : IClassFixture<SQLServerFixture> { }
+
+    [CollectionDefinition("Database collection")]
+    public class DatabaseCollection : IClassFixture<MySQLFixture>,
+                                      IClassFixture<PostgreSqlFixture>,
+                                      IClassFixture<SQLServerFixture>,
+                                      IClassFixture<CassandraFixture> { }
 }
