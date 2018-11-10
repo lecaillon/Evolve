@@ -27,7 +27,9 @@ Setup(ctx =>
 ///////////////////////////////////////////////////////////////////////////////
 
 Task("clean").Does(() =>
-{ 
+{
+    CreateDirectory(distDir);
+    
     CleanDirectories(distDir);
     CleanDirectories(publishDir);
     CleanDirectories($"./**/obj/{framework}");
