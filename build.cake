@@ -49,7 +49,7 @@ Task("win-build").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 
 Task("linux-build").WithCriteria(() => IsRunningOnUnix()).Does(() =>
 {
-    DotNetCoreBuild("./src/*", new DotNetCoreBuildSettings
+    DotNetCoreBuild("./src/**/*", new DotNetCoreBuildSettings
     {
         Configuration = configuration,
         Verbosity = DotNetCoreVerbosity.Minimal
