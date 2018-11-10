@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using Evolve.Tests.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Evolve.Tests.Cli.Win
+namespace Evolve.Tests.Cli
 {
     [Collection("Database collection")]
-    public class WinCliTest
+    public class CliTest
     {
         private readonly PostgreSqlFixture _pgContainer;
         private readonly MySQLFixture _mySQLContainer;
@@ -16,7 +17,7 @@ namespace Evolve.Tests.Cli.Win
         private readonly CassandraFixture _cassandraContainer;
         private readonly ITestOutputHelper _output;
 
-        public WinCliTest(PostgreSqlFixture pgContainer, MySQLFixture mySQLContainer, SQLServerFixture sqlServerContainer, CassandraFixture cassandraContainer, ITestOutputHelper output)
+        public CliTest(PostgreSqlFixture pgContainer, MySQLFixture mySQLContainer, SQLServerFixture sqlServerContainer, CassandraFixture cassandraContainer, ITestOutputHelper output)
         {
             _pgContainer = pgContainer;
             _mySQLContainer = mySQLContainer;
@@ -41,7 +42,7 @@ namespace Evolve.Tests.Cli.Win
 
             foreach (var command in new[] { "erase", "migrate" })
             {
-                string stderr = RunCliExe(
+                string stderr = RunCli(
                     db: "cassandra",
                     command: command,
                     cnxStr: _cassandraContainer.CnxStr,
@@ -58,7 +59,7 @@ namespace Evolve.Tests.Cli.Win
         {
             foreach (var command in new[] { "erase", "migrate" })
             {
-                string stderr = RunCliExe(
+                string stderr = RunCli(
                     db: "mysql",
                     command: command,
                     cnxStr: _mySQLContainer.CnxStr,
@@ -75,7 +76,7 @@ namespace Evolve.Tests.Cli.Win
         {
             foreach (var command in new [] { "erase", "migrate" })
             {
-                string stderr = RunCliExe(
+                string stderr = RunCli(
                     db: "postgresql",
                     command: command,
                     cnxStr: _pgContainer.CnxStr,
@@ -92,7 +93,7 @@ namespace Evolve.Tests.Cli.Win
         {
             foreach (var command in new[] { "erase", "migrate" })
             {
-                string stderr = RunCliExe(
+                string stderr = RunCli(
                     db: "sqlserver",
                     command: command,
                     cnxStr: _sqlServerContainer.GetCnxStr("my_database_2"),
@@ -111,7 +112,7 @@ namespace Evolve.Tests.Cli.Win
 
             foreach (var command in new[] { "erase", "migrate" })
             {
-                string stderr = RunCliExe(
+                string stderr = RunCli(
                     db: "sqlite",
                     command: command,
                     cnxStr: sqliteCnxStr,
@@ -122,13 +123,13 @@ namespace Evolve.Tests.Cli.Win
             }
         }
 
-        private string RunCliExe(string db, string command, string cnxStr, string location, string args)
+        private string RunCli(string db, string command, string cnxStr, string location, string args)
         {
             var proc = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
-                    FileName = TestContext.CliExe,
+                    FileName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? TestContext.CliExe : TestContext.Cli,
                     Arguments = $"{db} {command} -c \"{cnxStr}\" -l {location} {args}",
                     UseShellExecute = false,
                     CreateNoWindow = true,

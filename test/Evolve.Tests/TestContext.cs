@@ -14,6 +14,7 @@ namespace Evolve.Tests
         public static bool Local => !AppVeyor && !AzureDevOps;
         public static string DistFolder => Path.GetFullPath(Path.Combine(ProjectFolder, "../../../../../dist"));
         public static string CliExe => Path.Combine(DistFolder, "evolve.exe");
+        public static string Cli => Path.Combine(DistFolder, "evolve");
         public static string ResourcesFolder => Path.Combine(ProjectFolder, "Resources");
         public static string CrLfScriptPath => Path.Combine(ResourcesFolder, "LF_CRLF/V2_3_1__Migration_description.sql");
         public static string LfScriptPath => Path.Combine(ResourcesFolder, "LF_CRLF/V2_3_2__Migration_description_lf.sql");

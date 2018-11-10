@@ -48,7 +48,7 @@ Task("test").Does(() =>
     });
 });
 
-Task("win-test-cli").Does(() =>
+Task("test-cli").Does(() =>
 {
     DotNetCoreTest("./test/Evolve.Tests", new DotNetCoreTestSettings
     {
@@ -59,7 +59,7 @@ Task("win-test-cli").Does(() =>
     });
 });
 
-Task("win-publish").WithCriteria(() => IsRunningOnWindows()).Does(() =>
+Task("win-publish-cli").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 {
     DotNetCorePublish("./src/Evolve.Cli", new DotNetCorePublishSettings
     {
@@ -70,7 +70,18 @@ Task("win-publish").WithCriteria(() => IsRunningOnWindows()).Does(() =>
     });
 });
 
-Task("win-warp").WithCriteria(() => IsRunningOnWindows()).Does(() =>
+Task("linux-publish-cli").WithCriteria(() => IsRunningOnUnix()).Does(() =>
+{
+    DotNetCorePublish("./src/Evolve.Cli", new DotNetCorePublishSettings
+    {
+        Configuration = configuration,
+        OutputDirectory = publishDir + "/cli/linux-x64",
+        Runtime = "linux-x64",
+        ArgumentCustomization = args => args.Append($"/p:Version={version}")
+    });
+});
+
+Task("win-warp-cli").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 {
     StartProcess(winWarpPacker, new ProcessSettings().WithArguments
     (
@@ -78,6 +89,17 @@ Task("win-warp").WithCriteria(() => IsRunningOnWindows()).Does(() =>
                     .Append($"--input_dir {publishDir}/cli/win-x64")
                     .Append($"--exec Evolve.Cli.exe")
                     .Append($"--output {distDir}/evolve.exe")
+    ));
+});
+
+Task("linux-warp-cli").WithCriteria(() => IsRunningOnUnix()).Does(() =>
+{
+    StartProcess(winWarpPacker, new ProcessSettings().WithArguments
+    (
+        args => args.Append($"--arch linux-x64")
+                    .Append($"--input_dir {publishDir}/cli/linux-x64")
+                    .Append($"--exec Evolve.Cli")
+                    .Append($"--output {distDir}/evolve")
     ));
 });
 
@@ -94,9 +116,11 @@ Task("default")
     .IsDependentOn("clean")
     .IsDependentOn("build")
     .IsDependentOn("test")
-    .IsDependentOn("win-publish")
-    .IsDependentOn("win-warp")
-    .IsDependentOn("win-test-cli")
+    .IsDependentOn("win-publish-cli")
+    .IsDependentOn("win-warp-cli")
+    .IsDependentOn("linux-publish-cli")
+    .IsDependentOn("linux-warp-cli")
+    .IsDependentOn("test-cli")
     .IsDependentOn("pack-evolve");
 
 RunTarget(target);
