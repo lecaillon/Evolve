@@ -30,7 +30,7 @@ namespace Evolve.Tests.Integration.SQLServer
             TestUtil.CreateSqlServerDatabase(DbName, _sqlServerContainer.GetCnxStr("master"));
         }
 
-        //[Fact]
+        [Fact]
         public void Run_all_SQLServer_migrations_work()
         {
             var cnn = new SqlConnection(_sqlServerContainer.GetCnxStr(DbName));
