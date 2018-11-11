@@ -31,7 +31,7 @@ namespace Evolve.Tests.Integration.SQLServer
             TestUtil.CreateSqlServerDatabase(DbName, _sqlServerContainer.GetCnxStr("master"));
         }
 
-        [Fact]
+        //[Fact]
         public void Run_all_SQLServer_integration_tests_work()
         {
             // Open a connection to the SQLServer database
