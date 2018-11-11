@@ -94,14 +94,15 @@ namespace Evolve.Tests.Cli
         [Trait("Category", "Cli")]
         public void Erase_And_Migrate_SQLServer()
         {
-            TestUtil.CreateSqlServerDatabase("my_database_3", _sqlServerContainer.GetCnxStr("master"));
+            string dbName = "my_database_3";
+            TestUtil.CreateSqlServerDatabase(dbName, _sqlServerContainer.GetCnxStr("master"));
 
             foreach (var command in new[] { "erase", "migrate" })
             {
                 string stderr = RunCli(
                     db: "sqlserver",
                     command: command,
-                    cnxStr: _sqlServerContainer.GetCnxStr("my_database_2"),
+                    cnxStr: _sqlServerContainer.GetCnxStr(dbName),
                     location: TestContext.SqlServer.MigrationFolder,
                     args: "-p db:my_database_2 -p schema2:dbo --target-version 8_9");
 
