@@ -28,7 +28,7 @@ namespace Evolve.Tests.Integration.Cassandra
             }
         }
 
-        //[FactSkippedOnAppVeyor]
+        [FactSkippedOnAppVeyor]
         public void Run_all_Cassandra_integration_tests_work()
         {
             string metadataKeyspaceName = "my_keyspace_1"; // this name must also be declared in _evolve.cassandra.json
