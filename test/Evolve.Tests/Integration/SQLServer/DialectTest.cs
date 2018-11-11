@@ -25,13 +25,13 @@ namespace Evolve.Tests.Integration.SQLServer
 
             if (TestContext.Local || TestContext.AzureDevOps)
             {
-                sqlServerContainer.Run(fromScratch: true);
+                sqlServerContainer.Run(fromScratch: false);
             }
 
             TestUtil.CreateSqlServerDatabase(DbName, _sqlServerContainer.GetCnxStr("master"));
         }
 
-        //[Fact]
+        [Fact]
         public void Run_all_SQLServer_integration_tests_work()
         {
             // Open a connection to the SQLServer database
