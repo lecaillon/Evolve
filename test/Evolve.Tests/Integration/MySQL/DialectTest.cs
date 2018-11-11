@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Evolve.Tests.Integration.MySQL
 {
-    [Collection("MySQL collection")]
+    [Collection("Database collection")]
     public class DialectTest
     {
         private readonly MySQLFixture _mySQLContainer;

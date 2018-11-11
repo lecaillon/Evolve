@@ -10,7 +10,7 @@ using static Evolve.Dialect.Cassandra.Configuration;
 
 namespace Evolve.Tests.Integration.Cassandra
 {
-    [Collection("Cassandra collection")]
+    [Collection("Database collection")]
     public class MigrationTest
     {
         private readonly CassandraFixture _cassandraContainer;
@@ -28,7 +28,7 @@ namespace Evolve.Tests.Integration.Cassandra
             }
         }
 
-        [FactSkippedOnAppVeyor]
+        //[FactSkippedOnAppVeyor]
         public void Run_all_Cassandra_integration_tests_work()
         {
             string metadataKeyspaceName = "my_keyspace_1"; // this name must also be declared in _evolve.cassandra.json

@@ -13,7 +13,7 @@ using Xunit;
 
 namespace Evolve.Tests.Integration.SQLServer
 {
-    [Collection("SQLServer collection")]
+    [Collection("Database collection")]
     public class DialectTest
     {
         public const string DbName = "my_database_1";

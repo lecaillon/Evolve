@@ -10,7 +10,7 @@ using Xunit.Abstractions;
 
 namespace Evolve.Tests.Integration.SQLServer
 {
-    [Collection("SQLServer collection")]
+    [Collection("Database collection")]
     public class MigrationTest
     {
         public const string DbName = "my_database_2";
