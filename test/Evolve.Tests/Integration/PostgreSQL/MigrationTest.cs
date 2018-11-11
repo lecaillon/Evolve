@@ -19,13 +19,13 @@ namespace Evolve.Tests.Integration.PostgreSQL
             _pgContainer = pgContainer;
             _output = output;
 
-            if (TestContext.Local || TestContext.AzureDevOps)
+            if (TestContext.Local)
             {
                 pgContainer.Run(fromScratch: true);
             }
         }
 
-        //[Fact]
+        [Fact]
         public void Run_all_PostgreSQL_migrations_work()
         {
             var cnn = _pgContainer.CreateDbConnection();
