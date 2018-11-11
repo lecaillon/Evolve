@@ -8,7 +8,7 @@ env:
     - DOTNET_CLI_TELEMETRY_OPTOUT: 1
     - DOTNETPATH: /home/travis/.dotnet
 sudo: required
-mono: none
+mono: latest
 dotnet: 2.1.403
 os: linux
 before_script:
