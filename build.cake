@@ -47,6 +47,15 @@ Task("win-build").WithCriteria(() => IsRunningOnWindows()).Does(() =>
     });
 });
 
+Task("linux-build").WithCriteria(() => IsRunningOnUnix()).Does(() =>
+{
+    DotNetCoreBuild("./test/Evolve.Tests", new DotNetCoreBuildSettings
+    {
+        Configuration = configuration,
+        Verbosity = DotNetCoreVerbosity.Minimal
+    });
+});
+
 Task("test").Does(() =>
 {
     DotNetCoreTest("./test/Evolve.Tests", new DotNetCoreTestSettings
@@ -119,6 +128,7 @@ Task("pack-evolve").WithCriteria(() => IsRunningOnUnix()).Does(() =>
 Task("default")
     .IsDependentOn("clean")
     .IsDependentOn("win-build")
+    .IsDependentOn("linux-build")
     .IsDependentOn("test")
     .IsDependentOn("win-publish-cli")
     .IsDependentOn("win-warp-cli")
