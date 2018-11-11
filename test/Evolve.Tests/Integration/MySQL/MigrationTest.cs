@@ -8,7 +8,7 @@ using Xunit.Abstractions;
 
 namespace Evolve.Tests.Integration.MySQL
 {
-    [Collection("Database collection")]
+    [Collection("MySQL collection")]
     public class MigrationTest
     {
         private readonly MySQLFixture _mySQLFixture;

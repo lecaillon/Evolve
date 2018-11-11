@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Evolve.Tests.Integration.PostgreSQL
 {
-    [Collection("Database collection")]
+    [Collection("PostgreSql collection")]
     public class DialectTest
     {
         private readonly PostgreSqlFixture _pgContainer;

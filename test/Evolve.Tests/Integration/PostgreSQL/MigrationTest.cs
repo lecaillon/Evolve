@@ -8,7 +8,7 @@ using Xunit.Abstractions;
 
 namespace Evolve.Tests.Integration.PostgreSQL
 {
-    [Collection("Database collection")]
+    [Collection("PostgreSql collection")]
     public class MigrationTest
     {
         private readonly PostgreSqlFixture _pgContainer;
