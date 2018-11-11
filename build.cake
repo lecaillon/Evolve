@@ -98,7 +98,7 @@ Task("win-warp-cli").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 
 Task("linux-warp-cli").WithCriteria(() => IsRunningOnUnix()).Does(() =>
 {
-    StartProcess(winWarpPacker, new ProcessSettings().WithArguments
+    StartProcess(linuxWarpPacker, new ProcessSettings().WithArguments
     (
         args => args.Append($"--arch linux-x64")
                     .Append($"--input_dir {publishDir}/cli/linux-x64")
