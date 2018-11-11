@@ -29,7 +29,7 @@ namespace Evolve.Tests.Cli
             {
                 pgContainer.Run();
                 sqlServerContainer.Run();
-                //cassandraContainer.Run();
+                cassandraContainer.Run();
                 if (TestContext.Local)
                 {
                     mySQLContainer.Run();
@@ -37,8 +37,8 @@ namespace Evolve.Tests.Cli
             }
         }
 
-        //[FactSkippedOnAppVeyor]
-        //[Trait("Category", "Cli")]
+        [FactSkippedOnAppVeyor]
+        [Trait("Category", "Cli")]
         public void Erase_And_Migrate_Cassandra()
         {
             string metadataKeyspaceName = "my_keyspace_3";
