@@ -22,13 +22,13 @@ namespace Evolve.Tests.Integration.Cassandra
             _cassandraContainer = cassandraContainer;
             _output = output;
 
-            if (TestContext.Local || TestContext.AzureDevOps)
+            if (TestContext.Local)
             {
                 cassandraContainer.Run(fromScratch: true);
             }
         }
 
-        //[FactSkippedOnAppVeyor]
+        [FactSkippedOnAppVeyor]
         public void Run_all_Cassandra_integration_tests_work()
         {
             string metadataKeyspaceName = "my_keyspace_1"; // this name must also be declared in _evolve.cassandra.json
