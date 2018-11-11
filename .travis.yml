@@ -1,5 +1,5 @@
 language: csharp
-dist: xenial
+dist: trusty
 services:
   - docker
 env:
