@@ -116,7 +116,7 @@ Task("linux-warp-cli").WithCriteria(() => IsRunningOnUnix()).Does(() =>
     ));
 });
 
-Task("pack-evolve").WithCriteria(() => IsRunningOnUnix()).Does(() =>
+Task("pack-evolve").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 {
     NuGetPack("./src/Evolve/Evolve.nuspec", new NuGetPackSettings 
     {
