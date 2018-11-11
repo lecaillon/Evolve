@@ -26,13 +26,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Integration\Cassandra\" />
-    <Folder Include="Integration\MySQL\" />
-    <Folder Include="Integration\SQLServer\" />
-    <Folder Include="Integration\PostgreSql\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="Integration\**\*.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
