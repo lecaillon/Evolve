@@ -25,7 +25,7 @@ namespace Evolve.Tests.Integration.PostgreSQL
             }
         }
 
-        //[Fact]
+        [Fact]
         public void Run_all_PostgreSQL_migrations_work()
         {
             var cnn = _pgContainer.CreateDbConnection();
