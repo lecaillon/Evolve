@@ -104,7 +104,7 @@ namespace Evolve.Tests.Cli
                     command: command,
                     cnxStr: _sqlServerContainer.GetCnxStr(dbName),
                     location: TestContext.SqlServer.MigrationFolder,
-                    args: "-p db:my_database_2 -p schema2:dbo --target-version 8_9");
+                    args: $"-p db:{dbName} -p schema2:dbo --target-version 8_9");
 
                 Assert.True(stderr == string.Empty, stderr);
             }
