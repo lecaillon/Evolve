@@ -11,7 +11,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{34E16608-D0C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{8C56B824-4253-4093-9193-E6E35A3B75D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.Tests", "test\Evolve.Tests\Evolve.Tests.csproj", "{3A6F17CA-AF46-456B-BF71-5A9C0C87D2EB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evolve.Tests", "test\Evolve.Tests\Evolve.Tests.csproj", "{3A6F17CA-AF46-456B-BF71-5A9C0C87D2EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.MSBuild", "src\Evolve.MSBuild\Evolve.MSBuild.csproj", "{257E5F2F-3B3F-4098-A32D-3D7AA2F18581}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +33,10 @@ Global
 		{3A6F17CA-AF46-456B-BF71-5A9C0C87D2EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3A6F17CA-AF46-456B-BF71-5A9C0C87D2EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3A6F17CA-AF46-456B-BF71-5A9C0C87D2EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{257E5F2F-3B3F-4098-A32D-3D7AA2F18581}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{257E5F2F-3B3F-4098-A32D-3D7AA2F18581}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{257E5F2F-3B3F-4098-A32D-3D7AA2F18581}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{257E5F2F-3B3F-4098-A32D-3D7AA2F18581}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -39,6 +45,7 @@ Global
 		{DBF0F8FA-5FD6-442A-BD36-925E38319E42} = {34E16608-D0C2-4638-8909-0D7F48675CFF}
 		{7DF2B02C-A19B-45F9-9C4A-D4C748EE8314} = {34E16608-D0C2-4638-8909-0D7F48675CFF}
 		{3A6F17CA-AF46-456B-BF71-5A9C0C87D2EB} = {8C56B824-4253-4093-9193-E6E35A3B75D2}
+		{257E5F2F-3B3F-4098-A32D-3D7AA2F18581} = {34E16608-D0C2-4638-8909-0D7F48675CFF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BD9DBF69-6342-4993-B508-CCD184163FA8}

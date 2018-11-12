@@ -125,6 +125,15 @@ Task("pack-evolve").WithCriteria(() => IsRunningOnWindows()).Does(() =>
     });
 });
 
+Task("pack-evolve.msbuild").WithCriteria(() => IsRunningOnWindows()).Does(() =>
+{
+    NuGetPack("./src/Evolve.MSBuild/Evolve.MSBuild.nuspec", new NuGetPackSettings 
+    {
+        OutputDirectory = distDir,
+        Version = version
+    });
+});
+
 Task("default")
     .IsDependentOn("clean")
     .IsDependentOn("win-build")
@@ -135,6 +144,7 @@ Task("default")
     .IsDependentOn("linux-publish-cli")
     .IsDependentOn("linux-warp-cli")
     .IsDependentOn("test-cli")
+    .IsDependentOn("pack-evolve.msbuild")
     .IsDependentOn("pack-evolve");
 
 RunTarget(target);
