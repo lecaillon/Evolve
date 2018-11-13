@@ -30,11 +30,6 @@ namespace Evolve.Configuration
         string ConnectionString { get; set; }
 
         /// <summary>
-        ///     Gets or sets the full name of the driver used to interact with the database.)
-        /// </summary>
-        string Driver { get; set; }
-
-        /// <summary>
         ///     Gets or sets the paths (separated by semicolon) to scan recursively for migrations. (default: Sql_Scripts)
         /// </summary>
         IEnumerable<string> Locations { get; set; }
