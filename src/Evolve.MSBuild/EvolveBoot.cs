@@ -28,6 +28,12 @@ namespace Evolve.MSBuild
         public bool IsDotNetCoreProject { get; set; }
 
         /// <summary>
+        ///     The directory of the evolve.exe CLI.
+        /// </summary>
+        [Required]
+        public string EvolveCliDir { get; set; }
+
+        /// <summary>
         ///     The directory of the project (includes the trailing backslash '\').
         /// </summary>
         [Required]
@@ -57,9 +63,10 @@ namespace Evolve.MSBuild
         {
             WriteHeader();
 
-            LogInfo(IsDotNetCoreProject.ToString());
-            LogInfo(ProjectDir);
-            LogInfo(TargetPath);
+            LogInfo($"IsDotNetCoreProject: {IsDotNetCoreProject.ToString()}");
+            LogInfo($"ProjectDir: {ProjectDir}");
+            LogInfo($"TargetPath: {TargetPath}");
+            LogInfo($"EvolveCliDir: {EvolveCliDir}");
 
             return true;
         }

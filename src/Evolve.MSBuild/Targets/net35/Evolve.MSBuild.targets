@@ -4,7 +4,8 @@
     <Message Condition="!Exists('Web.config') AND !Exists('App.config')" Importance="High" Text="Evolve MSBuild mode is off: no configuration file found." />
     <EvolveBoot Condition="Exists('Web.config') OR Exists('App.config')"
                 Configuration="$(Configuration)"
-                IsDotNetCoreProject="false" 
+                IsDotNetCoreProject="false"
+                EvolveCliDir="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\..\tools))" 
                 ProjectDir="$([MSBuild]::Unescape($(ProjectDir)))" 
                 TargetPath="$([MSBuild]::Unescape($(TargetPath)))" />
   </Target>

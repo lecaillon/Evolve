@@ -4,7 +4,8 @@
     <Message Condition="!Exists('Evolve.json') AND !Exists('evolve.json')" Importance="High" Text="Evolve MSBuild mode is off: evolve.json configuration file not found." />
     <EvolveBoot Condition="Exists('Evolve.json') OR Exists('evolve.json')" 
                 Configuration="$(Configuration)"
-                IsDotNetCoreProject="true" 
+                IsDotNetCoreProject="true"
+                EvolveCliDir="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\..\tools))" 
                 ProjectDir="$([MSBuild]::Unescape($(ProjectDir)))" 
                 TargetPath="$([MSBuild]::Unescape($(TargetPath)))" />
   </Target>

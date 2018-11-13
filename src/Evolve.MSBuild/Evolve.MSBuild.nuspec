@@ -16,19 +16,16 @@ Every time you build your project, it will automatically ensure that your databa
     <releaseNotes></releaseNotes>
     <tags>Evolve Flyway sql database migration database-migration continuous-integration continuous-delivery</tags>
     <dependencies>
-      <group targetFramework="net35">
-      </group>
-      <group targetFramework="net461">
-        <dependency id="Microsoft.Build.Utilities.Core" version="15.8.166" />
-      </group>
+      <group targetFramework="net35" />
+      <group targetFramework="net461" />
       <group targetFramework="netstandard2.0">
         <dependency id="Microsoft.Build.Utilities.Core" version="15.8.166" />
       </group>
     </dependencies>
   </metadata>
   <files>
+    <file src="..\..\dist\evolve.exe" target="tools" />
     <file src="Targets\**" target="build" />
-    
     <file src="bin\Release\net35\*.dll" target="lib\net35" />
     <file src="bin\Release\net461\*.dll" target="lib\net461" />
     <file src="bin\Release\netstandard2.0\*.dll" target="lib\netstandard2.0" />
