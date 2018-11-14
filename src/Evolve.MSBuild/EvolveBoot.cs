@@ -67,6 +67,7 @@ namespace Evolve.MSBuild
             LogInfo($"ProjectDir: {ProjectDir}");
             LogInfo($"TargetPath: {TargetPath}");
             LogInfo($"EvolveCliDir: {EvolveCliDir}");
+            LogInfo($"EvolveConfigurationFile: {EvolveConfigurationFile}");
 
             return true;
         }
