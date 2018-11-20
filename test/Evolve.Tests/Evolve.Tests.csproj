@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
@@ -22,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Evolve.MSBuild\Evolve.MSBuild.csproj" />
     <ProjectReference Include="..\..\src\Evolve\Evolve.csproj" />
   </ItemGroup>
 
@@ -33,6 +33,24 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Integration\Cassandra\**\*.cql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\Configuration\evolve.json" />
+    <None Remove="Resources\Configuration\evolve2.json" />
+    <None Remove="Resources\Configuration\evolve2.staging.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\Configuration\evolve.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Configuration\evolve2.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Configuration\evolve2.staging.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

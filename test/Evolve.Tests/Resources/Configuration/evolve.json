@@ -1,0 +1,25 @@
+{
+  "Evolve.ConnectionString": "Server=${EVOLVE_HOST};Port=5432;Database=myDataBase;User Id=${EVOLVE_DB_USER};Password=${EVOLVE_DB_PWD};",
+  "Evolve.Database": "postgresql",
+  "Evolve.Locations": "migration;dataset;",
+  "Evolve.EraseDisabled": "true",
+  "Evolve.Command": "Erase",
+  "Evolve.EraseOnValidationError": "True",
+  "Evolve.Encoding": "utf-16",
+  "Evolve.SqlMigrationPrefix": "Ver",
+  "Evolve.SqlMigrationSeparator": "@",
+  "Evolve.SqlMigrationSuffix": ".query",
+  "Evolve.Schemas": "my_shema",
+  "Evolve.MetadataTableSchema": "my_metadata_schema",
+  "Evolve.MetadataTableName": "metadata_store",
+  "Evolve.PlaceholderPrefix": "@{",
+  "Evolve.PlaceholderSuffix": "@}",
+  "Evolve.TargetVersion": "2_1_0",
+  "Evolve.StartVersion": "1_1_0",
+  "Evolve.EnableClusterMode": "true",
+  "Evolve.OutOfOrder": "true",
+  "Evolve.CommandTimeout": 200,
+
+  "Evolve.Placeholder.Schema": "my_schema",
+  "Evolve.Placeholder.Pwd": "password"
+}

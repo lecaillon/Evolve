@@ -2,7 +2,7 @@
   "profiles": {
     "Evolve.Cli": {
       "commandName": "Project",
-      "commandLineArgs": "sqlite erase --connection-string=\"Data Source=C:\\Users\\lecai\\Downloads\\my_database.db\" --location=\"C:\\Projets\\Evolve\\test\\Evolve.IntegrationTest\\SQLite\\Resources\\Sql_Scripts\\Migration\" --placeholder table4:table_4"
+      "commandLineArgs": "sqlite erase --connection-string=\"Data Source=C:\\Users\\lecai\\Downloads\\my_database.db\" --location=\"C:\\Projets\\Evolve\\test\\Evolve.IntegrationTest\\SQLite\\Resources\\Sql_Scripts\\Migration\" --placeholder table4:table_4 --out-of-order=True"
     }
   }
 }

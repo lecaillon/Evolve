@@ -37,7 +37,7 @@
                 OutOfOrder = options.OutOfOrder,
                 IsEraseDisabled = options.EraseDisabled,
                 MustEraseOnValidationError = options.EraseOnValidationError,
-                EnableClusterMode = !options.DisableClusterMode
+                EnableClusterMode = options.EnableClusterMode
             };
 
             if (options.Placeholders != null)

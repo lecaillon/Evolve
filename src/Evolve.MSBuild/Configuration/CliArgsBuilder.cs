@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Evolve.MSBuild
@@ -10,6 +11,7 @@ namespace Evolve.MSBuild
         private const string EnvVarPatternMatching = @"\$\{(\w+)\}|\$(\w+)";
         private const string EnvVarPrefix = @"${";
         private const string EnvVarSuffix = @"}";
+        protected const string IncorrectFileFormat = "Incorrect Evolve configuration file format at: {0}.";
 
         public CliArgsBuilder(string configFile, string env = null)
         {
@@ -37,7 +39,8 @@ namespace Evolve.MSBuild
             OutOfOrder = ReadValue("Evolve.OutOfOrder");
             CommandTimeout = ReadValue("Evolve.CommandTimeout");
             Placeholders = Datasource.Where(x => x.Key.StartsWith("Evolve.Placeholder.", StringComparison.OrdinalIgnoreCase))
-                                                      .ToDictionary(x => x.Key.Replace("Evolve.Placeholder.", PlaceholderPrefix ?? "${") + PlaceholderSuffix ?? "}", x => x.Value);
+                                                      .Select(x => x.Key.Replace("Evolve.Placeholder.", "") + ":" + x.Value)
+                                                      .ToArray();
 
             // Cassandra
             if (ReadValue("Evolve.Keyspaces") != null)
@@ -50,36 +53,83 @@ namespace Evolve.MSBuild
             }
         }
 
-        protected Dictionary<string, string> Datasource { get; } = new Dictionary<string, string>();
-        protected string ConfigFile { get; }
-        protected string Env { get; }
+        protected abstract Dictionary<string, string> Datasource { get; }
+        public string ConfigFile { get; }
+        public string Env { get; }
 
-        protected string Command { get; set; }
-        protected string Database { get; set; }
-        protected string ConnectionString { get; set; }
-        protected string[] Locations { get; set; }
-        protected string EraseDisabled { get; set; }
-        protected string EraseOnValidationError { get; set; }
-        protected string Encoding { get; set; }
-        protected string SqlMigrationPrefix { get; set; }
-        protected string SqlMigrationSeparator { get; set; }
-        protected string SqlMigrationSuffix { get; set; }
-        protected string[] Schemas { get; set; }
-        protected string MetadataTableSchema { get; set; }
-        protected string MetadataTableName { get; set; }
-        protected string PlaceholderPrefix { get; set; }
-        protected string PlaceholderSuffix { get; set; }
-        protected string TargetVersion { get; set; }
-        protected string StartVersion { get; set; }
-        protected Dictionary<string, string> Placeholders { get; set; } = new Dictionary<string, string>();
-        protected string EnableClusterMode { get; set; }
-        protected string OutOfOrder { get; set; }
-        protected string CommandTimeout { get; set; }
+        public string Command { get; protected set; }
+        public string Database { get; protected set; }
+        public string ConnectionString { get; protected set; }
+        public string[] Locations { get; protected set; }
+        public string EraseDisabled { get; protected set; }
+        public string EraseOnValidationError { get; protected set; }
+        public string Encoding { get; protected set; }
+        public string SqlMigrationPrefix { get; protected set; }
+        public string SqlMigrationSeparator { get; protected set; }
+        public string SqlMigrationSuffix { get; protected set; }
+        public string[] Schemas { get; protected set; }
+        public string MetadataTableSchema { get; protected set; }
+        public string MetadataTableName { get; protected set; }
+        public string PlaceholderPrefix { get; protected set; }
+        public string PlaceholderSuffix { get; protected set; }
+        public string TargetVersion { get; protected set; }
+        public string StartVersion { get; protected set; }
+        public string[] Placeholders { get; protected set; }
+        public string EnableClusterMode { get; protected set; }
+        public string OutOfOrder { get; protected set; }
+        public string CommandTimeout { get; protected set; }
 
-
+        /// <summary>
+        ///     Returns the command-line argumements needed by the Evolve CLI 
+        ///     or null if the MSBuild task is disable (when Evolve.Command is empty)
+        /// </summary>
+        /// <exception cref="EvolveMSBuildException"> When a required option is missing. </exception>
         public virtual string Build()
         {
-            throw new NotImplementedException();
+            if (Command is null)
+            {
+                return null;
+            }
+            else
+            {
+                if (Database is null)
+                {
+                    throw new EvolveMSBuildException("Evolve.Database option is required. Allowed values are: postgresql, sqlite, sqlserver, mysql, mariadb or cassandra. See https://evolve-db.netlify.com/configuration for more informations.");
+                }
+                if (ConnectionString is null)
+                {
+                    throw new EvolveMSBuildException("Evolve.ConnectionString option is required. See https://evolve-db.netlify.com/configuration for more informations.");
+                }
+                if (Locations is null)
+                {
+                    throw new EvolveMSBuildException("Evolve.Locations option is required. See https://evolve-db.netlify.com/configuration for more informations.");
+                }
+            }
+
+            var builder = new StringBuilder();
+            AppendArg(builder, null, Database, false);
+            AppendArg(builder, null, Command, false);
+            AppendArg(builder, "-c", ConnectionString, true);
+            AppendArgs(builder, "-l", Locations, true);
+            AppendArgs(builder, "-s", Schemas, true);
+            AppendArg(builder, "--metadata-table-schema", MetadataTableSchema, true);
+            AppendArg(builder, "--metadata-table", MetadataTableName, true);
+            AppendArgs(builder, "-p", Placeholders, true);
+            AppendArg(builder, "--placeholder-prefix", PlaceholderPrefix, false);
+            AppendArg(builder, "--placeholder-suffix", PlaceholderSuffix, false);
+            AppendArg(builder, "--target-version", TargetVersion, false);
+            AppendArg(builder, "--start-version", StartVersion, false);
+            AppendArg(builder, "--scripts-prefix", SqlMigrationPrefix, false);
+            AppendArg(builder, "--scripts-suffix", SqlMigrationSuffix, false);
+            AppendArg(builder, "--scripts-separator", SqlMigrationSeparator, false);
+            AppendArg(builder, "--encoding", Encoding, false);
+            AppendArg(builder, "--command-timeout", CommandTimeout, false);
+            AppendArg(builder, "--out-of-order", OutOfOrder, false);
+            AppendArg(builder, "--erase-disabled", EraseDisabled, false);
+            AppendArg(builder, "--erase-on-validation-error", EraseOnValidationError, false);
+            AppendArg(builder, "--enable-cluster-mode", EnableClusterMode, false);
+
+            return builder.ToString().TrimEnd();
         }
 
         /// <summary>
@@ -117,5 +167,31 @@ namespace Evolve.MSBuild
 
         private string[] SplitCommaSeparatedString(string value) 
             => value?.Split(';')?.Where(s => s != null && s.Trim() != string.Empty)?.Distinct(StringComparer.OrdinalIgnoreCase)?.ToArray();
+
+        private void AppendArg(StringBuilder builder, string option, string value, bool quoted)
+        {
+            if (value is null)
+            {
+                return;
+            }
+
+            builder.Append(option ?? "");
+            builder.Append(option is null ? "" : "=");
+            builder.Append(quoted ? "\"" + value + "\"" : value);
+            builder.Append(" ");
+        }
+
+        private void AppendArgs(StringBuilder builder, string option, string[] values, bool quoted)
+        {
+            if (values is null)
+            {
+                return;
+            }
+
+            foreach (string value in values)
+            {
+                AppendArg(builder, option, value, quoted);
+            }
+        }
     }
 }

@@ -8,6 +8,14 @@ namespace Evolve.Tests
 {
     public static class TestContext
     {
+        static TestContext()
+        {
+            // Used in evolve.json configuration tests
+            Environment.SetEnvironmentVariable("EVOLVE_HOST", "127.0.0.1");
+            Environment.SetEnvironmentVariable("EVOLVE_DB_USER", "myUsername");
+            Environment.SetEnvironmentVariable("EVOLVE_DB_PWD", "myPassword");
+        }
+
         public static string ProjectFolder => Path.GetDirectoryName(typeof(TestContext).GetTypeInfo().Assembly.Location);
         public static bool AppVeyor => Environment.GetEnvironmentVariable("APPVEYOR") == "True";
         public static bool AzureDevOps => Environment.GetEnvironmentVariable("TF_BUILD") == "True";
@@ -20,6 +28,8 @@ namespace Evolve.Tests
         public static string LfScriptPath => Path.Combine(ResourcesFolder, "LF_CRLF/V2_3_2__Migration_description_lf.sql");
         public static string Scripts1 => Path.Combine(ResourcesFolder, "Scripts_1");
         public static string Scripts2 => Path.Combine(ResourcesFolder, "Scripts_2");
+        public static string EvolveJsonPath => Path.Combine(ResourcesFolder, "Configuration/evolve.json");
+        public static string Evolve2JsonPath => Path.Combine(ResourcesFolder, "Configuration/evolve2.json");
 
         public static class Cassandra
         {

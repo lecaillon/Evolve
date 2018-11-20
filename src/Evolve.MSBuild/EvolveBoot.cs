@@ -69,6 +69,13 @@ namespace Evolve.MSBuild
             LogInfo($"EvolveCliDir: {EvolveCliDir}");
             LogInfo($"EvolveConfigurationFile: {EvolveConfigurationFile}");
 
+#if NET35 || NET461
+            CliArgsBuilder builder = new AppConfigCliArgsBuilder(EvolveConfigurationFile);
+#else
+            CliArgsBuilder builder = new JsonCliArgsBuilder(EvolveConfigurationFile);
+#endif
+            LogInfo($"CommandLineArgs: {builder.Build()}");
+
             return true;
         }
 
