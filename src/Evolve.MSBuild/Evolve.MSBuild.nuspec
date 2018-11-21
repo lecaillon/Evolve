@@ -26,9 +26,8 @@ Every time you build your project, it will automatically ensure that your databa
   <files>
     <file src="..\..\dist\evolve.exe" target="tools" />
     <file src="Targets\**" target="build" />
-    <file src="bin\Release\net35\*.dll" target="lib\net35" />
-    <file src="bin\Release\net461\*.dll" target="lib\net461" />
-    <file src="bin\Release\netstandard2.0\*.dll" target="lib\netstandard2.0" />
+    <file src="bin\Release\net35\*.dll" target="build\net35" />
+    <file src="bin\Release\net461\*.dll" target="build\net461" />
     <file src="bin\Release\netstandard2.0\*.dll" target="build\netstandard2.0" />
   </files>
 </package>
