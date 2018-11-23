@@ -63,6 +63,7 @@ namespace Evolve.MSBuild
         {
             WriteHeader();
 
+            LogInfo($"Configuration: {Configuration}");
             LogInfo($"IsDotNetCoreProject: {IsDotNetCoreProject.ToString()}");
             LogInfo($"ProjectDir: {ProjectDir}");
             LogInfo($"TargetPath: {TargetPath}");
@@ -70,9 +71,9 @@ namespace Evolve.MSBuild
             LogInfo($"EvolveConfigurationFile: {EvolveConfigurationFile}");
 
 #if NET35 || NET461
-            CliArgsBuilder builder = new AppConfigCliArgsBuilder(EvolveConfigurationFile);
+            CliArgsBuilder builder = new AppConfigCliArgsBuilder(EvolveConfigurationFile, env: Configuration);
 #else
-            CliArgsBuilder builder = new JsonCliArgsBuilder(EvolveConfigurationFile);
+            CliArgsBuilder builder = new JsonCliArgsBuilder(EvolveConfigurationFile, env: Configuration);
 #endif
             LogInfo($"CommandLineArgs: {builder.Build()}");
 

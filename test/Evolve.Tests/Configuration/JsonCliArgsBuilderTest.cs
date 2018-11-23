@@ -65,6 +65,34 @@ namespace Evolve.Tests.Configuration
         }
 
         [Fact]
+        public void Load_incomplete_json_configuration_files_works()
+        {
+            var builder = new JsonCliArgsBuilder(TestContext.Evolve3JsonPath);
+
+            Assert.Equal("Erase", builder.Command);
+            Assert.Equal("postgresql", builder.Database);
+            Assert.Equal("Server=127.0.0.1;Port=5432;Database=myDataBase;User Id=myUsername;Password=myPassword;", builder.ConnectionString);
+            Assert.True(new List<string>() { "migration", "dataset" }.SequenceEqual(builder.Locations));
+            Assert.Null(builder.Encoding);
+            Assert.Null(builder.SqlMigrationPrefix);
+            Assert.Null(builder.SqlMigrationSeparator);
+            Assert.Null(builder.SqlMigrationSuffix);
+            Assert.Null(builder.Schemas);
+            Assert.Null(builder.MetadataTableSchema);
+            Assert.Null(builder.MetadataTableName);
+            Assert.Null(builder.PlaceholderPrefix);
+            Assert.Null(builder.PlaceholderSuffix);
+            Assert.Null(builder.TargetVersion);
+            Assert.Null(builder.StartVersion);
+            Assert.Empty(builder.Placeholders);
+            Assert.Null(builder.EraseDisabled);
+            Assert.Null(builder.EraseOnValidationError);
+            Assert.Null(builder.EnableClusterMode);
+            Assert.Null(builder.OutOfOrder);
+            Assert.Null(builder.CommandTimeout);
+        }
+
+        [Fact]
         public void Build_CommandLine_Args_works()
         {
             string expected = @"postgresql Erase -c=""Server=127.0.0.1;Port=5432;Database=myDataBase;User Id=myUsername;Password=myPassword;"" -l=""migration"" -l=""dataset"" -s=""my_shema"" --metadata-table-schema=""my_metadata_schema"" --metadata-table=""metadata_store"" -p=""Schema:my_schema"" -p=""Pwd:password"" --placeholder-prefix=@{ --placeholder-suffix=@} --target-version=2_1_0 --start-version=1_1_0 --scripts-prefix=Ver --scripts-suffix=.query --scripts-separator=@ --encoding=utf-16 --command-timeout=200 --out-of-order=true --erase-disabled=true --erase-on-validation-error=True --enable-cluster-mode=true";
