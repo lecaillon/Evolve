@@ -1,5 +1,3 @@
-#tool "nuget:?package=ILRepack"
-
 ///////////////////////////////////////////////////////////////////////////////
 // ARGUMENTS
 ///////////////////////////////////////////////////////////////////////////////
@@ -122,8 +120,12 @@ Task("Pack").Does(() =>
 
 Task("PackCli").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 {
-    var assemblies = GetFiles("./src/Evolve.Cli/bin/Release/net452/*.dll");
-    ILRepack("./dist/Evolve.exe", "./src/Evolve.Cli/bin/Release/net452/Evolve.Cli.exe", assemblies);
+    var settings = new DotNetCorePackSettings
+    {
+        OutputDirectory = distDir.FullPath,
+    };
+
+    DotNetCorePack("./src/Evolve.Cli/Evolve.Cli.csproj", settings);
 });
 
 Task("Test CLI").Does(() =>

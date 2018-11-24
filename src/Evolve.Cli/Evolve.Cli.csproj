@@ -2,8 +2,19 @@
   <Import Project="..\..\build\common.props" />
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>netcoreapp1.1;netcoreapp2.0;net452;</TargetFrameworks>
+    <TargetFrameworks>netcoreapp2.1</TargetFrameworks>
     <Version>$(PackageVersion)</Version>
+    <Authors>Philippe Lécaillon</Authors>
+    <PackageLicenseUrl>https://github.com/lecaillon/Evolve/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/lecaillon/Evolve</PackageProjectUrl>
+    <PackageIconUrl>https://github.com/lecaillon/Evolve/raw/master/logo128.png</PackageIconUrl>
+    <PackageDescription>Evolve is an easy migration tool that uses plain old sql scripts. Its purpose is to automate your database changes, and help keep those changes synchronized through all your environments and development teams.
+
+There are various NuGet packages for Evolve. This one provides Evolve as a command line application, as a .NET Core Global Tool.</PackageDescription>
+    <Copyright>Copyright © P.Lécaillon 2018</Copyright>
+    <PackageTags>Evolve Flyway sql database migration database-migration continuous-integration continuous-delivery</PackageTags>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>evolve</ToolCommandName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net452'">
     <DefineConstants>NET;NET45</DefineConstants>
