@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
@@ -34,6 +35,11 @@ namespace Evolve.MSBuild
         public string EvolveCliDir { get; set; }
 
         /// <summary>
+        ///     The full path of the Windows Evolve CLI.
+        /// </summary>
+        public string EvolveCli => Path.Combine(EvolveCliDir, "evolve.exe");
+
+        /// <summary>
         ///     The directory of the project (includes the trailing backslash '\').
         /// </summary>
         [Required]
@@ -61,28 +67,56 @@ namespace Evolve.MSBuild
         /// </summary>
         public override bool Execute()
         {
-            WriteHeader();
+            string originalCurrentDirectory = Directory.GetCurrentDirectory();
 
-            LogInfo($"Configuration: {Configuration}");
-            LogInfo($"IsDotNetCoreProject: {IsDotNetCoreProject.ToString()}");
-            LogInfo($"ProjectDir: {ProjectDir}");
-            LogInfo($"TargetPath: {TargetPath}");
-            LogInfo($"EvolveCliDir: {EvolveCliDir}");
-            LogInfo($"EvolveConfigurationFile: {EvolveConfigurationFile}");
+            try
+            {
+                WriteHeader();
 
-#if NET35 || NET461
-            CliArgsBuilder builder = new AppConfigCliArgsBuilder(EvolveConfigurationFile, env: Configuration);
-#else
-            CliArgsBuilder builder = new JsonCliArgsBuilder(EvolveConfigurationFile, env: Configuration);
-#endif
-            LogInfo($"CommandLineArgs: {builder.Build()}");
+                Directory.SetCurrentDirectory(TargetDir);
+                var args = GetCliArgsBuilder();
+                CopyMigrationProjectDirToTargetDir(args.Locations);
+                var proc = new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = EvolveCli,
+                        Arguments = args.Build(),
+                        UseShellExecute = false,
+                        CreateNoWindow = true,
+                        RedirectStandardError = true,
+                        RedirectStandardOutput = true
+                    }
+                };
 
-            return true;
+                LogInfo(EvolveCli + " " + args.Build());
+                proc.Start();
+                proc.WaitForExit();
+                LogInfo(proc.StandardOutput.ReadToEnd());
+
+                string stderr = proc.StandardError.ReadToEnd();
+                if (!string.IsNullOrEmpty(stderr))
+                {
+                    Log.LogError(stderr);
+                    return false;
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                LogErrorFromException(ex);
+                return false;
+            }
+            finally
+            {
+                Directory.SetCurrentDirectory(originalCurrentDirectory);
+            }
         }
 
         /// <summary>
         ///     <para>
-        ///         Convienent method to avoiding the forgettable user step 'always copy' on each sql migration file.
+        ///         Convienent method to avoid the forgettable user step 'always copy' on each sql migration file.
         ///     </para>
         ///     <para>
         ///         Copy sql migration folders and files to the output directory if the location is under the <see cref="ProjectDir"/> folder.
@@ -160,15 +194,15 @@ namespace Evolve.MSBuild
             throw new EvolveMSBuildException(string.Format(EvolveJsonConfigFileNotFound, file));
         }
 
-        private void LogError(Exception ex)
-        {
-            Log.LogErrorFromException(ex, true, true, "Evolve");
-        }
+#if NET35 || NET461
+        private CliArgsBuilder GetCliArgsBuilder() => new AppConfigCliArgsBuilder(EvolveConfigurationFile, Configuration);
+#else
+        private CliArgsBuilder GetCliArgsBuilder() => new JsonCliArgsBuilder(EvolveConfigurationFile, Configuration);
+#endif
 
-        private void LogInfo(string msg)
-        {
-            Log.LogMessage(MessageImportance.High, msg);
-        }
+        private void LogErrorFromException(Exception ex) => Log.LogErrorFromException(ex, true, true, "Evolve");
+
+        private void LogInfo(string msg) => Log.LogMessage(MessageImportance.High, msg);
 
         private void WriteHeader()
         {
@@ -179,13 +213,6 @@ namespace Evolve.MSBuild
             Log.LogMessage(MessageImportance.High, @"/_____/  _____/ \____//_/  _____/ \___/ ");
         }
 
-        private void WriteFooter()
-        {
-        }
-
-        private void WriteNewLine()
-        {
-            Log.LogMessage(MessageImportance.High, string.Empty);
-        }
+        private void WriteNewLine() => Log.LogMessage(MessageImportance.High, string.Empty);
     }
 }
