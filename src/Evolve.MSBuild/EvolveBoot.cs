@@ -75,13 +75,19 @@ namespace Evolve.MSBuild
 
                 Directory.SetCurrentDirectory(TargetDir);
                 var args = GetCliArgsBuilder();
+                string cmdLineArgs = args.Build();
+                if (string.IsNullOrEmpty(cmdLineArgs))
+                {
+                    return true;
+                }
+
                 CopyMigrationProjectDirToTargetDir(args.Locations);
                 var proc = new Process
                 {
                     StartInfo = new ProcessStartInfo
                     {
                         FileName = EvolveCli,
-                        Arguments = args.Build(),
+                        Arguments = cmdLineArgs,
                         UseShellExecute = false,
                         CreateNoWindow = true,
                         RedirectStandardError = true,
@@ -89,7 +95,7 @@ namespace Evolve.MSBuild
                     }
                 };
 
-                LogInfo(EvolveCli + " " + args.Build());
+                LogInfo(EvolveCli + " " + cmdLineArgs);
                 proc.Start();
                 proc.WaitForExit();
                 LogInfo(proc.StandardOutput.ReadToEnd());
