@@ -14,7 +14,7 @@ namespace Evolve.Tests.Infrastructure
         private DockerContainer _container;
 
         public string Id => _container?.Id;
-        public string CnxStr => $"Server=127.0.0.1;Port={HostPort};Database={DbName};Uid={DbUser};Pwd={DbPwd};SslMode=none;";
+        public string CnxStr => $"Server=127.0.0.1;Port={HostPort};Database={DbName};Uid={DbUser};Pwd={DbPwd};SslMode=none;Allow User Variables=True";
         public int TimeOutInSec => 10;
 
         public bool Start(bool fromScratch = false)
