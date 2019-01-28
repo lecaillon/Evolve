@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>Evolve.MSBuild</id>
+    <id>Evolve.MSBuild.Windows.x64</id>
     <authors>Philippe Lécaillon</authors>
     <owners>Philippe Lécaillon</owners>
     <summary>A MSBuild task to run Evolve at build time.</summary>
@@ -14,7 +14,7 @@ Every time you build your project, it will automatically ensure that your databa
     <iconUrl>https://github.com/lecaillon/Evolve/raw/master/logo128.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <releaseNotes></releaseNotes>
-    <tags>Evolve Flyway sql database migration database-migration continuous-integration continuous-delivery</tags>
+    <tags>Evolve MSBuild Windows x64 Flyway sql database migration database-migration</tags>
     <dependencies>
       <group targetFramework="net35" />
       <group targetFramework="net461" />
