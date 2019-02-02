@@ -129,7 +129,6 @@ Task("pack-evolve.msbuild.windows.x64").WithCriteria(() => IsRunningOnWindows())
 {
     NuGetPack("./src/Evolve.MSBuild/Evolve.MSBuild.Windows.x64.nuspec", new NuGetPackSettings 
     {
-        DevelopmentDependency = true,
         OutputDirectory = distDir,
         Version = version
     });
