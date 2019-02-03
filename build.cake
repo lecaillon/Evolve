@@ -171,6 +171,7 @@ Task("default")
     .IsDependentOn("linux-warp-cli")
     .IsDependentOn("test-cli")
     .IsDependentOn("pack-evolve.msbuild.windows.x64")
+    .IsDependentOn("test-msbuild.windows.x64")
     .IsDependentOn("pack-evolve");
 
 RunTarget(target);
