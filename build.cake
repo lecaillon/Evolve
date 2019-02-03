@@ -136,7 +136,7 @@ Task("pack-evolve.msbuild.windows.x64").WithCriteria(() => IsRunningOnWindows())
     });
 });
 
-Task("test-msbuild.windows.x64").WithCriteria(() => IsRunningOnWindows()).Does(() =>
+Task("test-msbuild.windows.x64-for-net").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 {
     foreach(var file in GetFiles("./test-msbuild-package/Windows.x64/**/packages.config"))
     {
@@ -145,11 +145,7 @@ Task("test-msbuild.windows.x64").WithCriteria(() => IsRunningOnWindows()).Does((
 
     NuGetRestore(slnTestMsbuildWinx64, new NuGetRestoreSettings
     {
-        Source = new[] 
-        { 
-            "https://api.nuget.org/v3/index.json", 
-            MakeAbsolute(Directory($"{distDir}")).FullPath.Replace('/', '\\') 
-        }
+        Source = new[] { "https://api.nuget.org/v3/index.json", MakeAbsolute(Directory($"{distDir}")).FullPath.Replace('/', '\\') }
     });
 
     MSBuild(slnTestMsbuildWinx64, new MSBuildSettings
@@ -158,6 +154,24 @@ Task("test-msbuild.windows.x64").WithCriteria(() => IsRunningOnWindows()).Does((
         Verbosity = Verbosity.Minimal,
         Restore = false
     });
+});
+
+Task("test-msbuild.windows.x64-for-netcore").WithCriteria(() => IsRunningOnWindows()).Does(() =>
+{
+    NuGetRestore(slnTestMsbuildWinx64, new NuGetRestoreSettings
+    {
+        Source = new[] { "https://api.nuget.org/v3/index.json", MakeAbsolute(Directory($"{distDir}")).FullPath.Replace('/', '\\') }
+    });
+
+    foreach(var project in GetFiles("./test-msbuild-package/Windows.x64/**/Evolve.*Core*.Test.csproj"))
+    {
+        DotNetCoreBuild(project.FullPath, new DotNetCoreBuildSettings 
+        {
+            Configuration = configuration,
+            Verbosity = DotNetCoreVerbosity.Minimal,
+            NoRestore = true
+        });
+    }
 });
 
 Task("default")
@@ -171,7 +185,8 @@ Task("default")
     .IsDependentOn("linux-warp-cli")
     .IsDependentOn("test-cli")
     .IsDependentOn("pack-evolve.msbuild.windows.x64")
-    .IsDependentOn("test-msbuild.windows.x64")
+    .IsDependentOn("test-msbuild.windows.x64-for-net")
+    .IsDependentOn("test-msbuild.windows.x64-for-netcore")
     .IsDependentOn("pack-evolve");
 
 RunTarget(target);
