@@ -1,6 +1,4 @@
-﻿#if NETSTANDARD2_0
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -74,5 +72,3 @@ namespace Evolve.MSBuild
         }
     }
 }
-
-#endif

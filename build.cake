@@ -7,6 +7,7 @@ var configuration = Argument("configuration", "Release");
 var version = XmlPeek(File("./build/common.props"), "/Project/PropertyGroup/Version/text()");
 
 var sln = "./Evolve.sln";
+var slnTestMsbuildWinx64 = "./Evolve.Test.MSBuild.Windows.x64.sln";
 var distDir = "./dist";
 var publishDir = "./publish";
 var winWarpPacker = "./warp/windows-x64.warp-packer.exe";
@@ -132,6 +133,30 @@ Task("pack-evolve.msbuild.windows.x64").WithCriteria(() => IsRunningOnWindows())
         DevelopmentDependency = true,
         OutputDirectory = distDir,
         Version = version
+    });
+});
+
+Task("test-msbuild.windows.x64").WithCriteria(() => IsRunningOnWindows()).Does(() =>
+{
+    foreach(var file in GetFiles("./test-msbuild-package/Windows.x64/**/packages.config"))
+    {
+        XmlPoke(file, "/packages/package[@id = 'Evolve.MSBuild.Windows.x64']/@version", version);
+    }
+
+    NuGetRestore(slnTestMsbuildWinx64, new NuGetRestoreSettings
+    {
+        Source = new[] 
+        { 
+            "https://api.nuget.org/v3/index.json", 
+            MakeAbsolute(Directory($"{distDir}")).FullPath.Replace('/', '\\') 
+        }
+    });
+
+    MSBuild(slnTestMsbuildWinx64, new MSBuildSettings
+    {
+        Configuration = configuration,
+        Verbosity = Verbosity.Minimal,
+        Restore = false
     });
 });
 

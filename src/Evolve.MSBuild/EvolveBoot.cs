@@ -200,11 +200,9 @@ namespace Evolve.MSBuild
             throw new EvolveMSBuildException(string.Format(EvolveJsonConfigFileNotFound, file));
         }
 
-#if NET35 || NET461
-        private CliArgsBuilder GetCliArgsBuilder() => new AppConfigCliArgsBuilder(EvolveConfigurationFile, Configuration);
-#else
-        private CliArgsBuilder GetCliArgsBuilder() => new JsonCliArgsBuilder(EvolveConfigurationFile, Configuration);
-#endif
+        private CliArgsBuilder GetCliArgsBuilder() => Path.GetExtension(EvolveConfigurationFile) == ".json"
+            ? new JsonCliArgsBuilder(EvolveConfigurationFile, Configuration) as CliArgsBuilder
+            : new AppConfigCliArgsBuilder(EvolveConfigurationFile, Configuration);
 
         private void LogErrorFromException(Exception ex) => Log.LogErrorFromException(ex, true, true, "Evolve");
 

@@ -53,4 +53,23 @@ namespace Evolve.MSBuild
     }
 }
 
+#else
+
+using System;
+using System.Collections.Generic;
+
+namespace Evolve.MSBuild
+{
+    public class AppConfigCliArgsBuilder : CliArgsBuilder
+    {
+        public AppConfigCliArgsBuilder(string configFile, string env = null) 
+            : base(configFile, env)
+        {
+            throw new NotSupportedException("This class supports .NET framework only.");
+        }
+
+        protected override Dictionary<string, string> Datasource => throw new NotSupportedException("This class supports .NET framework only.");
+    }
+}
+
 #endif
