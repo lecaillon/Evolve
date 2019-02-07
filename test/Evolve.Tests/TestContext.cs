@@ -31,6 +31,8 @@ namespace Evolve.Tests
         public static string EvolveJsonPath => Path.Combine(ResourcesFolder, "Configuration/evolve.json");
         public static string Evolve2JsonPath => Path.Combine(ResourcesFolder, "Configuration/evolve2.json");
         public static string Evolve3JsonPath => Path.Combine(ResourcesFolder, "Configuration/evolve3.json");
+        public static string EvolveAppConfigPath => Path.Combine(ResourcesFolder, "Configuration/App.config");
+        public static string EvolveWebConfigPath => Path.Combine(ResourcesFolder, "Configuration/Web.config");
 
         public static class Cassandra
         {

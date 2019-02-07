@@ -19,7 +19,7 @@ namespace Evolve.MSBuild
             string cnn = _config.ConnectionStrings.ConnectionStrings[ConnectionString]?.ConnectionString;
             if (cnn != null)
             {
-                ConnectionString = cnn;
+                ConnectionString = Normalize(cnn);
             }
         }
 

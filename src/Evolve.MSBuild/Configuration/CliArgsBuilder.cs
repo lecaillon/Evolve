@@ -140,18 +140,7 @@ namespace Evolve.MSBuild
         {
             if (Datasource.TryGetValue(key, out string value))
             {
-                foreach (Match match in Regex.Matches(value, EnvVarPatternMatching))
-                {
-                    string cleanEnvVar = match.Value.Replace(EnvVarPrefix, string.Empty)
-                                                    .Replace(EnvVarSuffix, string.Empty);
-
-                    string envVarValue = Environment.GetEnvironmentVariable(cleanEnvVar);
-                    if (envVarValue != null)
-                    {
-                        value = value.Replace(match.Value, envVarValue);
-                    }
-                }
-
+                value = Normalize(value);
                 if (value is null || value.Trim() == string.Empty) // .NET35 does not support IsNullOrWhiteSpace()
                 {
                     return null;
@@ -165,10 +154,27 @@ namespace Evolve.MSBuild
             }
         }
 
-        private string[] SplitCommaSeparatedString(string value) 
+        protected static string Normalize(string value)
+        {
+            foreach (Match match in Regex.Matches(value, EnvVarPatternMatching))
+            {
+                string cleanEnvVar = match.Value.Replace(EnvVarPrefix, string.Empty)
+                                                .Replace(EnvVarSuffix, string.Empty);
+
+                string envVarValue = Environment.GetEnvironmentVariable(cleanEnvVar);
+                if (envVarValue != null)
+                {
+                    value = value.Replace(match.Value, envVarValue);
+                }
+            }
+
+            return value;
+        }
+
+        private static string[] SplitCommaSeparatedString(string value) 
             => value?.Split(';')?.Where(s => s != null && s.Trim() != string.Empty)?.Distinct(StringComparer.OrdinalIgnoreCase)?.ToArray();
 
-        private void AppendArg(StringBuilder builder, string option, string value, bool quoted)
+        private static void AppendArg(StringBuilder builder, string option, string value, bool quoted)
         {
             if (value is null)
             {
@@ -181,7 +187,7 @@ namespace Evolve.MSBuild
             builder.Append(" ");
         }
 
-        private void AppendArgs(StringBuilder builder, string option, string[] values, bool quoted)
+        private static void AppendArgs(StringBuilder builder, string option, string[] values, bool quoted)
         {
             if (values is null)
             {
