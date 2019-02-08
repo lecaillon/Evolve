@@ -12,7 +12,7 @@ var distDir = "./dist";
 var publishDir = "./publish";
 var winWarpPacker = "./warp/windows-x64.warp-packer.exe";
 var linuxWarpPacker = "./warp/linux-x64.warp-packer";
-var framework = "netcoreapp2.1";
+var framework = "netcoreapp2.2";
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP / TEARDOWN
