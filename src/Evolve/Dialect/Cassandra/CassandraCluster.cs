@@ -1,6 +1,7 @@
-﻿using Evolve.Connection;
+﻿using System.Collections.Generic;
+using Evolve.Connection;
 using Evolve.Metadata;
-using Newtonsoft.Json.Linq;
+using TinyJson;
 
 namespace Evolve.Dialect.Cassandra
 {
@@ -54,11 +55,12 @@ namespace Evolve.Dialect.Cassandra
 
             if (Configuration.ConfigurationFileExists())
             {
-                var configuration = JObject.Parse(Configuration.GetConfiguration())["clusterLock"];
-                clusterLockKeyspaceName = configuration["defaultClusterLockKeyspace"].ToObject<string>()
-                    ?? DefaultClusterLockKeyspaceName;
-                clusterLockTableName = configuration["defaultClusterLockTable"].ToObject<string>()
-                    ?? DefaultClusterLockTableName;
+                var configuration = Configuration.GetConfiguration()
+                                                 .FromJson<Dictionary<string, Dictionary<string, object>>>()
+                                                 .GetValue("clusterLock", new Dictionary<string, object>());
+
+                clusterLockKeyspaceName = configuration.GetValue("defaultClusterLockKeyspace", DefaultClusterLockKeyspaceName) as string;
+                clusterLockTableName = configuration.GetValue("defaultClusterLockTable", DefaultClusterLockTableName) as string;
             }
 
             try
@@ -70,7 +72,7 @@ namespace Evolve.Dialect.Cassandra
             {
                 //These error messages are very specific to Cassandra's drivers and could change
                 if (ex.Message.StartsWith($"Keyspace {clusterLockKeyspaceName} does not exist")
-                    || ex.Message.StartsWith($"unconfigured table {clusterLockTableName}"))
+                 || ex.Message.StartsWith($"unconfigured table {clusterLockTableName}"))
                     return true;
                 else
                     return true;

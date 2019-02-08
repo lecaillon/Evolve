@@ -20,4 +20,12 @@
     <Reference Include="System.Configuration" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Include="..\Evolve\Utilities\JSONParser.cs" Link="Util\JSONParser.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Util\" />
+  </ItemGroup>
+
 </Project>

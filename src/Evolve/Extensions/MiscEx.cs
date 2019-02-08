@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Evolve
 {
-    public static class StringEx
+    public static class MiscEx
     {
         /// <summary>
         ///     Truncates a string to be no longer than a certain length.
@@ -42,6 +43,14 @@ namespace Evolve
         public static bool Contains(this string source, string toCheck, StringComparison comp)
         {
             return source.IndexOf(toCheck, comp) >= 0;
+        }
+
+        /// <summary>
+        ///     Returns the value of the given dictionary key or default if not found.
+        /// </summary>
+        public static TV GetValue<TK, TV>(this IDictionary<TK, TV> dict, TK key, TV defaultValue = default(TV))
+        {
+            return dict.TryGetValue(key, out TV value) ? value : defaultValue;
         }
     }
 }
