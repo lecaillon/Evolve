@@ -41,6 +41,12 @@ steps:
      POSTGRES_PASSWORD=Password12!
      POSTGRES_DB=my_database
 
+- task: DotNetCoreCLI@2
+  displayName: 'Dotnet info'
+  inputs:
+    command: custom
+    custom: '--info'
+
 - script: './build.sh --target=linux-build'
   displayName: Build
 
@@ -51,6 +57,16 @@ steps:
 
 - script: './build.sh --target=test'
   displayName: Test
+  continueOnError: true
+
+- task: PublishTestResults@2
+  displayName: 'Publish test results'
+  inputs:
+    testResultsFormat: VSTest
+    testResultsFiles: '*.trx'
+    searchFolder: '$(build.sourcesdirectory)/publish'
+    mergeTestResults: true
+    failTaskOnFailedTests: true
 
 - script: './build.sh --target=report-coverage'
   displayName: 'Report coverage'
@@ -59,8 +75,8 @@ steps:
   displayName: 'Publish code coverage results'
   inputs:
     codeCoverageTool: Cobertura
-    summaryFileLocation: ./publish/coverage/Cobertura.xml
-    reportDirectory: ./publish/coverage
+    summaryFileLocation: '$(build.sourcesdirectory)/publish/coverage/Cobertura.xml'
+    reportDirectory: '$(build.sourcesdirectory)/publish/coverage'
 
 - script: './build.sh --target=linux-publish-cli'
   displayName: 'Publish CLI'
