@@ -11,11 +11,13 @@ var version = XmlPeek(File("./build/common.props"), "/Project/PropertyGroup/Vers
 var sln = "./Evolve.sln";
 var slnTestMsbuildWinx64 = "./Evolve.Test.MSBuild.Windows.x64.sln";
 var distDir = "./dist";
+var distDirFullPath = MakeAbsolute(Directory($"{distDir}")).FullPath;
 var publishDir = "./publish";
+var publishDirFullPath = MakeAbsolute(Directory($"{publishDir}")).FullPath;
 var winWarpPacker = "./warp/windows-x64.warp-packer.exe";
 var linuxWarpPacker = "./warp/linux-x64.warp-packer";
 var framework = "netcoreapp2.2";
-var logger = Environment.GetEnvironmentVariable("TF_BUILD") == "True" ? "-l:trx --results-directory /home/vsts/work/_temp" : "-l:console;verbosity=normal";
+var logger = Environment.GetEnvironmentVariable("TF_BUILD") == "True" ? $"-l:trx --results-directory {publishDirFullPath}" : "-l:console;verbosity=normal";
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP / TEARDOWN
@@ -71,7 +73,7 @@ Task("test").Does(() =>
                                             .Append("/p:AltCoverForce=true")
                                             .Append("/p:AltCoverCallContext=[Fact]|[Theory]")
                                             .Append("/p:AltCoverAssemblyFilter=Evolve.Tests|xunit.runner")
-                                            .Append($"/p:AltCoverXmlReport={MakeAbsolute(Directory($"{publishDir}")).FullPath}/coverage.xml")
+                                            .Append($"/p:AltCoverXmlReport={publishDirFullPath}/coverage.xml")
     });
 });
 
@@ -164,7 +166,7 @@ Task("test-msbuild.windows.x64-for-net").WithCriteria(() => IsRunningOnWindows()
 
     NuGetRestore(slnTestMsbuildWinx64, new NuGetRestoreSettings
     {
-        Source = new[] { "https://api.nuget.org/v3/index.json", MakeAbsolute(Directory($"{distDir}")).FullPath.Replace('/', '\\') }
+        Source = new[] { "https://api.nuget.org/v3/index.json", distDirFullPath.Replace('/', '\\') }
     });
 
     MSBuild(slnTestMsbuildWinx64, new MSBuildSettings
@@ -179,7 +181,7 @@ Task("test-msbuild.windows.x64-for-netcore").WithCriteria(() => IsRunningOnWindo
 {
     NuGetRestore(slnTestMsbuildWinx64, new NuGetRestoreSettings
     {
-        Source = new[] { "https://api.nuget.org/v3/index.json", MakeAbsolute(Directory($"{distDir}")).FullPath.Replace('/', '\\') }
+        Source = new[] { "https://api.nuget.org/v3/index.json", distDirFullPath.Replace('/', '\\') }
     });
 
     foreach(var project in GetFiles("./test-msbuild-package/Windows.x64/**/Evolve.*Core*.Test.csproj"))
