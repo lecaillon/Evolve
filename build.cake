@@ -15,6 +15,7 @@ var publishDir = "./publish";
 var winWarpPacker = "./warp/windows-x64.warp-packer.exe";
 var linuxWarpPacker = "./warp/linux-x64.warp-packer";
 var framework = "netcoreapp2.2";
+var logger = Environment.GetEnvironmentVariable("TF_BUILD") == "True" ? "-l:trx --results-directory /home/vsts/work/_temp" : "-l:console;verbosity=normal";
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP / TEARDOWN
@@ -65,7 +66,7 @@ Task("test").Does(() =>
     {
         Configuration = configuration,
         ArgumentCustomization = args => args.AppendSwitchQuoted("--filter", "Category!=Cli")
-                                            .Append("-l:console;verbosity=normal")
+                                            .Append(logger)
                                             .Append("/p:AltCover=true")
                                             .Append("/p:AltCoverForce=true")
                                             .Append("/p:AltCoverCallContext=[Fact]|[Theory]")
@@ -89,7 +90,7 @@ Task("test-cli").Does(() =>
     {
         Configuration = configuration,
         ArgumentCustomization = args => args.AppendSwitchQuoted("--filter", "Category=Cli")
-                                            .Append("-l:console;verbosity=normal")
+                                            .Append(logger)
     });
 });
 
