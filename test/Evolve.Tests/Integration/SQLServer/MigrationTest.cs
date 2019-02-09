@@ -31,6 +31,7 @@ namespace Evolve.Tests.Integration.SQLServer
         }
 
         [Fact]
+        [Category(Test.SQLServer)]
         public void Run_all_SQLServer_migrations_work()
         {
             var cnn = new SqlConnection(_sqlServerContainer.GetCnxStr(DbName));

@@ -38,7 +38,7 @@ namespace Evolve.Tests.Cli
         }
 
         [FactSkippedOnAppVeyor]
-        [Trait("Category", "Cli")]
+        [Category(Test.Cli, Test.Cassandra)]
         public void Erase_And_Migrate_Cassandra()
         {
             string metadataKeyspaceName = "my_keyspace_3";
@@ -57,7 +57,7 @@ namespace Evolve.Tests.Cli
         }
 
         [Fact]
-        [Trait("Category", "Cli")]
+        [Category(Test.Cli, Test.MySQL)]
         public void Erase_And_Migrate_MySQL()
         {
             foreach (var command in new[] { "erase", "migrate" })
@@ -74,7 +74,7 @@ namespace Evolve.Tests.Cli
         }
 
         [Fact]
-        [Trait("Category", "Cli")]
+        [Category(Test.Cli, Test.PostgreSQL)]
         public void Erase_And_Migrate_PostgreSql()
         {
             foreach (var command in new [] { "erase", "migrate" })
@@ -91,7 +91,7 @@ namespace Evolve.Tests.Cli
         }
 
         [Fact]
-        [Trait("Category", "Cli")]
+        [Category(Test.Cli, Test.SQLServer)]
         public void Erase_And_Migrate_SQLServer()
         {
             string dbName = "my_database_3";
@@ -111,7 +111,7 @@ namespace Evolve.Tests.Cli
         }
 
         [Fact]
-        [Trait("Category", "Cli")]
+        [Category(Test.Cli, Test.SQLite)]
         public void Erase_And_Migrate_SQLite()
         {
             string sqliteCnxStr = $"Data Source={Path.GetTempPath() + Guid.NewGuid().ToString()}.db";

@@ -26,12 +26,14 @@ namespace Evolve.Tests.Connection
         }
 
         [Fact]
+        [Category(Test.Connection)]
         public void Inner_dbconnection_can_not_be_null()
         {
             Assert.Throws<ArgumentNullException>(() => new WrappedConnection(null));
         }
 
         [Fact]
+        [Category(Test.Connection)]
         public void When_disposed_inner_dbconnection_is_closed()
         {
             var cnn = _pgContainer.CreateDbConnection();
@@ -44,6 +46,7 @@ namespace Evolve.Tests.Connection
         }
 
         [Fact]
+        [Category(Test.Connection)]
         public void When_opened_multiple_times_a_single_call_to_close_is_not_enought()
         {
             var cnn = _pgContainer.CreateDbConnection();
@@ -62,6 +65,7 @@ namespace Evolve.Tests.Connection
         }
 
         [Fact]
+        [Category(Test.Connection)]
         public void Commit_a_null_transaction_throws_InvalidOperationException()
         {
             var cnn = _pgContainer.CreateDbConnection();
@@ -74,6 +78,7 @@ namespace Evolve.Tests.Connection
         }
 
         [Fact]
+        [Category(Test.Connection)]
         public void Rollback_a_null_transaction_throws_InvalidOperationException()
         {
             var cnn = _pgContainer.CreateDbConnection();
@@ -86,6 +91,7 @@ namespace Evolve.Tests.Connection
         }
 
         [Fact]
+        [Category(Test.Connection)]
         public void BeginTransaction_opens_a_connection_and_returns_a_transaction()
         {
             var cnn = _pgContainer.CreateDbConnection();
@@ -101,6 +107,7 @@ namespace Evolve.Tests.Connection
         }
 
         [Fact]
+        [Category(Test.Connection)]
         public void When_commit_transaction_is_cleared()
         {
             using (var wrappedConnection = TestUtil.CreateSQLiteWrappedCnx())
@@ -113,6 +120,7 @@ namespace Evolve.Tests.Connection
         }
 
         [Fact]
+        [Category(Test.Connection)]
         public void When_rollback_transaction_is_cleared()
         {
             using (var wrappedConnection = TestUtil.CreateSQLiteWrappedCnx())
@@ -125,6 +133,7 @@ namespace Evolve.Tests.Connection
         }
 
         [Fact]
+        [Category(Test.Connection)]
         public void When_dbconnection_is_ok_validation_works()
         {
             using (var wrappedConnection = TestUtil.CreateSQLiteWrappedCnx())
@@ -134,6 +143,7 @@ namespace Evolve.Tests.Connection
         }
 
         [Fact(Skip = "Skip test bescause it oddly fails on Linux")]
+        [Category(Test.Connection)]
         public void When_dbconnection_is_not_ok_validation_fails()
         {
             using (var wrappedConnection = new WrappedConnection(new SQLiteConnection("Data Source=:fails")))
@@ -143,6 +153,7 @@ namespace Evolve.Tests.Connection
         }
 
         [Fact]
+        [Category(Test.Connection)]
         public void TryBeginTransaction_creates_a_tx_when_needed()
         {
             using (var cnx = TestUtil.CreateSQLiteWrappedCnx())
@@ -156,6 +167,7 @@ namespace Evolve.Tests.Connection
         }
 
         [Fact]
+        [Category(Test.Connection)]
         public void TryCommit_returns_true_when_a_tx_exists()
         {
             using (var cnx = TestUtil.CreateSQLiteWrappedCnx())
@@ -170,6 +182,7 @@ namespace Evolve.Tests.Connection
         }
 
         [Fact]
+        [Category(Test.Connection)]
         public void TryRollback_returns_true_when_a_tx_exists()
         {
             using (var cnx = TestUtil.CreateSQLiteWrappedCnx())

@@ -8,6 +8,7 @@ namespace Evolve.Tests.Dialect.SQLServer
     public class SQLServerStatementBuilderTest
     {
         [Fact]
+        [Category(Test.SQLServer)]
         public void SQLServerStatementBuilder_LoadSqlStatements_SplitsScriptCorrectly()
         {
             string sql = @"PRINT 'CREATE TYPE'

@@ -26,6 +26,7 @@ namespace Evolve.Tests.Integration.MySQL
         }
 
         [Fact]
+        [Category(Test.MySQL)]
         public void Run_all_MySQL_migrations_work()
         {
             var cnn = _mySQLFixture.CreateDbConnection();

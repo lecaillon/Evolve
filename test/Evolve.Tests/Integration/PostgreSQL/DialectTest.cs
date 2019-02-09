@@ -28,6 +28,7 @@ namespace Evolve.Tests.Integration.PostgreSQL
         }
 
         [Fact]
+        [Category(Test.PostgreSQL)]
         public void Run_all_PostgreSQL_integration_tests_work()
         {
             // Open a connection to the PostgreSQL database

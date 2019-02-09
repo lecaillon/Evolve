@@ -8,6 +8,7 @@ namespace Evolve.Tests.Dialect.Cassandra
     public sealed class CqlStatementBuilderTest
     {
         [Fact]
+        [Category(Test.Cassandra)]
         public void CqlStatementBuilder_LoadSqlStatements_SplitsScriptCorrectly()
         {
             var cql = @"create keyspace my_keyspace

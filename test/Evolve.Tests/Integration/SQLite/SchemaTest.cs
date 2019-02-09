@@ -7,6 +7,7 @@ namespace Evolve.Tests.Integration.SQLite
     public class SchemaTest
     {
         [Fact]
+        [Category(Test.SQLite)]
         public void Can_get_schema()
         {
             using (var cnn = TestUtil.CreateSQLiteWrappedCnx())
@@ -18,6 +19,7 @@ namespace Evolve.Tests.Integration.SQLite
         }
 
         [Fact]
+        [Category(Test.SQLite)]
         public void When_new_database_is_created_schema_is_empty()
         {
             using (var cnn = TestUtil.CreateSQLiteWrappedCnx())
@@ -29,6 +31,7 @@ namespace Evolve.Tests.Integration.SQLite
         }
 
         [Fact]
+        [Category(Test.SQLite)]
         public void SQLite_does_not_support_creating_schemas()
         {
             using (var cnn = TestUtil.CreateSQLiteWrappedCnx())
@@ -40,6 +43,7 @@ namespace Evolve.Tests.Integration.SQLite
         }
 
         [Fact]
+        [Category(Test.SQLite)]
         public void SQLite_does_not_support_dropping_schemas()
         {
             using (var cnn = TestUtil.CreateSQLiteWrappedCnx())
@@ -51,6 +55,7 @@ namespace Evolve.Tests.Integration.SQLite
         }
 
         [Fact]
+        [Category(Test.SQLite)]
         public void When_schema_contains_tables_schema_is_not_empty()
         {
             using (var cnn = TestUtil.CreateSQLiteWrappedCnx())
@@ -62,6 +67,7 @@ namespace Evolve.Tests.Integration.SQLite
         }
 
         [Fact]
+        [Category(Test.SQLite)]
         public void After_schema_cleannig_schema_is_empty()
         {
             using (var cnn = TestUtil.CreateSQLiteWrappedCnx())
@@ -74,6 +80,7 @@ namespace Evolve.Tests.Integration.SQLite
         }
 
         [Fact]
+        [Category(Test.SQLite)]
         public void After_schema_cleannig_and_rollback_schema_is_not_empty()
         {
             using (var cnn = TestUtil.CreateSQLiteWrappedCnx())

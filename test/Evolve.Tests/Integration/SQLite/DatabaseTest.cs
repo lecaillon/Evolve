@@ -6,6 +6,7 @@ namespace Evolve.Tests.Integration.SQLite
     public class DatabaseTest
     {
         [Fact]
+        [Category(Test.SQLite)]
         public void SQLiteDatabase_name_is_sqlite()
         {
             using (var connection = TestUtil.CreateSQLiteWrappedCnx())
@@ -16,6 +17,7 @@ namespace Evolve.Tests.Integration.SQLite
         }
 
         [Fact]
+        [Category(Test.SQLite)]
         public void GetCurrentSchemaName_is_always_main()
         {
             using (var connection = TestUtil.CreateSQLiteWrappedCnx())
@@ -26,6 +28,7 @@ namespace Evolve.Tests.Integration.SQLite
         }
 
         [Fact]
+        [Category(Test.SQLite)]
         public void ChangeSchema_always_returns_main()
         {
             using (var connection = TestUtil.CreateSQLiteWrappedCnx())
@@ -39,6 +42,7 @@ namespace Evolve.Tests.Integration.SQLite
         }
 
         [Fact]
+        [Category(Test.SQLite)]
         public void GetMetadataTable_works()
         {
             using (var connection = TestUtil.CreateSQLiteWrappedCnx())

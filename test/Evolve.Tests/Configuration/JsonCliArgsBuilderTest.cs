@@ -9,6 +9,7 @@ namespace Evolve.Tests.Configuration
     public class JsonCliArgsBuilderTest
     {
         [Fact]
+        [Category(Test.Configuration)]
         public void Load_json_configuration_file_works()
         {
             var builder = new JsonCliArgsBuilder(TestContext.EvolveJsonPath);
@@ -37,6 +38,7 @@ namespace Evolve.Tests.Configuration
         }
 
         [Fact]
+        [Category(Test.Configuration)]
         public void Load_multiple_json_configuration_files_works()
         {
             var builder = new JsonCliArgsBuilder(TestContext.Evolve2JsonPath, env: "staging");
@@ -65,6 +67,7 @@ namespace Evolve.Tests.Configuration
         }
 
         [Fact]
+        [Category(Test.Configuration)]
         public void Load_incomplete_json_configuration_files_works()
         {
             var builder = new JsonCliArgsBuilder(TestContext.Evolve3JsonPath);
@@ -93,6 +96,7 @@ namespace Evolve.Tests.Configuration
         }
 
         [Fact]
+        [Category(Test.Configuration)]
         public void Build_CommandLine_Args_works()
         {
             string expected = @"postgresql Erase -c=""Server=127.0.0.1;Port=5432;Database=myDataBase;User Id=myUsername;Password=myPassword;"" -l=""migration"" -l=""dataset"" -s=""my_shema"" --metadata-table-schema=""my_metadata_schema"" --metadata-table=""metadata_store"" -p=""Schema:my_schema"" -p=""Pwd:password"" --placeholder-prefix=@{ --placeholder-suffix=@} --target-version=2_1_0 --start-version=1_1_0 --scripts-prefix=Ver --scripts-suffix=.query --scripts-separator=@ --encoding=utf-16 --command-timeout=200 --out-of-order=true --erase-disabled=true --erase-on-validation-error=True --enable-cluster-mode=true";

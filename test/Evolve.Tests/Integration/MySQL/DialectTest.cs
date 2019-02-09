@@ -27,6 +27,7 @@ namespace Evolve.Tests.Integration.MySQL
         }
 
         [Fact]
+        [Category(Test.MySQL)]
         public void Run_all_MySQL_integration_tests_work()
         {
             // Open a connection to the MySQL database

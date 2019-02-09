@@ -18,6 +18,7 @@ namespace Evolve.Tests.Integration.SQLite
         }
 
         [Fact]
+        [Category(Test.SQLite)]
         public void Run_all_SQLite_migrations_work()
         {
             var cnn = new SQLiteConnection($@"Data Source={Path.GetTempPath() + Guid.NewGuid().ToString()}.db;");

@@ -32,6 +32,7 @@ namespace Evolve.Tests.Integration.SQLServer
         }
 
         [Fact]
+        [Category(Test.SQLServer)]
         public void Run_all_SQLServer_integration_tests_work()
         {
             // Open a connection to the SQLServer database

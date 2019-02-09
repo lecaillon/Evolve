@@ -12,6 +12,7 @@ namespace Evolve.Tests.Migration
         [InlineData("1_2")]
         [InlineData("1_20_31_4000")]
         [InlineData("1")]
+        [Category(Test.Migration)]
         public void Can_get_new_migration_version(string version)
         {
             Assert.Equal(new MigrationVersion(version).VersionParts, version.Split('_').Select(long.Parse).ToList());
@@ -22,12 +23,14 @@ namespace Evolve.Tests.Migration
         [InlineData("1_2_3_4_")]
         [InlineData(".1.2.3.4")]
         [InlineData("1.2.3.a")]
+        [Category(Test.Migration)]
         public void When_version_format_is_incorrect_Throws_EvolveConfigurationException(string version)
         {
             Assert.Throws<EvolveConfigurationException>(() => new MigrationVersion(version));
         }
 
         [Fact]
+        [Category(Test.Migration)]
         public void Versions_should_be_well_ordered()
         {
             var list = new List<MigrationVersion>
@@ -57,6 +60,7 @@ namespace Evolve.Tests.Migration
         }
 
         [Fact]
+        [Category(Test.Migration)]
         public void Version_comparaison_should_be_logical()
         {
             Assert.True(new MigrationVersion("1") == new MigrationVersion("1"));

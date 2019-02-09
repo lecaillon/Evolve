@@ -8,6 +8,7 @@ namespace Evolve.Tests.Extensions
     public class WrappedConnectionExtensionsTest
     {
         [Fact]
+        [Category(Test.Connection)]
         public void GetDatabaseServerType_is_sqlite()
         {
             using (var connection = TestUtil.CreateSQLiteWrappedCnx())
@@ -17,6 +18,7 @@ namespace Evolve.Tests.Extensions
         }
 
         [Fact]
+        [Category(Test.Connection)]
         public void QueryForLong_works()
         {
             using (var connection = TestUtil.CreateSQLiteWrappedCnx())
@@ -26,6 +28,7 @@ namespace Evolve.Tests.Extensions
         }
 
         [Fact]
+        [Category(Test.Connection)]
         public void QueryForString_works()
         {
             using (var connection = TestUtil.CreateSQLiteWrappedCnx())
@@ -35,6 +38,7 @@ namespace Evolve.Tests.Extensions
         }
 
         [Fact]
+        [Category(Test.Connection)]
         public void QueryForListOfString_works()
         {
             var expected = new List<string> { "azerty", "qwerty" };
@@ -47,6 +51,7 @@ namespace Evolve.Tests.Extensions
         }
 
         [Fact]
+        [Category(Test.Connection)]
         public void QueryForListOfT_works()
         {
             var expected = new[] { new { Item1 = "azerty", Item2 = "qwerty" } }.ToList();
@@ -59,6 +64,7 @@ namespace Evolve.Tests.Extensions
         }
 
         [Fact]
+        [Category(Test.Connection)]
         public void QueryForListOfT_never_returns_null()
         {
             string sql = "SELECT tbl_name FROM sqlite_master WHERE type = 'PSG'";

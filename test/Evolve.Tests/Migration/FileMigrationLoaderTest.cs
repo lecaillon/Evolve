@@ -7,6 +7,7 @@ namespace Evolve.Tests.Migration
     public class FileMigrationLoaderTest
     {
         [Fact]
+        [Category(Test.Migration)]
         public void GetMigrations_works()
         {
             var loader = new FileMigrationLoader();
@@ -27,6 +28,7 @@ namespace Evolve.Tests.Migration
         }
 
         [Fact]
+        [Category(Test.Migration)]
         public void When_duplicate_version_found_Throws_EvolveException()
         {
             var loader = new FileMigrationLoader();

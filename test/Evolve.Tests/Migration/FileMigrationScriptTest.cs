@@ -9,6 +9,7 @@ namespace Evolve.Tests.Migration
     public class FileMigrationScriptTest
     {
         [Fact]
+        [Category(Test.Migration)]
         public void CalculateChecksum_should_not_return_null()
         {
             var script = new FileMigrationScript(TestContext.CrLfScriptPath, "2.3.1", "Migration description");
@@ -17,6 +18,7 @@ namespace Evolve.Tests.Migration
         }
 
         [Fact]
+        [Category(Test.Migration)]
         public void ValidateChecksum_should_work_with_both_crlf_and_lf_versions()
         {
             // Arrange
@@ -29,6 +31,7 @@ namespace Evolve.Tests.Migration
         }
 
         [Fact]
+        [Category(Test.Migration)]
         public void ValidateChecksum_should_work_with_old_checksum_version()
         {
             // Arrange
@@ -42,6 +45,7 @@ namespace Evolve.Tests.Migration
         }
 
         [Fact]
+        [Category(Test.Migration)]
         public void ValidateChecksum_throws_EvolveValidationException_when_checksums_mismatch()
         {
             // Arrange
@@ -52,6 +56,7 @@ namespace Evolve.Tests.Migration
         }
 
         [Fact]
+        [Category(Test.Migration)]
         public void CalculateChecksum_should_be_the_same_with_both_crlf_and_lf_versions()
         {
             // Arrange

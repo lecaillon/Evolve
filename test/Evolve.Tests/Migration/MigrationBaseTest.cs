@@ -8,6 +8,7 @@ namespace Evolve.Tests.Migration
     public class MigrationBaseTest
     {
         [Fact]
+        [Category(Test.Migration)]
         public void Migrations_should_be_well_ordered()
         {
             var list = new List<MigrationBase>
@@ -37,6 +38,7 @@ namespace Evolve.Tests.Migration
         }
 
         [Fact]
+        [Category(Test.Migration)]
         public void Migration_comparaison_should_be_logical()
         {
             Assert.True(new MigrationMetadata("1", "desc", "name", MetadataType.Migration) == new FileMigrationScript(TestContext.SQLite.ChinookScriptPath, "1", "desc"));

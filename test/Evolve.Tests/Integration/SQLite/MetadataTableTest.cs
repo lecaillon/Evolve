@@ -12,6 +12,7 @@ namespace Evolve.Tests.Integration.SQLite
         const string MetadataTableName = "changelog";
 
         [Fact]
+        [Category(Test.SQLite)]
         public void When_not_exists_IsExists_returns_false()
         {
             using (var connection = TestUtil.CreateSQLiteWrappedCnx())
@@ -23,6 +24,7 @@ namespace Evolve.Tests.Integration.SQLite
         }
 
         [Fact]
+        [Category(Test.SQLite)]
         public void When_exists_IsExists_returns_true()
         {
             using (var connection = TestUtil.CreateSQLiteWrappedCnx())
@@ -36,6 +38,7 @@ namespace Evolve.Tests.Integration.SQLite
         }
 
         [Fact]
+        [Category(Test.SQLite)]
         public void When_not_exists_create_metadataTable()
         {
             using (var connection = TestUtil.CreateSQLiteWrappedCnx())
@@ -49,6 +52,7 @@ namespace Evolve.Tests.Integration.SQLite
         }
 
         [Fact]
+        [Category(Test.SQLite)]
         public void SaveMigration_works()
         {
             var migration = new FileMigrationScript(TestContext.SQLite.ChinookScriptPath, "1.0.0", "desc");
@@ -64,6 +68,7 @@ namespace Evolve.Tests.Integration.SQLite
         }
 
         [Fact]
+        [Category(Test.SQLite)]
         public void UpdateChecksum_works()
         {
             var migration = new FileMigrationScript(TestContext.SQLite.ChinookScriptPath, "1.0.0", "desc");
@@ -81,6 +86,7 @@ namespace Evolve.Tests.Integration.SQLite
         }
 
         [Fact]
+        [Category(Test.SQLite)]
         public void GetAllMigrationMetadata_works()
         {
             var migrationScript = new FileMigrationScript(TestContext.SQLite.ChinookScriptPath, "1.0.0", "desc");
@@ -104,6 +110,7 @@ namespace Evolve.Tests.Integration.SQLite
         }
 
         [Fact]
+        [Category(Test.SQLite)]
         public void CanDropSchema_works()
         {
             using (var connection = TestUtil.CreateSQLiteWrappedCnx())
@@ -118,6 +125,7 @@ namespace Evolve.Tests.Integration.SQLite
         }
 
         [Fact]
+        [Category(Test.SQLite)]
         public void CanEraseSchema_works()
         {
             using (var connection = TestUtil.CreateSQLiteWrappedCnx())
@@ -132,6 +140,7 @@ namespace Evolve.Tests.Integration.SQLite
         }
 
         [Fact]
+        [Category(Test.SQLite)]
         public void FindStartVersion_works()
         {
             using (var connection = TestUtil.CreateSQLiteWrappedCnx())
