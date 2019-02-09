@@ -1,3 +1,5 @@
+#tool nuget:?package=ReportGenerator&version=4.0.11
+
 ///////////////////////////////////////////////////////////////////////////////
 // ARGUMENTS
 ///////////////////////////////////////////////////////////////////////////////
@@ -63,6 +65,21 @@ Task("test").Does(() =>
     {
         Configuration = configuration,
         ArgumentCustomization = args => args.AppendSwitchQuoted("--filter", "Category!=Cli")
+                                            .Append("-l:console;verbosity=normal")
+                                            .Append("/p:AltCover=true")
+                                            .Append("/p:AltCoverForce=true")
+                                            .Append("/p:AltCoverCallContext=[Fact]|[Theory]")
+                                            .Append("/p:AltCoverAssemblyFilter=Evolve.Tests|xunit.runner")
+                                            .Append($"/p:AltCoverXmlReport={MakeAbsolute(Directory($"{publishDir}")).FullPath}/coverage.xml")
+    });
+});
+
+Task("report-coverage").Does(() =>
+{
+    ReportGenerator($"{publishDir}/coverage.xml", $"{publishDir}/coverage", new ReportGeneratorSettings
+    {
+        ReportTypes = new[] { ReportGeneratorReportType.Badges, ReportGeneratorReportType.Cobertura, ReportGeneratorReportType.HtmlInline },
+        Verbosity = ReportGeneratorVerbosity.Info
     });
 });
 
@@ -72,6 +89,7 @@ Task("test-cli").Does(() =>
     {
         Configuration = configuration,
         ArgumentCustomization = args => args.AppendSwitchQuoted("--filter", "Category=Cli")
+                                            .Append("-l:console;verbosity=normal")
     });
 });
 
@@ -179,6 +197,7 @@ Task("default")
     .IsDependentOn("win-build")
     .IsDependentOn("linux-build")
     .IsDependentOn("test")
+    .IsDependentOn("report-coverage")
     .IsDependentOn("win-publish-cli")
     .IsDependentOn("win-warp-cli")
     .IsDependentOn("linux-publish-cli")
