@@ -34,18 +34,6 @@ namespace Evolve
         }
 
         /// <summary>
-        ///     Returns a value indicating whether the specified String object occurs within this string.
-        /// </summary>
-        /// <param name="source"></param>
-        /// <param name="toCheck"> The String object to seek. </param>
-        /// <param name="comp"> One of the enumeration values that specifies how the strings will be compared. </param>
-        /// <returns> True if the value parameter occurs within this string, otherwise, false. </returns>
-        public static bool Contains(this string source, string toCheck, StringComparison comp)
-        {
-            return source.IndexOf(toCheck, comp) >= 0;
-        }
-
-        /// <summary>
         ///     Returns the value of the given dictionary key or default if not found.
         /// </summary>
         public static TV GetValue<TK, TV>(this IDictionary<TK, TV> dict, TK key, TV defaultValue = default(TV))
