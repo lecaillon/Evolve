@@ -64,9 +64,7 @@ Task("linux-build").WithCriteria(() => IsRunningOnUnix()).Does(() =>
 
 Task("test").Does(() =>
 {
-    var assemblyFilter = Environment.GetEnvironmentVariable("APPVEYOR") == "True" 
-        ? "Evolve.Tests|xunit.runner|Evolve.Dialect.Cassandra" 
-        : "Evolve.Tests|xunit.runner";
+    var pathFilter = Environment.GetEnvironmentVariable("APPVEYOR") == "True" ? "\\SCassandra" : "";
 
     DotNetCoreTest("./test/Evolve.Tests", new DotNetCoreTestSettings
     {
@@ -76,7 +74,8 @@ Task("test").Does(() =>
                                             .Append("/p:AltCover=true")
                                             .Append("/p:AltCoverForce=true")
                                             .Append("/p:AltCoverCallContext=[Fact]|[Theory]")
-                                            .Append($"/p:AltCoverAssemblyFilter={assemblyFilter}")
+                                            .Append("/p:AltCoverAssemblyFilter=Evolve.Tests|xunit.runner")
+                                            .Append($"/p:AltCoverPathFilter={pathFilter}")
                                             .Append("/p:AltCoverTypeFilter=Evolve.MSBuild.AppConfigCliArgsBuilder|Evolve.Utilities.Check|TinyJson.JSONParser")
                                             .Append($"/p:AltCoverXmlReport={publishDirFullPath}/coverage.xml")
     });
