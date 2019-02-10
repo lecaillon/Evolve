@@ -107,8 +107,8 @@ namespace Evolve.MSBuild
             }
 
             var builder = new StringBuilder();
-            AppendArg(builder, null, Database, false);
             AppendArg(builder, null, Command, false);
+            AppendArg(builder, null, Database, false);
             AppendArg(builder, "-c", ConnectionString, true);
             AppendArgs(builder, "-l", Locations, true);
             AppendArgs(builder, "-s", Schemas, true);

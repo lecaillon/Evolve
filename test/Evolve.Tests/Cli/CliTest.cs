@@ -136,7 +136,7 @@ namespace Evolve.Tests.Cli
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? TestContext.CliExe : TestContext.Cli,
-                    Arguments = $"{db} {command} -c \"{cnxStr}\" -l {location} {args}",
+                    Arguments = $"{command} {db} -c \"{cnxStr}\" -l {location} {args}",
                     UseShellExecute = false,
                     CreateNoWindow = true,
                     RedirectStandardError = true,
