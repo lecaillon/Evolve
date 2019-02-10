@@ -85,7 +85,7 @@ Task("report-coverage").Does(() =>
 {
     ReportGenerator($"{publishDir}/coverage.xml", $"{publishDir}/coverage", new ReportGeneratorSettings
     {
-        ReportTypes = new[] { ReportGeneratorReportType.Badges, ReportGeneratorReportType.Cobertura, ReportGeneratorReportType.HtmlInline },
+        ReportTypes = new[] { ReportGeneratorReportType.Badges, ReportGeneratorReportType.Cobertura, ReportGeneratorReportType.Html },
         Verbosity = ReportGeneratorVerbosity.Info
     });
 });
