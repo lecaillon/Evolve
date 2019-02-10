@@ -73,7 +73,7 @@ Task("test").Does(() =>
                                             .Append("/p:AltCoverForce=true")
                                             .Append("/p:AltCoverCallContext=[Fact]|[Theory]")
                                             .Append("/p:AltCoverAssemblyFilter=Evolve.Tests|xunit.runner")
-                                            .Append("/p:AltCoverTypeFilter=Evolve.Utilities.Check|TinyJson.JSONParser")
+                                            .Append("/p:AltCoverTypeFilter=Evolve.MSBuild.AppConfigCliArgsBuilder|Evolve.Utilities.Check|TinyJson.JSONParser")
                                             .Append($"/p:AltCoverXmlReport={publishDirFullPath}/coverage.xml")
     });
 });
