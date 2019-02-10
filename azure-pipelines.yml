@@ -59,13 +59,22 @@ steps:
   displayName: Test
   continueOnError: true
 
+- script: './build.sh --target=linux-publish-cli'
+  displayName: 'Publish CLI'
+
+- script: './build.sh --target=linux-warp-cli'
+  displayName: 'Warp CLI'
+
+- script: './build.sh --target=test-cli'
+  displayName: 'Test CLI'
+  continueOnError: true
+
 - task: PublishTestResults@2
   displayName: 'Publish test results'
   inputs:
     testResultsFormat: VSTest
     testResultsFiles: '*.trx'
     searchFolder: '$(build.sourcesdirectory)/publish'
-    mergeTestResults: true
     failTaskOnFailedTests: true
 
 - script: './build.sh --target=report-coverage'
@@ -77,15 +86,6 @@ steps:
     codeCoverageTool: Cobertura
     summaryFileLocation: '$(build.sourcesdirectory)/publish/coverage/Cobertura.xml'
     reportDirectory: '$(build.sourcesdirectory)/publish/coverage'
-
-- script: './build.sh --target=linux-publish-cli'
-  displayName: 'Publish CLI'
-
-- script: './build.sh --target=linux-warp-cli'
-  displayName: 'Warp CLI'
-
-- script: './build.sh --target=test-cli'
-  displayName: 'Test CLI'
 
 - task: PublishPipelineArtifact@0
   displayName: 'Publish artifacts'
