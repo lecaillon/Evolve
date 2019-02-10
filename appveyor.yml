@@ -48,3 +48,5 @@ test: off
 artifacts:
 - path: '.\dist\Evolve*.nupkg'
 - path: '.\dist\evolve.exe'
+- path: '.\publish\coverage'
+  type: zip
