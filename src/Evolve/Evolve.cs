@@ -50,6 +50,7 @@ namespace Evolve
         private const string MigrationError = "Error executing script: {0}.";
         private const string MigrationErrorEraseOnValidationError = "{0} Erase database. (MustEraseOnValidationError = True)";
         private const string MigrationSuccessfull = "Successfully applied migration {0}.";
+        private const string NoMigrationScript = "No migration script found.";
         private const string NothingToMigrate = "Database is up to date. No migration needed.";
         private const string MigrateSuccessfull = "Database migrated to version {0}. {1} migration(s) applied.";
         private const string MigrateOutOfOrderSuccessfull = "{0} out of order migration(s) applied.";
@@ -74,9 +75,9 @@ namespace Evolve
 
         #region Fields
 
-        private IDbConnection _userDbConnection;
-        private IMigrationLoader _loader = new FileMigrationLoader();
-        private Action<string> _logInfoDelegate;
+        private readonly IDbConnection _userDbConnection;
+        private readonly IMigrationLoader _loader = new FileMigrationLoader();
+        private readonly Action<string> _logInfoDelegate;
         private readonly string _depsFile = "";
 
         #endregion
@@ -194,6 +195,12 @@ namespace Evolve
                 {
                     throw ex;
                 }
+            }
+
+            if (_loader.GetMigrations(Locations, SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding).Count() == 0)
+            {
+                _logInfoDelegate(NoMigrationScript);
+                return;
             }
 
             var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
