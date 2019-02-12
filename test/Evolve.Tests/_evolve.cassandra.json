@@ -1,0 +1,21 @@
+﻿{
+  "clusterLock": {
+    "defaultClusterLockKeyspace": "my_cluster_lock_keyspace",
+    "defaultClusterLockTable": "my_lock_table"
+  },
+  "keyspaces": {
+    "my_keyspace_1": {
+      "class": "NetworkTopologyStrategy",
+      "dc1": "1"
+    },
+    "my_second_keyspace": {
+      "class": "NetworkTopologyStrategy",
+      "dc1": "2",
+      "dc2": "3"
+    },
+    "_default": {
+      "class": "SimpleStrategy",
+      "replication_factor": "1"
+    }
+  }
+}

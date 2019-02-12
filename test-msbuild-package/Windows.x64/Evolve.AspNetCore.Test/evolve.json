@@ -1,0 +1,6 @@
+{
+  "Evolve.ConnectionString": "Server=127.0.0.1;Port=5432;Database=my_database;User Id=postgres;Password=Password12!;",
+  "Evolve.Database": "postgresql",
+  "Evolve.Locations": "migration;dataset;",
+  "Evolve.Command": "erase"
+}

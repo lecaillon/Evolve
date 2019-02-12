@@ -1,0 +1,12 @@
+﻿<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <UsingTask TaskName="Evolve.MSBuild.EvolveBoot" AssemblyFile="$(MSBuildThisFileDirectory)Evolve.MSBuild.dll" />
+  <Target Name="SqlMigration" AfterTargets="Build">
+    <Message Condition="!Exists('Evolve.json') AND !Exists('evolve.json')" Importance="High" Text="Evolve MSBuild mode is off: evolve.json configuration file not found." />
+    <EvolveBoot Condition="Exists('Evolve.json') OR Exists('evolve.json')" 
+                Configuration="$(Configuration)"
+                IsDotNetCoreProject="true"
+                EvolveCliDir="$([System.IO.Path]::GetFullPath($(MSBuildThisFileDirectory)..\..\tools))" 
+                ProjectDir="$([MSBuild]::Unescape($(ProjectDir)))" 
+                TargetPath="$([MSBuild]::Unescape($(TargetPath)))" />
+  </Target>
+</Project>

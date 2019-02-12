@@ -1,10 +1,8 @@
-﻿using Evolve.Connection;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
+using Evolve.Connection;
+using TinyJson;
 
 namespace Evolve.Dialect.Cassandra
 {
@@ -83,17 +81,27 @@ namespace Evolve.Dialect.Cassandra
         {
             if (Configuration.ConfigurationFileExists())
             {
-                var configuration = JObject.Parse(Configuration.GetConfiguration())["keyspaces"];
+                var configuration = Configuration.GetConfiguration()
+                                 .FromJson<Dictionary<string, Dictionary<string, object>>>()
+                                 .GetValue("keyspaces", new Dictionary<string, object>());
 
-                if (configuration[keyspaceName] != null)
-                    return ReplicationStrategy.FromSortedDictionary(configuration[keyspaceName].ToObject<SortedDictionary<string, string>>());
-                else if (configuration[Configuration.DefaultKeyspaceKey] != null)
-                    return ReplicationStrategy.FromSortedDictionary(configuration[Configuration.DefaultKeyspaceKey].ToObject<SortedDictionary<string, string>>());
+                if (configuration.GetValue(keyspaceName) != null)
+                {
+                    return ReplicationStrategy.FromSortedDictionary(new SortedDictionary<string, string>((configuration[keyspaceName] as Dictionary<string, object>).ToDictionary(kv => kv.Key, kv => kv.Value as string)));
+                }
+                else if (configuration.GetValue(Configuration.DefaultKeyspaceKey) != null)
+                {
+                    return ReplicationStrategy.FromSortedDictionary(new SortedDictionary<string, string>((configuration[Configuration.DefaultKeyspaceKey] as Dictionary<string, object>).ToDictionary(kv => kv.Key, kv => kv.Value as string)));
+                }
                 else
+                {
                     return CreateSimpleStrategy(1); //Default if the the keyspace name is not present and there is no default
+                }
             }
             else
+            {
                 return CreateSimpleStrategy(1); //Default if the file is not present
+            }
         }
 
         public abstract class ReplicationStrategy

@@ -18,7 +18,8 @@ namespace Evolve.Dialect
         {
             [DBMS.SQLite]           = wcnn => new SQLiteDatabase(wcnn),
             [DBMS.PostgreSQL]       = wcnn => new PostgreSQLDatabase(wcnn),
-            [DBMS.MySQL_MariaDB]    = wcnn => new MySQLDatabase(wcnn),
+            [DBMS.MySQL]            = wcnn => new MySQLDatabase(wcnn),
+            [DBMS.MariaDB]          = wcnn => new MySQLDatabase(wcnn),
             [DBMS.SQLServer]        = wcnn => new SQLServerDatabase(wcnn),
             [DBMS.Cassandra]        = wcnn => new CassandraCluster(wcnn),
         };
