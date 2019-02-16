@@ -102,7 +102,6 @@ namespace Evolve
 
         public string ConnectionString { get; set; }
         public IEnumerable<string> Schemas { get; set; } = new List<string>();
-        public string Driver { get; set; }
         public CommandOptions Command { get; set; } = CommandOptions.DoNothing;
         public bool IsEraseDisabled { get; set; }
         public bool MustEraseOnValidationError { get; set; }
