@@ -13,7 +13,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{8C56B824-4
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evolve.Tests", "test\Evolve.Tests\Evolve.Tests.csproj", "{3A6F17CA-AF46-456B-BF71-5A9C0C87D2EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evolve.MSBuild", "src\Evolve.MSBuild\Evolve.MSBuild.csproj", "{257E5F2F-3B3F-4098-A32D-3D7AA2F18581}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evolve.MSBuild", "src\Evolve.MSBuild\Evolve.MSBuild.csproj", "{257E5F2F-3B3F-4098-A32D-3D7AA2F18581}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{7183866D-B03D-440A-904D-B92152904C4B}"
+	ProjectSection(SolutionItems) = preProject
+		build.cake = build.cake
+		build\common.props = build\common.props
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
