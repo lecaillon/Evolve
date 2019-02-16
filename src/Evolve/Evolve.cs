@@ -100,7 +100,6 @@ namespace Evolve
 
         #region IEvolveConfiguration
 
-        public string ConnectionString { get; set; }
         public IEnumerable<string> Schemas { get; set; } = new List<string>();
         public CommandOptions Command { get; set; } = CommandOptions.DoNothing;
         public bool IsEraseDisabled { get; set; }

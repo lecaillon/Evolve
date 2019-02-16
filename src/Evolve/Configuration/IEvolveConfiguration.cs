@@ -20,16 +20,6 @@ namespace Evolve.Configuration
     public interface IEvolveConfiguration
     {
         /// <summary>
-        ///     <para>
-        ///         Gets or sets the connection string to the database.
-        ///     </para>
-        ///     <para>
-        ///         Must have the necessary privileges to execute ddl.
-        ///     </para>
-        /// </summary>
-        string ConnectionString { get; set; }
-
-        /// <summary>
         ///     Gets or sets the paths (separated by semicolon) to scan recursively for migrations. (default: Sql_Scripts)
         /// </summary>
         IEnumerable<string> Locations { get; set; }
