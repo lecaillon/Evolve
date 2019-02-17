@@ -9,7 +9,9 @@ This makes it an ideal tool for continuous integration / delivery.
 Over all Evolve embraces simplicity. Every time you build or run your project, it will automatically ensure that your database is up-to-date. Install it and forget it!
 
 ## Evolve v2
-Evolve 2.0 is the first major rewrite version. It will help simplify the overall design by getting rid of the hard to maintain dynamic database driver loading. The benefits: a simpler code base, a simpler test infrastructure, more time to develop new features. **Evole** is now decoupled from its **MSBuild** part, is fully compatible with .NET Standard 2.0 and comes with a standalone **CLI**.
+Evolve 2.0 is the first major rewrite version. It will help simplify the overall design by getting rid of the hard to maintain dynamic database driver loading. The benefits: a simpler code base, a simpler test infrastructure, more time to develop new features. 
+
+**Evole** is now decoupled from its **MSBuild** part, is fully compatible with .NET Standard 2.0 and comes with a standalone **CLI**.
 
 ## Installation
 
