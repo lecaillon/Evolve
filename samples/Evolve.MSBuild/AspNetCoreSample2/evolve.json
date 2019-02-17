@@ -3,6 +3,7 @@
   "Evolve.Database": "sqlite",
   "Evolve.ConnectionString": "Data Source=C:\\Windows\\Temp\\mydb.dev.db;",
   "Evolve.Locations": "db",
-  "Evolve.EraseDisabled": true,
+  "Evolve.EraseOnValidationError": true,
+  "Evolve.OutOfOrder": true,
   "Evolve.Placeholder.table4": "table_4"
 }
