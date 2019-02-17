@@ -19,7 +19,7 @@ Evolve 2.0 is the first major rewrite version. It will help simplify the overall
 |---------|------------|
 | Evolve | [![NuGet](https://buildstats.info/nuget/Evolve)](https://www.nuget.org/packages/Evolve) |
 | Evolve MSBuild | [![NuGet](https://buildstats.info/nuget/Evolve.MSBuild.Windows.x64)](https://www.nuget.org/packages/Evolve.MSBuild.Windows.x64) |
-| Evolve CLI | [Evolve Releases](https://github.com/lecaillon/Evolve/releases) |
+| Evolve CLI | Evolve [releases](https://github.com/lecaillon/Evolve/releases) |
 
 ## Continuous integration
 | Build server    | Platform | Build status |
@@ -33,6 +33,8 @@ Evolve 2.0 is the first major rewrite version. It will help simplify the overall
 - [Evolve MSBuild](https://evolve-db.netlify.com/msbuild/)
 - [Evolve CLI](https://evolve-db.netlify.com/cli/)
 - [Samples](https://evolve-db.netlify.com/samples/)
+
+_The Evolve v1 documentation can be found [here](https://evolve-db-v1.netlify.com/)._
 
 ## Supported Databases
 - [x] PostgreSQL
