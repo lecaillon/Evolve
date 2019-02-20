@@ -97,6 +97,12 @@
         [Option("--enable-cluster-mode", "By default, Evolve will use a session level lock to coordinate the migration on multiple nodes. Default: true", CommandOptionType.SingleValue)]
         public bool EnableClusterMode { get; } = Default.EnableClusterMode;
 
+        [Option("-a|--embedded-resource-assembly", "When set, Evolve will scan the given list of assembly to load embedded migration scripts.", CommandOptionType.MultipleValue)]
+        public string[] EmbeddedResourceLocations { get; }
+
+        [Option("-f|--embedded-resource-filter", "When set, exclude embedded migration scripts that do not start with one of these filters.", CommandOptionType.MultipleValue)]
+        public string[] EmbeddedResourceFilters { get; }
+
         // Cassandra
         [Option("--keyspace", "A list of keyspaces managed by Evolve (Cassandra only).", CommandOptionType.MultipleValue)]
         public string[] Keyspaces { get; }
@@ -105,9 +111,3 @@
         public string MetadataTableKeyspace { get; }
     }
 }
-
-// erase postgresql --connection-string="Server=127.0.0.1;Port=5432;Database=my_database;User Id=postgres;Password=Password12!;" --schema=public --schema=unittest --location="C:\Projets\Evolve\test\Evolve.IntegrationTest\PostgreSQL\Resources\Sql_Scripts\Migration" --placeholder schema1:unittest
-// erase sqlite --connection-string="Data Source=C:\Users\lecai\Downloads\my_database.db" --location="C:\Projets\Evolve\test\Evolve.IntegrationTest\SQLite\Resources\Sql_Scripts\Migration" --placeholder table4:table_4
-// erase mysql --connection-string="Server=127.0.0.1;Port=3306;Database=my_database;Uid=root;Pwd=Password12!;SslMode=none;" --location="C:\Projets\Evolve\test\Evolve.IntegrationTest\MySQL\Resources\Sql_Scripts\Migration"
-// erase sqlserver --connection-string="Server=127.0.0.1;Database=my_database_2;User Id=sa;Password=Password12!;" --location="C:\Projets\Evolve\test\Evolve.IntegrationTest\SQLServer\Resources\Sql_Scripts\Migration" --placeholder db:my_database_2 --placeholder schema2:dbo --target-version="8_9"
-// erase cassandra --connection-string="Contact Points=127.0.0.1;Port=9042;Cluster Name=evolve" --location="C:\Projets\Evolve\test\Evolve.IntegrationTest\Cassandra\Resources\Cql_Scripts\Migration" --scripts-suffix=".cql" --keyspace="my_keyspace" --metadata-table-keyspace="evolve_change_log"
