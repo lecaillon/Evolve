@@ -9,7 +9,7 @@
 
     class Program
     {
-        private static readonly Evolve Default = new Evolve(null);
+        private static readonly Evolve Default = new Evolve(new System.Data.SQLite.SQLiteConnection());
 
         static void Main(string[] args) => CommandLineApplication.Execute<Program>(args);
 
