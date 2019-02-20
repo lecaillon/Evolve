@@ -1,4 +1,6 @@
-﻿using Evolve.Utilities;
+﻿using System.Collections.Generic;
+using Evolve.Migration;
+using Evolve.Utilities;
 using Xunit;
 
 namespace Evolve.Tests.Utilities
@@ -26,6 +28,36 @@ namespace Evolve.Tests.Utilities
         public void When_migration_name_format_is_incorrect_Throws_EvolveConfigurationException(string script)
         {
             Assert.Throws<EvolveConfigurationException>(() => MigrationUtil.ExtractVersionAndDescription(script, "V", "__", out string version, out string description));
+        }
+
+        [Fact]
+        [Category(Test.Migration)]
+        public void When_no_duplicate_returns_all_migration_scripts()
+        {
+            // Arrange
+            var sut = new List<FileMigrationScript>
+            {
+                new FileMigrationScript(TestContext.CrLfScriptPath, "2.3.1", "Migration description"),
+                new FileMigrationScript(TestContext.CrLfScriptPath, "2.3.2", "Migration description")
+            };
+
+            // Assert
+            Assert.Equal(sut, sut.CheckForDuplicates());
+        }
+
+        [Fact]
+        [Category(Test.Migration)]
+        public void When_duplicates_throws_EvolveConfigurationException()
+        {
+            // Arrange
+            var sut = new List<FileMigrationScript>
+            {
+                new FileMigrationScript(TestContext.CrLfScriptPath, "2.3.1", "Migration description"),
+                new FileMigrationScript(TestContext.CrLfScriptPath, "2.3.1", "Migration description")
+            };
+
+            // Assert
+            Assert.Throws<EvolveConfigurationException>(() => sut.CheckForDuplicates());
         }
     }
 }

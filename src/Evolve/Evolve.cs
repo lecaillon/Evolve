@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using Evolve.Configuration;
@@ -76,25 +76,18 @@ namespace Evolve
         #region Fields
 
         private readonly IDbConnection _userDbConnection;
-        private readonly IMigrationLoader _loader = new FileMigrationLoader();
         private readonly Action<string> _logInfoDelegate;
-        private readonly string _depsFile = "";
 
         #endregion
 
         /// <summary>
-        ///     <para>
-        ///         Simple constructor.
-        ///     </para>
-        ///     <para>
-        ///         Usefull when Evolve is used "in-app" or for unit tests. 
-        ///     </para>
+        ///     Initialize a new instance of the <see cref="Evolve"/> class.
         /// </summary>
-        /// <param name="dbConnection"> Optional database connection. </param>
-        /// <param name="logInfoDelegate"> Optional logger. </param>
+        /// <param name="dbConnection"> The database connection used to apply the migrations. </param>
+        /// <param name="logInfoDelegate"> An optional logger. </param>
         public Evolve(IDbConnection dbConnection, Action<string> logInfoDelegate = null)
         {
-            _userDbConnection = dbConnection;
+            _userDbConnection = Check.NotNull(dbConnection, nameof(dbConnection));
             _logInfoDelegate = logInfoDelegate ?? new Action<string>((msg) => { });
         }
 
@@ -114,7 +107,6 @@ namespace Evolve
             get => _metadaTableSchema.IsNullOrWhiteSpace() ? Schemas?.FirstOrDefault() : _metadaTableSchema;
             set => _metadaTableSchema = value;
         }
-
         public string PlaceholderPrefix { get; set; } = "${";
         public string PlaceholderSuffix { get; set; } = "}";
         public Dictionary<string, string> Placeholders { get; set; } = new Dictionary<string, string>();
@@ -126,19 +118,22 @@ namespace Evolve
         public bool EnableClusterMode { get; set; } = true;
         public bool OutOfOrder { get; set; } = false;
         public int? CommandTimeout { get; set; }
+        public IEnumerable<Assembly> EmbeddedResourceAssemblies { get; set; } = new List<Assembly>();
+        public IEnumerable<string> EmbeddedResourceFilters { get; set; } = new List<string>();
 
         #endregion
 
         #region Properties
 
-        /// <summary>
-        ///     True if the project to migrate targets netcoreapp or NETCORE, otherwise false.
-        /// </summary>
-        public bool IsDotNetStandardProject => !_depsFile.IsNullOrWhiteSpace();
         public int NbMigration { get; private set; }
         public int NbReparation { get; private set; }
         public int NbSchemaErased { get; private set; }
         public int NbSchemaToEraseSkipped { get; private set; }
+        public IMigrationLoader MigrationLoader
+        {
+            get => EmbeddedResourceAssemblies.Any() ? new EmbeddedResourceMigrationLoader(EmbeddedResourceAssemblies, EmbeddedResourceFilters)
+                                                  : new FileMigrationLoader(Locations) as IMigrationLoader;
+        }
 
         #endregion
 
@@ -195,7 +190,7 @@ namespace Evolve
                 }
             }
 
-            if (_loader.GetMigrations(Locations, SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding).Count() == 0)
+            if (MigrationLoader.GetMigrations(SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding).Count() == 0)
             {
                 _logInfoDelegate(NoMigrationScript);
                 return;
@@ -204,10 +199,10 @@ namespace Evolve
             var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
             var lastAppliedVersion = metadata.GetAllMigrationMetadata().LastOrDefault()?.Version ?? MigrationVersion.MinVersion;
             var startVersion = metadata.FindStartVersion(); // Load start version from metadata
-            var scripts = _loader.GetMigrations(Locations, SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding)
-                                 .SkipWhile(x => x.Version < startVersion)
-                                 .SkipWhile(x => x.Version <= lastAppliedVersion)
-                                 .TakeWhile(x => x.Version <= TargetVersion);
+            var scripts = MigrationLoader.GetMigrations(SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding)
+                                         .SkipWhile(x => x.Version < startVersion)
+                                         .SkipWhile(x => x.Version <= lastAppliedVersion)
+                                         .TakeWhile(x => x.Version <= TargetVersion);
 
             foreach (var script in scripts)
             {
@@ -328,20 +323,6 @@ namespace Evolve
 
         #endregion
 
-        private string ResolveConfigurationFileLocation(string location)
-        {
-            Check.NotNullOrEmpty(location, nameof(location));
-
-            try
-            {
-                return new FileInfo(location).FullName;
-            }
-            catch (Exception ex)
-            {
-                throw new EvolveConfigurationException(string.Format(InvalidConfigurationLocation, location), ex);
-            }
-        }
-
         private void InternalExecuteCommand(Action<DatabaseHelper> commandAction)
         {
             NbMigration = 0;
@@ -423,7 +404,7 @@ namespace Evolve
 
         private DatabaseHelper InitiateDatabaseConnection()
         {
-            var connectionProvider = GetConnectionProvider();                               // Get a database connection provider
+            var connectionProvider = new ConnectionProvider(_userDbConnection);             // Get a database connection provider
             var evolveConnection = connectionProvider.GetConnection();                      // Get a connection to the database
             evolveConnection.Validate();                                                    // Validate the reliabilty of the initiated connection
             var dbmsType = evolveConnection.GetDatabaseServerType();                        // Get the DBMS type
@@ -436,11 +417,6 @@ namespace Evolve
             _logInfoDelegate(EvolveInitialized);
 
             return db;
-        }
-
-        private IConnectionProvider GetConnectionProvider()
-        {
-            return new ConnectionProvider(_userDbConnection);
         }
 
         private void WaitForApplicationLock(DatabaseHelper db)
@@ -554,9 +530,9 @@ namespace Evolve
 
             var lastAppliedVersion = appliedMigrations.Last().Version;                                                      // Get the last applied migration version
             var startVersion = metadata.FindStartVersion();                                                                 // Load start version from metadata
-            var scripts = _loader.GetMigrations(Locations, SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding)
-                                 .SkipWhile(x => x.Version < startVersion)
-                                 .TakeWhile(x => x.Version <= lastAppliedVersion);                                          // Keep scripts between first and last applied migration
+            var scripts = MigrationLoader.GetMigrations(SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding)
+                                         .SkipWhile(x => x.Version < startVersion)
+                                         .TakeWhile(x => x.Version <= lastAppliedVersion);                                  // Keep scripts between first and last applied migration
 
             foreach (var script in scripts)
             {

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using Evolve.Migration;
 
@@ -159,5 +160,15 @@ namespace Evolve.Configuration
         ///     a migration and generating an error. (The default is 30 seconds.)
         /// </summary>
         int? CommandTimeout { get; set; }
+
+        /// <summary>
+        ///     When set, Evolve will scan the given list of assembly to load embedded migration scripts.
+        /// </summary>
+        IEnumerable<Assembly> EmbeddedResourceAssemblies { get; set; }
+
+        /// <summary>
+        ///     When set, exclude embedded migration scripts that do not start with one of these filters.
+        /// </summary>
+        IEnumerable<string> EmbeddedResourceFilters { get; set; }
     }
 }

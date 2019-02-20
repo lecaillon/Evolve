@@ -35,10 +35,10 @@ namespace Evolve.Tests.Migration
         public void ValidateChecksum_should_work_with_old_checksum_version()
         {
             // Arrange
-            FileMigrationLoader loader = new FileMigrationLoader();
+            FileMigrationLoader loader = new FileMigrationLoader(new[] { "Resources/LF_CRLF" });
 
             // Assert
-            foreach (FileMigrationScript script in loader.GetMigrations(new [] { "Resources/LF_CRLF" }, "V", "__", ".sql"))
+            foreach (FileMigrationScript script in loader.GetMigrations("V", "__", ".sql"))
             {
                 script.ValidateChecksum(FallbackCheck(script.Path));
             }
