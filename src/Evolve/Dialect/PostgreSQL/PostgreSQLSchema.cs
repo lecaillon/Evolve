@@ -7,14 +7,10 @@ namespace Evolve.Dialect.PostgreSQL
     {
         public PostgreSQLSchema(string schemaName, WrappedConnection wrappedConnection) : base(schemaName, wrappedConnection)
         {
-            var version = _wrappedConnection.QueryForString("SHOW server_version;").Split('.');
-            MajorVersion = int.Parse(version[0]);
-            MinorVersion = int.Parse(version[1]);
+            Version = _wrappedConnection.QueryForLong("SHOW server_version_num;");
         }
 
-        public int MajorVersion { get; }
-
-        public int MinorVersion { get; }
+        public long Version { get; }
 
         public override bool IsExists()
         {
@@ -61,7 +57,7 @@ namespace Evolve.Dialect.PostgreSQL
 
         protected void DropMaterializedViews()
         {
-            if (MajorVersion < 9 || (MajorVersion == 9 && MinorVersion < 3))
+            if (Version < 90300)
             {
                 return;
             }
@@ -110,7 +106,7 @@ namespace Evolve.Dialect.PostgreSQL
 
         protected void DropBaseAggregates()
         {
-            if (MajorVersion >= 11)
+            if (Version >= 110000)
             {
                 return;
             }
@@ -127,7 +123,7 @@ namespace Evolve.Dialect.PostgreSQL
 
         protected void DropRoutines()
         {
-            if (MajorVersion < 11)
+            if (Version < 110000)
             {
                 string sql = "SELECT proname, oidvectortypes(proargtypes) AS args " +
                              "FROM pg_proc INNER JOIN pg_namespace ns ON (pg_proc.pronamespace = ns.oid) " +
