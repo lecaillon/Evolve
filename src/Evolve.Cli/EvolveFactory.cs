@@ -6,6 +6,7 @@
     using System.Data.SqlClient;
     using System.Data.SQLite;
     using System.Linq;
+    using System.Reflection;
     using System.Text;
     using Cassandra.Data;
     using Dialect;
@@ -43,6 +44,12 @@
             if (options.Placeholders != null)
             {
                 evolve.Placeholders = MapPlaceholders(options.Placeholders, options.PlaceholderPrefix, options.PlaceholderSuffix);
+            }
+
+            if (options.EmbeddedResourceLocations != null)
+            {
+                evolve.EmbeddedResourceAssemblies = LoadAssemblies(options.EmbeddedResourceLocations);
+                evolve.EmbeddedResourceFilters = options.EmbeddedResourceFilters;
             }
 
             if (options.Database == DBMS.Cassandra)
@@ -110,6 +117,24 @@
             {
                 return Encoding.UTF8;
             }
+        }
+
+        private static List<Assembly> LoadAssemblies(string[] assemblies)
+        {
+            var list = new List<Assembly>();
+            foreach (var assembly in assemblies)
+            {
+                try
+                {
+                    list.Add(Assembly.LoadFrom(assembly));
+                }
+                catch (Exception ex)
+                {
+                    throw new EvolveConfigurationException($"Error loading assembly from --embedded-resource-assembly {assembly}", ex);
+                }
+            }
+
+            return list;
         }
     }
 }

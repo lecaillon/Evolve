@@ -35,6 +35,8 @@ namespace Evolve.Tests.Configuration
             Assert.Equal("true", builder.EnableClusterMode);
             Assert.Equal("true", builder.OutOfOrder);
             Assert.Equal("200", builder.CommandTimeout);
+            Assert.True(new List<string>() { "Evolve.Tests.dll" }.SequenceEqual(builder.EmbeddedResourceAssemblies));
+            Assert.True(new List<string>() { "Evolve.Tests.Resources" }.SequenceEqual(builder.EmbeddedResourceFilters));
         }
 
         [Fact]
@@ -64,6 +66,8 @@ namespace Evolve.Tests.Configuration
             Assert.Equal("false", builder.EnableClusterMode);
             Assert.Equal("false", builder.OutOfOrder);
             Assert.Null(builder.CommandTimeout);
+            Assert.True(new List<string>() { "Evolve.Tests.dll" }.SequenceEqual(builder.EmbeddedResourceAssemblies));
+            Assert.True(new List<string>() { "Evolve.Tests.Resources.Migrations" }.SequenceEqual(builder.EmbeddedResourceFilters));
         }
 
         [Fact]
@@ -93,13 +97,15 @@ namespace Evolve.Tests.Configuration
             Assert.Null(builder.EnableClusterMode);
             Assert.Null(builder.OutOfOrder);
             Assert.Null(builder.CommandTimeout);
+            Assert.Null(builder.EmbeddedResourceAssemblies);
+            Assert.Null(builder.EmbeddedResourceFilters);
         }
 
         [Fact]
         [Category(Test.Configuration)]
         public void Build_CommandLine_Args_works()
         {
-            string expected = @"Erase postgresql -c=""Server=127.0.0.1;Port=5432;Database=myDataBase;User Id=myUsername;Password=myPassword;"" -l=""migration"" -l=""dataset"" -s=""my_shema"" --metadata-table-schema=""my_metadata_schema"" --metadata-table=""metadata_store"" -p=""Schema:my_schema"" -p=""Pwd:password"" --placeholder-prefix=@{ --placeholder-suffix=@} --target-version=2_1_0 --start-version=1_1_0 --scripts-prefix=Ver --scripts-suffix=.query --scripts-separator=@ --encoding=utf-16 --command-timeout=200 --out-of-order=true --erase-disabled=true --erase-on-validation-error=True --enable-cluster-mode=true";
+            string expected = @"Erase postgresql -c=""Server=127.0.0.1;Port=5432;Database=myDataBase;User Id=myUsername;Password=myPassword;"" -l=""migration"" -l=""dataset"" -s=""my_shema"" --metadata-table-schema=""my_metadata_schema"" --metadata-table=""metadata_store"" -p=""Schema:my_schema"" -p=""Pwd:password"" --placeholder-prefix=@{ --placeholder-suffix=@} --target-version=2_1_0 --start-version=1_1_0 --scripts-prefix=Ver --scripts-suffix=.query --scripts-separator=@ --encoding=utf-16 --command-timeout=200 --out-of-order=true --erase-disabled=true --erase-on-validation-error=True --enable-cluster-mode=true -a=""Evolve.Tests.dll"" -f=""Evolve.Tests.Resources""";
             string actual = new JsonCliArgsBuilder(TestContext.EvolveJsonPath).Build();
 
             Assert.Equal(expected, actual);

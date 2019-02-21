@@ -58,7 +58,7 @@ namespace Evolve.Tests.Cli
 
         [Fact]
         [Category(Test.Cli, Test.MySQL)]
-        public void Erase_And_Migrate_MySQL()
+        public void Erase_And_Migrate_MySQL_With_Embedded_Resources()
         {
             foreach (var command in new[] { "erase", "migrate" })
             {
@@ -66,8 +66,8 @@ namespace Evolve.Tests.Cli
                     db: "mysql",
                     command: command,
                     cnxStr: _mySQLContainer.CnxStr,
-                    location: TestContext.MySQL.MigrationFolder,
-                    args: "--command-timeout 25");
+                    location: null,
+                    args: "-a Evolve.Tests.dll -f Evolve.Tests.Integration.MySQL.Resources.Sql_Scripts.Migration");
 
                 Assert.True(stderr == string.Empty, stderr);
             }
@@ -131,12 +131,16 @@ namespace Evolve.Tests.Cli
 
         private string RunCli(string db, string command, string cnxStr, string location, string args)
         {
+            string commandLineArgs = location is null
+                ? $"{command} {db} -c \"{cnxStr}\" {args}"
+                : $"{command} {db} -c \"{cnxStr}\" -l {location} {args}";
+
             var proc = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? TestContext.CliExe : TestContext.Cli,
-                    Arguments = $"{command} {db} -c \"{cnxStr}\" -l {location} {args}",
+                    Arguments = commandLineArgs,
                     UseShellExecute = false,
                     CreateNoWindow = true,
                     RedirectStandardError = true,

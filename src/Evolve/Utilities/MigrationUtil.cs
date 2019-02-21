@@ -1,5 +1,7 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using Evolve.Migration;
 
 namespace Evolve.Utilities
 {
@@ -9,6 +11,7 @@ namespace Evolve.Utilities
         private const string MigrationNameSeparatorNotFound = "Separator {0} not found in sql file name: {1}.";
         private const string MigrationNameVersionNotFound = "No version found in sql file name: {0}.";
         private const string MigrationNameDescriptionNotFound = "No description found in sql file name: {0}.";
+        private const string DuplicateMigrationScriptVersion = "Found multiple sql migration files with the same version: {0}.";
 
         public static void ExtractVersionAndDescription(string script, string prefix, string separator, out string version, out string description)
         {
@@ -39,6 +42,23 @@ namespace Evolve.Utilities
             // Check description
             if (description.IsNullOrWhiteSpace())
                 throw new EvolveConfigurationException(string.Format(MigrationNameDescriptionNotFound, script));
+        }
+
+        public static IEnumerable<MigrationBase> CheckForDuplicates(this IEnumerable<MigrationBase> migrations)
+        {
+            Check.NotNull(migrations, nameof(migrations));
+
+            var duplicates = migrations.GroupBy(x => x.Version)
+                                       .Where(grp => grp.Count() > 1)
+                                       .Select(grp => grp.Key.Label)
+                                       .ToArray();
+
+            if (duplicates.Count() > 0)
+            {
+                throw new EvolveConfigurationException(string.Format(DuplicateMigrationScriptVersion, string.Join(", ", duplicates)));
+            }
+
+            return migrations;
         }
     }
 }

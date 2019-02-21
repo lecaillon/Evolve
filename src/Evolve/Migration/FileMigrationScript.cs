@@ -10,14 +10,14 @@ namespace Evolve.Migration
     {
         private const string IncorrectMigrationChecksum = "Validate failed: invalid checksum for migration: {0}.";
 
-        public FileMigrationScript(string path, string version, string description, Encoding textEncoding = null)
+        public FileMigrationScript(string path, string version, string description, Encoding encoding = null)
             : base(version,
                    description,
                    System.IO.Path.GetFileName(Check.FileExists(path, nameof(path))),
-                   File.ReadAllText(path, textEncoding ?? Encoding.UTF8))
+                   File.ReadAllText(path, encoding ?? Encoding.UTF8))
         {
             Path = path;
-            Encoding = textEncoding ?? Encoding.UTF8;
+            Encoding = encoding ?? Encoding.UTF8;
         }
         
         public string Path { get; }

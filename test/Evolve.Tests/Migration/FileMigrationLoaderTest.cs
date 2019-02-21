@@ -8,16 +8,16 @@ namespace Evolve.Tests.Migration
     {
         [Fact]
         [Category(Test.Migration)]
-        public void GetMigrations_works()
+        public void Load_file_migrations_works()
         {
-            var loader = new FileMigrationLoader();
-            var scripts = loader.GetMigrations(new [] 
+            var loader = new FileMigrationLoader(new[]
             {
                 TestContext.Scripts1,
                 TestContext.Scripts2,
                 TestContext.Scripts1,
                 TestContext.Scripts2 + "/PSG"
-            }, "V", "__", ".sql").ToList();
+            });
+            var scripts = loader.GetMigrations("V", "__", ".sql").ToList();
 
             Assert.Equal("1.3.0", scripts[0].Version.Label);
             Assert.Equal("1.3.1", scripts[1].Version.Label);
@@ -31,8 +31,8 @@ namespace Evolve.Tests.Migration
         [Category(Test.Migration)]
         public void When_duplicate_version_found_Throws_EvolveException()
         {
-            var loader = new FileMigrationLoader();
-            Assert.Throws<EvolveConfigurationException>(() => loader.GetMigrations(new [] { TestContext.ResourcesFolder }, "V", "__", ".sql"));
+            var loader = new FileMigrationLoader(new[] { TestContext.ResourcesFolder });
+            Assert.Throws<EvolveConfigurationException>(() => loader.GetMigrations("V", "__", ".sql"));
         }
     }
 }
