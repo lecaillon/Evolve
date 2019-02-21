@@ -40,6 +40,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="Integration\MySQL\Resources\Sql_Scripts\Migration\*.sql" />
+    <EmbeddedResource Include="Integration\MySQL\Resources\Sql_Scripts\Migration\**\*.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  
+  <ItemGroup>
     <Content Include="Resources\Configuration\Web.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
