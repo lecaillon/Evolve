@@ -13,10 +13,8 @@ Every time you build your project, it will automatically ensure that your databa
     <repository type="git" url="https://github.com/lecaillon/Evolve.git" />
     <iconUrl>https://raw.githubusercontent.com/lecaillon/Evolve/master/images/logo128.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <releaseNotes>- #80 Add netstandard2.0 support
-- #88 Add PostgreSQL 11 support
-- #89 Add SourceLink to the NuGet package
-- #93 Breaking change: remove the MSBuild task from the Evolve NuGet package</releaseNotes>
+    <releaseNotes>- #30 Add support for loading scripts from embedded resources.
+- #100 Fix: failed to parse PostgreSQL version in Debian based PostgreSQL containers.</releaseNotes>
     <tags>Evolve Flyway sql database migration database-migration continuous-integration continuous-delivery</tags>
     <dependencies>
       <group targetFramework="net35" />
