@@ -66,8 +66,8 @@ namespace Evolve.Tests.Cli
                     db: "mysql",
                     command: command,
                     cnxStr: _mySQLContainer.CnxStr,
-                    location: TestContext.MySQL.MigrationFolder,
-                    args: "--embedded-resource-assembly Evolve.Tests.dll --command-timeout 25");
+                    location: null,
+                    args: "-a Evolve.Tests.dll -f Evolve.Tests.Integration.MySQL.Resources.Sql_Scripts.Migration");
 
                 Assert.True(stderr == string.Empty, stderr);
             }
