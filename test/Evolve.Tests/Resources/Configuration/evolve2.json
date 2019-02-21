@@ -16,6 +16,8 @@
   "Evolve.PlaceholderSuffix": "@}",
   "Evolve.EnableClusterMode": "false",
   "Evolve.OutOfOrder": "false",
+  "Evolve.EmbeddedResourceAssemblies": "Evolve.Tests.dll",
+  "Evolve.EmbeddedResourceFilters": "Evolve.Tests.Resources",
 
   "Evolve.Placeholder.Schema": "my_schema",
   "Evolve.Placeholder.Pwd": "password"

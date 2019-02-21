@@ -85,6 +85,8 @@ namespace Evolve.Tests.Configuration
             Assert.Equal("true", builder.EnableClusterMode);
             Assert.Equal("true", builder.OutOfOrder);
             Assert.Equal("200", builder.CommandTimeout);
+            Assert.True(new List<string>() { "Evolve.dll", "Evolve.Tests.dll" }.SequenceEqual(builder.EmbeddedResourceAssemblies));
+            Assert.True(new List<string>() { "Evolve.Resources", "Evolve.Tests.Resources" }.SequenceEqual(builder.EmbeddedResourceFilters));
         }
 
         [Fact]
@@ -114,6 +116,8 @@ namespace Evolve.Tests.Configuration
             Assert.Null(builder.EnableClusterMode);
             Assert.Null(builder.OutOfOrder);
             Assert.Null(builder.CommandTimeout);
+            Assert.Null(builder.EmbeddedResourceAssemblies);
+            Assert.Null(builder.EmbeddedResourceFilters);
         }
 
         [Fact]

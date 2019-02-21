@@ -38,6 +38,8 @@ namespace Evolve.MSBuild
             EnableClusterMode = ReadValue("Evolve.EnableClusterMode");
             OutOfOrder = ReadValue("Evolve.OutOfOrder");
             CommandTimeout = ReadValue("Evolve.CommandTimeout");
+            EmbeddedResourceAssemblies = SplitCommaSeparatedString(ReadValue("Evolve.EmbeddedResourceAssemblies"));
+            EmbeddedResourceFilters = SplitCommaSeparatedString(ReadValue("Evolve.EmbeddedResourceFilters"));
             Placeholders = Datasource.Where(x => x.Key.StartsWith("Evolve.Placeholder.", StringComparison.OrdinalIgnoreCase))
                                                       .Select(x => x.Key.Replace("Evolve.Placeholder.", "") + ":" + x.Value)
                                                       .ToArray();
@@ -78,6 +80,8 @@ namespace Evolve.MSBuild
         public string EnableClusterMode { get; protected set; }
         public string OutOfOrder { get; protected set; }
         public string CommandTimeout { get; protected set; }
+        public string[] EmbeddedResourceAssemblies { get; protected set; }
+        public string[] EmbeddedResourceFilters { get; protected set; }
 
         /// <summary>
         ///     Returns the command-line argumements needed by the Evolve CLI 
@@ -100,9 +104,9 @@ namespace Evolve.MSBuild
                 {
                     throw new EvolveMSBuildException("Evolve.ConnectionString option is required. See https://evolve-db.netlify.com/configuration for more informations.");
                 }
-                if (Locations is null)
+                if (Locations is null && EmbeddedResourceAssemblies is null)
                 {
-                    throw new EvolveMSBuildException("Evolve.Locations option is required. See https://evolve-db.netlify.com/configuration for more informations.");
+                    throw new EvolveMSBuildException("Evolve.Locations or Evolve.EmbeddedResourceAssemblies option is required. See https://evolve-db.netlify.com/configuration for more informations.");
                 }
             }
 
@@ -128,6 +132,8 @@ namespace Evolve.MSBuild
             AppendArg(builder, "--erase-disabled", EraseDisabled, false);
             AppendArg(builder, "--erase-on-validation-error", EraseOnValidationError, false);
             AppendArg(builder, "--enable-cluster-mode", EnableClusterMode, false);
+            AppendArgs(builder, "-a", EmbeddedResourceAssemblies, true);
+            AppendArgs(builder, "-f", EmbeddedResourceFilters, true);
 
             return builder.ToString().TrimEnd();
         }

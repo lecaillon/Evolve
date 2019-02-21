@@ -19,6 +19,8 @@
   "Evolve.EnableClusterMode": "true",
   "Evolve.OutOfOrder": "true",
   "Evolve.CommandTimeout": 200,
+  "Evolve.EmbeddedResourceAssemblies": "Evolve.Tests.dll",
+  "Evolve.EmbeddedResourceFilters": "Evolve.Tests.Resources",
 
   "Evolve.Placeholder.Schema": "my_schema",
   "Evolve.Placeholder.Pwd": "password"
