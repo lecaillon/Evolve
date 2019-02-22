@@ -67,7 +67,7 @@ namespace Evolve.Tests.Cli
                     command: command,
                     cnxStr: _mySQLContainer.CnxStr,
                     location: null,
-                    args: "-a Evolve.Tests.dll -f Evolve.Tests.Integration.MySQL.Resources.Sql_Scripts.Migration");
+                    args: $"-a Evolve.Tests.dll -f {TestContext.MySQL.MigrationFolderFilter}");
 
                 Assert.True(stderr == string.Empty, stderr);
             }

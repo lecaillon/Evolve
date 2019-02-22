@@ -2,6 +2,7 @@
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using Evolve.Tests.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
@@ -32,7 +33,8 @@ namespace Evolve.Tests.Integration.MySQL
             var cnn = _mySQLFixture.CreateDbConnection();
             var evolve = new Evolve(cnn, msg => _output.WriteLine(msg))
             {
-                Locations = new List<string> { TestContext.MySQL.MigrationFolder },
+                EmbeddedResourceAssemblies = new[] { typeof(TestContext).Assembly },
+                EmbeddedResourceFilters = new[] { TestContext.MySQL.MigrationFolderFilter },
                 CommandTimeout = 25
             };
 
@@ -48,6 +50,7 @@ namespace Evolve.Tests.Integration.MySQL
             Assert.True(cnn.State == ConnectionState.Closed);
 
             // Migrate Sql_Scripts\Checksum_mismatch: validation should fail due to a checksum mismatch.
+            evolve.EmbeddedResourceAssemblies = new List<Assembly>();
             evolve.Locations = new List<string> { TestContext.MySQL.ChecksumMismatchFolder };
             Assert.Throws<EvolveValidationException>(() => evolve.Migrate());
             Assert.True(cnn.State == ConnectionState.Closed);
