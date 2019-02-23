@@ -111,6 +111,7 @@ namespace Evolve
         public string PlaceholderSuffix { get; set; } = "}";
         public Dictionary<string, string> Placeholders { get; set; } = new Dictionary<string, string>();
         public string SqlMigrationPrefix { get; set; } = "V";
+        public string SqlRepeatableMigrationPrefix { get; set; } = "R";
         public string SqlMigrationSeparator { get; set; } = "__";
         public string SqlMigrationSuffix { get; set; } = ".sql";
         public MigrationVersion TargetVersion { get; set; } = MigrationVersion.MaxVersion;
