@@ -40,16 +40,17 @@ namespace AspNetCoreSample3
 
         private void MigrateDatabase()
         {
-            string filters = Env.IsProduction() || Env.IsStaging() // exclude db/datasets from production environment
+            string filter = Env.IsProduction() || Env.IsStaging() // exclude db/datasets from production environment
                 ? "AspNetCoreSample3.db.migrations"
-                : "AspNetCoreSample3.db.";
+                : "AspNetCoreSample3.db";
 
             try
             {
                 var cnx = new SqliteConnection(Configuration.GetConnectionString("MyDatabase"));
                 var evolve = new Evolve.Evolve(cnx, msg => _logger.LogInformation(msg))
                 {
-                    // TODO: use Evolve 2.1 embedded resource feature
+                    EmbeddedResourceAssemblies = new[] { typeof(Startup).Assembly },
+                    EmbeddedResourceFilters = new[] { filter },
                     IsEraseDisabled = true,
                     Placeholders = new Dictionary<string, string>
                     {
