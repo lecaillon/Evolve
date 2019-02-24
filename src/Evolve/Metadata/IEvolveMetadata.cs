@@ -56,7 +56,8 @@ namespace Evolve.Metadata
         /// <param name="description"> Metadata description. Cannot be null. </param>
         /// <param name="name"> Metadata name. Cannot be null. </param>
         /// <exception cref="ArgumentException">
-        ///     Throws ArgumentException when the type of the metadata to save is <see cref="MetadataType.Migration"/>. 
+        ///     Throws ArgumentException when the type of the metadata to save is 
+        ///     <see cref="MetadataType.Migration"/> or <see cref="MetadataType.RepeatableMigration"/>. 
         /// </exception>
         void Save(MetadataType type, string version, string description, string name);
 

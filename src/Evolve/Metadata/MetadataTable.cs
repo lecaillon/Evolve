@@ -50,7 +50,10 @@ namespace Evolve.Metadata
 
         public void Save(MetadataType type, string version, string description, string name = "")
         {
-            if(type == MetadataType.Migration) throw new ArgumentException(MigrationMetadataTypeNotSupported, nameof(type));
+            if (type == MetadataType.Migration || type == MetadataType.RepeatableMigration)
+            {
+                throw new ArgumentException(MigrationMetadataTypeNotSupported, nameof(type));
+            }
 
             Check.NotNullOrEmpty(version, nameof(version));
             Check.NotNullOrEmpty(description, nameof(description));

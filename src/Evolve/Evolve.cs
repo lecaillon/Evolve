@@ -515,50 +515,50 @@ namespace Evolve
         {
             Check.NotNull(db, nameof(db));
 
-            var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);                                       // Get the metadata table
+            var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
             if (!metadata.IsExists())
-            {
-                _logInfoDelegate(NoMetadataFound); // Nothing to validate
+            { // Nothing to validate
+                _logInfoDelegate(NoMetadataFound);
                 return;
             }
 
-            var appliedMigrations = metadata.GetAllMigrationMetadata();                                                     // Load all applied migrations metadata
+            var appliedMigrations = metadata.GetAllMigrationMetadata(); // Load all applied migrations metadata
             if (appliedMigrations.Count() == 0)
-            {
-                _logInfoDelegate(NoMetadataFound); // Nothing to validate
+            { // Nothing to validate
+                _logInfoDelegate(NoMetadataFound);
                 return;
             }
 
-            var lastAppliedVersion = appliedMigrations.Last().Version;                                                      // Get the last applied migration version
-            var startVersion = metadata.FindStartVersion();                                                                 // Load start version from metadata
+            var lastAppliedVersion = appliedMigrations.Last().Version; // Get the last applied migration version
+            var startVersion = metadata.FindStartVersion(); // Load start version from metadata
             var scripts = MigrationLoader.GetMigrations(SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding)
                                          .SkipWhile(x => x.Version < startVersion)
-                                         .TakeWhile(x => x.Version <= lastAppliedVersion);                                  // Keep scripts between first and last applied migration
+                                         .TakeWhile(x => x.Version <= lastAppliedVersion); // Keep scripts between first and last applied migration
 
             foreach (var script in scripts)
-            {
-                var appliedMigration = appliedMigrations.SingleOrDefault(x => x.Version == script.Version);                 // Search script in the applied migrations
+            { // Search script in the applied migrations
+                var appliedMigration = appliedMigrations.SingleOrDefault(x => x.Version == script.Version);
                 if (appliedMigration == null)
-                {
+                { // Script not found
                     if (Command == CommandOptions.Migrate && OutOfOrder)
-                    {
+                    { // Apply migration
                         ExecuteMigrationScript(script, db);
                         continue;
                     }
                     else
-                    {
+                    { // Validation error
                         throw new EvolveValidationException(string.Format(MigrationMetadataNotFound, script.Name));
                     }
                 }
 
                 try
-                {
-                    script.ValidateChecksum(appliedMigration.Checksum);                                                     // Script found, verify checksum
+                { // Script found, verify checksum
+                    script.ValidateChecksum(appliedMigration.Checksum);
                 }
                 catch (Exception ex)
-                {
+                { // Validation error
                     if (Command == CommandOptions.Repair)
-                    {
+                    { // Repair by updating checksum
                         metadata.UpdateChecksum(appliedMigration.Id, script.CalculateChecksum());
                         NbReparation++;
 
