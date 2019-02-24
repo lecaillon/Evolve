@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Evolve.Metadata;
 using Evolve.Utilities;
 
 namespace Evolve.Migration
@@ -44,10 +45,11 @@ namespace Evolve.Migration
                         {
                             MigrationUtil.ExtractVersionAndDescription(GetFileName(x), prefix, separator, out string version, out string description);
                             return new EmbeddedResourceMigrationScript(
-                                version: version,
-                                description: description,
+                                version,
+                                description,
                                 name: GetFileName(x),
                                 content: assembly.GetManifestResourceStream(x),
+                                type: MetadataType.Migration,
                                 encoding: encoding ?? Encoding.UTF8);
                         })
                         .ToList()

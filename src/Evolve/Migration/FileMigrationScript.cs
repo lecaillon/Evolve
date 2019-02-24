@@ -2,6 +2,7 @@
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using Evolve.Metadata;
 using Evolve.Utilities;
 
 namespace Evolve.Migration
@@ -9,12 +10,16 @@ namespace Evolve.Migration
     public class FileMigrationScript : MigrationScript
     {
         private const string IncorrectMigrationChecksum = "Validate failed: invalid checksum for migration: {0}.";
+        private const string IncorrectMigrationType = "File migration {0} must be of type MetadataType.Migration or MetadataType.RepeatableMigration";
 
-        public FileMigrationScript(string path, string version, string description, Encoding encoding = null)
+        public FileMigrationScript(string path, string version, string description, MetadataType type, Encoding encoding = null)
             : base(version,
                    description,
-                   System.IO.Path.GetFileName(Check.FileExists(path, nameof(path))),
-                   File.ReadAllText(path, encoding ?? Encoding.UTF8))
+                   name: System.IO.Path.GetFileName(Check.FileExists(path, nameof(path))),
+                   content: File.ReadAllText(path, encoding ?? Encoding.UTF8),
+                   type == MetadataType.Migration || type == MetadataType.RepeatableMigration
+                       ? type
+                       : throw new NotSupportedException(string.Format(IncorrectMigrationType, System.IO.Path.GetFileName(path))))
         {
             Path = path;
             Encoding = encoding ?? Encoding.UTF8;

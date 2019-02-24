@@ -83,7 +83,7 @@ namespace Evolve.Tests.Integration.Cassandra
             Assert.False(metadata.CanEraseSchema(metadataKeyspaceName), $"[{metadataKeyspaceName}] should not be erasable.");
 
             // Add metadata migration
-            var migrationScript = new FileMigrationScript(TestContext.Cassandra.EmptyMigrationScriptPath, "1_3_2", "Migration_description");
+            var migrationScript = new FileMigrationScript(TestContext.Cassandra.EmptyMigrationScriptPath, "1_3_2", "desc", MetadataType.Migration);
             metadata.SaveMigration(migrationScript, true);
             var migrationMetadata = metadata.GetAllMigrationMetadata().FirstOrDefault();
             Assert.True(migrationMetadata != null, "One migration metadata should be found.");

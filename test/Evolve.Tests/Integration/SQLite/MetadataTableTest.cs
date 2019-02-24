@@ -55,7 +55,7 @@ namespace Evolve.Tests.Integration.SQLite
         [Category(Test.SQLite)]
         public void SaveMigration_works()
         {
-            var migration = new FileMigrationScript(TestContext.SQLite.ChinookScriptPath, "1.0.0", "desc");
+            var migration = new FileMigrationScript(TestContext.SQLite.ChinookScriptPath, "1.0.0", "desc", MetadataType.Migration);
 
             using (var connection = TestUtil.CreateSQLiteWrappedCnx())
             {
@@ -71,7 +71,7 @@ namespace Evolve.Tests.Integration.SQLite
         [Category(Test.SQLite)]
         public void UpdateChecksum_works()
         {
-            var migration = new FileMigrationScript(TestContext.SQLite.ChinookScriptPath, "1.0.0", "desc");
+            var migration = new FileMigrationScript(TestContext.SQLite.ChinookScriptPath, "1.0.0", "desc", MetadataType.Migration);
 
             using (var connection = TestUtil.CreateSQLiteWrappedCnx())
             {
@@ -89,7 +89,7 @@ namespace Evolve.Tests.Integration.SQLite
         [Category(Test.SQLite)]
         public void GetAllMigrationMetadata_works()
         {
-            var migrationScript = new FileMigrationScript(TestContext.SQLite.ChinookScriptPath, "1.0.0", "desc");
+            var migrationScript = new FileMigrationScript(TestContext.SQLite.ChinookScriptPath, "1.0.0", "desc", MetadataType.Migration);
 
             using (var connection = TestUtil.CreateSQLiteWrappedCnx())
             {

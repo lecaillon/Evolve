@@ -10,8 +10,8 @@ namespace Evolve.Migration
     {
         private const string IncorrectMigrationChecksum = "Validate failed: invalid checksum for migration: {0}.";
 
-        public MigrationScript(string version, string description, string name, string content) 
-            : base(version, description, name, MetadataType.Migration)
+        public MigrationScript(string version, string description, string name, string content, MetadataType type) 
+            : base(version, description, name, type)
         {
             Content = Check.NotNull(content, nameof(content));
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Evolve.Metadata;
 using Evolve.Utilities;
 
 namespace Evolve.Migration
@@ -57,7 +58,7 @@ namespace Evolve.Migration
             Check.NotNull(textEncoding, nameof(textEncoding));
 
             MigrationUtil.ExtractVersionAndDescription(script, prefix, separator, out string version, out string description);
-            return new FileMigrationScript(script, version, description, textEncoding);
+            return new FileMigrationScript(script, version, description, MetadataType.Migration, textEncoding);
         }
 
         private DirectoryInfo ResolveDirectory(string location)

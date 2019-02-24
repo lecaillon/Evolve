@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using Evolve.Metadata;
 using Evolve.Migration;
 using Evolve.Utilities;
 using Xunit;
+using static Evolve.Tests.TestContext;
 
 namespace Evolve.Tests.Utilities
 {
@@ -37,8 +39,8 @@ namespace Evolve.Tests.Utilities
             // Arrange
             var sut = new List<FileMigrationScript>
             {
-                new FileMigrationScript(TestContext.CrLfScriptPath, "2.3.1", "Migration description"),
-                new FileMigrationScript(TestContext.CrLfScriptPath, "2.3.2", "Migration description")
+                new FileMigrationScript(CrLfScriptPath, "2.3.1", "desc", MetadataType.Migration),
+                new FileMigrationScript(CrLfScriptPath, "2.3.2", "desc", MetadataType.Migration)
             };
 
             // Assert
@@ -52,8 +54,8 @@ namespace Evolve.Tests.Utilities
             // Arrange
             var sut = new List<FileMigrationScript>
             {
-                new FileMigrationScript(TestContext.CrLfScriptPath, "2.3.1", "Migration description"),
-                new FileMigrationScript(TestContext.CrLfScriptPath, "2.3.1", "Migration description")
+                new FileMigrationScript(CrLfScriptPath, "2.3.1", "desc", MetadataType.Migration),
+                new FileMigrationScript(CrLfScriptPath, "2.3.1", "desc", MetadataType.Migration)
             };
 
             // Assert
