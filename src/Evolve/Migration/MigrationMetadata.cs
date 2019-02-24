@@ -3,7 +3,7 @@ using Evolve.Metadata;
 
 namespace Evolve.Migration
 {
-    public class MigrationMetadata : MigrationBase
+    public class MigrationMetadata : VersionedMigration
     {
         public MigrationMetadata(string version, string description, string name, MetadataType type) 
             : base(version, description, name, type)

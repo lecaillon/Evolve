@@ -5,13 +5,13 @@ using Xunit;
 
 namespace Evolve.Tests.Migration
 {
-    public class MigrationBaseTest
+    public class VersionedMigrationTest
     {
         [Fact]
         [Category(Test.Migration)]
-        public void Migrations_should_be_well_ordered()
+        public void Versioned_migrations_should_be_well_ordered()
         {
-            var list = new List<MigrationBase>
+            var list = new List<VersionedMigration>
             {
                 new MigrationMetadata("2", "desc", "name", MetadataType.Migration),      // 3
                 new MigrationMetadata("1.1", "desc", "name", MetadataType.Migration),    // 1
@@ -39,7 +39,7 @@ namespace Evolve.Tests.Migration
 
         [Fact]
         [Category(Test.Migration)]
-        public void Migration_comparaison_should_be_logical()
+        public void Versioned_migration_comparaison_should_be_logical()
         {
             Assert.True(new MigrationMetadata("1", "desc", "name", MetadataType.Migration) == new FileMigrationScript(TestContext.SQLite.ChinookScriptPath, "1", "desc"));
             Assert.True(new MigrationMetadata("1.1.1.12", "desc", "name", MetadataType.Migration) == new FileMigrationScript(TestContext.SQLite.ChinookScriptPath, "1.1.1.12", "desc"));

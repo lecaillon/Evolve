@@ -6,7 +6,7 @@ using Evolve.Utilities;
 
 namespace Evolve.Migration
 {
-    public abstract class MigrationScript : MigrationBase
+    public abstract class MigrationScript : VersionedMigration
     {
         private const string IncorrectMigrationChecksum = "Validate failed: invalid checksum for migration: {0}.";
 
