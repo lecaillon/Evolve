@@ -16,7 +16,6 @@ namespace Evolve.Tests.Integration.Cassandra
         private readonly CassandraFixture _cassandraContainer;
         private readonly ITestOutputHelper _output;
 
-
         public MigrationTest(CassandraFixture cassandraContainer, ITestOutputHelper output)
         {
             _cassandraContainer = cassandraContainer;

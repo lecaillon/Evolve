@@ -38,25 +38,25 @@ namespace Evolve.Tests.Integration.Cassandra
             var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.Cassandra, wcnn);
 
             // Create schema
-            string metadataKeyspaceName = "my_keyspace_2";
-            Schema metadataSchema = new CassandraKeyspace(metadataKeyspaceName, CassandraKeyspace.CreateSimpleStrategy(1), wcnn);
-            Assert.False(metadataSchema.IsExists(), $"The schema [{metadataKeyspaceName}] should not already exist.");
-            Assert.True(metadataSchema.Create(), $"Creation of the schema [{metadataKeyspaceName}] failed.");
-            Assert.True(metadataSchema.IsExists(), $"The schema [{metadataKeyspaceName}] should be created.");
-            Assert.True(metadataSchema.IsEmpty(), $"The schema [{metadataKeyspaceName}] should be empty.");
+            string keyspaceName = "my_keyspace_2";
+            Schema schema = new CassandraKeyspace(keyspaceName, CassandraKeyspace.CreateSimpleStrategy(1), wcnn);
+            Assert.False(schema.IsExists(), $"The schema [{keyspaceName}] should not already exist.");
+            Assert.True(schema.Create(), $"Creation of the schema [{keyspaceName}] failed.");
+            Assert.True(schema.IsExists(), $"The schema [{keyspaceName}] should be created.");
+            Assert.True(schema.IsEmpty(), $"The schema [{keyspaceName}] should be empty.");
 
-            var s = db.GetSchema(metadataKeyspaceName);
+            var s = db.GetSchema(keyspaceName);
 
             // Get MetadataTable
             string metadataTableName = "evolve_change_log";
-            var metadata = db.GetMetadataTable(metadataKeyspaceName, metadataTableName);
+            var metadataTable = db.GetMetadataTable(keyspaceName, metadataTableName);
 
             // Create MetadataTable
-            Assert.False(metadata.IsExists(), "MetadataTable sould not already exist.");
-            Assert.True(metadata.CreateIfNotExists(), "MetadataTable creation failed.");
-            Assert.True(metadata.IsExists(), "MetadataTable sould exist.");
-            Assert.False(metadata.CreateIfNotExists(), "MetadataTable already exists. Creation should return false.");
-            Assert.True(metadata.GetAllMigrationMetadata().Count() == 0, "No migration metadata should be found.");
+            Assert.False(metadataTable.IsExists(), "MetadataTable sould not already exist.");
+            Assert.True(metadataTable.CreateIfNotExists(), "MetadataTable creation failed.");
+            Assert.True(metadataTable.IsExists(), "MetadataTable sould exist.");
+            Assert.False(metadataTable.CreateIfNotExists(), "MetadataTable already exists. Creation should return false.");
+            Assert.True(metadataTable.GetAllMigrationMetadata().Count() == 0, "No migration metadata should be found.");
 
             //Lock & Unlock
             //..Applicaiton level: return true if the cluster lock keyspace/table is not present
@@ -72,44 +72,44 @@ namespace Evolve.Tests.Integration.Cassandra
             Assert.True(db.ReleaseApplicationLock());
             Assert.True(db.ReleaseApplicationLock());
             //..Table level: lock implemented with LWT on evolve metadata table
-            Assert.True(metadata.TryLock());
-            Assert.False(metadata.TryLock());
-            Assert.True(metadata.ReleaseLock());
-            Assert.False(metadata.ReleaseLock());
+            Assert.True(metadataTable.TryLock());
+            Assert.False(metadataTable.TryLock());
+            Assert.True(metadataTable.ReleaseLock());
+            Assert.False(metadataTable.ReleaseLock());
 
             // Save NewSchema metadata
-            metadata.Save(MetadataType.NewSchema, "0", "New schema created.", metadataKeyspaceName);
-            Assert.True(metadata.CanDropSchema(metadataKeyspaceName), $"[{metadataKeyspaceName}] should be droppable.");
-            Assert.False(metadata.CanEraseSchema(metadataKeyspaceName), $"[{metadataKeyspaceName}] should not be erasable.");
+            metadataTable.Save(MetadataType.NewSchema, "0", "New schema created.", keyspaceName);
+            Assert.True(metadataTable.CanDropSchema(keyspaceName), $"[{keyspaceName}] should be droppable.");
+            Assert.False(metadataTable.CanEraseSchema(keyspaceName), $"[{keyspaceName}] should not be erasable.");
 
             // Add metadata migration
-            var migrationScript = new FileMigrationScript(TestContext.Cassandra.EmptyMigrationScriptPath, "1_3_2", "desc", MetadataType.Migration);
-            metadata.SaveMigration(migrationScript, true);
-            var migrationMetadata = metadata.GetAllMigrationMetadata().FirstOrDefault();
+            var migration = new FileMigrationScript(TestContext.Cassandra.EmptyMigrationScriptPath, "1_3_2", "desc", MetadataType.Migration);
+            metadataTable.SaveMigration(migration, true);
+            var migrationMetadata = metadataTable.GetAllMigrationMetadata().FirstOrDefault();
             Assert.True(migrationMetadata != null, "One migration metadata should be found.");
-            Assert.True(migrationMetadata.Version == migrationScript.Version, "Metadata version is not the same.");
-            Assert.True(migrationMetadata.Checksum == migrationScript.CalculateChecksum(), "Metadata checksum is not the same.");
-            Assert.True(migrationMetadata.Description == migrationScript.Description, "Metadata descritpion is not the same.");
-            Assert.True(migrationMetadata.Name == migrationScript.Name, "Metadata name is not the same.");
+            Assert.True(migrationMetadata.Version == migration.Version, "Metadata version is not the same.");
+            Assert.True(migrationMetadata.Checksum == migration.CalculateChecksum(), "Metadata checksum is not the same.");
+            Assert.True(migrationMetadata.Description == migration.Description, "Metadata descritpion is not the same.");
+            Assert.True(migrationMetadata.Name == migration.Name, "Metadata name is not the same.");
             Assert.True(migrationMetadata.Success == true, "Metadata success is not true.");
             Assert.True(migrationMetadata.Id != 0, "Metadata id is not set.");
             Assert.True(migrationMetadata.InstalledOn.Date == DateTime.UtcNow.Date, $"Installed date is {migrationMetadata.InstalledOn.Date} whereas UtcNow is {DateTime.UtcNow.Date}.");
 
             // Update checksum
-            metadata.UpdateChecksum(migrationMetadata.Id, "Hi !");
-            Assert.Equal("Hi !", metadata.GetAllMigrationMetadata().First().Checksum);
+            metadataTable.UpdateChecksum(migrationMetadata.Id, "Hi !");
+            Assert.Equal("Hi !", metadataTable.GetAllMigrationMetadata().First().Checksum);
 
             // Assert metadata schema is not empty
-            Assert.False(metadataSchema.IsEmpty(), $"[{metadataKeyspaceName}] should not be empty.");
+            Assert.False(schema.IsEmpty(), $"[{keyspaceName}] should not be empty.");
 
             // Erase schema
-            metadataSchema.Erase();
-            Assert.True(metadataSchema.IsEmpty(), $"The schema [{metadataKeyspaceName}] should be empty.");
-            Assert.True(metadataSchema.IsExists(), $"The schema [{metadataKeyspaceName}] should exist.");
+            schema.Erase();
+            Assert.True(schema.IsEmpty(), $"The schema [{keyspaceName}] should be empty.");
+            Assert.True(schema.IsExists(), $"The schema [{keyspaceName}] should exist.");
 
             // Drop schema
-            metadataSchema.Drop();
-            Assert.False(metadataSchema.IsExists(), $"The schema [{metadataKeyspaceName}] should not exist.");
+            schema.Drop();
+            Assert.False(schema.IsExists(), $"The schema [{keyspaceName}] should not exist.");
         }
     }
 }

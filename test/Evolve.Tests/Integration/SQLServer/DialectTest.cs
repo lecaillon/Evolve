@@ -50,54 +50,54 @@ namespace Evolve.Tests.Integration.SQLServer
             DatabaseHelper db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLServer, wcnn);
 
             // Get default schema name
-            string metadataSchemaName = db.GetCurrentSchemaName();
-            Assert.True(metadataSchemaName == "dbo", "The default SQLServer schema should be 'dbo'.");
+            string schemaName = db.GetCurrentSchemaName();
+            Assert.True(schemaName == "dbo", "The default SQLServer schema should be 'dbo'.");
 
             // Get MetadataTable
             string metadataTableName = "changelog";
-            var metadata = db.GetMetadataTable(metadataSchemaName, metadataTableName);
+            var metadataTable = db.GetMetadataTable(schemaName, metadataTableName);
 
             // Create MetadataTable
-            Assert.False(metadata.IsExists(), "MetadataTable sould not already exist.");
-            Assert.True(metadata.CreateIfNotExists(), "MetadataTable creation failed.");
-            Assert.True(metadata.IsExists(), "MetadataTable sould exist.");
-            Assert.False(metadata.CreateIfNotExists(), "MetadataTable already exists. Creation should return false.");
-            Assert.True(metadata.GetAllMigrationMetadata().Count() == 0, "No migration metadata should be found.");
+            Assert.False(metadataTable.IsExists(), "MetadataTable sould not already exist.");
+            Assert.True(metadataTable.CreateIfNotExists(), "MetadataTable creation failed.");
+            Assert.True(metadataTable.IsExists(), "MetadataTable sould exist.");
+            Assert.False(metadataTable.CreateIfNotExists(), "MetadataTable already exists. Creation should return false.");
+            Assert.True(metadataTable.GetAllMigrationMetadata().Count() == 0, "No migration metadata should be found.");
 
             // TryLock/ReleaseLock MetadataTable
-            Assert.True(metadata.TryLock());
-            Assert.True(metadata.ReleaseLock());
+            Assert.True(metadataTable.TryLock());
+            Assert.True(metadataTable.ReleaseLock());
 
             // Save EmptySchema metadata
-            metadata.Save(MetadataType.EmptySchema, "0", "Empty schema found.", metadataSchemaName);
-            Assert.False(metadata.CanDropSchema(metadataSchemaName), $"[{metadataSchemaName}] should not be droppable.");
-            Assert.True(metadata.CanEraseSchema(metadataSchemaName), $"[{metadataSchemaName}] should be erasable.");
+            metadataTable.Save(MetadataType.EmptySchema, "0", "Empty schema found.", schemaName);
+            Assert.False(metadataTable.CanDropSchema(schemaName), $"[{schemaName}] should not be droppable.");
+            Assert.True(metadataTable.CanEraseSchema(schemaName), $"[{schemaName}] should be erasable.");
 
             // Add metadata migration
-            var migrationScript = new FileMigrationScript(TestContext.SqlServer.EmptyMigrationScriptPath, "1_3_2", "desc", MetadataType.Migration);
-            metadata.SaveMigration(migrationScript, true);
-            var migrationMetadata = metadata.GetAllMigrationMetadata().FirstOrDefault();
+            var migration = new FileMigrationScript(TestContext.SqlServer.EmptyMigrationScriptPath, "1_3_2", "desc", MetadataType.Migration);
+            metadataTable.SaveMigration(migration, true);
+            var migrationMetadata = metadataTable.GetAllMigrationMetadata().FirstOrDefault();
             Assert.True(migrationMetadata != null, "One migration metadata should be found.");
-            Assert.True(migrationMetadata.Version == migrationScript.Version, "Metadata version is not the same.");
-            Assert.True(migrationMetadata.Checksum == migrationScript.CalculateChecksum(), "Metadata checksum is not the same.");
-            Assert.True(migrationMetadata.Description == migrationScript.Description, "Metadata descritpion is not the same.");
-            Assert.True(migrationMetadata.Name == migrationScript.Name, "Metadata name is not the same.");
+            Assert.True(migrationMetadata.Version == migration.Version, "Metadata version is not the same.");
+            Assert.True(migrationMetadata.Checksum == migration.CalculateChecksum(), "Metadata checksum is not the same.");
+            Assert.True(migrationMetadata.Description == migration.Description, "Metadata descritpion is not the same.");
+            Assert.True(migrationMetadata.Name == migration.Name, "Metadata name is not the same.");
             Assert.True(migrationMetadata.Success == true, "Metadata success is not true.");
             Assert.True(migrationMetadata.Id > 0, "Metadata id is not set.");
             Assert.True(migrationMetadata.InstalledOn.Date == DateTime.UtcNow.Date, $"Metadata InstalledOn date {migrationMetadata.InstalledOn} must be equals to {DateTime.UtcNow.Date}.");
 
             // Update checksum
-            metadata.UpdateChecksum(migrationMetadata.Id, "Hi !");
-            Assert.Equal("Hi !", metadata.GetAllMigrationMetadata().First().Checksum);
+            metadataTable.UpdateChecksum(migrationMetadata.Id, "Hi !");
+            Assert.Equal("Hi !", metadataTable.GetAllMigrationMetadata().First().Checksum);
 
             // Assert metadata schema is not empty
-            Schema metadataSchema = new SQLServerSchema(metadataSchemaName, wcnn);
-            Assert.False(metadataSchema.IsEmpty(), $"[{metadataSchemaName}] should not be empty.");
+            Schema schema = new SQLServerSchema(schemaName, wcnn);
+            Assert.False(schema.IsEmpty(), $"[{schemaName}] should not be empty.");
 
             // Erase schema
-            metadataSchema.Erase();
-            Assert.True(metadataSchema.IsEmpty(), $"The schema [{metadataSchemaName}] should be empty.");
-            Assert.True(metadataSchema.IsExists(), $"The schema [{metadataSchemaName}] should exist.");
+            schema.Erase();
+            Assert.True(schema.IsEmpty(), $"The schema [{schemaName}] should be empty.");
+            Assert.True(schema.IsExists(), $"The schema [{schemaName}] should exist.");
 
             // Acquisition du lock applicatif
             while (true)

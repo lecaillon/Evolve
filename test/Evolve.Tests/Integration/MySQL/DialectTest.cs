@@ -48,61 +48,61 @@ namespace Evolve.Tests.Integration.MySQL
             Assert.True(db.GetCurrentSchemaName() == MySQLContainer.DbName, $"The default MySQL schema should be '{MySQLContainer.DbName}'.");
 
             // Create schema
-            string metadataSchemaName = "My metadata schema";
-            Schema metadataSchema = new MySQLSchema(metadataSchemaName, wcnn);
-            Assert.False(metadataSchema.IsExists(), $"The schema [{metadataSchemaName}] should not already exist.");
-            Assert.True(metadataSchema.Create(), $"Creation of the schema [{metadataSchemaName}] failed.");
-            Assert.True(metadataSchema.IsExists(), $"The schema [{metadataSchemaName}] should be created.");
-            Assert.True(metadataSchema.IsEmpty(), $"The schema [{metadataSchemaName}] should be empty.");
+            string schemaName = "My metadata schema";
+            Schema schema = new MySQLSchema(schemaName, wcnn);
+            Assert.False(schema.IsExists(), $"The schema [{schemaName}] should not already exist.");
+            Assert.True(schema.Create(), $"Creation of the schema [{schemaName}] failed.");
+            Assert.True(schema.IsExists(), $"The schema [{schemaName}] should be created.");
+            Assert.True(schema.IsEmpty(), $"The schema [{schemaName}] should be empty.");
 
             // Get MetadataTable
             string metadataTableName = "change log";
-            var metadata = db.GetMetadataTable(metadataSchemaName, metadataTableName);
+            var metadataTable = db.GetMetadataTable(schemaName, metadataTableName);
 
             // Create MetadataTable
-            Assert.False(metadata.IsExists(), "MetadataTable sould not already exist.");
-            Assert.True(metadata.CreateIfNotExists(), "MetadataTable creation failed.");
-            Assert.True(metadata.IsExists(), "MetadataTable sould exist.");
-            Assert.False(metadata.CreateIfNotExists(), "MetadataTable already exists. Creation should return false.");
-            Assert.True(metadata.GetAllMigrationMetadata().Count() == 0, "No migration metadata should be found.");
+            Assert.False(metadataTable.IsExists(), "MetadataTable sould not already exist.");
+            Assert.True(metadataTable.CreateIfNotExists(), "MetadataTable creation failed.");
+            Assert.True(metadataTable.IsExists(), "MetadataTable sould exist.");
+            Assert.False(metadataTable.CreateIfNotExists(), "MetadataTable already exists. Creation should return false.");
+            Assert.True(metadataTable.GetAllMigrationMetadata().Count() == 0, "No migration metadata should be found.");
 
             // TryLock/ReleaseLock MetadataTable
-            Assert.True(metadata.TryLock());
-            Assert.True(metadata.ReleaseLock());
+            Assert.True(metadataTable.TryLock());
+            Assert.True(metadataTable.ReleaseLock());
 
             // Save NewSchema metadata
-            metadata.Save(MetadataType.NewSchema, "0", "New schema created.", metadataSchemaName);
-            Assert.True(metadata.CanDropSchema(metadataSchemaName), $"[{metadataSchemaName}] should be droppable.");
-            Assert.False(metadata.CanEraseSchema(metadataSchemaName), $"[{metadataSchemaName}] should not be erasable.");
+            metadataTable.Save(MetadataType.NewSchema, "0", "New schema created.", schemaName);
+            Assert.True(metadataTable.CanDropSchema(schemaName), $"[{schemaName}] should be droppable.");
+            Assert.False(metadataTable.CanEraseSchema(schemaName), $"[{schemaName}] should not be erasable.");
 
             // Add metadata migration
-            var migrationScript = new FileMigrationScript(TestContext.MySQL.EmptyMigrationScriptPath, "1_3_2", "desc", MetadataType.Migration);
-            metadata.SaveMigration(migrationScript, true);
-            var migrationMetadata = metadata.GetAllMigrationMetadata().FirstOrDefault();
+            var migration = new FileMigrationScript(TestContext.MySQL.EmptyMigrationScriptPath, "1_3_2", "desc", MetadataType.Migration);
+            metadataTable.SaveMigration(migration, true);
+            var migrationMetadata = metadataTable.GetAllMigrationMetadata().FirstOrDefault();
             Assert.True(migrationMetadata != null, "One migration metadata should be found.");
-            Assert.True(migrationMetadata.Version == migrationScript.Version, "Metadata version is not the same.");
-            Assert.True(migrationMetadata.Checksum == migrationScript.CalculateChecksum(), "Metadata checksum is not the same.");
-            Assert.True(migrationMetadata.Description == migrationScript.Description, "Metadata descritpion is not the same.");
-            Assert.True(migrationMetadata.Name == migrationScript.Name, "Metadata name is not the same.");
+            Assert.True(migrationMetadata.Version == migration.Version, "Metadata version is not the same.");
+            Assert.True(migrationMetadata.Checksum == migration.CalculateChecksum(), "Metadata checksum is not the same.");
+            Assert.True(migrationMetadata.Description == migration.Description, "Metadata descritpion is not the same.");
+            Assert.True(migrationMetadata.Name == migration.Name, "Metadata name is not the same.");
             Assert.True(migrationMetadata.Success == true, "Metadata success is not true.");
             Assert.True(migrationMetadata.Id > 0, "Metadata id is not set.");
             Assert.True(migrationMetadata.InstalledOn.Date == DateTime.UtcNow.Date, $"Installed date is {migrationMetadata.InstalledOn.Date} whereas UtcNow is {DateTime.UtcNow.Date}.");
 
             // Update checksum
-            metadata.UpdateChecksum(migrationMetadata.Id, "Hi !");
-            Assert.Equal("Hi !", metadata.GetAllMigrationMetadata().First().Checksum);
+            metadataTable.UpdateChecksum(migrationMetadata.Id, "Hi !");
+            Assert.Equal("Hi !", metadataTable.GetAllMigrationMetadata().First().Checksum);
 
             // Assert metadata schema is not empty
-            Assert.False(metadataSchema.IsEmpty(), $"[{metadataSchemaName}] should not be empty.");
+            Assert.False(schema.IsEmpty(), $"[{schemaName}] should not be empty.");
 
             // Erase schema
-            metadataSchema.Erase();
-            Assert.True(metadataSchema.IsEmpty(), $"The schema [{metadataSchemaName}] should be empty.");
-            Assert.True(metadataSchema.IsExists(), $"The schema [{metadataSchemaName}] should exist.");
+            schema.Erase();
+            Assert.True(schema.IsEmpty(), $"The schema [{schemaName}] should be empty.");
+            Assert.True(schema.IsExists(), $"The schema [{schemaName}] should exist.");
 
             // Drop schema
-            metadataSchema.Drop();
-            Assert.False(metadataSchema.IsExists(), $"The schema [{metadataSchemaName}] should not exist.");
+            schema.Drop();
+            Assert.False(schema.IsExists(), $"The schema [{schemaName}] should not exist.");
         }
     }
 }
