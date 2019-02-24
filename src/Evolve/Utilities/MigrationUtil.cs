@@ -44,7 +44,7 @@ namespace Evolve.Utilities
                 throw new EvolveConfigurationException(string.Format(MigrationNameDescriptionNotFound, script));
         }
 
-        public static IEnumerable<VersionedMigration> CheckForDuplicates(this IEnumerable<VersionedMigration> migrations)
+        public static IEnumerable<MigrationBase> CheckForDuplicates(this IEnumerable<MigrationBase> migrations)
         {
             Check.NotNull(migrations, nameof(migrations));
 

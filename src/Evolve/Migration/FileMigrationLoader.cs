@@ -42,7 +42,7 @@ namespace Evolve.Migration
                          .ForEach(f => migrations.Add(LoadMigrationFromFile(f.FullName, prefix, separator, encoding ?? Encoding.UTF8)));
             }
 
-            return migrations.Cast<VersionedMigration>() // NET 3.5
+            return migrations.Cast<MigrationBase>() // NET 3.5
                              .CheckForDuplicates()
                              .OrderBy(x => x.Version)
                              .Cast<MigrationScript>() // NET 3.5

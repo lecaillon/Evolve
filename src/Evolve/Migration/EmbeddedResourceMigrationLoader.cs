@@ -54,7 +54,7 @@ namespace Evolve.Migration
                         .ForEach(x => migrations.Add(x));
             }
 
-            return migrations.Cast<VersionedMigration>() // NET 3.5
+            return migrations.Cast<MigrationBase>() // NET 3.5
                              .CheckForDuplicates()
                              .OrderBy(x => x.Version)
                              .Cast<MigrationScript>() // NET 3.5
