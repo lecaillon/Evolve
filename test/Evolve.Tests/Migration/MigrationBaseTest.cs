@@ -13,9 +13,11 @@ namespace Evolve.Tests.Migration
         {
             var list = new List<MigrationBase>
             {
+                new MigrationMetadata(version: null, "desc", "a-name", MetadataType.RepeatableMigration), // 9
                 new MigrationMetadata("2", "desc", "name", MetadataType.Migration),      // 3
                 new MigrationMetadata("1.1", "desc", "name", MetadataType.Migration),    // 1
                 new MigrationMetadata("3.12.1", "desc", "name", MetadataType.Migration), // 8
+                new MigrationMetadata(version: null, "desc", "name", MetadataType.RepeatableMigration), // 10
                 new MigrationMetadata("1", "desc", "name", MetadataType.Migration),      // 0
                 new MigrationMetadata("1.1.0", "desc", "name", MetadataType.Migration),  // 2
                 new FileMigrationScript(TestContext.SQLite.ChinookScriptPath, "2.1.0", "desc"),  // 4
@@ -35,6 +37,8 @@ namespace Evolve.Tests.Migration
             Assert.Equal("3.0", list[6].Version.Label);
             Assert.Equal("3.11.2", list[7].Version.Label);
             Assert.Equal("3.12.1", list[8].Version.Label);
+            Assert.Equal("a-name", list[9].Name);
+            Assert.Equal("name", list[10].Name);
         }
 
         [Fact]
@@ -54,6 +58,13 @@ namespace Evolve.Tests.Migration
             Assert.True(new MigrationMetadata("2", "desc", "name", MetadataType.Migration) > new MigrationMetadata("1", "desc", "name", MetadataType.Migration));
             Assert.True(new MigrationMetadata("1", "desc", "name", MetadataType.Migration) > new FileMigrationScript(TestContext.SQLite.ChinookScriptPath, "0.5", "desc"));
             Assert.True(new FileMigrationScript(TestContext.SQLite.ChinookScriptPath, "1.1.1", "desc") > new FileMigrationScript(TestContext.SQLite.ChinookScriptPath, "1.0.9", "desc"));
+
+            // RepeatableMigration
+            Assert.True(new MigrationMetadata(version: null, "desc", "a-name", MetadataType.RepeatableMigration) == new MigrationMetadata(version: null, "desc2", "a-name", MetadataType.RepeatableMigration));
+            Assert.True(new MigrationMetadata(version: null, "desc", "a-name", MetadataType.RepeatableMigration) != new MigrationMetadata("1", "desc", "a-name", MetadataType.Migration));
+            Assert.True(new MigrationMetadata("1", "desc", "a-name", MetadataType.Migration) != new MigrationMetadata(version: null, "desc", "a-name", MetadataType.RepeatableMigration));
+            Assert.True(new MigrationMetadata("1", "desc", "a-name", MetadataType.Migration) < new MigrationMetadata(version: null, "desc", "a-name", MetadataType.RepeatableMigration));
+            Assert.True(new MigrationMetadata(version: null, "desc", "a-name", MetadataType.RepeatableMigration) > new MigrationMetadata("1", "desc", "a-name", MetadataType.Migration));
         }
     }
 }
