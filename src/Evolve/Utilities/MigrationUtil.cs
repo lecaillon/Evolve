@@ -14,6 +14,12 @@ namespace Evolve.Utilities
         private const string DuplicateMigrationScriptVersion = "Found multiple sql migration files with the same version: {0}.";
 
         public static void ExtractVersionAndDescription(string script, string prefix, string separator, out string version, out string description)
+            => ExtractVersionAndDescription(script, prefix, separator, out version, out description, throwIfNoVersion: true);
+
+        public static void ExtractDescription(string script, string prefix, string separator, out string description)
+            => ExtractVersionAndDescription(script, prefix, separator, out string version, out description, throwIfNoVersion: false);
+
+        private static void ExtractVersionAndDescription(string script, string prefix, string separator, out string version, out string description, bool throwIfNoVersion)
         {
             Check.NotNullOrEmpty(script, nameof(script)); // V1_3_1__Migration_description.sql
             Check.NotNullOrEmpty(prefix, nameof(prefix)); // V
@@ -35,7 +41,7 @@ namespace Evolve.Utilities
                                        .Replace("_", " ");
 
             // Check version
-            if (version.IsNullOrWhiteSpace())
+            if (version.IsNullOrWhiteSpace() && throwIfNoVersion)
                 throw new EvolveConfigurationException(string.Format(MigrationNameVersionNotFound, script));
 
             // Check description

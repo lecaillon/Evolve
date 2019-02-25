@@ -63,12 +63,11 @@ namespace Evolve.Tests.Utilities
         }
 
         [Theory]
-        [InlineData("R__desc.sql", null, "desc")]
+        [InlineData("R__desc.sql", "desc")]
         [Category(Test.Migration)]
-        public void When_repeatable_migration_gets_a_null_version_and_a_description(string script, string expectedVersion, string expectedDescription)
+        public void When_repeatable_migration_gets_a_null_version_and_a_description(string script, string expectedDescription)
         {
-            MigrationUtil.ExtractVersionAndDescription(script, "R", "__", out string version, out string description);
-            Assert.Equal(expectedVersion, version);
+            MigrationUtil.ExtractDescription(script, "R", "__", out string description);
             Assert.Equal(expectedDescription, description);
         }
     }
