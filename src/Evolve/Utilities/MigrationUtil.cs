@@ -12,6 +12,7 @@ namespace Evolve.Utilities
         private const string MigrationNameVersionNotFound = "No version found in sql file name: {0}.";
         private const string MigrationNameDescriptionNotFound = "No description found in sql file name: {0}.";
         private const string DuplicateMigrationScriptVersion = "Found multiple sql migration files with the same version: {0}.";
+        private const string DuplicateRepeatableMigrationScript = "Found multiple sql migration files with the same name: {0}.";
 
         public static void ExtractVersionAndDescription(string script, string prefix, string separator, out string version, out string description)
             => ExtractVersionAndDescription(script, prefix, separator, out version, out description, throwIfNoVersion: true);
@@ -49,7 +50,7 @@ namespace Evolve.Utilities
                 throw new EvolveConfigurationException(string.Format(MigrationNameDescriptionNotFound, script));
         }
 
-        public static IEnumerable<MigrationBase> CheckForDuplicates(this IEnumerable<MigrationBase> migrations)
+        public static IEnumerable<MigrationBase> CheckForDuplicateVersion(this IEnumerable<MigrationBase> migrations)
         {
             Check.NotNull(migrations, nameof(migrations));
 
@@ -61,6 +62,23 @@ namespace Evolve.Utilities
             if (duplicates.Count() > 0)
             {
                 throw new EvolveConfigurationException(string.Format(DuplicateMigrationScriptVersion, string.Join(", ", duplicates)));
+            }
+
+            return migrations;
+        }
+
+        public static IEnumerable<MigrationBase> CheckForDuplicateName(this IEnumerable<MigrationBase> migrations)
+        {
+            Check.NotNull(migrations, nameof(migrations));
+
+            var duplicates = migrations.GroupBy(x => x.Name)
+                                       .Where(grp => grp.Count() > 1)
+                                       .Select(grp => grp.Key)
+                                       .ToArray();
+
+            if (duplicates.Count() > 0)
+            {
+                throw new EvolveConfigurationException(string.Format(DuplicateRepeatableMigrationScript, string.Join(", ", duplicates)));
             }
 
             return migrations;

@@ -34,7 +34,7 @@ namespace Evolve.Tests.Utilities
 
         [Fact]
         [Category(Test.Migration)]
-        public void When_no_duplicate_returns_all_migration_scripts()
+        public void When_no_duplicate_version_returns_all_migration_scripts()
         {
             // Arrange
             var sut = new List<FileMigrationScript>
@@ -44,12 +44,27 @@ namespace Evolve.Tests.Utilities
             };
 
             // Assert
-            Assert.Equal(sut, sut.CheckForDuplicates());
+            Assert.Equal(sut, sut.CheckForDuplicateVersion());
         }
 
         [Fact]
         [Category(Test.Migration)]
-        public void When_duplicates_throws_EvolveConfigurationException()
+        public void When_no_duplicate_name_returns_all_migration_scripts()
+        {
+            // Arrange
+            var sut = new List<FileMigrationScript>
+            {
+                new FileMigrationScript(CrLfScriptPath, null, "desc", MetadataType.RepeatableMigration),
+                new FileMigrationScript(SQLite.ChinookScriptPath, null, "desc", MetadataType.RepeatableMigration)
+            };
+
+            // Assert
+            Assert.Equal(sut, sut.CheckForDuplicateName());
+        }
+
+        [Fact]
+        [Category(Test.Migration)]
+        public void When_duplicate_version_throws_EvolveConfigurationException()
         {
             // Arrange
             var sut = new List<FileMigrationScript>
@@ -59,7 +74,22 @@ namespace Evolve.Tests.Utilities
             };
 
             // Assert
-            Assert.Throws<EvolveConfigurationException>(() => sut.CheckForDuplicates());
+            Assert.Throws<EvolveConfigurationException>(() => sut.CheckForDuplicateVersion());
+        }
+
+        [Fact]
+        [Category(Test.Migration)]
+        public void When_duplicate_name_throws_EvolveConfigurationException()
+        {
+            // Arrange
+            var sut = new List<FileMigrationScript>
+            {
+                new FileMigrationScript(CrLfScriptPath, null, "desc", MetadataType.RepeatableMigration),
+                new FileMigrationScript(CrLfScriptPath, null, "asc", MetadataType.RepeatableMigration)
+            };
+
+            // Assert
+            Assert.Throws<EvolveConfigurationException>(() => sut.CheckForDuplicateName());
         }
 
         [Theory]

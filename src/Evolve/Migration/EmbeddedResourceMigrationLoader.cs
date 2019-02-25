@@ -57,7 +57,7 @@ namespace Evolve.Migration
             }
 
             return migrations.Cast<MigrationBase>() // NET 3.5
-                             .CheckForDuplicates()
+                             .CheckForDuplicateVersion()
                              .OrderBy(x => x.Version)
                              .Cast<MigrationScript>() // NET 3.5
                              .ToList();
