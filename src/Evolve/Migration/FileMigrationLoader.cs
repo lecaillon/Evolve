@@ -40,7 +40,7 @@ namespace Evolve.Migration
                 dirToScan.GetFiles(searchPattern, SearchOption.AllDirectories)   // Get scripts recursively
                          .Where(f => !migrations.Any(m => m.Path == f.FullName)) // Scripts not already loaded
                          .ToList()
-                         .ForEach(f => migrations.Add(LoadMigrationFromFile(f.FullName, prefix, separator, encoding ?? Encoding.UTF8)));
+                         .ForEach(f => migrations.Add(LoadMigrationFromFile(f.FullName)));
             }
 
             return migrations.Cast<MigrationBase>() // NET 3.5
@@ -48,17 +48,12 @@ namespace Evolve.Migration
                              .OrderBy(x => x.Version)
                              .Cast<MigrationScript>() // NET 3.5
                              .ToList();
-        }
 
-        private FileMigrationScript LoadMigrationFromFile(string script, string prefix, string separator, Encoding textEncoding)
-        {
-            Check.FileExists(script, nameof(script)); // V1_3_1__Migration_description.sql
-            Check.NotNullOrEmpty(prefix, nameof(prefix)); // V
-            Check.NotNullOrEmpty(separator, nameof(separator)); // __
-            Check.NotNull(textEncoding, nameof(textEncoding));
-
-            MigrationUtil.ExtractVersionAndDescription(script, prefix, separator, out string version, out string description);
-            return new FileMigrationScript(script, version, description, MetadataType.Migration, textEncoding);
+            FileMigrationScript LoadMigrationFromFile(string script)
+            {
+                MigrationUtil.ExtractVersionAndDescription(script, prefix, separator, out string version, out string description);
+                return new FileMigrationScript(script, version, description, MetadataType.Migration, encoding ?? Encoding.UTF8);
+            }
         }
 
         private DirectoryInfo ResolveDirectory(string location)
