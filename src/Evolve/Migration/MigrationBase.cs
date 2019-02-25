@@ -14,7 +14,7 @@ namespace Evolve.Migration
             Name = Check.NotNull(name, nameof(name));
             Type = type;
             Version = Type == MetadataType.RepeatableMigration 
-                ? null 
+                ? null
                 : new MigrationVersion(Check.NotNullOrEmpty(version, nameof(version)));
         }
 

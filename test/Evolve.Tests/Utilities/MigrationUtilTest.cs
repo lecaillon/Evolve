@@ -61,5 +61,15 @@ namespace Evolve.Tests.Utilities
             // Assert
             Assert.Throws<EvolveConfigurationException>(() => sut.CheckForDuplicates());
         }
+
+        [Theory]
+        [InlineData("R__desc.sql", null, "desc")]
+        [Category(Test.Migration)]
+        public void When_repeatable_migration_gets_a_null_version_and_a_description(string script, string expectedVersion, string expectedDescription)
+        {
+            MigrationUtil.ExtractVersionAndDescription(script, "R", "__", out string version, out string description);
+            Assert.Equal(expectedVersion, version);
+            Assert.Equal(expectedDescription, description);
+        }
     }
 }

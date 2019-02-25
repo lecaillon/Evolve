@@ -20,7 +20,6 @@ namespace Evolve.Utilities
             Check.NotNullOrEmpty(separator, nameof(separator)); // __
 
             // Check prefix
-            //Resolved issuer with .net 3.5
             if (!Path.GetFileNameWithoutExtension(script).Substring(0, prefix.Length).Equals(prefix))
                 throw new EvolveConfigurationException(string.Format(MigrationNamePrefixNotFound, prefix, script));
 
