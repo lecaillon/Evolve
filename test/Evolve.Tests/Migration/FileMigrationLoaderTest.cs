@@ -9,7 +9,7 @@ namespace Evolve.Tests.Migration
     {
         [Fact]
         [Category(Test.Migration)]
-        public void Load_file_migrations_works()
+        public void Load_file_migrations_with_file_loader_works()
         {
             // Arrange
             var loader = new FileMigrationLoader(new[]
@@ -43,7 +43,7 @@ namespace Evolve.Tests.Migration
 
         [Fact]
         [Category(Test.Migration)]
-        public void When_duplicate_version_found_Throws_EvolveException()
+        public void When_duplicate_version_found_with_file_loader_Throws_EvolveException()
         {
             var loader = new FileMigrationLoader(new[] { TestContext.ResourcesFolder });
             Assert.Throws<EvolveConfigurationException>(() => loader.GetMigrations("V", "__", ".sql"));
@@ -51,7 +51,7 @@ namespace Evolve.Tests.Migration
 
         [Fact]
         [Category(Test.Migration)]
-        public void Load_repeatable_file_migrations_works()
+        public void Load_repeatable_file_migrations_with_file_loader_works()
         {
             // Arrange
             var loader = new FileMigrationLoader(new[]
@@ -82,7 +82,7 @@ namespace Evolve.Tests.Migration
 
         [Fact]
         [Category(Test.Migration)]
-        public void When_duplicate_name_found_Throws_EvolveException()
+        public void When_duplicate_name_found_with_file_loader_Throws_EvolveException()
         {
             var loader = new FileMigrationLoader(new[] { TestContext.ResourcesFolder });
             Assert.Throws<EvolveConfigurationException>(() => loader.GetMigrations("R", "__", ".sql"));
