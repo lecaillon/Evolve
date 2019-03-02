@@ -80,7 +80,7 @@ namespace Evolve.Tests.Integration.SQLServer
             Assert.True(metadata.Description == FileMigrationScriptV.Description, $"Migration metadata description should be: Duplicate migration script, but found {metadata.Description}.");
             Assert.True(metadata.Name == FileMigrationScriptV.Name, $"Migration metadata name should be: V2_3_1__Duplicate_migration_script.sql, but found {metadata.Name}.");
             Assert.True(metadata.Success == true, $"Migration metadata success should be: true, but found {metadata.Success}.");
-            Assert.True(metadata.Id == 1, $"Migration metadata id should be: 1, but found {metadata.Id}.");
+            Assert.True(metadata.Id > 0, $"Migration metadata id should be greater than: 0, but found {metadata.Id}.");
             Assert.True(metadata.Type == MetadataType.Migration, $"Migration metadata type should be: Migration, but found {metadata.Type}.");
             Assert.True(metadata.InstalledOn.Date == DateTime.UtcNow.Date, $"Migration metadata InstalledOn date {metadata.InstalledOn} should be equals to {DateTime.UtcNow.Date}.");
 
