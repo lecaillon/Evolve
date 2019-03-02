@@ -7,9 +7,9 @@ using Evolve.Connection;
 using Evolve.Dialect;
 using Evolve.Dialect.SQLServer;
 using Evolve.Metadata;
-using Evolve.Migration;
 using Evolve.Tests.Infrastructure;
 using Xunit;
+using static Evolve.Tests.TestContext;
 
 namespace Evolve.Tests.Integration.SQLServer
 {
@@ -35,60 +35,62 @@ namespace Evolve.Tests.Integration.SQLServer
         [Category(Test.SQLServer)]
         public void Run_all_SQLServer_integration_tests_work()
         {
-            // Open a connection to the SQLServer database
+            // Open a connection to SQL Server
             var cnn = new SqlConnection(_sqlServerContainer.GetCnxStr(DbName));
             cnn.Open();
             Assert.True(cnn.State == ConnectionState.Open, "Cannot open a connection to the database.");
 
-            // Initiate a connection to the database
+            // Initialize the Evolve connection wrapper
             var wcnn = new WrappedConnection(cnn);
 
-            // Validate DBMS.SQLServer
+            // Assert the DBMS type
             Assert.Equal(DBMS.SQLServer, wcnn.GetDatabaseServerType());
 
-            // Init the DatabaseHelper
+            // Initialize the DatabaseHelper
             DatabaseHelper db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLServer, wcnn);
 
-            // Get default schema name
+            // Assert the default schema name
             string schemaName = db.GetCurrentSchemaName();
             Assert.True(schemaName == "dbo", "The default SQLServer schema should be 'dbo'.");
 
-            // Get MetadataTable
-            string metadataTableName = "changelog";
-            var metadataTable = db.GetMetadataTable(schemaName, metadataTableName);
-
-            // Create MetadataTable
+            // Assert MetadataTable creation
+            var metadataTable = db.GetMetadataTable(schemaName, "changelog");
             Assert.False(metadataTable.IsExists(), "MetadataTable sould not already exist.");
             Assert.True(metadataTable.CreateIfNotExists(), "MetadataTable creation failed.");
-            Assert.True(metadataTable.IsExists(), "MetadataTable sould exist.");
+            Assert.True(metadataTable.IsExists(), "MetadataTable should exist.");
             Assert.False(metadataTable.CreateIfNotExists(), "MetadataTable already exists. Creation should return false.");
             Assert.True(metadataTable.GetAllMigrationMetadata().Count() == 0, "No migration metadata should be found.");
+            Assert.True(metadataTable.GetAllRepeatableMigrationMetadata().Count() == 0, "No migration metadata should be found.");
 
-            // TryLock/ReleaseLock MetadataTable
+            // Assert TryLock/ReleaseLock
             Assert.True(metadataTable.TryLock());
             Assert.True(metadataTable.ReleaseLock());
 
-            // Save EmptySchema metadata
+            // Assert save EmptySchema metadata
             metadataTable.Save(MetadataType.EmptySchema, "0", "Empty schema found.", schemaName);
             Assert.False(metadataTable.CanDropSchema(schemaName), $"[{schemaName}] should not be droppable.");
             Assert.True(metadataTable.CanEraseSchema(schemaName), $"[{schemaName}] should be erasable.");
 
-            // Add metadata migration
-            var migration = new FileMigrationScript(TestContext.SqlServer.EmptyMigrationScriptPath, "1_3_2", "desc", MetadataType.Migration);
-            metadataTable.SaveMigration(migration, true);
-            var migrationMetadata = metadataTable.GetAllMigrationMetadata().FirstOrDefault();
-            Assert.True(migrationMetadata != null, "One migration metadata should be found.");
-            Assert.True(migrationMetadata.Version == migration.Version, "Metadata version is not the same.");
-            Assert.True(migrationMetadata.Checksum == migration.CalculateChecksum(), "Metadata checksum is not the same.");
-            Assert.True(migrationMetadata.Description == migration.Description, "Metadata descritpion is not the same.");
-            Assert.True(migrationMetadata.Name == migration.Name, "Metadata name is not the same.");
-            Assert.True(migrationMetadata.Success == true, "Metadata success is not true.");
-            Assert.True(migrationMetadata.Id > 0, "Metadata id is not set.");
-            Assert.True(migrationMetadata.InstalledOn.Date == DateTime.UtcNow.Date, $"Metadata InstalledOn date {migrationMetadata.InstalledOn} must be equals to {DateTime.UtcNow.Date}.");
+            // Assert save migration
+            metadataTable.SaveMigration(FileMigrationScriptV, true);
+            Assert.True(metadataTable.GetAllMigrationMetadata().Count() == 1, "1 migration metadata should have been found.");
+            var metadata = metadataTable.GetAllMigrationMetadata().First();
+            Assert.True(metadata.Version == FileMigrationScriptV.Version, $"Migration metadata version should be: 2.3.1, but found {metadata.Version}.");
+            Assert.True(metadata.Checksum == FileMigrationScriptV.CalculateChecksum(), $"Migration metadata checksum should be; 6C7E36422F79696602E19079534B4076, but found {metadata.Checksum}.");
+            Assert.True(metadata.Description == FileMigrationScriptV.Description, $"Migration metadata description should be: Duplicate migration script, but found {metadata.Description}.");
+            Assert.True(metadata.Name == FileMigrationScriptV.Name, $"Migration metadata name should be: V2_3_1__Duplicate_migration_script.sql, but found {metadata.Name}.");
+            Assert.True(metadata.Success == true, $"Migration metadata success should be: true, but found {metadata.Success}.");
+            Assert.True(metadata.Id == 1, $"Migration metadata id should be: 1, but found {metadata.Id}.");
+            Assert.True(metadata.Type == MetadataType.Migration, $"Migration metadata type should be: Migration, but found {metadata.Type}.");
+            Assert.True(metadata.InstalledOn.Date == DateTime.UtcNow.Date, $"Migration metadata InstalledOn date {metadata.InstalledOn} should be equals to {DateTime.UtcNow.Date}.");
 
-            // Update checksum
-            metadataTable.UpdateChecksum(migrationMetadata.Id, "Hi !");
-            Assert.Equal("Hi !", metadataTable.GetAllMigrationMetadata().First().Checksum);
+            // Assert updated checksum
+            metadataTable.UpdateChecksum(metadata.Id, "Hi !");
+            metadata = metadataTable.GetAllMigrationMetadata().First();
+            Assert.True(metadata.Checksum == "Hi !", $"Updated checksum should be: Hi!, but found {metadata.Checksum}");
+
+            // Assert save repeatable migration
+
 
             // Assert metadata schema is not empty
             Schema schema = new SQLServerSchema(schemaName, wcnn);

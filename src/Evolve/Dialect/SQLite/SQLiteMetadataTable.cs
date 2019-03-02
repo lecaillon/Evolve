@@ -55,7 +55,7 @@ namespace Evolve.Dialect.SQLite
             string sql = $"INSERT INTO [{TableName}] (type, version, description, name, checksum, installed_by, success) VALUES" +
              "( " +
                 $"'{(int)metadata.Type}', " +
-                $"'{metadata.Version.Label}', " +
+                $"{(metadata.Version is null ? "null" : $"'{metadata.Version}'")}, " +
                 $"'{metadata.Description.TruncateWithEllipsis(200)}', " +
                 $"'{metadata.Name.TruncateWithEllipsis(1000)}', " +
                 $"'{metadata.Checksum}', " +
@@ -80,7 +80,7 @@ namespace Evolve.Dialect.SQLite
             string sql = $"SELECT id, type, version, description, name, checksum, installed_by, installed_on, success FROM [{TableName}]";
             return _database.WrappedConnection.QueryForList(sql, r =>
             {
-                return new MigrationMetadata(r.GetString(2), r.GetString(3), r.GetString(4), (MetadataType)r.GetInt16(1))
+                return new MigrationMetadata(r[2] as string, r.GetString(3), r.GetString(4), (MetadataType)r.GetInt16(1))
                 {
                     Id = r.GetInt32(0),
                     Checksum = r.GetString(5),

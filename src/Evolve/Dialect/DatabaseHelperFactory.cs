@@ -14,7 +14,7 @@ namespace Evolve.Dialect
     {
         private const string UnknownDBMS = "Unknown DBMS {0}.";
 
-        private static Dictionary<DBMS, Func<WrappedConnection, DatabaseHelper>> _dbmsMap = new Dictionary<DBMS, Func<WrappedConnection, DatabaseHelper>>
+        private static readonly Dictionary<DBMS, Func<WrappedConnection, DatabaseHelper>> _dbmsMap = new Dictionary<DBMS, Func<WrappedConnection, DatabaseHelper>>
         {
             [DBMS.SQLite]           = wcnn => new SQLiteDatabase(wcnn),
             [DBMS.PostgreSQL]       = wcnn => new PostgreSQLDatabase(wcnn),

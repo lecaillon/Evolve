@@ -40,7 +40,7 @@ namespace Evolve.Metadata
 
             Execute(() =>
             {
-                InternalSave(new MigrationMetadata(migration.Version.Label, migration.Description, migration.Name, MetadataType.Migration)
+                InternalSave(new MigrationMetadata(migration.Version?.Label, migration.Description, migration.Name, migration.Type)
                 {
                     Checksum = migration.CalculateChecksum(),
                     Success = success
@@ -86,6 +86,16 @@ namespace Evolve.Metadata
             {
                 return InternalGetAllMetadata().Where(x => x.Type == MetadataType.Migration && x.Success == true)
                                                .OrderBy(x => x.Version)
+                                               .ToList();
+            });
+        }
+
+        public IEnumerable<MigrationMetadata> GetAllRepeatableMigrationMetadata()
+        {
+            return Execute(() =>
+            {
+                return InternalGetAllMetadata().Where(x => x.Type == MetadataType.RepeatableMigration && x.Success == true)
+                                               .OrderBy(x => x.Name)
                                                .ToList();
             });
         }

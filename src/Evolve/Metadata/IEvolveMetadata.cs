@@ -71,8 +71,14 @@ namespace Evolve.Metadata
         /// <summary>
         ///     Returns all the applied migration metadata ordered by version.
         /// </summary>
-        /// <returns> The ordered list of all applied migration metadata. </returns>
+        /// <returns> The ordered by version list of all applied migration metadata. </returns>
         IEnumerable<MigrationMetadata> GetAllMigrationMetadata();
+
+        /// <summary>
+        ///     Returns all the applied repeatable migration metadata ordered by name.
+        /// </summary>
+        /// <returns> The ordered by name list of all applied repeatable migration metadata. </returns>
+        IEnumerable<MigrationMetadata> GetAllRepeatableMigrationMetadata();
 
         /// <summary>
         ///     <para>

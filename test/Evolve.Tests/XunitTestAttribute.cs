@@ -16,7 +16,8 @@ namespace Evolve.Tests
         Cli,
         Configuration,
         Connection,
-        Migration
+        Migration,
+        Metadata
     }
 
     [TraitDiscoverer("Evolve.Tests.CategoryDiscover", "Evolve.Tests")]

@@ -4,6 +4,7 @@ using Evolve.Dialect;
 using Evolve.Metadata;
 using Evolve.Migration;
 using Xunit;
+using static Evolve.Tests.TestContext;
 
 namespace Evolve.Tests.Integration.SQLite
 {
@@ -12,7 +13,7 @@ namespace Evolve.Tests.Integration.SQLite
         const string MetadataTableName = "changelog";
 
         [Fact]
-        [Category(Test.SQLite)]
+        [Category(Test.SQLite, Test.Metadata)]
         public void When_not_exists_IsExists_returns_false()
         {
             using (var connection = TestUtil.CreateSQLiteWrappedCnx())
@@ -24,7 +25,7 @@ namespace Evolve.Tests.Integration.SQLite
         }
 
         [Fact]
-        [Category(Test.SQLite)]
+        [Category(Test.SQLite, Test.Metadata)]
         public void When_exists_IsExists_returns_true()
         {
             using (var connection = TestUtil.CreateSQLiteWrappedCnx())
@@ -38,7 +39,7 @@ namespace Evolve.Tests.Integration.SQLite
         }
 
         [Fact]
-        [Category(Test.SQLite)]
+        [Category(Test.SQLite, Test.Metadata)]
         public void When_not_exists_create_metadataTable()
         {
             using (var connection = TestUtil.CreateSQLiteWrappedCnx())
@@ -52,65 +53,106 @@ namespace Evolve.Tests.Integration.SQLite
         }
 
         [Fact]
-        [Category(Test.SQLite)]
-        public void SaveMigration_works()
+        [Category(Test.SQLite, Test.Metadata)]
+        public void Save_migration_works()
         {
-            var migration = new FileMigrationScript(TestContext.SQLite.ChinookScriptPath, "1.0.0", "desc", MetadataType.Migration);
-
             using (var connection = TestUtil.CreateSQLiteWrappedCnx())
             {
+                // Arrange
                 var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLite, connection);
                 var metadataTable = db.GetMetadataTable("", MetadataTableName);
-                metadataTable.SaveMigration(migration, true);
+                metadataTable.SaveMigration(FileMigrationScriptV, true);
 
-                Assert.True(metadataTable.GetAllMigrationMetadata().First().Id > 0);
+                // Assert
+                AssertMigrationMetadata(metadataTable.GetAllMigrationMetadata().First());
             }
         }
 
         [Fact]
-        [Category(Test.SQLite)]
+        [Category(Test.SQLite, Test.Metadata)]
+        public void Save_repeatable_migration_works()
+        {
+            using (var connection = TestUtil.CreateSQLiteWrappedCnx())
+            {
+                // Arrange
+                var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLite, connection);
+                var metadataTable = db.GetMetadataTable("", MetadataTableName);
+                metadataTable.SaveMigration(FileMigrationScriptR, true);
+
+                // Assert
+                AssertMigrationMetadata(metadataTable.GetAllRepeatableMigrationMetadata().First(),
+                                        expectedName: "R__desc_b.sql",
+                                        expectedDescription: "desc b",
+                                        expectedVersion: null,
+                                        expectedType: MetadataType.RepeatableMigration,
+                                        expectedChecksum: "71568061B2970A4B7C5160FE75356E10");
+            }
+        }
+
+        [Fact]
+        [Category(Test.SQLite, Test.Metadata)]
         public void UpdateChecksum_works()
         {
-            var migration = new FileMigrationScript(TestContext.SQLite.ChinookScriptPath, "1.0.0", "desc", MetadataType.Migration);
-
             using (var connection = TestUtil.CreateSQLiteWrappedCnx())
             {
+                // Arrange
                 var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLite, connection);
                 var metadataTable = db.GetMetadataTable("", MetadataTableName);
-                metadataTable.SaveMigration(migration, true);
+                metadataTable.SaveMigration(FileMigrationScriptV, true);
 
+                // Act
                 var appliedMigration = metadataTable.GetAllMigrationMetadata().First();
                 metadataTable.UpdateChecksum(appliedMigration.Id, "Hi !");
-                Assert.Equal("Hi !", metadataTable.GetAllMigrationMetadata().First().Checksum);
+
+                // Assert
+                AssertMigrationMetadata(metadataTable.GetAllMigrationMetadata().First(), expectedChecksum: "Hi !");
             }
         }
 
         [Fact]
-        [Category(Test.SQLite)]
+        [Category(Test.SQLite, Test.Metadata)]
         public void GetAllMigrationMetadata_works()
         {
-            var migrationScript = new FileMigrationScript(TestContext.SQLite.ChinookScriptPath, "1.0.0", "desc", MetadataType.Migration);
-
             using (var connection = TestUtil.CreateSQLiteWrappedCnx())
             {
+                // Arrange
                 var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLite, connection);
                 var metadataTable = db.GetMetadataTable("", MetadataTableName);
-                metadataTable.SaveMigration(migrationScript, true);
-                var migrationMetadata = metadataTable.GetAllMigrationMetadata().First();
+                metadataTable.SaveMigration(FileMigrationScriptV, true);
+                metadataTable.SaveMigration(FileMigrationScriptR, true);
 
-                Assert.Equal(migrationScript.Description, migrationMetadata.Description);
-                Assert.Equal(migrationScript.Name, migrationMetadata.Name);
-                Assert.Equal(migrationScript.CalculateChecksum(), migrationMetadata.Checksum);
-                Assert.Equal(migrationScript.Version, migrationMetadata.Version);
-                Assert.True(migrationMetadata.Success);
-                Assert.Equal(string.Empty, migrationMetadata.InstalledBy);
-                Assert.True(migrationMetadata.Id > 0);
-                Assert.True(migrationMetadata.InstalledOn.Date == DateTime.UtcNow.Date);
+                // Assert
+                Assert.Single(metadataTable.GetAllMigrationMetadata());
+                AssertMigrationMetadata(metadataTable.GetAllMigrationMetadata().First());
             }
         }
 
         [Fact]
-        [Category(Test.SQLite)]
+        [Category(Test.SQLite, Test.Metadata)]
+        public void GetAllRepeatableMigrationMetadata_works()
+        {
+            using (var connection = TestUtil.CreateSQLiteWrappedCnx())
+            {
+                // Arrange
+                var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLite, connection);
+                var metadataTable = db.GetMetadataTable("", MetadataTableName);
+                metadataTable.SaveMigration(FileMigrationScriptV, true);
+                metadataTable.SaveMigration(FileMigrationScriptR, true);
+
+                // Assert
+                Assert.Single(metadataTable.GetAllRepeatableMigrationMetadata());
+                AssertMigrationMetadata(metadataTable.GetAllRepeatableMigrationMetadata().First(),
+                        expectedId: 2,
+                        expectedName: "R__desc_b.sql",
+                        expectedDescription: "desc b",
+                        expectedVersion: null,
+                        expectedType: MetadataType.RepeatableMigration,
+                        expectedChecksum: "71568061B2970A4B7C5160FE75356E10");
+            }
+        }
+
+        [Fact]
+        [Category(Test.SQLite, Test.Metadata)]
         public void CanDropSchema_works()
         {
             using (var connection = TestUtil.CreateSQLiteWrappedCnx())
@@ -125,7 +167,7 @@ namespace Evolve.Tests.Integration.SQLite
         }
 
         [Fact]
-        [Category(Test.SQLite)]
+        [Category(Test.SQLite, Test.Metadata)]
         public void CanEraseSchema_works()
         {
             using (var connection = TestUtil.CreateSQLiteWrappedCnx())
@@ -140,7 +182,7 @@ namespace Evolve.Tests.Integration.SQLite
         }
 
         [Fact]
-        [Category(Test.SQLite)]
+        [Category(Test.SQLite, Test.Metadata)]
         public void FindStartVersion_works()
         {
             using (var connection = TestUtil.CreateSQLiteWrappedCnx())
@@ -153,6 +195,26 @@ namespace Evolve.Tests.Integration.SQLite
                 metadataTable.Save(MetadataType.StartVersion, "2.0", "New starting version = 2.0", "");
                 Assert.True(metadataTable.FindStartVersion() == new MigrationVersion("2.0"));
             }
+        }
+
+        private void AssertMigrationMetadata(
+            MigrationMetadata metadata,
+            int expectedId = 1,
+            string expectedName = "V2_3_1__Duplicate_migration_script.sql",
+            string expectedVersion = "2.3.1",
+            string expectedDescription = "Duplicate migration script",
+            MetadataType expectedType = MetadataType.Migration,
+            string expectedChecksum = "6C7E36422F79696602E19079534B4076")
+        {
+            Assert.Equal(expectedId, metadata.Id);
+            Assert.Equal(expectedName, metadata.Name);
+            Assert.Equal(expectedVersion, metadata.Version?.Label);
+            Assert.Equal(expectedDescription, metadata.Description);
+            Assert.Equal(expectedType, metadata.Type);
+            Assert.Equal(expectedChecksum, metadata.Checksum);
+            Assert.True(metadata.Success);
+            Assert.Equal(string.Empty, metadata.InstalledBy);
+            Assert.Equal(DateTime.UtcNow.Date, metadata.InstalledOn.Date);
         }
     }
 }
