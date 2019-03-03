@@ -92,7 +92,7 @@ namespace Evolve.Tests.Integration.SQLServer
             // Assert save repeatable migration
             metadataTable.SaveMigration(FileMigrationScriptR, true);
             Assert.True(metadataTable.GetAllMigrationMetadata().Count() == 1, $"1 migration metadata should have been found, instead of {metadataTable.GetAllMigrationMetadata().Count()}.");
-            Assert.True(metadataTable.GetAllRepeatableMigrationMetadata().Count() == 0, $"1 repeatable migration metadata should have been found, instead of {metadataTable.GetAllRepeatableMigrationMetadata().Count()}.");
+            Assert.True(metadataTable.GetAllRepeatableMigrationMetadata().Count() == 1, $"1 repeatable migration metadata should have been found, instead of {metadataTable.GetAllRepeatableMigrationMetadata().Count()}.");
             metadata = metadataTable.GetAllRepeatableMigrationMetadata().First();
             Assert.True(metadata.Version == FileMigrationScriptR.Version, $"Repeatable migration metadata version should be: null, but found {metadata.Version}.");
             Assert.True(metadata.Checksum == FileMigrationScriptR.CalculateChecksum(), $"Repeatable migration metadata checksum should be; 71568061B2970A4B7C5160FE75356E10, but found {metadata.Checksum}.");
