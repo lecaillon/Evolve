@@ -10,21 +10,35 @@ namespace Evolve.Migration
     public class FileMigrationScript : MigrationScript
     {
         private const string IncorrectMigrationChecksum = "Validate failed: invalid checksum for migration: {0}.";
-        private const string IncorrectMigrationType = "File migration {0} must be of type MetadataType.Migration or MetadataType.RepeatableMigration";
 
-        public FileMigrationScript(string path, string version, string description, MetadataType type, Encoding encoding = null)
+        /// <summary>
+        ///     Initialize a new versioned file migration
+        /// </summary>
+        public FileMigrationScript(string path, string version, string description, Encoding encoding = null)
             : base(version,
                    description,
                    name: System.IO.Path.GetFileName(Check.FileExists(path, nameof(path))),
                    content: File.ReadAllText(path, encoding ?? Encoding.UTF8),
-                   type == MetadataType.Migration || type == MetadataType.RepeatableMigration
-                       ? type
-                       : throw new NotSupportedException(string.Format(IncorrectMigrationType, System.IO.Path.GetFileName(path))))
+                   type: MetadataType.Migration)
         {
             Path = path;
             Encoding = encoding ?? Encoding.UTF8;
         }
-        
+
+        /// <summary>
+        ///     Initialize a new repeatable file migration
+        /// </summary>
+        public FileMigrationScript(string path, string description, Encoding encoding = null)
+            : base(version: null,
+                   description,
+                   name: System.IO.Path.GetFileName(Check.FileExists(path, nameof(path))),
+                   content: File.ReadAllText(path, encoding ?? Encoding.UTF8),
+                   type: MetadataType.RepeatableMigration)
+        {
+            Path = path;
+            Encoding = encoding ?? Encoding.UTF8;
+        }
+
         public string Path { get; }
 
         public Encoding Encoding { get; }

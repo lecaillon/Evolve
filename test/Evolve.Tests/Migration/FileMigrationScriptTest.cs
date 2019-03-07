@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Security.Cryptography;
-using Evolve.Metadata;
 using Evolve.Migration;
 using Xunit;
 using static Evolve.Tests.TestContext;
@@ -11,13 +10,6 @@ namespace Evolve.Tests.Migration
 {
     public class FileMigrationScriptTest
     {
-        [Fact]
-        [Category(Test.Migration)]
-        public void Should_throw_NotSupportedException_when_type_is_not_migration_or_repeatable_migration()
-        {
-            Assert.Throws<NotSupportedException>(() => new FileMigrationScript(CrLfScriptPath, "2.3.1", "desc", MetadataType.EmptySchema));
-        }
-
         [Fact]
         [Category(Test.Migration)]
         public void CalculateChecksum_should_not_return_null()

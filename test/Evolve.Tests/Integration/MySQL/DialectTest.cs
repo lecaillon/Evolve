@@ -76,7 +76,7 @@ namespace Evolve.Tests.Integration.MySQL
             Assert.False(metadataTable.CanEraseSchema(schemaName), $"[{schemaName}] should not be erasable.");
 
             // Add metadata migration
-            var migration = new FileMigrationScript(TestContext.MySQL.EmptyMigrationScriptPath, "1_3_2", "desc", MetadataType.Migration);
+            var migration = new FileMigrationScript(TestContext.MySQL.EmptyMigrationScriptPath, "1_3_2", "desc");
             metadataTable.SaveMigration(migration, true);
             var migrationMetadata = metadataTable.GetAllMigrationMetadata().FirstOrDefault();
             Assert.True(migrationMetadata != null, "One migration metadata should be found.");
