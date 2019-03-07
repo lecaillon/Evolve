@@ -42,7 +42,7 @@ namespace Evolve.Migration
                          .Select(f =>
                          {
                              MigrationUtil.ExtractVersionAndDescription(f.FullName, prefix, separator, out string version, out string description);
-                             return new FileMigrationScript(path: f.FullName, version, description, encoding);
+                             return new FileMigrationScript(path: f.FullName, version, description, MetadataType.Migration, encoding);
                          })
                          .ToList()
                          .ForEach(x => migrations.Add(x));
@@ -75,7 +75,7 @@ namespace Evolve.Migration
                          .Select(f =>
                          {
                              MigrationUtil.ExtractDescription(f.FullName, prefix, separator, out string description);
-                             return new FileMigrationScript(f.FullName, description, encoding);
+                             return new FileMigrationScript(f.FullName, version: null, description, MetadataType.RepeatableMigration, encoding);
                          })
                          .ToList()
                          .ForEach(x => migrations.Add(x));

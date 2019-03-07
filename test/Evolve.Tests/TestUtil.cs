@@ -30,12 +30,15 @@ namespace Evolve.Tests
             new FileMigrationScript(
                 path: path ?? TestContext.CrLfScriptPath,
                 version: version ?? "1",
-                description: description ?? "desc");
+                description: description ?? "desc",
+                type: MetadataType.Migration);
 
         public static FileMigrationScript BuildRepeatableFileMigrationScript(string path = null, string description = null, string version = null) =>
             new FileMigrationScript(
                 path: path ?? TestContext.CrLfScriptPath,
-                description: description ?? "desc");
+                version: version ?? null,
+                description: description ?? "desc",
+                type: MetadataType.RepeatableMigration);
 
         public static EmbeddedResourceMigrationScript BuildEmbeddedResourceMigrationScript(string version = null, string description = null, string name = null, Stream content = null) =>
             new EmbeddedResourceMigrationScript(

@@ -39,8 +39,8 @@ namespace Evolve.Tests.Utilities
             // Arrange
             var sut = new List<FileMigrationScript>
             {
-                new FileMigrationScript(CrLfScriptPath, "2.3.1", "desc"),
-                new FileMigrationScript(CrLfScriptPath, "2.3.2", "desc")
+                new FileMigrationScript(CrLfScriptPath, "2.3.1", "desc", MetadataType.Migration),
+                new FileMigrationScript(CrLfScriptPath, "2.3.2", "desc", MetadataType.Migration)
             };
 
             // Assert
@@ -54,8 +54,8 @@ namespace Evolve.Tests.Utilities
             // Arrange
             var sut = new List<FileMigrationScript>
             {
-                new FileMigrationScript(CrLfScriptPath, "desc"),
-                new FileMigrationScript(SQLite.ChinookScriptPath, "desc")
+                new FileMigrationScript(CrLfScriptPath, null, "desc", MetadataType.RepeatableMigration),
+                new FileMigrationScript(SQLite.ChinookScriptPath, null, "desc", MetadataType.RepeatableMigration)
             };
 
             // Assert
@@ -69,8 +69,8 @@ namespace Evolve.Tests.Utilities
             // Arrange
             var sut = new List<FileMigrationScript>
             {
-                new FileMigrationScript(CrLfScriptPath, "2.3.1", "desc"),
-                new FileMigrationScript(CrLfScriptPath, "2.3.1", "desc")
+                new FileMigrationScript(CrLfScriptPath, "2.3.1", "desc", MetadataType.Migration),
+                new FileMigrationScript(CrLfScriptPath, "2.3.1", "desc", MetadataType.Migration)
             };
 
             // Assert
@@ -84,8 +84,8 @@ namespace Evolve.Tests.Utilities
             // Arrange
             var sut = new List<FileMigrationScript>
             {
-                new FileMigrationScript(CrLfScriptPath, "desc"),
-                new FileMigrationScript(CrLfScriptPath, "asc")
+                new FileMigrationScript(CrLfScriptPath, null, "desc", MetadataType.RepeatableMigration),
+                new FileMigrationScript(CrLfScriptPath, null, "asc", MetadataType.RepeatableMigration)
             };
 
             // Assert

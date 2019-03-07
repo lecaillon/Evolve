@@ -77,7 +77,7 @@ namespace Evolve.Tests.Integration.PostgreSQL
             Assert.False(metadataTable.CanEraseSchema(schemaName), $"[{schemaName}] should not be erasable.");
 
             // Add metadata migration
-            var migration = new FileMigrationScript(TestContext.PostgreSQL.EmptyMigrationScriptPath, "1_3_2", "desc");
+            var migration = new FileMigrationScript(TestContext.PostgreSQL.EmptyMigrationScriptPath, "1_3_2", "desc", MetadataType.Migration);
             metadataTable.SaveMigration(migration, true);
             var migrationMetadata = metadataTable.GetAllMigrationMetadata().FirstOrDefault();
             Assert.True(migrationMetadata != null, "One migration metadata should be found.");
