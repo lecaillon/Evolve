@@ -1,0 +1,152 @@
+﻿using System;
+using System.Data;
+using System.Linq;
+using Evolve.Connection;
+using Evolve.Dialect;
+using Evolve.Metadata;
+using Xunit;
+using static Evolve.Tests.TestContext;
+
+namespace Evolve.Tests
+{
+    public static class AssertHelper
+    {
+        public static IDbConnection AssertIsOpenned(this IDbConnection cnn)
+        {
+            cnn.Open();
+            Assert.True(cnn.State == ConnectionState.Open, "Cannot open a connection to the database.");
+
+            return cnn;
+        }
+
+        public static WrappedConnection AssertDatabaseServerType(this WrappedConnection wcnn)
+        {
+            Assert.Equal(DBMS.SQLServer, wcnn.GetDatabaseServerType());
+
+            return wcnn;
+        }
+
+        public static DatabaseHelper AssertDefaultSchemaName(this DatabaseHelper db, string expectedSchemaName)
+        {
+            string schemaName = db.GetCurrentSchemaName();
+            Assert.True(schemaName == expectedSchemaName, $"The default schema should be '{expectedSchemaName}'.");
+
+            return db;
+        }
+
+        public static IEvolveMetadata AssertMetadataTableCreation(this DatabaseHelper db, string schemaName, string tableName)
+        {
+            var metadataTable = db.GetMetadataTable(schemaName, tableName);
+            Assert.False(metadataTable.IsExists(), "MetadataTable sould not already exist.");
+            Assert.True(metadataTable.CreateIfNotExists(), "MetadataTable creation failed.");
+            Assert.True(metadataTable.IsExists(), "MetadataTable should exist.");
+            Assert.False(metadataTable.CreateIfNotExists(), "MetadataTable already exists. Creation should return false.");
+            Assert.True(metadataTable.GetAllMigrationMetadata().Count() == 0, "No migration metadata should be found.");
+            Assert.True(metadataTable.GetAllRepeatableMigrationMetadata().Count() == 0, "No repeatable migration metadata should be found.");
+
+            return metadataTable;
+        }
+
+        public static IEvolveMetadata AssertMetadataTableLock(this IEvolveMetadata metadataTable)
+        {
+            Assert.True(metadataTable.TryLock());
+            Assert.True(metadataTable.ReleaseLock());
+
+            return metadataTable;
+        }
+
+        public static IEvolveMetadata AssertSchemaIsErasableWhenEmptySchemaFound(this IEvolveMetadata metadataTable, string schemaName)
+        {
+            metadataTable.Save(MetadataType.EmptySchema, "0", "Empty schema found.", schemaName);
+            Assert.False(metadataTable.CanDropSchema(schemaName), $"[{schemaName}] should not be droppable.");
+            Assert.True(metadataTable.CanEraseSchema(schemaName), $"[{schemaName}] should be erasable.");
+
+            return metadataTable;
+        }
+
+        public static IEvolveMetadata AssertVersionedMigrationSave(this IEvolveMetadata metadataTable)
+        {
+            metadataTable.SaveMigration(FileMigrationScriptV, true);
+            Assert.True(metadataTable.GetAllMigrationMetadata().Count() == 1, $"1 migration metadata should have been found, instead of {metadataTable.GetAllMigrationMetadata().Count()}.");
+            Assert.True(metadataTable.GetAllRepeatableMigrationMetadata().Count() == 0, $"0 repeatable migration metadata should have been found, instead of {metadataTable.GetAllRepeatableMigrationMetadata().Count()}.");
+            var metadata = metadataTable.GetAllMigrationMetadata().First();
+            Assert.True(metadata.Version == FileMigrationScriptV.Version, $"Migration metadata version should be: 2.3.1, but found {metadata.Version}.");
+            Assert.True(metadata.Checksum == FileMigrationScriptV.CalculateChecksum(), $"Migration metadata checksum should be: 6C7E36422F79696602E19079534B4076, but found {metadata.Checksum}.");
+            Assert.True(metadata.Description == FileMigrationScriptV.Description, $"Migration metadata description should be: Duplicate migration script, but found {metadata.Description}.");
+            Assert.True(metadata.Name == FileMigrationScriptV.Name, $"Migration metadata name should be: V2_3_1__Duplicate_migration_script.sql, but found {metadata.Name}.");
+            Assert.True(metadata.Success == true, $"Migration metadata success should be: true, but found {metadata.Success}.");
+            Assert.True(metadata.Id == 2, $"Migration metadata id should be: 2, but found {metadata.Id}.");
+            Assert.True(metadata.Type == MetadataType.Migration, $"Migration metadata type should be: Migration, but found {metadata.Type}.");
+            Assert.True(metadata.InstalledOn.Date == DateTime.UtcNow.Date, $"Migration metadata InstalledOn date {metadata.InstalledOn} should be equals to {DateTime.UtcNow.Date}.");
+
+            return metadataTable;
+        }
+
+        public static IEvolveMetadata AssertVersionedMigrationChecksumUpdate(this IEvolveMetadata metadataTable, int metadataId = 2)
+        {
+            metadataTable.UpdateChecksum(metadataId, "Hi !");
+            var metadata = metadataTable.GetAllMigrationMetadata().Single(x => x.Id == metadataId);
+            Assert.True(metadata.Checksum == "Hi !", $"Updated checksum should be: Hi!, but found {metadata.Checksum}");
+
+            return metadataTable;
+        }
+
+        public static IEvolveMetadata AssertRepeatableMigrationSave(this IEvolveMetadata metadataTable)
+        {
+            metadataTable.SaveMigration(FileMigrationScriptR, true);
+            Assert.True(metadataTable.GetAllMigrationMetadata().Count() == 1, $"1 migration metadata should have been found, instead of {metadataTable.GetAllMigrationMetadata().Count()}.");
+            Assert.True(metadataTable.GetAllRepeatableMigrationMetadata().Count() == 1, $"1 repeatable migration metadata should have been found, instead of {metadataTable.GetAllRepeatableMigrationMetadata().Count()}.");
+            var metadata = metadataTable.GetAllRepeatableMigrationMetadata().First();
+            Assert.True(metadata.Version == FileMigrationScriptR.Version, $"Repeatable migration metadata version should be: null, but found {metadata.Version}.");
+            Assert.True(metadata.Checksum == FileMigrationScriptR.CalculateChecksum(), $"Repeatable migration metadata checksum should be; 71568061B2970A4B7C5160FE75356E10, but found {metadata.Checksum}.");
+            Assert.True(metadata.Description == FileMigrationScriptR.Description, $"Repeatable migration metadata description should be: desc b, but found {metadata.Description}.");
+            Assert.True(metadata.Name == FileMigrationScriptR.Name, $"Repeatable migration metadata name should be: R__desc_b.sql, but found {metadata.Name}.");
+            Assert.True(metadata.Success == true, $"Repeatable migration metadata success should be: true, but found {metadata.Success}.");
+            Assert.True(metadata.Id == 3, $"Repeatable migration metadata id should be: 3, but found {metadata.Id}.");
+            Assert.True(metadata.Type == MetadataType.RepeatableMigration, $"Repeatable migration metadata type should be: RepeatableMigration, but found {metadata.Type}.");
+            Assert.True(metadata.InstalledOn.Date == DateTime.UtcNow.Date, $"Repeatable migration metadata InstalledOn date {metadata.InstalledOn} should be equals to {DateTime.UtcNow.Date}.");
+
+            return metadataTable;
+        }
+
+        public static Schema AssertIsNotEmpty(this Schema schema)
+        {
+            Assert.True(schema.IsExists(), $"The schema [{schema.Name}] should exist.");
+            Assert.False(schema.IsEmpty(), $"[{schema.Name}] should not be empty.");
+
+            return schema;
+        }
+
+        public static Schema AssertIsEmpty(this Schema schema)
+        {
+            Assert.True(schema.IsExists(), $"The schema [{schema.Name}] should exist.");
+            Assert.True(schema.IsEmpty(), $"The schema [{schema.Name}] should be empty.");
+
+            return schema;
+        }
+
+        public static DatabaseHelper AssertApplicationLock(this DatabaseHelper db, IDbConnection cnn2)
+        {
+            // Assert lock acquisition
+            Assert.True(db.TryAcquireApplicationLock(), "Cannot acquire application lock.");
+
+            // Can not acquire lock while it is taken by another connection
+            var wcnn2 = new WrappedConnection(cnn2);
+            var db2 = DatabaseHelperFactory.GetDatabaseHelper(wcnn2.GetDatabaseServerType(), wcnn2);
+            Assert.False(db2.TryAcquireApplicationLock(), "Application lock should not have been acquired, because it is already handled.");
+
+            // Assert lock is released
+            Assert.True(db.ReleaseApplicationLock(), "Cannot release the application lock.");
+
+            return db;
+        }
+
+        public static DatabaseHelper AssertCloseConnection(this DatabaseHelper db)
+        {
+            db.CloseConnection();
+            Assert.True(db.WrappedConnection.DbConnection.State == ConnectionState.Closed, "Database connection should be closed.");
+
+            return db;
+        }
+    }
+}
