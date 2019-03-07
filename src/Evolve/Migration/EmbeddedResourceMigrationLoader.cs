@@ -49,7 +49,6 @@ namespace Evolve.Migration
                                 description,
                                 name: GetFileName(x),
                                 content: assembly.GetManifestResourceStream(x),
-                                type: MetadataType.Migration,
                                 encoding);
                         })
                         .ToList()
@@ -82,11 +81,9 @@ namespace Evolve.Migration
                         {
                             MigrationUtil.ExtractDescription(GetFileName(x), prefix, separator, out string description);
                             return new EmbeddedResourceMigrationScript(
-                                version: null,
                                 description,
                                 name: GetFileName(x),
                                 content: assembly.GetManifestResourceStream(x),
-                                type: MetadataType.RepeatableMigration,
                                 encoding);
                         })
                         .ToList()

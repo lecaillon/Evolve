@@ -42,16 +42,13 @@ namespace Evolve.Tests
                 version: version ?? "1",
                 description: description ?? "desc",
                 name: name ?? "name",
-                content: content ?? new MemoryStream(Encoding.UTF8.GetBytes("content")),
-                type: MetadataType.Migration);
+                content: content ?? new MemoryStream(Encoding.UTF8.GetBytes("content")));
 
         public static EmbeddedResourceMigrationScript BuildRepeatableEmbeddedResourceMigrationScript(string name = null, string description = null, Stream content = null) =>
             new EmbeddedResourceMigrationScript(
-                version: null,
                 description: description ?? "desc",
                 name: name ?? "name",
-                content: content ?? new MemoryStream(Encoding.UTF8.GetBytes("content")),
-                type: MetadataType.RepeatableMigration);
+                content: content ?? new MemoryStream(Encoding.UTF8.GetBytes("content")));
 
         public static MigrationMetadata BuildMigrationMetadata(string version = null, string description = null, string name = null) =>
             new MigrationMetadata(
