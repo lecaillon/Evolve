@@ -45,7 +45,7 @@ namespace Evolve.Tests.Integration.SQLServer
               .AssertSchemaIsErasableWhenEmptySchemaFound(schemaName) // id:1
               .AssertVersionedMigrationSave() // id:2
               .AssertVersionedMigrationChecksumUpdate()
-              .AssertRepeatableMigrationSave();
+              .AssertRepeatableMigrationSave(); // id:3
 
             schema.AssertIsNotEmpty();
             schema.Erase();
