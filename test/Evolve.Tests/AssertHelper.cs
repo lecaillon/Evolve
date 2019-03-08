@@ -3,6 +3,7 @@ using System.Data;
 using System.Linq;
 using Evolve.Connection;
 using Evolve.Dialect;
+using Evolve.Dialect.Cassandra;
 using Evolve.Metadata;
 using Xunit;
 using static Evolve.Tests.TestContext;
@@ -94,7 +95,10 @@ namespace Evolve.Tests
             Assert.True(metadata.Description == FileMigrationScriptV.Description, $"Migration metadata description should be: Duplicate migration script, but found {metadata.Description}.");
             Assert.True(metadata.Name == FileMigrationScriptV.Name, $"Migration metadata name should be: V2_3_1__Duplicate_migration_script.sql, but found {metadata.Name}.");
             Assert.True(metadata.Success == true, $"Migration metadata success should be: true, but found {metadata.Success}.");
-            Assert.True(metadata.Id == 2, $"Migration metadata id should be: 2, but found {metadata.Id}.");
+            if (!(metadataTable is CassandraMetadataTable))
+            {
+                Assert.True(metadata.Id == 2, $"Migration metadata id should be: 2, but found {metadata.Id}.");
+            }
             Assert.True(metadata.Type == MetadataType.Migration, $"Migration metadata type should be: Migration, but found {metadata.Type}.");
             Assert.True(metadata.InstalledOn.Date == DateTime.UtcNow.Date, $"Migration metadata InstalledOn date {metadata.InstalledOn} should be equals to {DateTime.UtcNow.Date}.");
 
@@ -121,7 +125,10 @@ namespace Evolve.Tests
             Assert.True(metadata.Description == FileMigrationScriptR.Description, $"Repeatable migration metadata description should be: desc b, but found {metadata.Description}.");
             Assert.True(metadata.Name == FileMigrationScriptR.Name, $"Repeatable migration metadata name should be: R__desc_b.sql, but found {metadata.Name}.");
             Assert.True(metadata.Success == true, $"Repeatable migration metadata success should be: true, but found {metadata.Success}.");
-            Assert.True(metadata.Id == 3, $"Repeatable migration metadata id should be: 3, but found {metadata.Id}.");
+            if (!(metadataTable is CassandraMetadataTable))
+            {
+                Assert.True(metadata.Id == 3, $"Repeatable migration metadata id should be: 3, but found {metadata.Id}.");
+            }
             Assert.True(metadata.Type == MetadataType.RepeatableMigration, $"Repeatable migration metadata type should be: RepeatableMigration, but found {metadata.Type}.");
             Assert.True(metadata.InstalledOn.Date == DateTime.UtcNow.Date, $"Repeatable migration metadata InstalledOn date {metadata.InstalledOn} should be equals to {DateTime.UtcNow.Date}.");
 
