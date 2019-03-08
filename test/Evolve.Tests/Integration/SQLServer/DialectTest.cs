@@ -32,7 +32,7 @@ namespace Evolve.Tests.Integration.SQLServer
         {
             // Arrange
             var cnn = new SqlConnection(_dbContainer.GetCnxStr(DbName)).AssertIsOpenned();
-            var wcnn = new WrappedConnection(cnn).AssertDatabaseServerType();
+            var wcnn = new WrappedConnection(cnn).AssertDatabaseServerType(DBMS.SQLServer);
             var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLServer, wcnn);
             string schemaName = "dbo";
             var schema = new SQLServerSchema(schemaName, wcnn);

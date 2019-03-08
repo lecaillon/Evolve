@@ -19,9 +19,9 @@ namespace Evolve.Tests
             return cnn;
         }
 
-        public static WrappedConnection AssertDatabaseServerType(this WrappedConnection wcnn)
+        public static WrappedConnection AssertDatabaseServerType(this WrappedConnection wcnn, DBMS expectedDBMS)
         {
-            Assert.Equal(DBMS.SQLServer, wcnn.GetDatabaseServerType());
+            Assert.Equal(expectedDBMS, wcnn.GetDatabaseServerType());
 
             return wcnn;
         }

@@ -27,7 +27,7 @@ namespace Evolve.Tests.Integration.PostgreSQL
         {
             // Arrange
             var cnn = _dbContainer.CreateDbConnection().AssertIsOpenned();
-            var wcnn = new WrappedConnection(cnn).AssertDatabaseServerType();
+            var wcnn = new WrappedConnection(cnn).AssertDatabaseServerType(DBMS.PostgreSQL);
             var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.PostgreSQL, wcnn);
             string schemaName = "My metadata schema";
             var schema = new PostgreSQLSchema(schemaName, wcnn);
