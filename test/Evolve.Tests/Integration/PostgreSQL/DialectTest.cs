@@ -33,20 +33,19 @@ namespace Evolve.Tests.Integration.PostgreSQL
             var schema = new PostgreSQLSchema(schemaName, wcnn);
 
             // Assert
-            var metadataTable = db.AssertDefaultSchemaName("public")
-                                  .AssertApplicationLock(_dbContainer.CreateDbConnection())
-                                  .AssertMetadataTableCreation(schemaName, "changelog")
-                                  .AssertMetadataTableLock();
-
             schema.AssertIsNotExists();
             schema.AssertCreation();
             schema.AssertExists();
             schema.AssertIsEmpty();
 
-            metadataTable.AssertSchemaIsDroppableWhenNewSchemaFound(schemaName) // id:1
-                         .AssertVersionedMigrationSave() // id:2
-                         .AssertVersionedMigrationChecksumUpdate()
-                         .AssertRepeatableMigrationSave(); // id:3
+            var metadataTable = db.AssertDefaultSchemaName("public")
+                                  .AssertApplicationLock(_dbContainer.CreateDbConnection())
+                                  .AssertMetadataTableCreation(schemaName, "changelog")
+                                  .AssertMetadataTableLock()
+                                  .AssertSchemaIsDroppableWhenNewSchemaFound(schemaName) // id:1
+                                  .AssertVersionedMigrationSave() // id:2
+                                  .AssertVersionedMigrationChecksumUpdate()
+                                  .AssertRepeatableMigrationSave(); // id:3
 
             schema.AssertIsNotEmpty();
             schema.Erase();
