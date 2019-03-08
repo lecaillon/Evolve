@@ -50,7 +50,9 @@ namespace Evolve.Tests
         public static IEvolveMetadata AssertMetadataTableLock(this IEvolveMetadata metadataTable)
         {
             Assert.True(metadataTable.TryLock());
+            Assert.False(metadataTable.TryLock());
             Assert.True(metadataTable.ReleaseLock());
+            Assert.False(metadataTable.ReleaseLock());
 
             return metadataTable;
         }

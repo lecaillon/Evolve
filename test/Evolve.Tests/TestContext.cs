@@ -44,7 +44,6 @@ namespace Evolve.Tests
             public static string SqlScriptsFolder => Path.Combine(ResourcesFolder, "Cql_Scripts");
             public static string MigrationFolder => Path.Combine(SqlScriptsFolder, "Migration");
             public static string ChecksumMismatchFolder => Path.Combine(SqlScriptsFolder, "Checksum_mismatch");
-            public static string EmptyMigrationScriptPath => Path.Combine(ResourcesFolder, "V1_3_2__Migration_description.cql");
         }
 
         public static class MySQL
@@ -54,7 +53,6 @@ namespace Evolve.Tests
             public static string MigrationFolder => Path.Combine(SqlScriptsFolder, "Migration");
             public static string MigrationFolderFilter => "Evolve.Tests.Integration.MySQL.Resources.Sql_Scripts.Migration";
             public static string ChecksumMismatchFolder => Path.Combine(SqlScriptsFolder, "Checksum_mismatch");
-            public static string EmptyMigrationScriptPath => Path.Combine(ResourcesFolder, "V1_3_2__Migration_description.sql");
         }
 
         public static class PostgreSQL
@@ -65,7 +63,6 @@ namespace Evolve.Tests
             public static string Migration11Folder => Path.Combine(SqlScriptsFolder, "Migration11"); // PostgreSQL 11
             public static string ChecksumMismatchFolder => Path.Combine(SqlScriptsFolder, "Checksum_mismatch");
             public static string OutOfOrderFolder => Path.Combine(SqlScriptsFolder, "OutOfOrder");
-            public static string EmptyMigrationScriptPath => Path.Combine(ResourcesFolder, "V1_3_2__Migration_description.sql");
         }
 
         public static class SQLite
@@ -84,7 +81,6 @@ namespace Evolve.Tests
             public static string SqlScriptsFolder => Path.Combine(ResourcesFolder, "Sql_Scripts");
             public static string MigrationFolder => Path.Combine(SqlScriptsFolder, "Migration");
             public static string ChecksumMismatchFolder => Path.Combine(SqlScriptsFolder, "Checksum_mismatch");
-            public static string EmptyMigrationScriptPath => Path.Combine(ResourcesFolder, "V1_3_2__Migration_description.sql");
         }
     }
 
