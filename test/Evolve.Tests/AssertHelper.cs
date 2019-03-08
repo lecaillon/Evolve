@@ -55,6 +55,15 @@ namespace Evolve.Tests
             return metadataTable;
         }
 
+        public static IEvolveMetadata AssertSchemaIsDroppableWhenNewSchemaFound(this IEvolveMetadata metadataTable, string schemaName)
+        {
+            metadataTable.Save(MetadataType.NewSchema, "0", "New schema created.", schemaName);
+            Assert.True(metadataTable.CanDropSchema(schemaName), $"[{schemaName}] should be droppable.");
+            Assert.False(metadataTable.CanEraseSchema(schemaName), $"[{schemaName}] should not be erasable.");
+
+            return metadataTable;
+        }
+
         public static IEvolveMetadata AssertSchemaIsErasableWhenEmptySchemaFound(this IEvolveMetadata metadataTable, string schemaName)
         {
             metadataTable.Save(MetadataType.EmptySchema, "0", "Empty schema found.", schemaName);
@@ -107,6 +116,24 @@ namespace Evolve.Tests
             Assert.True(metadata.InstalledOn.Date == DateTime.UtcNow.Date, $"Repeatable migration metadata InstalledOn date {metadata.InstalledOn} should be equals to {DateTime.UtcNow.Date}.");
 
             return metadataTable;
+        }
+
+        public static Schema AssertIsNotExists(this Schema schema)
+        {
+            Assert.False(schema.IsExists(), $"The schema [{schema.Name}] should not already exist.");
+            return schema;
+        }
+
+        public static Schema AssertExists(this Schema schema)
+        {
+            Assert.True(schema.IsExists(), $"The schema [{schema.Name}] should be created.");
+            return schema;
+        }
+
+        public static Schema AssertCreation(this Schema schema)
+        {
+            Assert.True(schema.Create(), $"Creation of the schema [{schema.Name}] failed.");
+            return schema;
         }
 
         public static Schema AssertIsNotEmpty(this Schema schema)
