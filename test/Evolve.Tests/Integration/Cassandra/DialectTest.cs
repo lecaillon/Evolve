@@ -46,7 +46,7 @@ namespace Evolve.Tests.Integration.Cassandra
             Assert.True(db.ReleaseApplicationLock());
 
             db.AssertMetadataTableCreation(keyspaceName, "evolve_change_log")
-              .AssertMetadataTableLock() //..Table level: lock implemented with LWT on evolve metadata table
+              .AssertMetadataTableLockEx() //..Table level: lock implemented with LWT on evolve metadata table
               .AssertSchemaIsDroppableWhenNewSchemaFound(keyspaceName) // id:1
               .AssertVersionedMigrationSave() // id:2
               .AssertVersionedMigrationChecksumUpdate()
