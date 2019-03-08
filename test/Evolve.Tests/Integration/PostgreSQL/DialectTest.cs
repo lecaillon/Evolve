@@ -11,13 +11,13 @@ namespace Evolve.Tests.Integration.PostgreSQL
     {
         private readonly PostgreSqlFixture _dbContainer;
 
-        public DialectTest(PostgreSqlFixture pgContainer)
+        public DialectTest(PostgreSqlFixture dbContainer)
         {
-            _dbContainer = pgContainer;
+            _dbContainer = dbContainer;
 
             if (TestContext.Local)
             {
-                pgContainer.Run(fromScratch: true);
+                dbContainer.Run(fromScratch: true);
             }
         }
 
@@ -38,14 +38,14 @@ namespace Evolve.Tests.Integration.PostgreSQL
             schema.AssertExists();
             schema.AssertIsEmpty();
 
-            var metadataTable = db.AssertDefaultSchemaName("public")
-                                  .AssertApplicationLock(_dbContainer.CreateDbConnection())
-                                  .AssertMetadataTableCreation(schemaName, "changelog")
-                                  .AssertMetadataTableLock()
-                                  .AssertSchemaIsDroppableWhenNewSchemaFound(schemaName) // id:1
-                                  .AssertVersionedMigrationSave() // id:2
-                                  .AssertVersionedMigrationChecksumUpdate()
-                                  .AssertRepeatableMigrationSave(); // id:3
+            db.AssertDefaultSchemaName("public")
+              .AssertApplicationLock(_dbContainer.CreateDbConnection())
+              .AssertMetadataTableCreation(schemaName, "changelog")
+              .AssertMetadataTableLock()
+              .AssertSchemaIsDroppableWhenNewSchemaFound(schemaName) // id:1
+              .AssertVersionedMigrationSave() // id:2
+              .AssertVersionedMigrationChecksumUpdate()
+              .AssertRepeatableMigrationSave(); // id:3
 
             schema.AssertIsNotEmpty();
             schema.Erase();
