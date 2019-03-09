@@ -53,7 +53,6 @@ namespace Evolve
         private const string NoMigrationScript = "No migration script found.";
         private const string NothingToMigrate = "Database is up to date. No migration needed.";
         private const string MigrateSuccessfull = "Database migrated to version {0}. {1} migration(s) applied.";
-        private const string MigrateOutOfOrderSuccessfull = "{0} out of order migration(s) applied.";
 
         // Erase
         private const string ExecutingErase = "Executing Erase...";
@@ -133,7 +132,7 @@ namespace Evolve
         public IMigrationLoader MigrationLoader
         {
             get => EmbeddedResourceAssemblies.Any() ? new EmbeddedResourceMigrationLoader(EmbeddedResourceAssemblies, EmbeddedResourceFilters)
-                                                  : new FileMigrationLoader(Locations) as IMigrationLoader;
+                                                    : new FileMigrationLoader(Locations) as IMigrationLoader;
         }
 
         #endregion
@@ -191,24 +190,14 @@ namespace Evolve
                 }
             }
 
-            if (MigrationLoader.GetMigrations(SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding).Count() == 0)
+            if (MigrationLoader.GetMigrations(SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding).Count() == 0
+             && MigrationLoader.GetRepeatableMigrations(SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding).Count() == 0)
             {
                 _logInfoDelegate(NoMigrationScript);
                 return;
             }
 
-            var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
-            var lastAppliedVersion = metadata.GetAllMigrationMetadata().LastOrDefault()?.Version ?? MigrationVersion.MinVersion;
-            var startVersion = metadata.FindStartVersion(); // Load start version from metadata
-            var scripts = MigrationLoader.GetMigrations(SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding)
-                                         .SkipWhile(x => x.Version < startVersion)
-                                         .SkipWhile(x => x.Version <= lastAppliedVersion)
-                                         .TakeWhile(x => x.Version <= TargetVersion);
-
-            foreach (var script in scripts)
-            {
-                ExecuteMigrationScript(script, db);
-            }
+            var lastAppliedVersion = ExecuteAllMigration(db);
 
             if (NbMigration == 0)
             {
@@ -216,15 +205,28 @@ namespace Evolve
             }
             else
             {
-                if (scripts.Count() == 0)
-                {
-                    _logInfoDelegate(string.Format(MigrateOutOfOrderSuccessfull, NbMigration));
-                }
-                else
-                {
-                    _logInfoDelegate(string.Format(MigrateSuccessfull, scripts.Last().Version, NbMigration));
-                }
+                _logInfoDelegate(string.Format(MigrateSuccessfull, lastAppliedVersion, NbMigration));
             }
+        }
+
+        private MigrationVersion ExecuteAllMigration(DatabaseHelper db)
+        {
+            var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
+            var lastAppliedVersion = metadata.GetAllMigrationMetadata().LastOrDefault()?.Version ?? MigrationVersion.MinVersion;
+            var startVersion = metadata.FindStartVersion(); // Load start version from metadata
+            var migrations = MigrationLoader.GetMigrations(SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding)
+                                            .SkipWhile(x => x.Version < startVersion)
+                                            .SkipWhile(x => x.Version <= lastAppliedVersion)
+                                            .TakeWhile(x => x.Version <= TargetVersion);
+
+            foreach (var migration in migrations)
+            {
+                ExecuteMigration(migration, db);
+            }
+
+            return migrations.Any() 
+                ? migrations.Last().Version 
+                : lastAppliedVersion;
         }
 
         public void Repair()
@@ -366,7 +368,7 @@ namespace Evolve
             }
         }
 
-        private void ExecuteMigrationScript(MigrationScript script, DatabaseHelper db)
+        private void ExecuteMigration(MigrationScript script, DatabaseHelper db)
         {
             Check.NotNull(script, nameof(script));
             Check.NotNull(db, nameof(db));
@@ -531,38 +533,38 @@ namespace Evolve
 
             var lastAppliedVersion = appliedMigrations.Last().Version; // Get the last applied migration version
             var startVersion = metadata.FindStartVersion(); // Load start version from metadata
-            var scripts = MigrationLoader.GetMigrations(SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding)
-                                         .SkipWhile(x => x.Version < startVersion)
-                                         .TakeWhile(x => x.Version <= lastAppliedVersion); // Keep scripts between first and last applied migration
+            var migrations = MigrationLoader.GetMigrations(SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding)
+                                            .SkipWhile(x => x.Version < startVersion)
+                                            .TakeWhile(x => x.Version <= lastAppliedVersion); // Keep scripts between first and last applied migration
 
-            foreach (var script in scripts)
+            foreach (var migration in migrations)
             { // Search script in the applied migrations
-                var appliedMigration = appliedMigrations.SingleOrDefault(x => x.Version == script.Version);
+                var appliedMigration = appliedMigrations.SingleOrDefault(x => x.Version == migration.Version);
                 if (appliedMigration == null)
                 { // Script not found
                     if (Command == CommandOptions.Migrate && OutOfOrder)
                     { // Apply migration
-                        ExecuteMigrationScript(script, db);
+                        ExecuteMigration(migration, db);
                         continue;
                     }
                     else
                     { // Validation error
-                        throw new EvolveValidationException(string.Format(MigrationMetadataNotFound, script.Name));
+                        throw new EvolveValidationException(string.Format(MigrationMetadataNotFound, migration.Name));
                     }
                 }
 
                 try
                 { // Script found, verify checksum
-                    script.ValidateChecksum(appliedMigration.Checksum);
+                    migration.ValidateChecksum(appliedMigration.Checksum);
                 }
                 catch (Exception ex)
                 { // Validation error
                     if (Command == CommandOptions.Repair)
                     { // Repair by updating checksum
-                        metadata.UpdateChecksum(appliedMigration.Id, script.CalculateChecksum());
+                        metadata.UpdateChecksum(appliedMigration.Id, migration.CalculateChecksum());
                         NbReparation++;
 
-                        _logInfoDelegate(string.Format(ChecksumFixed, script.Name));
+                        _logInfoDelegate(string.Format(ChecksumFixed, migration.Name));
                     }
                     else
                     {
