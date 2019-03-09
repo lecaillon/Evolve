@@ -198,6 +198,7 @@ namespace Evolve
             }
 
             var lastAppliedVersion = ExecuteAllMigration(db);
+            ExecuteAllRepeatableMigration(db);
 
             if (NbMigration == 0)
             {
@@ -227,6 +228,24 @@ namespace Evolve
             return migrations.Any() 
                 ? migrations.Last().Version 
                 : lastAppliedVersion;
+        }
+
+        private void ExecuteAllRepeatableMigration(DatabaseHelper db)
+        {
+            var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
+            var appliedMigrations = metadata.GetAllRepeatableMigrationMetadata();
+            var migrations = MigrationLoader.GetRepeatableMigrations(SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding);
+            foreach (var migration in migrations)
+            {
+                var appliedMigration = appliedMigrations.Where(x => x.Name == migration.Name)
+                                                        .OrderBy(x => x.InstalledOn)
+                                                        .LastOrDefault();
+                if (appliedMigration is null
+                 || appliedMigration.Checksum != migration.CalculateChecksum())
+                {
+                    ExecuteMigration(migration, db);
+                }
+            }
         }
 
         public void Repair()
@@ -368,16 +387,16 @@ namespace Evolve
             }
         }
 
-        private void ExecuteMigration(MigrationScript script, DatabaseHelper db)
+        private void ExecuteMigration(MigrationScript migration, DatabaseHelper db)
         {
-            Check.NotNull(script, nameof(script));
+            Check.NotNull(migration, nameof(migration));
             Check.NotNull(db, nameof(db));
 
             var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
 
             try
             {
-                foreach (var statement in db.SqlStatementBuilder.LoadSqlStatements(script, Placeholders))
+                foreach (var statement in db.SqlStatementBuilder.LoadSqlStatements(migration, Placeholders))
                 {
                     if (statement.MustExecuteInTransaction)
                     {
@@ -391,17 +410,17 @@ namespace Evolve
                     db.WrappedConnection.ExecuteNonQuery(statement.Sql, CommandTimeout);
                 }
 
-                metadata.SaveMigration(script, true);
+                metadata.SaveMigration(migration, true);
                 db.WrappedConnection.TryCommit();
 
-                _logInfoDelegate(string.Format(MigrationSuccessfull, script.Name));
+                _logInfoDelegate(string.Format(MigrationSuccessfull, migration.Name));
                 NbMigration++;
             }
             catch (Exception ex)
             {
                 db.WrappedConnection.TryRollback();
-                metadata.SaveMigration(script, false);
-                throw new EvolveException(string.Format(MigrationError, script.Name), ex);
+                metadata.SaveMigration(migration, false);
+                throw new EvolveException(string.Format(MigrationError, migration.Name), ex);
             }
         }
 
