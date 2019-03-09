@@ -191,7 +191,7 @@ namespace Evolve
             }
 
             if (MigrationLoader.GetMigrations(SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding).Count() == 0
-             && MigrationLoader.GetRepeatableMigrations(SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding).Count() == 0)
+             && MigrationLoader.GetRepeatableMigrations(SqlRepeatableMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding).Count() == 0)
             {
                 _logInfoDelegate(NoMigrationScript);
                 return;
@@ -234,7 +234,7 @@ namespace Evolve
         {
             var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
             var appliedMigrations = metadata.GetAllRepeatableMigrationMetadata();
-            var migrations = MigrationLoader.GetRepeatableMigrations(SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding);
+            var migrations = MigrationLoader.GetRepeatableMigrations(SqlRepeatableMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding);
             foreach (var migration in migrations)
             {
                 var appliedMigration = appliedMigrations.Where(x => x.Name == migration.Name)
