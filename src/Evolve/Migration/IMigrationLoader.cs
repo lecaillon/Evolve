@@ -19,7 +19,7 @@ namespace Evolve.Migration
         /// <summary>
         ///     Returns a list of repeatable migration scripts ordered by name.
         /// </summary>
-        /// <param name="prefix"> File name prefix for sql migrations. </param>
+        /// <param name="prefix"> File name prefix for sql repeatable migrations. </param>
         /// <param name="separator"> File name separator for sql migrations. </param>
         /// <param name="suffix"> File name suffix for sql migrations. </param>
         /// <param name="encoding"> Encoding of the migration script. </param>

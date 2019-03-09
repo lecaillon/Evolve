@@ -210,6 +210,10 @@ namespace Evolve
             }
         }
 
+        /// <summary>
+        ///     Execute new versioned migrations considering <see cref="StartVersion"/> and <see cref="TargetVersion"/>.
+        /// </summary>
+        /// <returns> The version of the last applied versioned migration or <see cref="MigrationVersion.MinVersion"/> if none. </returns>
         private MigrationVersion ExecuteAllMigration(DatabaseHelper db)
         {
             var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
@@ -230,6 +234,9 @@ namespace Evolve
                 : lastAppliedVersion;
         }
 
+        /// <summary>
+        ///     Execute new repeatable migrations and all those for which the checksum has changed since the last execution.
+        /// </summary>
         private void ExecuteAllRepeatableMigration(DatabaseHelper db)
         {
             var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
