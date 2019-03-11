@@ -16,14 +16,12 @@ namespace Evolve.Tests
         {
             cnn.Open();
             Assert.True(cnn.State == ConnectionState.Open, "Cannot open a connection to the database.");
-
             return cnn;
         }
 
         public static WrappedConnection AssertDatabaseServerType(this WrappedConnection wcnn, DBMS expectedDBMS)
         {
             Assert.Equal(expectedDBMS, wcnn.GetDatabaseServerType());
-
             return wcnn;
         }
 
@@ -31,7 +29,6 @@ namespace Evolve.Tests
         {
             string schemaName = db.GetCurrentSchemaName();
             Assert.True(schemaName == expectedSchemaName, $"The default schema should be '{expectedSchemaName}'.");
-
             return db;
         }
 
@@ -44,7 +41,6 @@ namespace Evolve.Tests
             Assert.False(metadataTable.CreateIfNotExists(), "MetadataTable already exists. Creation should return false.");
             Assert.True(metadataTable.GetAllMigrationMetadata().Count() == 0, "No migration metadata should be found.");
             Assert.True(metadataTable.GetAllRepeatableMigrationMetadata().Count() == 0, "No repeatable migration metadata should be found.");
-
             return metadataTable;
         }
 
@@ -52,7 +48,6 @@ namespace Evolve.Tests
         {
             Assert.True(metadataTable.TryLock());
             Assert.True(metadataTable.ReleaseLock());
-
             return metadataTable;
         }
 
@@ -62,7 +57,6 @@ namespace Evolve.Tests
             Assert.False(metadataTable.TryLock());
             Assert.True(metadataTable.ReleaseLock());
             Assert.False(metadataTable.ReleaseLock());
-
             return metadataTable;
         }
 
@@ -71,7 +65,6 @@ namespace Evolve.Tests
             metadataTable.Save(MetadataType.NewSchema, "0", "New schema created.", schemaName);
             Assert.True(metadataTable.CanDropSchema(schemaName), $"[{schemaName}] should be droppable.");
             Assert.False(metadataTable.CanEraseSchema(schemaName), $"[{schemaName}] should not be erasable.");
-
             return metadataTable;
         }
 
@@ -80,7 +73,6 @@ namespace Evolve.Tests
             metadataTable.Save(MetadataType.EmptySchema, "0", "Empty schema found.", schemaName);
             Assert.False(metadataTable.CanDropSchema(schemaName), $"[{schemaName}] should not be droppable.");
             Assert.True(metadataTable.CanEraseSchema(schemaName), $"[{schemaName}] should be erasable.");
-
             return metadataTable;
         }
 
@@ -101,7 +93,6 @@ namespace Evolve.Tests
             }
             Assert.True(metadata.Type == MetadataType.Migration, $"Migration metadata type should be: Migration, but found {metadata.Type}.");
             Assert.True(metadata.InstalledOn.Date == DateTime.UtcNow.Date, $"Migration metadata InstalledOn date {metadata.InstalledOn} should be equals to {DateTime.UtcNow.Date}.");
-
             return metadataTable;
         }
 
@@ -110,7 +101,6 @@ namespace Evolve.Tests
             metadataTable.UpdateChecksum(metadataId, "Hi !");
             var metadata = metadataTable.GetAllMigrationMetadata().Single(x => x.Id == metadataId);
             Assert.True(metadata.Checksum == "Hi !", $"Updated checksum should be: Hi!, but found {metadata.Checksum}");
-
             return metadataTable;
         }
 
@@ -131,7 +121,6 @@ namespace Evolve.Tests
             }
             Assert.True(metadata.Type == MetadataType.RepeatableMigration, $"Repeatable migration metadata type should be: RepeatableMigration, but found {metadata.Type}.");
             Assert.True(metadata.InstalledOn.Date == DateTime.UtcNow.Date, $"Repeatable migration metadata InstalledOn date {metadata.InstalledOn} should be equals to {DateTime.UtcNow.Date}.");
-
             return metadataTable;
         }
 
@@ -157,7 +146,6 @@ namespace Evolve.Tests
         {
             Assert.True(schema.IsExists(), $"The schema [{schema.Name}] should exist.");
             Assert.False(schema.IsEmpty(), $"[{schema.Name}] should not be empty.");
-
             return schema;
         }
 
@@ -165,7 +153,6 @@ namespace Evolve.Tests
         {
             Assert.True(schema.IsExists(), $"The schema [{schema.Name}] should exist.");
             Assert.True(schema.IsEmpty(), $"The schema [{schema.Name}] should be empty.");
-
             return schema;
         }
 
@@ -189,8 +176,41 @@ namespace Evolve.Tests
         {
             db.CloseConnection();
             Assert.True(db.WrappedConnection.DbConnection.State == ConnectionState.Closed, "Database connection should be closed.");
-
             return db;
+        }
+
+        public static Evolve AssertMigrateIsSuccessful(this Evolve evolve, IDbConnection cnn, int expectedNbMigration, params string[] locations)
+        {
+            if (locations.Any())
+            {
+                evolve.Locations = locations;
+            }
+
+            evolve.Migrate();
+            Assert.True(evolve.NbMigration == expectedNbMigration, $"{expectedNbMigration} migrations should have been applied, not {evolve.NbMigration}.");
+            Assert.True(cnn.State == ConnectionState.Closed);
+
+            evolve.Migrate();
+            Assert.True(evolve.NbMigration == 0, $"There should be no migration applied after a successful one, not {evolve.NbMigration}.");
+            Assert.True(cnn.State == ConnectionState.Closed);
+
+            return evolve;
+        }
+
+        public static Evolve AssertMigrateThrows<T>(this Evolve evolve, IDbConnection cnn, Action<Evolve> arrange, params string[] locations) where T : Exception
+        {
+            arrange(evolve);
+            Assert.Throws<EvolveConfigurationException>(() => evolve.Migrate());
+            Assert.True(cnn.State == ConnectionState.Closed);
+            return evolve;
+        }
+
+        public static Evolve AssertRepairIsSuccessful(this Evolve evolve, IDbConnection cnn, int expectedNbReparation)
+        {
+            evolve.Repair();
+            Assert.True(evolve.NbReparation == 1, $"There should be {expectedNbReparation} migration repaired, not {evolve.NbReparation}.");
+            Assert.True(cnn.State == ConnectionState.Closed);
+            return evolve;
         }
     }
 }
