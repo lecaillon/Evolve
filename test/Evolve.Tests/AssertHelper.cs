@@ -179,13 +179,14 @@ namespace Evolve.Tests
             return db;
         }
 
-        public static Evolve AssertMigrateIsSuccessful(this Evolve evolve, IDbConnection cnn, int expectedNbMigration, params string[] locations)
+        public static Evolve AssertMigrateIsSuccessful(this Evolve evolve, IDbConnection cnn, int expectedNbMigration, Action<Evolve> arrange = null, params string[] locations)
         {
             if (locations.Any())
             {
                 evolve.Locations = locations;
             }
 
+            arrange?.Invoke(evolve);
             evolve.Migrate();
             Assert.True(evolve.NbMigration == expectedNbMigration, $"{expectedNbMigration} migrations should have been applied, not {evolve.NbMigration}.");
             Assert.True(cnn.State == ConnectionState.Closed);
@@ -216,6 +217,25 @@ namespace Evolve.Tests
             evolve.Repair();
             Assert.True(evolve.NbReparation == 1, $"There should be {expectedNbReparation} migration repaired, not {evolve.NbReparation}.");
             Assert.True(cnn.State == ConnectionState.Closed);
+            return evolve;
+        }
+
+        public static Evolve AssertEraseThrows<T>(this Evolve evolve, IDbConnection cnn, Action<Evolve> arrange) where T : Exception
+        {
+            arrange(evolve);
+            Assert.Throws<T>(() => evolve.Erase());
+            Assert.True(cnn.State == ConnectionState.Closed);
+
+            return evolve;
+        }
+
+        public static Evolve AssertEraseIsSuccessful(this Evolve evolve, IDbConnection cnn, Action<Evolve> arrange = null)
+        {
+            arrange?.Invoke(evolve);
+            evolve.Erase();
+            Assert.True(evolve.NbSchemaErased == evolve.Schemas.Count(), $"{evolve.Schemas.Count()} schemas should have been erased, not {evolve.NbSchemaErased}.");
+            Assert.True(cnn.State == ConnectionState.Closed);
+
             return evolve;
         }
     }
