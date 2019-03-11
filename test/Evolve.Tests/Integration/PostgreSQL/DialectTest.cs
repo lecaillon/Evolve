@@ -4,7 +4,7 @@ using Evolve.Dialect.PostgreSQL;
 using Evolve.Tests.Infrastructure;
 using Xunit;
 
-namespace Evolve.Tests.Integration.PostgreSQL
+namespace Evolve.Tests.Integration.PostgregSql
 {
     [Collection("PostgreSql collection")]
     public class DialectTest

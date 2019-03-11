@@ -198,14 +198,14 @@ namespace Evolve.Tests
             return evolve;
         }
 
-        public static Evolve AssertMigrateThrows<T>(this Evolve evolve, IDbConnection cnn, Action<Evolve> arrange, params string[] locations) where T : Exception
+        public static Evolve AssertMigrateThrows<T>(this Evolve evolve, IDbConnection cnn, Action<Evolve> arrange = null, params string[] locations) where T : Exception
         {
             if (locations.Any())
             {
                 evolve.Locations = locations;
             }
 
-            arrange(evolve);
+            arrange?.Invoke(evolve);
             Assert.Throws<T>(() => evolve.Migrate());
             Assert.True(cnn.State == ConnectionState.Closed);
 
