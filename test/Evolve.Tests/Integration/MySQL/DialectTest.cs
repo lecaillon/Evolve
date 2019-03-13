@@ -4,7 +4,7 @@ using Evolve.Dialect.MySQL;
 using Evolve.Tests.Infrastructure;
 using Xunit;
 
-namespace Evolve.Tests.Integration.MySQL
+namespace Evolve.Tests.Integration.MySql
 {
     [Collection("MySQL collection")]
     public class DialectTest
