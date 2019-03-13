@@ -44,17 +44,17 @@ namespace Evolve.Tests.Integration.SQLServer
 
             // Assert
             evolve.AssertMigrateIsSuccessful(cnn, expectedNbMigration, locations: SqlServer.MigrationFolder)
-                  .AssertMigrateThrows<EvolveConfigurationException>(cnn, e => e.StartVersion = new MigrationVersion("3.0")) // Migrate should have failed because a least one migration has already been applied
-                  .AssertMigrateThrows<EvolveValidationException>(cnn, e => e.StartVersion = MigrationVersion.MinVersion, SqlServer.ChecksumMismatchFolder) // Validation should fail because checksum mismatches
+                  .AssertMigrateThrows<EvolveConfigurationException>(cnn, e => e.StartVersion = new MigrationVersion("3.0"))
+                  .AssertMigrateThrows<EvolveValidationException>(cnn, e => e.StartVersion = MigrationVersion.MinVersion, SqlServer.ChecksumMismatchFolder)
                   .AssertRepairIsSuccessful(cnn, expectedNbReparation: 1)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 0) // No migration needed. Database is already up to date.
-                  .AssertEraseThrows<EvolveConfigurationException>(cnn, e => e.IsEraseDisabled = true) // Erase throws because option is disabled.
+                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 0)
+                  .AssertEraseThrows<EvolveConfigurationException>(cnn, e => e.IsEraseDisabled = true)
                   .AssertEraseIsSuccessful(cnn, e => e.IsEraseDisabled = false)
                   .AssertMigrateIsSuccessful(cnn, expectedNbMigration, locations: SqlServer.MigrationFolder)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 1, e => e.MustEraseOnValidationError = true, locations: SqlServer.ChecksumMismatchFolder) // Migrate fails then erases and migrates successfully.
+                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 1, e => e.MustEraseOnValidationError = true, locations: SqlServer.ChecksumMismatchFolder)
                   .AssertEraseIsSuccessful(cnn, e => e.IsEraseDisabled = false)
                   .AssertMigrateIsSuccessful(cnn, expectedNbMigration - 1, e => e.StartVersion = new MigrationVersion("2.0"), locations: SqlServer.MigrationFolder)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 0, e => e.StartVersion = MigrationVersion.MinVersion); // No migration needed. Database is already up to date.
+                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 0, e => e.StartVersion = MigrationVersion.MinVersion);
         }
     }
 }
