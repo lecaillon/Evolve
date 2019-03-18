@@ -63,7 +63,7 @@ namespace Evolve.Tests.Integration.Cassandra
                   .AssertRepairIsSuccessful(cnn, expectedNbReparation: 0, locations: CassandraDb.RepeatableFolder)
                   .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 1)
                   .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 0)
-                  .AssertEraseIsSuccessful(cnn, e => e.StartVersion = MigrationVersion.MinVersion)
+                  .AssertEraseIsSuccessful(cnn, e => e.StartVersion = MigrationVersion.MinVersion);
 
             //DefaultKeyspaceReplicationStrategy
             evolve.Locations = new[] { CassandraDb.MigrationFolder };
