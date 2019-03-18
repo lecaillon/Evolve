@@ -47,7 +47,12 @@ namespace Evolve.Tests.Integration.MySql
                   .AssertEraseThrows<EvolveConfigurationException>(cnn, e => e.IsEraseDisabled = true)
                   .AssertEraseIsSuccessful(cnn, e => e.IsEraseDisabled = false)
                   .AssertMigrateIsSuccessful(cnn, expectedNbMigration, null, locations: MySQL.MigrationFolder)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 1, e => e.MustEraseOnValidationError = true, locations: MySQL.ChecksumMismatchFolder);
+                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 1, e => e.MustEraseOnValidationError = true, locations: MySQL.ChecksumMismatchFolder)
+                  .AssertEraseIsSuccessful(cnn, e => e.IsEraseDisabled = false)
+                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration, null, locations: MySQL.MigrationFolder)
+                  .AssertRepairIsSuccessful(cnn, expectedNbReparation: 0, locations: MySQL.RepeatableFolder)
+                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 1)
+                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 0);
         }
     }
 }

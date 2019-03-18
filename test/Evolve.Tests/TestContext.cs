@@ -53,6 +53,7 @@ namespace Evolve.Tests
             public static string MigrationFolder => Path.Combine(SqlScriptsFolder, "Migration");
             public static string MigrationFolderFilter => "Evolve.Tests.Integration.MySQL.Resources.Sql_Scripts.Migration";
             public static string ChecksumMismatchFolder => Path.Combine(SqlScriptsFolder, "Checksum_mismatch");
+            public static string RepeatableFolder => Path.Combine(SqlScriptsFolder, "Repeatable");
         }
 
         public static class PostgreSQL
