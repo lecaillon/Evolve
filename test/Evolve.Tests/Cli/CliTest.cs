@@ -49,7 +49,7 @@ namespace Evolve.Tests.Cli
                     db: "cassandra",
                     command: command,
                     cnxStr: _cassandraContainer.CnxStr,
-                    location: TestContext.Cassandra.MigrationFolder,
+                    location: TestContext.CassandraDb.MigrationFolder,
                     args: $"--scripts-suffix .cql -p keyspace:{metadataKeyspaceName} --keyspace {metadataKeyspaceName} --metadata-table-keyspace evolve_change_log");
 
                 Assert.True(stderr == string.Empty, stderr);
