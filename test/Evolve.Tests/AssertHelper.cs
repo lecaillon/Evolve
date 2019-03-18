@@ -212,10 +212,15 @@ namespace Evolve.Tests
             return evolve;
         }
 
-        public static Evolve AssertRepairIsSuccessful(this Evolve evolve, IDbConnection cnn, int expectedNbReparation)
+        public static Evolve AssertRepairIsSuccessful(this Evolve evolve, IDbConnection cnn, int expectedNbReparation, params string[] locations)
         {
+            if (locations.Any())
+            {
+                evolve.Locations = locations;
+            }
+
             evolve.Repair();
-            Assert.True(evolve.NbReparation == 1, $"There should be {expectedNbReparation} migration repaired, not {evolve.NbReparation}.");
+            Assert.True(evolve.NbReparation == expectedNbReparation, $"There should be {expectedNbReparation} migration repaired, not {evolve.NbReparation}.");
             Assert.True(cnn.State == ConnectionState.Closed);
             return evolve;
         }
