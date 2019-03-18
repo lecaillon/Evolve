@@ -38,7 +38,7 @@ namespace Evolve.Tests
         public static string EvolveAppConfigPath => Path.Combine(ResourcesFolder, "Configuration/App.config");
         public static string EvolveWebConfigPath => Path.Combine(ResourcesFolder, "Configuration/Web.config");
 
-        public static class Cassandra
+        public static class CassandraDb
         {
             public static string ResourcesFolder => Path.Combine(ProjectFolder, "Integration/Cassandra/Resources");
             public static string SqlScriptsFolder => Path.Combine(ResourcesFolder, "Cql_Scripts");
