@@ -56,7 +56,12 @@ namespace Evolve.Tests.Integration.Cassandra
                   .AssertMigrateIsSuccessful(cnn, expectedNbMigration - 2, e => e.StartVersion = new MigrationVersion("3"), TestContext.Cassandra.MigrationFolder)
                   .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 0, e => e.StartVersion = MigrationVersion.MinVersion)
                   .AssertMigrateThrows<EvolveConfigurationException>(cnn, e => e.StartVersion = new MigrationVersion("3.0"))
-                  .AssertEraseIsSuccessful(cnn, e => e.StartVersion = MigrationVersion.MinVersion);
+                  .AssertEraseIsSuccessful(cnn, e => e.StartVersion = MigrationVersion.MinVersion)
+                  .AssertEraseIsSuccessful(cnn, e => e.IsEraseDisabled = false)
+                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration, null, locations: TestContext.Cassandra.MigrationFolder)
+                  .AssertRepairIsSuccessful(cnn, expectedNbReparation: 0, locations: TestContext.Cassandra.RepeatableFolder)
+                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 1)
+                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 0);
 
             //DefaultKeyspaceReplicationStrategy
             var configurationFileName = ConfigurationFile;
