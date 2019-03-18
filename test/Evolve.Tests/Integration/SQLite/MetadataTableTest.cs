@@ -6,7 +6,7 @@ using Evolve.Migration;
 using Xunit;
 using static Evolve.Tests.TestContext;
 
-namespace Evolve.Tests.Integration.SQLite
+namespace Evolve.Tests.Integration.Sqlite
 {
     public class MetadataTableTest
     {
