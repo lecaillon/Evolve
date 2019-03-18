@@ -49,7 +49,12 @@ namespace Evolve.Tests.Integration.PostgregSql
                   .AssertEraseThrows<EvolveConfigurationException>(cnn, e => e.IsEraseDisabled = true)
                   .AssertEraseIsSuccessful(cnn, e => e.IsEraseDisabled = false)
                   .AssertMigrateIsSuccessful(cnn, expectedNbMigration, null, locations)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 1, e => e.MustEraseOnValidationError = true, locations: PostgreSQL.ChecksumMismatchFolder);
+                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 1, e => e.MustEraseOnValidationError = true, locations: PostgreSQL.ChecksumMismatchFolder)
+                  .AssertEraseIsSuccessful(cnn, e => e.IsEraseDisabled = false)
+                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration, null, locations)
+                  .AssertRepairIsSuccessful(cnn, expectedNbReparation: 0, locations: PostgreSQL.RepeatableFolder)
+                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 1)
+                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 0);
         }
     }
 }

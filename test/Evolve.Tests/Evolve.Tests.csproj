@@ -48,6 +48,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Integration\PostgreSQL\Resources\Sql_Scripts\Migration\R__Repeatable_migration.sql" />
+    <None Remove="Integration\PostgreSQL\Resources\Sql_Scripts\Repeatable\R__Repeatable_migration.sql" />
     <None Remove="Integration\SQLite\Resources\Sql_Scripts\Migration\R__Repeatable_migration.sql" />
     <None Remove="Integration\SQLite\Resources\Sql_Scripts\Repeatable\R__Repeatable_migration.sql" />
   </ItemGroup>
