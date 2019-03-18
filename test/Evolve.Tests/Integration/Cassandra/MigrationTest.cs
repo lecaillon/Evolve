@@ -9,7 +9,7 @@ using static Evolve.Tests.TestContext;
 
 namespace Evolve.Tests.Integration.Cassandra
 {
-    [Collection("CassandraDb collection")]
+    [Collection("Cassandra collection")]
     public class MigrationTest
     {
         private readonly CassandraFixture _dbContainer;
@@ -28,7 +28,7 @@ namespace Evolve.Tests.Integration.Cassandra
 
         [FactSkippedOnAppVeyor]
         [Category(Test.Cassandra)]
-        public void Run_all_CassandraDb_integration_tests_work()
+        public void Run_all_Cassandra_integration_tests_work()
         {
             // Arrange
             int expectedNbMigration = Directory.GetFiles(CassandraDb.MigrationFolder).Length;
@@ -72,7 +72,7 @@ namespace Evolve.Tests.Integration.Cassandra
             Assert.Contains("Not enough replicas available for query at consistency", ex.Message);
             File.Delete(configurationFileName);
 
-            // Call the second part of the CassandraDb integration tests
+            // Call the second part of the Cassandra integration tests
             DialectTest.Run_all_Cassandra_integration_tests_work(_dbContainer);
         }
     }
