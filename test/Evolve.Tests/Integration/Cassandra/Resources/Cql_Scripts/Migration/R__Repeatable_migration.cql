@@ -1,1 +1,1 @@
-SELECT 1;
+select release_version from system.local;
