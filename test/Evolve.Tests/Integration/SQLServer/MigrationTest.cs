@@ -54,7 +54,12 @@ namespace Evolve.Tests.Integration.SQLServer
                   .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 1, e => e.MustEraseOnValidationError = true, locations: SqlServer.ChecksumMismatchFolder)
                   .AssertEraseIsSuccessful(cnn, e => e.IsEraseDisabled = false)
                   .AssertMigrateIsSuccessful(cnn, expectedNbMigration - 1, e => e.StartVersion = new MigrationVersion("2.0"), locations: SqlServer.MigrationFolder)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 0, e => e.StartVersion = MigrationVersion.MinVersion);
+                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 0, e => e.StartVersion = MigrationVersion.MinVersion)
+                  .AssertEraseIsSuccessful(cnn, e => e.IsEraseDisabled = false)
+                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration, null, locations: SqlServer.MigrationFolder)
+                  .AssertRepairIsSuccessful(cnn, expectedNbReparation: 0, locations: SqlServer.RepeatableFolder)
+                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 1)
+                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 0);
         }
     }
 }
