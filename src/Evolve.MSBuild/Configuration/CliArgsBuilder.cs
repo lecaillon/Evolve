@@ -26,6 +26,7 @@ namespace Evolve.MSBuild
             EraseOnValidationError = ReadValue("Evolve.EraseOnValidationError");
             Encoding = ReadValue("Evolve.Encoding");
             SqlMigrationPrefix = ReadValue("Evolve.SqlMigrationPrefix");
+            SqlRepeatableMigrationPrefix = ReadValue("Evolve.SqlRepeatableMigrationPrefix");
             SqlMigrationSeparator = ReadValue("Evolve.SqlMigrationSeparator");
             SqlMigrationSuffix = ReadValue("Evolve.SqlMigrationSuffix");
             Schemas = SplitCommaSeparatedString(ReadValue("Evolve.Schemas"));
@@ -67,6 +68,7 @@ namespace Evolve.MSBuild
         public string EraseOnValidationError { get; protected set; }
         public string Encoding { get; protected set; }
         public string SqlMigrationPrefix { get; protected set; }
+        public string SqlRepeatableMigrationPrefix { get; protected set; }
         public string SqlMigrationSeparator { get; protected set; }
         public string SqlMigrationSuffix { get; protected set; }
         public string[] Schemas { get; protected set; }
@@ -124,6 +126,7 @@ namespace Evolve.MSBuild
             AppendArg(builder, "--target-version", TargetVersion, false);
             AppendArg(builder, "--start-version", StartVersion, false);
             AppendArg(builder, "--scripts-prefix", SqlMigrationPrefix, false);
+            AppendArg(builder, "--repeatable-scripts-prefix", SqlRepeatableMigrationPrefix, false);
             AppendArg(builder, "--scripts-suffix", SqlMigrationSuffix, false);
             AppendArg(builder, "--scripts-separator", SqlMigrationSeparator, false);
             AppendArg(builder, "--encoding", Encoding, false);
