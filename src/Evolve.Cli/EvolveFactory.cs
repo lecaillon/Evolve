@@ -29,6 +29,7 @@
                 StartVersion = ParseVersion(options.StartVersion, MigrationVersion.MinVersion),
                 TargetVersion = ParseVersion(options.TargetVersion, MigrationVersion.MaxVersion),
                 SqlMigrationPrefix = options.ScriptsPrefix,
+                SqlRepeatableMigrationPrefix = options.RepeatableScriptsPrefix,
                 SqlMigrationSuffix = options.ScriptsSuffix,
                 SqlMigrationSeparator = options.ScriptsSeparator,
                 PlaceholderPrefix = options.PlaceholderPrefix,
