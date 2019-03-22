@@ -48,7 +48,7 @@ namespace Evolve
 
         // Migrate
         private const string ExecutingMigrate = "Executing Migrate...";
-        private const string MigrationError = "Error executing script: {0}.";
+        private const string MigrationError = "Error executing script: {0} after {1} ms.";
         private const string MigrationErrorEraseOnValidationError = "{0} Erase database. (MustEraseOnValidationError = True)";
         private const string MigrationSuccessfull = "Successfully applied migration {0} in {1} ms.";
         private const string NoMigrationScript = "No migration script found.";
@@ -402,13 +402,12 @@ namespace Evolve
             Check.NotNull(migration, nameof(migration));
             Check.NotNull(db, nameof(db));
 
+            var stopWatch = new Stopwatch();
             var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
 
             try
             {
-                var stopWatch = new Stopwatch();
                 stopWatch.Start();
-
                 foreach (var statement in db.SqlStatementBuilder.LoadSqlStatements(migration, Placeholders))
                 {
                     if (statement.MustExecuteInTransaction)
@@ -433,9 +432,11 @@ namespace Evolve
             }
             catch (Exception ex)
             {
+                stopWatch.Stop();
+                TotalTimeElapsedInMs += stopWatch.ElapsedMilliseconds;
                 db.WrappedConnection.TryRollback();
                 metadata.SaveMigration(migration, false);
-                throw new EvolveException(string.Format(MigrationError, migration.Name), ex);
+                throw new EvolveException(string.Format(MigrationError, migration.Name, stopWatch.ElapsedMilliseconds), ex);
             }
         }
 
