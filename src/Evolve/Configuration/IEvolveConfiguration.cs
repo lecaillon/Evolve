@@ -83,6 +83,11 @@ namespace Evolve.Configuration
         string SqlMigrationPrefix { get; set; }
 
         /// <summary>
+        ///     Gets or sets the file name prefix for sql repeatable migrations. (default: R)
+        /// </summary>
+        string SqlRepeatableMigrationPrefix { get; set; }
+
+        /// <summary>
         ///     Gets or sets the file name separator for sql migrations. (default: __)
         /// </summary>
         string SqlMigrationSeparator { get; set; }

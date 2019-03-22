@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Evolve.Metadata;
 using Evolve.Utilities;
 
 namespace Evolve.Migration
@@ -28,8 +29,8 @@ namespace Evolve.Migration
             Check.NotNullOrEmpty(suffix, nameof(suffix)); // .sql
 
             var migrations = new List<FileMigrationScript>();
-
             string searchPattern = $"{prefix}*{suffix}"; // "V*.sql"
+            encoding = encoding ?? Encoding.UTF8;
 
             foreach (string location in _locations.Distinct(StringComparer.OrdinalIgnoreCase)) // Remove duplicate locations if any
             {
@@ -38,26 +39,53 @@ namespace Evolve.Migration
 
                 dirToScan.GetFiles(searchPattern, SearchOption.AllDirectories)   // Get scripts recursively
                          .Where(f => !migrations.Any(m => m.Path == f.FullName)) // Scripts not already loaded
+                         .Select(f =>
+                         {
+                             MigrationUtil.ExtractVersionAndDescription(f.FullName, prefix, separator, out string version, out string description);
+                             return new FileMigrationScript(path: f.FullName, version, description, MetadataType.Migration, encoding);
+                         })
                          .ToList()
-                         .ForEach(f => migrations.Add(LoadMigrationFromFile(f.FullName, prefix, separator, encoding ?? Encoding.UTF8)));
+                         .ForEach(x => migrations.Add(x));
             }
 
             return migrations.Cast<MigrationBase>() // NET 3.5
-                             .CheckForDuplicates()
+                             .CheckForDuplicateVersion()
                              .OrderBy(x => x.Version)
                              .Cast<MigrationScript>() // NET 3.5
                              .ToList();
         }
 
-        private FileMigrationScript LoadMigrationFromFile(string script, string prefix, string separator, Encoding textEncoding)
+        public IEnumerable<MigrationScript> GetRepeatableMigrations(string prefix, string separator, string suffix, Encoding encoding = null)
         {
-            Check.FileExists(script, nameof(script)); // V1_3_1__Migration_description.sql
-            Check.NotNullOrEmpty(prefix, nameof(prefix)); // V
+            Check.NotNullOrEmpty(prefix, nameof(prefix)); // R
             Check.NotNullOrEmpty(separator, nameof(separator)); // __
-            Check.NotNull(textEncoding, nameof(textEncoding));
+            Check.NotNullOrEmpty(suffix, nameof(suffix)); // .sql
 
-            MigrationUtil.ExtractVersionAndDescription(script, prefix, separator, out string version, out string description);
-            return new FileMigrationScript(script, version, description, textEncoding);
+            var migrations = new List<FileMigrationScript>();
+            string searchPattern = $"{prefix}*{suffix}"; // "R*.sql"
+            encoding = encoding ?? Encoding.UTF8;
+
+            foreach (string location in _locations.Distinct(StringComparer.OrdinalIgnoreCase)) // Remove duplicate locations if any
+            {
+                DirectoryInfo dirToScan = ResolveDirectory(location);
+                if (!dirToScan.Exists) continue;
+
+                dirToScan.GetFiles(searchPattern, SearchOption.AllDirectories)   // Get scripts recursively
+                         .Where(f => !migrations.Any(m => m.Path == f.FullName)) // Scripts not already loaded
+                         .Select(f =>
+                         {
+                             MigrationUtil.ExtractDescription(f.FullName, prefix, separator, out string description);
+                             return new FileMigrationScript(f.FullName, version: null, description, MetadataType.RepeatableMigration, encoding);
+                         })
+                         .ToList()
+                         .ForEach(x => migrations.Add(x));
+            }
+
+            return migrations.Cast<MigrationBase>() // NET 3.5
+                             .CheckForDuplicateName()
+                             .OrderBy(x => x.Name)
+                             .Cast<MigrationScript>() // NET 3.5
+                             .ToList();
         }
 
         private DirectoryInfo ResolveDirectory(string location)

@@ -1,8 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Security.Cryptography;
+using Evolve.Metadata;
 using Evolve.Migration;
 using Xunit;
+using static Evolve.Tests.TestContext;
+using static Evolve.Tests.TestUtil;
 
 namespace Evolve.Tests.Migration
 {
@@ -10,10 +13,16 @@ namespace Evolve.Tests.Migration
     {
         [Fact]
         [Category(Test.Migration)]
+        public void Should_throw_NotSupportedException_when_type_is_not_migration_or_repeatable_migration()
+        {
+            Assert.Throws<NotSupportedException>(() => new FileMigrationScript(CrLfScriptPath, "2.3.1", "desc", MetadataType.EmptySchema));
+        }
+
+        [Fact]
+        [Category(Test.Migration)]
         public void CalculateChecksum_should_not_return_null()
         {
-            var script = new FileMigrationScript(TestContext.CrLfScriptPath, "2.3.1", "Migration description");
-            string checksum = script.CalculateChecksum();
+            string checksum = BuildFileMigrationScript(CrLfScriptPath, "2.3.1").CalculateChecksum();
             Assert.False(string.IsNullOrEmpty(checksum));
         }
 
@@ -22,12 +31,12 @@ namespace Evolve.Tests.Migration
         public void ValidateChecksum_should_work_with_both_crlf_and_lf_versions()
         {
             // Arrange
-            var crlfScript = new FileMigrationScript(TestContext.CrLfScriptPath, "2.3.1", "Migration description");
-            string lfCheckSum = new FileMigrationScript(TestContext.LfScriptPath, "2.3.2", "Migration description lf").CalculateChecksum();
+            var crlfScript = BuildFileMigrationScript(CrLfScriptPath, "2.3.1");
+            string lfCheckSum = BuildFileMigrationScript(LfScriptPath, "2.3.2").CalculateChecksum();
 
             // Assert
             crlfScript.ValidateChecksum(lfCheckSum);
-            Assert.NotEqual(File.ReadAllText(TestContext.CrLfScriptPath), File.ReadAllText(TestContext.LfScriptPath));
+            Assert.NotEqual(File.ReadAllText(CrLfScriptPath), File.ReadAllText(LfScriptPath));
         }
 
         [Fact]
@@ -49,7 +58,7 @@ namespace Evolve.Tests.Migration
         public void ValidateChecksum_throws_EvolveValidationException_when_checksums_mismatch()
         {
             // Arrange
-            var crlfScript = new FileMigrationScript(TestContext.CrLfScriptPath, "2.3.1", "Migration description");
+            var crlfScript = BuildFileMigrationScript(CrLfScriptPath, "2.3.1");
 
             // Assert
             Assert.Throws<EvolveValidationException>(() => crlfScript.ValidateChecksum("checksums mismatch"));
@@ -60,12 +69,12 @@ namespace Evolve.Tests.Migration
         public void CalculateChecksum_should_be_the_same_with_both_crlf_and_lf_versions()
         {
             // Arrange
-            string crlfCheckSum = new FileMigrationScript(TestContext.CrLfScriptPath, "2.3.1", "Migration description").CalculateChecksum();
-            string lfCheckSum = new FileMigrationScript(TestContext.LfScriptPath, "2.3.2", "Migration description lf").CalculateChecksum();
+            string crlfCheckSum = BuildFileMigrationScript(CrLfScriptPath, "2.3.1").CalculateChecksum();
+            string lfCheckSum = BuildFileMigrationScript(LfScriptPath, "2.3.2").CalculateChecksum();
 
             // Assert
             Assert.Equal(crlfCheckSum, lfCheckSum);
-            Assert.NotEqual(File.ReadAllText(TestContext.CrLfScriptPath), File.ReadAllText(TestContext.LfScriptPath));
+            Assert.NotEqual(File.ReadAllText(CrLfScriptPath), File.ReadAllText(LfScriptPath));
         }
 
         /// <summary>

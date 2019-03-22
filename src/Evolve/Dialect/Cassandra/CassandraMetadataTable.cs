@@ -32,7 +32,7 @@ namespace Evolve.Dialect.Cassandra
 
             return _database.WrappedConnection
                 .QueryForList(cql, r =>
-                    new MigrationMetadata(r.GetString(2), r.GetString(3), r.GetString(4), (MetadataType)(sbyte)r.GetValue(1))
+                    new MigrationMetadata(r[2] as string, r.GetString(3), r.GetString(4), (MetadataType)(sbyte)r.GetValue(1))
                     {
                         Id = r.GetInt32(0),
                         Checksum = r.GetString(5),
@@ -60,7 +60,7 @@ namespace Evolve.Dialect.Cassandra
 
             _database.WrappedConnection.ExecuteNonQuery(
                 $"insert into {Schema}.{TableName} (id, type, version, description, name, checksum, installed_by, installed_on, success) " +
-                $"values({metadata.Id}, {(int)metadata.Type}, '{metadata.Version}', '{metadata.Description}', '{metadata.Name}', '{metadata.Checksum}', 'anonymous', toUnixTimestamp(now()), {metadata.Success})");
+                $"values({metadata.Id}, {(int)metadata.Type}, {(metadata.Version is null ? "null" : $"'{metadata.Version}'")}, '{metadata.Description}', '{metadata.Name}', '{metadata.Checksum}', 'anonymous', toUnixTimestamp(now()), {metadata.Success})");
 
             bool idExists(int id) =>
                 _database.WrappedConnection.QueryForLong($"select count(id) from {Schema}.{TableName} where id = {id}") > 0;

@@ -40,7 +40,7 @@ namespace Evolve.Metadata
 
             Execute(() =>
             {
-                InternalSave(new MigrationMetadata(migration.Version.Label, migration.Description, migration.Name, MetadataType.Migration)
+                InternalSave(new MigrationMetadata(migration.Version?.Label, migration.Description, migration.Name, migration.Type)
                 {
                     Checksum = migration.CalculateChecksum(),
                     Success = success
@@ -50,7 +50,10 @@ namespace Evolve.Metadata
 
         public void Save(MetadataType type, string version, string description, string name = "")
         {
-            if(type == MetadataType.Migration) throw new ArgumentException(MigrationMetadataTypeNotSupported, nameof(type));
+            if (type == MetadataType.Migration || type == MetadataType.RepeatableMigration)
+            {
+                throw new ArgumentException(MigrationMetadataTypeNotSupported, nameof(type));
+            }
 
             Check.NotNullOrEmpty(version, nameof(version));
             Check.NotNullOrEmpty(description, nameof(description));
@@ -83,6 +86,16 @@ namespace Evolve.Metadata
             {
                 return InternalGetAllMetadata().Where(x => x.Type == MetadataType.Migration && x.Success == true)
                                                .OrderBy(x => x.Version)
+                                               .ToList();
+            });
+        }
+
+        public IEnumerable<MigrationMetadata> GetAllRepeatableMigrationMetadata()
+        {
+            return Execute(() =>
+            {
+                return InternalGetAllMetadata().Where(x => x.Type == MetadataType.RepeatableMigration && x.Success == true)
+                                               .OrderBy(x => x.Name)
                                                .ToList();
             });
         }

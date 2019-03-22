@@ -5,6 +5,7 @@
         Migration,
         NewSchema,
         EmptySchema,
-        StartVersion
+        StartVersion,
+        RepeatableMigration,
     }
 }

@@ -12,15 +12,21 @@ namespace Evolve.Utilities
         private const string MigrationNameVersionNotFound = "No version found in sql file name: {0}.";
         private const string MigrationNameDescriptionNotFound = "No description found in sql file name: {0}.";
         private const string DuplicateMigrationScriptVersion = "Found multiple sql migration files with the same version: {0}.";
+        private const string DuplicateRepeatableMigrationScript = "Found multiple sql migration files with the same name: {0}.";
 
         public static void ExtractVersionAndDescription(string script, string prefix, string separator, out string version, out string description)
+            => ExtractVersionAndDescription(script, prefix, separator, out version, out description, throwIfNoVersion: true);
+
+        public static void ExtractDescription(string script, string prefix, string separator, out string description)
+            => ExtractVersionAndDescription(script, prefix, separator, out string version, out description, throwIfNoVersion: false);
+
+        private static void ExtractVersionAndDescription(string script, string prefix, string separator, out string version, out string description, bool throwIfNoVersion)
         {
             Check.NotNullOrEmpty(script, nameof(script)); // V1_3_1__Migration_description.sql
             Check.NotNullOrEmpty(prefix, nameof(prefix)); // V
             Check.NotNullOrEmpty(separator, nameof(separator)); // __
 
             // Check prefix
-            //Resolved issuer with .net 3.5
             if (!Path.GetFileNameWithoutExtension(script).Substring(0, prefix.Length).Equals(prefix))
                 throw new EvolveConfigurationException(string.Format(MigrationNamePrefixNotFound, prefix, script));
 
@@ -36,7 +42,7 @@ namespace Evolve.Utilities
                                        .Replace("_", " ");
 
             // Check version
-            if (version.IsNullOrWhiteSpace())
+            if (version.IsNullOrWhiteSpace() && throwIfNoVersion)
                 throw new EvolveConfigurationException(string.Format(MigrationNameVersionNotFound, script));
 
             // Check description
@@ -44,7 +50,7 @@ namespace Evolve.Utilities
                 throw new EvolveConfigurationException(string.Format(MigrationNameDescriptionNotFound, script));
         }
 
-        public static IEnumerable<MigrationBase> CheckForDuplicates(this IEnumerable<MigrationBase> migrations)
+        public static IEnumerable<MigrationBase> CheckForDuplicateVersion(this IEnumerable<MigrationBase> migrations)
         {
             Check.NotNull(migrations, nameof(migrations));
 
@@ -56,6 +62,23 @@ namespace Evolve.Utilities
             if (duplicates.Count() > 0)
             {
                 throw new EvolveConfigurationException(string.Format(DuplicateMigrationScriptVersion, string.Join(", ", duplicates)));
+            }
+
+            return migrations;
+        }
+
+        public static IEnumerable<MigrationBase> CheckForDuplicateName(this IEnumerable<MigrationBase> migrations)
+        {
+            Check.NotNull(migrations, nameof(migrations));
+
+            var duplicates = migrations.GroupBy(x => x.Name)
+                                       .Where(grp => grp.Count() > 1)
+                                       .Select(grp => grp.Key)
+                                       .ToArray();
+
+            if (duplicates.Count() > 0)
+            {
+                throw new EvolveConfigurationException(string.Format(DuplicateRepeatableMigrationScript, string.Join(", ", duplicates)));
             }
 
             return migrations;

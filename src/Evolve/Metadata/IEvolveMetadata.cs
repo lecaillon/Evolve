@@ -56,7 +56,8 @@ namespace Evolve.Metadata
         /// <param name="description"> Metadata description. Cannot be null. </param>
         /// <param name="name"> Metadata name. Cannot be null. </param>
         /// <exception cref="ArgumentException">
-        ///     Throws ArgumentException when the type of the metadata to save is <see cref="MetadataType.Migration"/>. 
+        ///     Throws ArgumentException when the type of the metadata to save is 
+        ///     <see cref="MetadataType.Migration"/> or <see cref="MetadataType.RepeatableMigration"/>. 
         /// </exception>
         void Save(MetadataType type, string version, string description, string name);
 
@@ -70,8 +71,14 @@ namespace Evolve.Metadata
         /// <summary>
         ///     Returns all the applied migration metadata ordered by version.
         /// </summary>
-        /// <returns> The ordered list of all applied migration metadata. </returns>
+        /// <returns> The ordered by version list of all applied migration metadata. </returns>
         IEnumerable<MigrationMetadata> GetAllMigrationMetadata();
+
+        /// <summary>
+        ///     Returns all the applied repeatable migration metadata ordered by name.
+        /// </summary>
+        /// <returns> The ordered by name list of all applied repeatable migration metadata. </returns>
+        IEnumerable<MigrationMetadata> GetAllRepeatableMigrationMetadata();
 
         /// <summary>
         ///     <para>

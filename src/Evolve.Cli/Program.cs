@@ -73,6 +73,9 @@
         [Option("--scripts-prefix", "Migration scripts file names prefix. Default: V", CommandOptionType.SingleValue)]
         public string ScriptsPrefix { get; } = Default.SqlMigrationPrefix;
 
+        [Option("--repeatable-scripts-prefix", "Repeatable migration scripts file names prefix. Default: R", CommandOptionType.SingleValue)]
+        public string RepeatableScriptsPrefix { get; } = Default.SqlRepeatableMigrationPrefix;
+
         [Option("--scripts-suffix", "Migration scripts files extension. Default: .sql", CommandOptionType.SingleValue)]
         public string ScriptsSuffix { get; } = Default.SqlMigrationSuffix;
 

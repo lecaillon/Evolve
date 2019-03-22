@@ -1,27 +1,26 @@
 ﻿using System.Collections.Generic;
-using System.Data;
 using System.IO;
-using System.Linq;
 using Evolve.Tests.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
+using static Evolve.Tests.TestContext;
 
-namespace Evolve.Tests.Integration.PostgreSQL
+namespace Evolve.Tests.Integration.PostgregSql
 {
     [Collection("PostgreSql collection")]
-    public class MigrationTest
+    public class MigrationTests
     {
-        private readonly PostgreSqlFixture _pgContainer;
+        private readonly PostgreSqlFixture _dbContainer;
         private readonly ITestOutputHelper _output;
 
-        public MigrationTest(PostgreSqlFixture pgContainer, ITestOutputHelper output)
+        public MigrationTests(PostgreSqlFixture dbContainer, ITestOutputHelper output)
         {
-            _pgContainer = pgContainer;
+            _dbContainer = dbContainer;
             _output = output;
 
-            if (TestContext.Local)
+            if (Local)
             {
-                pgContainer.Run(fromScratch: true);
+                dbContainer.Run(fromScratch: true);
             }
         }
 
@@ -29,81 +28,33 @@ namespace Evolve.Tests.Integration.PostgreSQL
         [Category(Test.PostgreSQL)]
         public void Run_all_PostgreSQL_migrations_work()
         {
-            var cnn = _pgContainer.CreateDbConnection();
+            // Arrange
+            string[] locations = AppVeyor ? new[] { PostgreSQL.MigrationFolder } : new[] { PostgreSQL.MigrationFolder, PostgreSQL.Migration11Folder }; // Add specific PostgreSQL 11 scripts
+            int expectedNbMigration = AppVeyor ? Directory.GetFiles(PostgreSQL.MigrationFolder).Length : Directory.GetFiles(PostgreSQL.MigrationFolder).Length + 1;
+            var cnn = _dbContainer.CreateDbConnection();
             var evolve = new Evolve(cnn, msg => _output.WriteLine(msg))
             {
-                Locations = new List<string> { TestContext.PostgreSQL.MigrationFolder },
-                Schemas = new List<string> { "public", "unittest" },
+                Schemas = new[] { "public", "unittest" },
                 MetadataTableSchema = "unittest",
                 Placeholders = new Dictionary<string, string> { ["${schema1}"] = "unittest" }
             };
 
-            int nbMigration = Directory.GetFiles(TestContext.PostgreSQL.MigrationFolder).Length;
-
-            if (!TestContext.AppVeyor)
-            { // Add specific PostgreSQL 11 scripts
-                evolve.Locations = new List<string> { TestContext.PostgreSQL.MigrationFolder, TestContext.PostgreSQL.Migration11Folder };
-                nbMigration = nbMigration + 1;
-            }
-
-            // Migrate Sql_Scripts\Migration
-            evolve.Migrate();
-            Assert.True(evolve.NbMigration == nbMigration, $"{nbMigration} migrations should have been applied, not {evolve.NbMigration}.");
-            Assert.True(cnn.State == ConnectionState.Closed);
-
-            // Migrate: nothing to do. Database is already up to date.
-            evolve.Migrate();
-            Assert.True(evolve.NbMigration == 0, $"There should be no more migration after a successful one, not {evolve.NbMigration}.");
-            Assert.True(cnn.State == ConnectionState.Closed);
-
-            // Migrate Sql_Scripts\Checksum_mismatch: validation should fail due to a checksum mismatch.
-            evolve.Locations = new List<string> { TestContext.PostgreSQL.ChecksumMismatchFolder };
-            Assert.Throws<EvolveValidationException>(() => evolve.Migrate());
-            Assert.True(cnn.State == ConnectionState.Closed);
-
-            // Repair sucessfull
-            evolve.Repair();
-            Assert.True(evolve.NbReparation == 1, $"There should be 1 migration repaired, not {evolve.NbReparation}.");
-            Assert.True(cnn.State == ConnectionState.Closed);
-
-            // Migrate: nothing to do. Database is already up to date.
-            evolve.Migrate();
-            Assert.True(evolve.NbMigration == 0, $"There should be no more migration after a successful one, not {evolve.NbMigration}.");
-            Assert.True(cnn.State == ConnectionState.Closed);
-
-            // Migrate Sql_Scripts\OutOfOrder: validation should fail due to an unordered migration (OutOfOrder = false).
-            evolve.Locations = new List<string> { TestContext.PostgreSQL.OutOfOrderFolder };
-            Assert.Throws<EvolveValidationException>(() => evolve.Migrate());
-            Assert.True(cnn.State == ConnectionState.Closed);
-
-            // Migrate sucessfull: (OutOfOrder = true).
-            evolve.OutOfOrder = true;
-            evolve.Migrate();
-            Assert.True(evolve.NbMigration == 1, $"1 migration should have been applied, not {evolve.NbMigration}.");
-            Assert.True(cnn.State == ConnectionState.Closed);
-
-            // Erase cancelled (EraseDisabled = true)
-            evolve.IsEraseDisabled = true;
-            Assert.Throws<EvolveConfigurationException>(() => evolve.Erase());
-            Assert.True(cnn.State == ConnectionState.Closed);
-
-            // Erase sucessfull
-            evolve.IsEraseDisabled = false;
-            evolve.Erase();
-            Assert.True(evolve.NbSchemaErased == evolve.Schemas.Count(), $"{evolve.Schemas.Count()} schemas should have been erased, not {evolve.NbSchemaErased}.");
-            Assert.True(cnn.State == ConnectionState.Closed);
-
-            // Migrate sucessfull after a validation error (MustEraseOnValidationError = true)
-            evolve.Locations = new List<string> { TestContext.PostgreSQL.MigrationFolder }; // Migrate Sql_Scripts\Migration
-            nbMigration = Directory.GetFiles(TestContext.PostgreSQL.MigrationFolder).Length;
-            evolve.Migrate();
-            Assert.True(evolve.NbMigration == nbMigration, $"{nbMigration} migrations should have been applied, not {evolve.NbMigration}.");
-            evolve.Locations = new List<string> { TestContext.PostgreSQL.ChecksumMismatchFolder }; // Migrate Sql_Scripts\Checksum_mismatch
-            evolve.MustEraseOnValidationError = true;
-            evolve.Migrate();
-            Assert.True(evolve.NbSchemaErased == evolve.Schemas.Count(), $"{evolve.Schemas.Count()} schemas should have been erased, not {evolve.NbSchemaErased}.");
-            Assert.True(evolve.NbMigration == 1, $"1 migration should have been applied, not {evolve.NbMigration}.");
-            Assert.True(cnn.State == ConnectionState.Closed);
+            // Assert
+            evolve.AssertMigrateIsSuccessful(cnn, expectedNbMigration, null, locations)
+                  .AssertMigrateThrows<EvolveValidationException>(cnn, locations: PostgreSQL.ChecksumMismatchFolder)
+                  .AssertRepairIsSuccessful(cnn, expectedNbReparation: 1)
+                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 0)
+                  .AssertMigrateThrows<EvolveValidationException>(cnn, locations: PostgreSQL.OutOfOrderFolder)
+                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 1, e => e.OutOfOrder = true)
+                  .AssertEraseThrows<EvolveConfigurationException>(cnn, e => e.IsEraseDisabled = true)
+                  .AssertEraseIsSuccessful(cnn, e => e.IsEraseDisabled = false)
+                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration, null, locations)
+                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 1, e => e.MustEraseOnValidationError = true, locations: PostgreSQL.ChecksumMismatchFolder)
+                  .AssertEraseIsSuccessful(cnn, e => e.IsEraseDisabled = false)
+                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration, null, locations)
+                  .AssertRepairIsSuccessful(cnn, expectedNbReparation: 0, locations: PostgreSQL.RepeatableFolder)
+                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 1)
+                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 0);
         }
     }
 }

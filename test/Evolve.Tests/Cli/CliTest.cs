@@ -49,7 +49,7 @@ namespace Evolve.Tests.Cli
                     db: "cassandra",
                     command: command,
                     cnxStr: _cassandraContainer.CnxStr,
-                    location: TestContext.Cassandra.MigrationFolder,
+                    location: TestContext.CassandraDb.MigrationFolder,
                     args: $"--scripts-suffix .cql -p keyspace:{metadataKeyspaceName} --keyspace {metadataKeyspaceName} --metadata-table-keyspace evolve_change_log");
 
                 Assert.True(stderr == string.Empty, stderr);
@@ -84,7 +84,7 @@ namespace Evolve.Tests.Cli
                     command: command,
                     cnxStr: _pgContainer.CnxStr,
                     location: TestContext.PostgreSQL.MigrationFolder,
-                    args: "-s public -s unittest -p schema1:unittest");
+                    args: "-s public -s unittest --metadata-table-schema unittest --erase-disabled false -p schema1:unittest");
 
                 Assert.True(stderr == string.Empty, stderr);
             }
