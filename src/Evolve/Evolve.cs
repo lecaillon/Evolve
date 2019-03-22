@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -47,12 +48,12 @@ namespace Evolve
 
         // Migrate
         private const string ExecutingMigrate = "Executing Migrate...";
-        private const string MigrationError = "Error executing script: {0}.";
+        private const string MigrationError = "Error executing script: {0} after {1} ms.";
         private const string MigrationErrorEraseOnValidationError = "{0} Erase database. (MustEraseOnValidationError = True)";
-        private const string MigrationSuccessfull = "Successfully applied migration {0}.";
+        private const string MigrationSuccessfull = "Successfully applied migration {0} in {1} ms.";
         private const string NoMigrationScript = "No migration script found.";
         private const string NothingToMigrate = "Database is up to date. No migration needed.";
-        private const string MigrateSuccessfull = "Database migrated to version {0}. {1} migration(s) applied.";
+        private const string MigrateSuccessfull = "Database migrated to version {0}. {1} migration(s) applied in {2} ms.";
 
         // Erase
         private const string ExecutingErase = "Executing Erase...";
@@ -129,6 +130,7 @@ namespace Evolve
         public int NbReparation { get; private set; }
         public int NbSchemaErased { get; private set; }
         public int NbSchemaToEraseSkipped { get; private set; }
+        public long TotalTimeElapsedInMs { get; private set; }
         public IMigrationLoader MigrationLoader
         {
             get => EmbeddedResourceAssemblies.Any() ? new EmbeddedResourceMigrationLoader(EmbeddedResourceAssemblies, EmbeddedResourceFilters)
@@ -206,7 +208,7 @@ namespace Evolve
             }
             else
             {
-                _logInfoDelegate(string.Format(MigrateSuccessfull, lastAppliedVersion, NbMigration));
+                _logInfoDelegate(string.Format(MigrateSuccessfull, lastAppliedVersion, NbMigration, TotalTimeElapsedInMs));
             }
         }
 
@@ -358,6 +360,7 @@ namespace Evolve
             NbReparation = 0;
             NbSchemaErased = 0;
             NbSchemaToEraseSkipped = 0;
+            TotalTimeElapsedInMs = 0;
 
             var db = InitiateDatabaseConnection();
 
@@ -399,10 +402,12 @@ namespace Evolve
             Check.NotNull(migration, nameof(migration));
             Check.NotNull(db, nameof(db));
 
+            var stopWatch = new Stopwatch();
             var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
 
             try
             {
+                stopWatch.Start();
                 foreach (var statement in db.SqlStatementBuilder.LoadSqlStatements(migration, Placeholders))
                 {
                     if (statement.MustExecuteInTransaction)
@@ -419,15 +424,19 @@ namespace Evolve
 
                 metadata.SaveMigration(migration, true);
                 db.WrappedConnection.TryCommit();
+                stopWatch.Stop();
 
-                _logInfoDelegate(string.Format(MigrationSuccessfull, migration.Name));
+                _logInfoDelegate(string.Format(MigrationSuccessfull, migration.Name, stopWatch.ElapsedMilliseconds));
+                TotalTimeElapsedInMs += stopWatch.ElapsedMilliseconds;
                 NbMigration++;
             }
             catch (Exception ex)
             {
+                stopWatch.Stop();
+                TotalTimeElapsedInMs += stopWatch.ElapsedMilliseconds;
                 db.WrappedConnection.TryRollback();
                 metadata.SaveMigration(migration, false);
-                throw new EvolveException(string.Format(MigrationError, migration.Name), ex);
+                throw new EvolveException(string.Format(MigrationError, migration.Name, stopWatch.ElapsedMilliseconds), ex);
             }
         }
 
