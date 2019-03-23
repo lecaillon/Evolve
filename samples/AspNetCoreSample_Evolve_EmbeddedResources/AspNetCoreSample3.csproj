@@ -6,9 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Evolve" Version="2.1.0" />
+    <PackageReference Include="Evolve" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="2.2.2" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="2.2.3" />
   </ItemGroup>
 
   <ItemGroup>
