@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading;
+using ConsoleTables;
 using Evolve.Configuration;
 using Evolve.Connection;
 using Evolve.Dialect;
@@ -76,7 +77,7 @@ namespace Evolve
         #region Fields
 
         private readonly IDbConnection _userDbConnection;
-        private readonly Action<string> _logInfoDelegate;
+        private readonly Action<string> _log;
 
         #endregion
 
@@ -84,11 +85,11 @@ namespace Evolve
         ///     Initialize a new instance of the <see cref="Evolve"/> class.
         /// </summary>
         /// <param name="dbConnection"> The database connection used to apply the migrations. </param>
-        /// <param name="logInfoDelegate"> An optional logger. </param>
-        public Evolve(IDbConnection dbConnection, Action<string> logInfoDelegate = null)
+        /// <param name="logDelegate"> An optional logger. </param>
+        public Evolve(IDbConnection dbConnection, Action<string> logDelegate = null)
         {
             _userDbConnection = Check.NotNull(dbConnection, nameof(dbConnection));
-            _logInfoDelegate = logInfoDelegate ?? new Action<string>((msg) => { });
+            _log = logDelegate ?? new Action<string>((msg) => { });
         }
 
         #region IEvolveConfiguration
@@ -154,16 +155,45 @@ namespace Evolve
                 case CommandOptions.Erase:
                     Erase();
                     break;
-                default:
-                    _logInfoDelegate(NoCommandSpecified);
+                case CommandOptions.Info:
+                    Info();
                     break;
+                default:
+                    _log(NoCommandSpecified);
+                    break;
+            }
+        }
+
+        public IEnumerable<MigrationMetadata> Info()
+        {
+            Command = CommandOptions.Info;
+
+            var db = InitiateDatabaseConnection();
+            try
+            {
+                var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
+                var rows = metadata.GetAllMetadata().ToList();
+                var table = new ConsoleTable("Id", "Version", "Category", "Description", "Installed on", "Installed by", "Success", "Checksum")
+                    .Configure(o => o.EnableCount = false);
+                rows.ForEach(x => table.AddRow(x.Id, x.Version, x.Type, x.Description, x.InstalledOn, x.InstalledBy, x.Success, x.Checksum));
+                _log(table.ToStringAlternative());
+                return rows;
+            }
+            catch
+            {
+                _log("Evolve metadata table cannot be found.");
+                return null;
+            }
+            finally
+            {
+                db.CloseConnection();
             }
         }
 
         public void Migrate()
         {
             Command = CommandOptions.Migrate;
-            _logInfoDelegate(ExecutingMigrate);
+            _log(ExecutingMigrate);
 
             InternalExecuteCommand(db =>
             {
@@ -181,7 +211,7 @@ namespace Evolve
             {
                 if (MustEraseOnValidationError)
                 {
-                    _logInfoDelegate(string.Format(MigrationErrorEraseOnValidationError, ex.Message));
+                    _log(string.Format(MigrationErrorEraseOnValidationError, ex.Message));
 
                     InternalErase(db);
                     ManageSchemas(db);
@@ -195,7 +225,7 @@ namespace Evolve
             if (MigrationLoader.GetMigrations(SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding).Count() == 0
              && MigrationLoader.GetRepeatableMigrations(SqlRepeatableMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding).Count() == 0)
             {
-                _logInfoDelegate(NoMigrationScript);
+                _log(NoMigrationScript);
                 return;
             }
 
@@ -204,11 +234,11 @@ namespace Evolve
 
             if (NbMigration == 0)
             {
-                _logInfoDelegate(NothingToMigrate);
+                _log(NothingToMigrate);
             }
             else
             {
-                _logInfoDelegate(string.Format(MigrateSuccessfull, lastAppliedVersion, NbMigration, TotalTimeElapsedInMs));
+                _log(string.Format(MigrateSuccessfull, lastAppliedVersion, NbMigration, TotalTimeElapsedInMs));
             }
         }
 
@@ -260,7 +290,7 @@ namespace Evolve
         public void Repair()
         {
             Command = CommandOptions.Repair;
-            _logInfoDelegate(ExecutingRepair);
+            _log(ExecutingRepair);
 
             InternalExecuteCommand(db =>
             {
@@ -268,11 +298,11 @@ namespace Evolve
 
                 if (NbReparation == 0)
                 {
-                    _logInfoDelegate(RepairCancelled);
+                    _log(RepairCancelled);
                 }
                 else
                 {
-                    _logInfoDelegate(string.Format(RepairSuccessfull, NbReparation));
+                    _log(string.Format(RepairSuccessfull, NbReparation));
                 }
             });
         }
@@ -289,7 +319,7 @@ namespace Evolve
 
         private void InternalErase(DatabaseHelper db)
         {
-            _logInfoDelegate(ExecutingErase);
+            _log(ExecutingErase);
 
             if (IsEraseDisabled)
             {
@@ -300,7 +330,7 @@ namespace Evolve
 
             if (!metadata.IsExists())
             {
-                _logInfoDelegate(EraseCancelled);
+                _log(EraseCancelled);
                 return;
             }
 
@@ -316,7 +346,7 @@ namespace Evolve
                     try
                     {
                         db.GetSchema(schemaName).Drop();
-                        _logInfoDelegate(string.Format(DropSchemaSuccessfull, schemaName));
+                        _log(string.Format(DropSchemaSuccessfull, schemaName));
                         NbSchemaErased++;
                     }
                     catch (Exception ex)
@@ -329,7 +359,7 @@ namespace Evolve
                     try
                     {
                         db.GetSchema(schemaName).Erase();
-                        _logInfoDelegate(string.Format(EraseSchemaSuccessfull, schemaName));
+                        _log(string.Format(EraseSchemaSuccessfull, schemaName));
                         NbSchemaErased++;
                     }
                     catch (Exception ex)
@@ -339,7 +369,7 @@ namespace Evolve
                 }
                 else
                 {
-                    _logInfoDelegate(string.Format(EraseSchemaImpossible, schemaName));
+                    _log(string.Format(EraseSchemaImpossible, schemaName));
                     NbSchemaToEraseSkipped++;
                 }
             }
@@ -349,7 +379,7 @@ namespace Evolve
                 db.WrappedConnection.TryCommit();
             }
 
-            _logInfoDelegate(string.Format(EraseCompleted, NbSchemaErased, NbSchemaToEraseSkipped));
+            _log(string.Format(EraseCompleted, NbSchemaErased, NbSchemaToEraseSkipped));
         }
 
         #endregion
@@ -389,7 +419,7 @@ namespace Evolve
                     var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
                     if (!db.ReleaseApplicationLock() || !metadata.ReleaseLock())
                     {
-                        _logInfoDelegate(CannotReleaseLock);
+                        _log(CannotReleaseLock);
                     }
                 }
 
@@ -426,7 +456,7 @@ namespace Evolve
                 db.WrappedConnection.TryCommit();
                 stopWatch.Stop();
 
-                _logInfoDelegate(string.Format(MigrationSuccessfull, migration.Name, stopWatch.ElapsedMilliseconds));
+                _log(string.Format(MigrationSuccessfull, migration.Name, stopWatch.ElapsedMilliseconds));
                 TotalTimeElapsedInMs += stopWatch.ElapsedMilliseconds;
                 NbMigration++;
             }
@@ -452,7 +482,10 @@ namespace Evolve
                 Schemas = new List<string> { db.GetCurrentSchemaName() };                   // If no schema, get the one associated to the datasource connection
             }
 
-            _logInfoDelegate(EvolveInitialized);
+            if (Command != CommandOptions.Info)
+            {
+                _log(EvolveInitialized);
+            }
 
             return db;
         }
@@ -466,7 +499,7 @@ namespace Evolve
                     break;
                 }
 
-                _logInfoDelegate(CannotAcquireApplicationLock);
+                _log(CannotAcquireApplicationLock);
                 Thread.Sleep(TimeSpan.FromSeconds(3));
             }
         }
@@ -482,7 +515,7 @@ namespace Evolve
                     break;
                 }
 
-                _logInfoDelegate(CannotAcquireMetadatatableLock);
+                _log(CannotAcquireMetadatatableLock);
                 Thread.Sleep(TimeSpan.FromSeconds(3));
             }
         }
@@ -499,7 +532,7 @@ namespace Evolve
 
                 if (!schema.IsExists())
                 {
-                    _logInfoDelegate(string.Format(SchemaNotExists, schemaName));
+                    _log(string.Format(SchemaNotExists, schemaName));
 
                     // Create new schema
                     db.WrappedConnection.BeginTransaction();
@@ -507,14 +540,14 @@ namespace Evolve
                     metadata.Save(MetadataType.NewSchema, "0", string.Format(NewSchemaCreated, schemaName), schemaName);
                     db.WrappedConnection.Commit();
 
-                    _logInfoDelegate(string.Format(SchemaCreated, schemaName));
+                    _log(string.Format(SchemaCreated, schemaName));
                 }
                 else if (schema.IsEmpty())
                 {
                     // Mark schema as empty in the metadata table
                     metadata.Save(MetadataType.EmptySchema, "0", string.Format(EmptySchemaFound, schemaName), schemaName);
 
-                    _logInfoDelegate(string.Format(SchemaMarkedEmpty, schemaName));
+                    _log(string.Format(SchemaMarkedEmpty, schemaName));
                 }
             }
         }
@@ -555,14 +588,14 @@ namespace Evolve
             var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
             if (!metadata.IsExists())
             { // Nothing to validate
-                _logInfoDelegate(NoMetadataFound);
+                _log(NoMetadataFound);
                 return;
             }
 
             var appliedMigrations = metadata.GetAllMigrationMetadata(); // Load all applied migrations metadata
             if (appliedMigrations.Count() == 0)
             { // Nothing to validate
-                _logInfoDelegate(NoMetadataFound);
+                _log(NoMetadataFound);
                 return;
             }
 
@@ -599,7 +632,7 @@ namespace Evolve
                         metadata.UpdateChecksum(appliedMigration.Id, migration.CalculateChecksum());
                         NbReparation++;
 
-                        _logInfoDelegate(string.Format(ChecksumFixed, migration.Name));
+                        _log(string.Format(ChecksumFixed, migration.Name));
                     }
                     else
                     {
@@ -608,7 +641,7 @@ namespace Evolve
                 }
             }
 
-            _logInfoDelegate(ValidateSuccessfull);
+            _log(ValidateSuccessfull);
         }
 
         private IEnumerable<string> FindSchemas()

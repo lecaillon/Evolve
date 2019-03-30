@@ -26,6 +26,12 @@
         ///     Only works if Evolve has created the schema at first or found it empty.
         ///     Otherwise Evolve won't do anything.
         /// </summary>
-        Erase
+        Erase,
+
+        /// <summary>
+        ///     Prints the details about all the migrations. 
+        ///     Displays the content of the EvolveMetadata table.
+        /// </summary>
+        Info
     }
 }

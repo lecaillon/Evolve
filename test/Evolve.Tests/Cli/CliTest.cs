@@ -39,11 +39,11 @@ namespace Evolve.Tests.Cli
 
         [FactSkippedOnAppVeyor]
         [Category(Test.Cli, Test.Cassandra)]
-        public void Erase_And_Migrate_Cassandra()
+        public void Cassandra_Should_Run_All_Cli_Commands()
         {
             string metadataKeyspaceName = "my_keyspace_3";
 
-            foreach (var command in new[] { "erase", "migrate" })
+            foreach (var command in new[] { "erase", "migrate", "repair", "info" })
             {
                 string stderr = RunCli(
                     db: "cassandra",
@@ -58,9 +58,9 @@ namespace Evolve.Tests.Cli
 
         [Fact]
         [Category(Test.Cli, Test.MySQL)]
-        public void Erase_And_Migrate_MySQL_With_Embedded_Resources()
+        public void MySQL_With_Embedded_Resources_Should_Run_All_Cli_Commands()
         {
-            foreach (var command in new[] { "erase", "migrate" })
+            foreach (var command in new[] { "erase", "migrate", "repair", "info" })
             {
                 string stderr = RunCli(
                     db: "mysql",
@@ -75,9 +75,9 @@ namespace Evolve.Tests.Cli
 
         [Fact]
         [Category(Test.Cli, Test.PostgreSQL)]
-        public void Erase_And_Migrate_PostgreSql()
+        public void PostgreSql_Should_Run_All_Cli_Commands()
         {
-            foreach (var command in new [] { "erase", "migrate" })
+            foreach (var command in new [] { "erase", "migrate", "repair", "info" })
             {
                 string stderr = RunCli(
                     db: "postgresql",
@@ -92,12 +92,12 @@ namespace Evolve.Tests.Cli
 
         [Fact]
         [Category(Test.Cli, Test.SQLServer)]
-        public void Erase_And_Migrate_SQLServer()
+        public void SQLServer_Should_Run_All_Cli_Commands()
         {
             string dbName = "my_database_3";
             TestUtil.CreateSqlServerDatabase(dbName, _sqlServerContainer.GetCnxStr("master"));
 
-            foreach (var command in new[] { "erase", "migrate" })
+            foreach (var command in new[] { "erase", "migrate", "repair", "info" })
             {
                 string stderr = RunCli(
                     db: "sqlserver",
@@ -112,11 +112,11 @@ namespace Evolve.Tests.Cli
 
         [Fact]
         [Category(Test.Cli, Test.SQLite)]
-        public void Erase_And_Migrate_SQLite()
+        public void SQLite_Should_Run_All_Cli_Commands()
         {
             string sqliteCnxStr = $"Data Source={Path.GetTempPath() + Guid.NewGuid().ToString()}.db";
 
-            foreach (var command in new[] { "erase", "migrate" })
+            foreach (var command in new[] { "erase", "migrate", "repair", "info" })
             {
                 string stderr = RunCli(
                     db: "sqlite",
@@ -149,9 +149,8 @@ namespace Evolve.Tests.Cli
             };
 
             proc.Start();
-            proc.WaitForExit();
             _output.WriteLine(proc.StandardOutput.ReadToEnd());
-
+            proc.WaitForExit();
             return proc.StandardError.ReadToEnd();
         }
     }

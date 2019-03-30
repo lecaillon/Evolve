@@ -40,7 +40,8 @@ namespace Evolve.Tests.Integration.MySql
             };
 
             // Assert
-            evolve.AssertMigrateIsSuccessful(cnn, expectedNbMigration)
+            evolve.AssertInfoIsSuccessful(cnn, expectedNbRows: 0)
+                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration)
                   .AssertMigrateThrows<EvolveValidationException>(cnn, e => e.EmbeddedResourceAssemblies = new List<Assembly>(), locations: MySQL.ChecksumMismatchFolder)
                   .AssertRepairIsSuccessful(cnn, expectedNbReparation: 1)
                   .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 0)
@@ -52,7 +53,8 @@ namespace Evolve.Tests.Integration.MySql
                   .AssertMigrateIsSuccessful(cnn, expectedNbMigration, null, locations: MySQL.MigrationFolder)
                   .AssertRepairIsSuccessful(cnn, expectedNbReparation: 0, locations: MySQL.RepeatableFolder)
                   .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 1)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 0);
+                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 0)
+                  .AssertInfoIsSuccessful(cnn, expectedNbRows: expectedNbMigration + 2);
         }
     }
 }
