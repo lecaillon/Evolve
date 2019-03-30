@@ -43,7 +43,8 @@ namespace Evolve.Tests.Integration.SQLServer
             };
 
             // Assert
-            evolve.AssertMigrateIsSuccessful(cnn, expectedNbMigration, locations: SqlServer.MigrationFolder)
+            evolve.AssertInfoIsSuccessful(cnn, expectedNbRows: 0)
+                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration, locations: SqlServer.MigrationFolder)
                   .AssertMigrateThrows<EvolveConfigurationException>(cnn, e => e.StartVersion = new MigrationVersion("3.0"))
                   .AssertMigrateThrows<EvolveValidationException>(cnn, e => e.StartVersion = MigrationVersion.MinVersion, SqlServer.ChecksumMismatchFolder)
                   .AssertRepairIsSuccessful(cnn, expectedNbReparation: 1)
@@ -59,7 +60,8 @@ namespace Evolve.Tests.Integration.SQLServer
                   .AssertMigrateIsSuccessful(cnn, expectedNbMigration, null, locations: SqlServer.MigrationFolder)
                   .AssertRepairIsSuccessful(cnn, expectedNbReparation: 0, locations: SqlServer.RepeatableFolder)
                   .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 1)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 0);
+                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 0)
+                  .AssertInfoIsSuccessful(cnn, expectedNbRows: expectedNbMigration + 2);
         }
     }
 }
