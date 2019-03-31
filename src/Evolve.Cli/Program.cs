@@ -7,6 +7,7 @@
     using Dialect;
     using McMaster.Extensions.CommandLineUtils;
 
+    [Command(ResponseFileHandling = ResponseFileHandling.ParseArgsAsLineSeparated)]
     class Program
     {
         private static readonly Evolve Default = new Evolve(new System.Data.SQLite.SQLiteConnection());
