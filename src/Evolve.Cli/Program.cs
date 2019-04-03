@@ -12,7 +12,7 @@
     {
         private static readonly Evolve Default = new Evolve(new System.Data.SQLite.SQLiteConnection());
 
-        static void Main(string[] args) => CommandLineApplication.Execute<Program>(args);
+        static int Main(string[] args) => CommandLineApplication.Execute<Program>(args);
 
         private int OnExecute(CommandLineApplication app, IConsole console)
         {
