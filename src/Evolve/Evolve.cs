@@ -94,6 +94,13 @@ namespace Evolve
 
         #region IEvolveConfiguration
 
+        private IDatabaseHelperFactory _databaseHelperFactory = new DatabaseHelperFactory();
+        public IDatabaseHelperFactory DatabaseHelperFactory
+        {
+            get => _databaseHelperFactory;
+            set => _databaseHelperFactory = value ?? throw new ArgumentNullException();
+        }
+        
         public IEnumerable<string> Schemas { get; set; } = new List<string>();
         public CommandOptions Command { get; set; } = CommandOptions.DoNothing;
         public bool IsEraseDisabled { get; set; }

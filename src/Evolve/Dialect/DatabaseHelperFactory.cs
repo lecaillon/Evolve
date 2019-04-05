@@ -10,7 +10,7 @@ using Evolve.Utilities;
 
 namespace Evolve.Dialect
 {
-    public static class DatabaseHelperFactory
+    public class DatabaseHelperFactory : IDatabaseHelperFactory
     {
         private const string UnknownDBMS = "Unknown DBMS {0}.";
 
@@ -24,7 +24,7 @@ namespace Evolve.Dialect
             [DBMS.Cassandra]        = wcnn => new CassandraCluster(wcnn),
         };
 
-        public static DatabaseHelper GetDatabaseHelper(DBMS dbmsType, WrappedConnection connection)
+        public DatabaseHelper GetDatabaseHelper(DBMS dbmsType, WrappedConnection connection)
         {
             Check.NotNull(connection, nameof(connection));
 
