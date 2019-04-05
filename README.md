@@ -24,7 +24,7 @@ Evolve 2.0 is the first major rewrite version. It will help simplify the overall
 ## Continuous integration
 | Build server    | Platform | Build status |
 |-----------------|----------|--------------|
-| AppVeyor        | Windows  | [![Build status](https://img.shields.io/appveyor/ci/lecaillon/Evolve.svg?label=appveyor&branch=master)](https://ci.appveyor.com/project/lecaillon/evolve) |
+| AppVeyor        | Windows  | [![Build status](https://ci.appveyor.com/api/projects/status/oj9wf4bk0p0npggu/branch/master?svg=true)](https://ci.appveyor.com/project/lecaillon/evolve) |
 | Azure Pipelines | Linux    | [![Build Status](https://lecaillon.visualstudio.com/Evolve-CI/_apis/build/status/Evolve-CI?branchName=master)](https://lecaillon.visualstudio.com/Evolve-CI/_build/latest?definitionId=2&branchName=master) |
 
 ## Documentation
