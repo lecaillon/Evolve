@@ -1,5 +1,5 @@
 pool:
-  vmImage: Hosted Ubuntu 1604
+  name: Hosted Ubuntu 1604
 steps:
 - script: './build.sh --target=clean'
   displayName: Clean
