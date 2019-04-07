@@ -14,7 +14,7 @@ Over all Evolve embraces simplicity. Every time you build or run your project, i
 |---------|------------|
 | Evolve | [![NuGet](https://buildstats.info/nuget/Evolve)](https://www.nuget.org/packages/Evolve) |
 | Evolve MSBuild | [![NuGet](https://buildstats.info/nuget/Evolve.MSBuild.Windows.x64)](https://www.nuget.org/packages/Evolve.MSBuild.Windows.x64) |
-| Evolve CLI | [![NuGet](https://img.shields.io/badge/Evolve%20CLI-releases-brightgreen.svg)](https://github.com/lecaillon/Evolve/releases) |
+| Evolve CLI | [![NuGet](https://img.shields.io/badge/GitHub-releases-brightgreen.svg?logo=github)](https://github.com/lecaillon/Evolve/releases) |
 
 ## Documentation
 You can read the latest documentation at [https://evolve-db.netlify.com](https://evolve-db.netlify.com).
