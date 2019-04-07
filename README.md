@@ -3,7 +3,7 @@
 
 Database migration tool for .NET and .NET Core. Inspired by [Flyway](https://flywaydb.org/).
 
-Evolve is an easy migration tool that uses plain old sql scripts. Its purpose is to automate your database changes, and help keep those changes synchronized through all your environments and development teams.
+Evolve is an easy migration tool that uses plain SQL scripts. Its purpose is to automate your database changes, and help keep those changes synchronized through all your environments and development teams.
 This makes it an ideal tool for continuous integration / delivery.
 
 Over all Evolve embraces simplicity. Every time you build or run your project, it will automatically ensure that your database is up-to-date. Install it and forget it!
