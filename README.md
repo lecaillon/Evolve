@@ -1,4 +1,4 @@
-# Evolve
+# Evolve [![Build status](https://ci.appveyor.com/api/projects/status/oj9wf4bk0p0npggu/branch/master?svg=true)](https://ci.appveyor.com/project/lecaillon/evolve) [![Build Status](https://lecaillon.visualstudio.com/Evolve-CI/_apis/build/status/Evolve-CI?branchName=master)](https://lecaillon.visualstudio.com/Evolve-CI/_build/latest?definitionId=2&branchName=master)
 <img align="right" width="173px" height="173px" src="https://raw.githubusercontent.com/lecaillon/Evolve/master/images/logo.png">
 
 Database migration tool for .NET and .NET Core. Inspired by [Flyway](https://flywaydb.org/).
@@ -15,12 +15,6 @@ Over all Evolve embraces simplicity. Every time you build or run your project, i
 | Evolve | [![NuGet](https://buildstats.info/nuget/Evolve)](https://www.nuget.org/packages/Evolve) |
 | Evolve MSBuild | [![NuGet](https://buildstats.info/nuget/Evolve.MSBuild.Windows.x64)](https://www.nuget.org/packages/Evolve.MSBuild.Windows.x64) |
 | Evolve CLI | Evolve [releases](https://github.com/lecaillon/Evolve/releases) |
-
-## Continuous integration
-| Build server    | Platform | Build status |
-|-----------------|----------|--------------|
-| AppVeyor        | Windows  | [![Build status](https://ci.appveyor.com/api/projects/status/oj9wf4bk0p0npggu/branch/master?svg=true)](https://ci.appveyor.com/project/lecaillon/evolve) |
-| Azure Pipelines | Linux    | [![Build Status](https://lecaillon.visualstudio.com/Evolve-CI/_apis/build/status/Evolve-CI?branchName=master)](https://lecaillon.visualstudio.com/Evolve-CI/_build/latest?definitionId=2&branchName=master) |
 
 ## Documentation
 You can read the latest documentation at [https://evolve-db.netlify.com](https://evolve-db.netlify.com).
