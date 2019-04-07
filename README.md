@@ -23,13 +23,7 @@ Over all Evolve embraces simplicity. Every time you build or run your project, i
 | Azure Pipelines | Linux    | [![Build Status](https://lecaillon.visualstudio.com/Evolve-CI/_apis/build/status/Evolve-CI?branchName=master)](https://lecaillon.visualstudio.com/Evolve-CI/_build/latest?definitionId=2&branchName=master) |
 
 ## Documentation
-- [Concepts](https://evolve-db.netlify.com/concepts/)
-- [Evolve](https://evolve-db.netlify.com/getting-started/)
-- [Evolve MSBuild](https://evolve-db.netlify.com/msbuild/)
-- [Evolve CLI](https://evolve-db.netlify.com/cli/)
-- [Samples](https://evolve-db.netlify.com/samples/)
-
-_The Evolve v1 documentation can be found [here](https://evolve-db-v1.netlify.com/)._
+You can read the latest documentation at [https://evolve-db.netlify.com](https://evolve-db.netlify.com).
 
 ## Supported Databases
 - [x] PostgreSQL
@@ -42,6 +36,3 @@ _The Evolve v1 documentation can be found [here](https://evolve-db-v1.netlify.co
 - [x] .NET 3.5+
 - [x] .NET 4.6.1+
 - [x] .NET Standard 2.0
-
-## Credits
-Again, many thanks to the [Flyway](https://flywaydb.org/) project. Great idea, big inspiration, a tool that I could not do without in .NET. 
