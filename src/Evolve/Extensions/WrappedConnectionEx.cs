@@ -30,7 +30,7 @@ namespace Evolve
                 dbVersion = QueryForString(wrappedConnection, "SELECT version()"); // attention ca marche aussi pour mysql
                 if (!dbVersion.IsNullOrWhiteSpace()) 
                 {
-                    return DBMS.PostgreSQL;
+                    return dbVersion.Contains("CockroachDB") ? DBMS.CockroachDb : DBMS.PostgreSQL;
                 }
             }
             catch { }

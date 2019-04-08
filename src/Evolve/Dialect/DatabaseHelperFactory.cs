@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Evolve.Connection;
 using Evolve.Dialect.Cassandra;
+using Evolve.Dialect.CockroachDb;
 using Evolve.Dialect.MySQL;
 using Evolve.Dialect.PostgreSQL;
 using Evolve.Dialect.SQLite;
@@ -22,6 +23,7 @@ namespace Evolve.Dialect
             [DBMS.MariaDB]          = wcnn => new MySQLDatabase(wcnn),
             [DBMS.SQLServer]        = wcnn => new SQLServerDatabase(wcnn),
             [DBMS.Cassandra]        = wcnn => new CassandraCluster(wcnn),
+            [DBMS.CockroachDb]      = wcnn => new CockroachDbDatabase(wcnn),
         };
 
         public static DatabaseHelper GetDatabaseHelper(DBMS dbmsType, WrappedConnection connection)

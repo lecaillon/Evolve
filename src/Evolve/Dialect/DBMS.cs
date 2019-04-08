@@ -8,6 +8,7 @@
         PostgreSQL,
         SQLite,
         SQLServer,
-        Cassandra
+        Cassandra,
+        CockroachDb
     }
 }
