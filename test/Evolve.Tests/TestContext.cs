@@ -47,6 +47,17 @@ namespace Evolve.Tests
             public static string RepeatableFolder => Path.Combine(SqlScriptsFolder, "Repeatable");
         }
 
+        public static class CockroachDb
+        {
+            public static string ResourcesFolder => Path.Combine(ProjectFolder, "Integration/Cockroach/Resources");
+            public static string SqlScriptsFolder => Path.Combine(ResourcesFolder, "Sql_Scripts");
+            public static string MigrationFolder => Path.Combine(SqlScriptsFolder, "Migration");
+            public static string Migration11Folder => Path.Combine(SqlScriptsFolder, "Migration11"); // PostgreSQL 11
+            public static string ChecksumMismatchFolder => Path.Combine(SqlScriptsFolder, "Checksum_mismatch");
+            public static string RepeatableFolder => Path.Combine(SqlScriptsFolder, "Repeatable");
+            public static string OutOfOrderFolder => Path.Combine(SqlScriptsFolder, "OutOfOrder");
+        }
+
         public static class MySQL
         {
             public static string ResourcesFolder => Path.Combine(ProjectFolder, "Integration/MySQL/Resources");
@@ -92,6 +103,9 @@ namespace Evolve.Tests
     [CollectionDefinition("Cassandra collection")]
     public class CassandraCollection : IClassFixture<CassandraFixture> { }
 
+    [CollectionDefinition("CockroachDb collection")]
+    public class CockroachDbCollection : IClassFixture<CockroachDbFixture> { }
+
     [CollectionDefinition("MySQL collection")]
     public class MySQLCollection : IClassFixture<MySQLFixture> { }
 
@@ -105,5 +119,6 @@ namespace Evolve.Tests
     public class DatabaseCollection : IClassFixture<MySQLFixture>,
                                       IClassFixture<PostgreSqlFixture>,
                                       IClassFixture<SQLServerFixture>,
-                                      IClassFixture<CassandraFixture> { }
+                                      IClassFixture<CassandraFixture>,
+                                      IClassFixture<CockroachDbFixture> { }
 }
