@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace Evolve.Tests.Infrastructure
 {
-    public class CockroachDbFixture : DbContainerFixture<CockroachDbContainer>, IDisposable
+    public class CockroachDBFixture : DbContainerFixture<CockroachDBContainer>, IDisposable
     {
         public override void Run(bool fromScratch = false)
         {

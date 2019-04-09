@@ -3,7 +3,7 @@ using Npgsql;
 
 namespace Evolve.Tests.Infrastructure
 {
-    public class CockroachDbContainer : IDbContainer
+    public class CockroachDBContainer : IDbContainer
     {
         public const string ExposedPort = "26257";
         public const string HostPort = "26257";
