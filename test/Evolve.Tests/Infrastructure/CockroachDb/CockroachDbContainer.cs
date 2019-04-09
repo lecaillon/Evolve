@@ -20,7 +20,7 @@ namespace Evolve.Tests.Infrastructure
             _container = new DockerContainerBuilder(new DockerContainerBuilderOptions
             {
                 FromImage = "cockroachdb/cockroach",
-                Tag = "v2.1.6",
+                Tag = "latest",
                 Name = "cockroachdb-evolve",
                 ExposedPort = $"{ExposedPort}/tcp",
                 HostPort = HostPort,
