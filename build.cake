@@ -1,4 +1,4 @@
-#tool nuget:?package=ReportGenerator&version=4.0.11
+#tool nuget:?package=ReportGenerator&version=4.1.1
 
 ///////////////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -85,7 +85,7 @@ Task("report-coverage").Does(() =>
 {
     ReportGenerator($"{publishDir}/coverage.xml", $"{publishDir}/coverage", new ReportGeneratorSettings
     {
-        ReportTypes = new[] { ReportGeneratorReportType.Badges, ReportGeneratorReportType.Cobertura, ReportGeneratorReportType.Html },
+        ReportTypes = new[] { ReportGeneratorReportType.Badges, ReportGeneratorReportType.Cobertura, ReportGeneratorReportType.HtmlInline_AzurePipelines_Dark },
         Verbosity = ReportGeneratorVerbosity.Info
     });
 });
