@@ -37,6 +37,21 @@ namespace Evolve.Tests.Integration.CockroachDb
             schema.AssertCreation();
             schema.AssertExists();
             schema.AssertIsEmpty();
+
+            db.AssertDefaultSchemaName("defaultdb")
+              .AssertMetadataTableCreation(schemaName, "changelog")
+              .AssertSchemaIsDroppableWhenNewSchemaFound(schemaName) // id:1
+              .AssertVersionedMigrationSave() // id:2
+              .AssertVersionedMigrationChecksumUpdate()
+              .AssertRepeatableMigrationSave(); // id:3
+
+            schema.AssertIsNotEmpty();
+            schema.Erase();
+            schema.AssertIsEmpty();
+            schema.Drop();
+            schema.AssertIsNotExists();
+
+            db.AssertCloseConnection();
         }
     }
 }

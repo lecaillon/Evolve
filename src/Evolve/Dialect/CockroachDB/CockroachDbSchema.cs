@@ -5,7 +5,8 @@ namespace Evolve.Dialect.CockroachDB
 {
     public class CockroachDbSchema : Schema
     {
-        public CockroachDbSchema(string schemaName, WrappedConnection wrappedConnection) : base(schemaName, wrappedConnection)
+        public CockroachDbSchema(string schemaName, WrappedConnection wrappedConnection)
+            : base(schemaName, wrappedConnection)
         {
         }
 
@@ -13,12 +14,15 @@ namespace Evolve.Dialect.CockroachDB
 
         public override bool IsEmpty()
         {
-            string sql = "SELECT COUNT(*) FROM " +
-                         "( " +
-                            $"SELECT 1 FROM information_schema.tables WHERE table_catalog = '{Name}' AND table_schema = 'public' AND table_type = 'BASE TABLE' " +
-                             "UNION " +
-                            $"SELECT 1 FROM information_schema.sequences WHERE sequence_catalog = '{Name}' AND sequence_schema = 'public'" +
-                         ") x ";
+            string sql = "SELECT " +
+                            $"(SELECT COUNT(*) " +
+                            $"FROM \"{Name}\".information_schema.tables " +
+                            $"WHERE table_catalog = '{Name}' AND table_schema = 'public' AND table_type = 'BASE TABLE') " +
+                             " + " +
+                            $"(SELECT COUNT(*) " +
+                            $"FROM \"{Name}\".information_schema.sequences " +
+                            $"WHERE sequence_catalog = '{Name}' AND sequence_schema = 'public')";
+
             return _wrappedConnection.QueryForLong(sql) == 0;
         }
 
@@ -46,7 +50,7 @@ namespace Evolve.Dialect.CockroachDB
         protected void DropViews()
         {
             string sql = "SELECT table_name " +
-                         "FROM information_schema.views " +
+                        $"FROM \"{Name}\".information_schema.views " +
                         $"WHERE table_catalog = '{Name}' " +
                          "AND table_schema = 'public'";
 
@@ -59,7 +63,7 @@ namespace Evolve.Dialect.CockroachDB
         protected void DropTables()
         {
             string sql = "SELECT table_name " +
-                         "FROM information_schema.tables " +
+                        $"FROM \"{Name}\".information_schema.tables " +
                         $"WHERE table_catalog = '{Name}' " +
                          "AND table_schema = 'public' " +
                          "AND table_type = 'BASE TABLE'";
@@ -73,7 +77,7 @@ namespace Evolve.Dialect.CockroachDB
         protected void DropSequences()
         {
             string sql = "SELECT sequence_name " +
-                         "FROM information_schema.sequences " +
+                        $"FROM \"{Name}\".information_schema.sequences " +
                         $"WHERE sequence_catalog = '{Name}' " +
                          "AND sequence_schema = 'public'";
 
