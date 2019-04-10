@@ -34,7 +34,7 @@ namespace Evolve.Dialect.CockroachDB
 
         public override bool Drop()
         {
-            _wrappedConnection.ExecuteNonQuery($"DROP DATABASE \"{Name}\"");
+            _wrappedConnection.ExecuteNonQuery($"DROP DATABASE IF EXISTS \"{Name}\"");
             return true;
         }
 
