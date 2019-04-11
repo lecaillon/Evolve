@@ -7,11 +7,12 @@
     using Dialect;
     using McMaster.Extensions.CommandLineUtils;
 
+    [Command(ResponseFileHandling = ResponseFileHandling.ParseArgsAsSpaceSeparated)]
     class Program
     {
         private static readonly Evolve Default = new Evolve(new System.Data.SQLite.SQLiteConnection());
 
-        static void Main(string[] args) => CommandLineApplication.Execute<Program>(args);
+        static int Main(string[] args) => CommandLineApplication.Execute<Program>(args);
 
         private int OnExecute(CommandLineApplication app, IConsole console)
         {
@@ -29,9 +30,9 @@
             }
         }
 
-        [Argument(0, Description = "migrate | erase | repair")]
+        [Argument(0, Description = "migrate | erase | repair | info")]
         [Required]
-        [AllowedValues("migrate", "erase", "repair", IgnoreCase = true)]
+        [AllowedValues("migrate", "erase", "repair", "info", IgnoreCase = true)]
         public CommandOptions Command { get; }
 
         [Argument(1, Description = "postgresql | sqlite | sqlserver | mysql | mariadb | cassandra")]

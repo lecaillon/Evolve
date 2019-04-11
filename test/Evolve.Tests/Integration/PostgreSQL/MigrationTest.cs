@@ -40,7 +40,8 @@ namespace Evolve.Tests.Integration.PostgregSql
             };
 
             // Assert
-            evolve.AssertMigrateIsSuccessful(cnn, expectedNbMigration, null, locations)
+            evolve.AssertInfoIsSuccessful(cnn, expectedNbRows: 0)
+                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration, null, locations)
                   .AssertMigrateThrows<EvolveValidationException>(cnn, locations: PostgreSQL.ChecksumMismatchFolder)
                   .AssertRepairIsSuccessful(cnn, expectedNbReparation: 1)
                   .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 0)
@@ -54,7 +55,8 @@ namespace Evolve.Tests.Integration.PostgregSql
                   .AssertMigrateIsSuccessful(cnn, expectedNbMigration, null, locations)
                   .AssertRepairIsSuccessful(cnn, expectedNbReparation: 0, locations: PostgreSQL.RepeatableFolder)
                   .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 1)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 0);
+                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 0)
+                  .AssertInfoIsSuccessful(cnn, expectedNbRows: expectedNbMigration + 3);
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading;
+using ConsoleTables;
 using Evolve.Configuration;
 using Evolve.Connection;
 using Evolve.Dialect;
@@ -17,66 +18,10 @@ namespace Evolve
 {
     public class Evolve : IEvolveConfiguration
     {
-        #region Constants
-
-        // Initialize
-        private const string InvalidConfigurationLocation = "Evolve configuration file not found at: {0}.";
-        private const string EvolveInitialized = "Evolve initialized.";
-        private const string NoCommandSpecified = "Evolve.Command parameter is not set. No migration applied. See: https://evolve-db.netlify.com/configuration/ for more information.";
-        private const string CannotAcquireApplicationLock = "Cannot acquire Evolve application lock. Another migration is running.";
-        private const string CannotAcquireMetadatatableLock = "Cannot acquire Evolve table lock. Another migration is running.";
-        private const string CannotReleaseLock = "Error trying to release Evolve lock.";
-
-        // Validate
-        private const string MigrationMetadataNotFound = "Validate failed: script {0} not found in the metadata table of applied migrations.";
-        private const string ChecksumFixed = "Checksum fixed for migration: {0}.";
-        private const string NoMetadataFound = "No metadata found.";
-        private const string ValidateSuccessfull = "Metadata validated.";
-
-        // ManageSchemas
-        private const string NewSchemaCreated = "Create new schema: {0}.";
-        private const string EmptySchemaFound = "Empty schema found: {0}.";
-        private const string SchemaNotExists = "Schema {0} does not exist.";
-        private const string SchemaCreated = "Schema {0} created.";
-        private const string SchemaMarkedEmpty = "Mark schema {0} as empty.";
-
-        // ManageStartVersion
-        private const string MultipleStartVersionError = "The database has already been flagged with a StartVersion ({0}). Only one StartVersion parameter is allowed.";
-        private const string StartVersionMetadataDesc = "Skip migration scripts until version {0} excluded.";
-        private const string StartVersionMetadataName = "StartVersion = {0}";
-        private const string StartVersionNotAllowed = "Use of the StartVersion parameter is not allowed when migrations have already been applied.";
-
-        // Migrate
-        private const string ExecutingMigrate = "Executing Migrate...";
-        private const string MigrationError = "Error executing script: {0} after {1} ms.";
-        private const string MigrationErrorEraseOnValidationError = "{0} Erase database. (MustEraseOnValidationError = True)";
-        private const string MigrationSuccessfull = "Successfully applied migration {0} in {1} ms.";
-        private const string NoMigrationScript = "No migration script found.";
-        private const string NothingToMigrate = "Database is up to date. No migration needed.";
-        private const string MigrateSuccessfull = "Database migrated to version {0}. {1} migration(s) applied in {2} ms.";
-
-        // Erase
-        private const string ExecutingErase = "Executing Erase...";
-        private const string EraseDisabled = "Erase is disabled.";
-        private const string EraseCancelled = "No metadata found. Erase cancelled.";
-        private const string EraseSchemaSuccessfull = "Successfully erased schema {0}.";
-        private const string DropSchemaSuccessfull = "Successfully dropped schema {0}.";
-        private const string EraseSchemaImpossible = "Cannot erase schema {0}. This schema was not empty when Evolve first started migrations.";
-        private const string EraseSchemaFailed = "Erase failed. Impossible to erase schema {0}.";
-        private const string DropSchemaFailed = "Erase failed. Impossible to drop schema {0}.";
-        private const string EraseCompleted = "Erase schema(s) completed: {0} erased, {1} skipped.";
-
-        // Repair
-        private const string ExecutingRepair = "Executing Repair...";
-        private const string RepairSuccessfull = "Successfully repaired {0} migration(s).";
-        private const string RepairCancelled = "Metadata are up to date. Repair cancelled.";
-
-        #endregion
-
         #region Fields
 
         private readonly IDbConnection _userDbConnection;
-        private readonly Action<string> _logInfoDelegate;
+        private readonly Action<string> _log;
 
         #endregion
 
@@ -84,11 +29,11 @@ namespace Evolve
         ///     Initialize a new instance of the <see cref="Evolve"/> class.
         /// </summary>
         /// <param name="dbConnection"> The database connection used to apply the migrations. </param>
-        /// <param name="logInfoDelegate"> An optional logger. </param>
-        public Evolve(IDbConnection dbConnection, Action<string> logInfoDelegate = null)
+        /// <param name="logDelegate"> An optional logger. </param>
+        public Evolve(IDbConnection dbConnection, Action<string> logDelegate = null)
         {
             _userDbConnection = Check.NotNull(dbConnection, nameof(dbConnection));
-            _logInfoDelegate = logInfoDelegate ?? new Action<string>((msg) => { });
+            _log = logDelegate ?? new Action<string>((msg) => { });
         }
 
         #region IEvolveConfiguration
@@ -154,16 +99,45 @@ namespace Evolve
                 case CommandOptions.Erase:
                     Erase();
                     break;
-                default:
-                    _logInfoDelegate(NoCommandSpecified);
+                case CommandOptions.Info:
+                    Info();
                     break;
+                default:
+                    _log($"Evolve.Command parameter is not set. No migration applied. See: https://evolve-db.netlify.com/configuration/ for more information.");
+                    break;
+            }
+        }
+
+        public IEnumerable<MigrationMetadata> Info()
+        {
+            Command = CommandOptions.Info;
+
+            var db = InitiateDatabaseConnection();
+            try
+            {
+                var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
+                var rows = metadata.GetAllMetadata().ToList();
+                var table = new ConsoleTable("Id", "Version", "Category", "Description", "Installed on", "Installed by", "Success", "Checksum")
+                    .Configure(o => o.EnableCount = false);
+                rows.ForEach(x => table.AddRow(x.Id, x.Version, x.Type, x.Description, x.InstalledOn, x.InstalledBy, x.Success, x.Checksum));
+                _log(table.ToStringAlternative());
+                return rows;
+            }
+            catch
+            {
+                _log("Evolve metadata table cannot be found.");
+                return null;
+            }
+            finally
+            {
+                db.CloseConnection();
             }
         }
 
         public void Migrate()
         {
             Command = CommandOptions.Migrate;
-            _logInfoDelegate(ExecutingMigrate);
+            _log("Executing Migrate...");
 
             InternalExecuteCommand(db =>
             {
@@ -181,7 +155,7 @@ namespace Evolve
             {
                 if (MustEraseOnValidationError)
                 {
-                    _logInfoDelegate(string.Format(MigrationErrorEraseOnValidationError, ex.Message));
+                    _log($"{ex.Message} Erase database. (MustEraseOnValidationError = True)");
 
                     InternalErase(db);
                     ManageSchemas(db);
@@ -195,7 +169,7 @@ namespace Evolve
             if (MigrationLoader.GetMigrations(SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding).Count() == 0
              && MigrationLoader.GetRepeatableMigrations(SqlRepeatableMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding).Count() == 0)
             {
-                _logInfoDelegate(NoMigrationScript);
+                _log("No migration script found.");
                 return;
             }
 
@@ -204,11 +178,11 @@ namespace Evolve
 
             if (NbMigration == 0)
             {
-                _logInfoDelegate(NothingToMigrate);
+                _log("Database is up to date. No migration needed.");
             }
             else
             {
-                _logInfoDelegate(string.Format(MigrateSuccessfull, lastAppliedVersion, NbMigration, TotalTimeElapsedInMs));
+                _log($"Database migrated to version {lastAppliedVersion}. {NbMigration} migration(s) applied in {TotalTimeElapsedInMs} ms.");
             }
         }
 
@@ -260,7 +234,7 @@ namespace Evolve
         public void Repair()
         {
             Command = CommandOptions.Repair;
-            _logInfoDelegate(ExecutingRepair);
+            _log("Executing Repair...");
 
             InternalExecuteCommand(db =>
             {
@@ -268,11 +242,11 @@ namespace Evolve
 
                 if (NbReparation == 0)
                 {
-                    _logInfoDelegate(RepairCancelled);
+                    _log("Metadata are up to date. Repair cancelled.");
                 }
                 else
                 {
-                    _logInfoDelegate(string.Format(RepairSuccessfull, NbReparation));
+                    _log($"Successfully repaired {NbReparation} migration(s).");
                 }
             });
         }
@@ -289,18 +263,18 @@ namespace Evolve
 
         private void InternalErase(DatabaseHelper db)
         {
-            _logInfoDelegate(ExecutingErase);
+            _log("Executing Erase...");
 
             if (IsEraseDisabled)
             {
-                throw new EvolveConfigurationException(EraseDisabled);
+                throw new EvolveConfigurationException("Erase is disabled.");
             }
 
             var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
 
             if (!metadata.IsExists())
             {
-                _logInfoDelegate(EraseCancelled);
+                _log("No metadata found. Erase cancelled.");
                 return;
             }
 
@@ -316,12 +290,12 @@ namespace Evolve
                     try
                     {
                         db.GetSchema(schemaName).Drop();
-                        _logInfoDelegate(string.Format(DropSchemaSuccessfull, schemaName));
+                        _log($"Successfully dropped schema {schemaName}.");
                         NbSchemaErased++;
                     }
                     catch (Exception ex)
                     {
-                        throw new EvolveException(string.Format(DropSchemaFailed, schemaName), ex);
+                        throw new EvolveException($"Erase failed. Impossible to drop schema {schemaName}.", ex);
                     }
                 }
                 else if (metadata.CanEraseSchema(schemaName))
@@ -329,17 +303,17 @@ namespace Evolve
                     try
                     {
                         db.GetSchema(schemaName).Erase();
-                        _logInfoDelegate(string.Format(EraseSchemaSuccessfull, schemaName));
+                        _log($"Successfully erased schema {schemaName}.");
                         NbSchemaErased++;
                     }
                     catch (Exception ex)
                     {
-                        throw new EvolveException(string.Format(EraseSchemaFailed, schemaName), ex);
+                        throw new EvolveException($"Erase failed. Impossible to erase schema {schemaName}.", ex);
                     }
                 }
                 else
                 {
-                    _logInfoDelegate(string.Format(EraseSchemaImpossible, schemaName));
+                    _log($"Cannot erase schema {schemaName}. This schema was not empty when Evolve first started migrations.");
                     NbSchemaToEraseSkipped++;
                 }
             }
@@ -349,7 +323,7 @@ namespace Evolve
                 db.WrappedConnection.TryCommit();
             }
 
-            _logInfoDelegate(string.Format(EraseCompleted, NbSchemaErased, NbSchemaToEraseSkipped));
+            _log($"Erase schema(s) completed: {NbSchemaErased} erased, {NbSchemaToEraseSkipped} skipped.");
         }
 
         #endregion
@@ -389,7 +363,7 @@ namespace Evolve
                     var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
                     if (!db.ReleaseApplicationLock() || !metadata.ReleaseLock())
                     {
-                        _logInfoDelegate(CannotReleaseLock);
+                        _log("Error trying to release Evolve lock.");
                     }
                 }
 
@@ -426,7 +400,7 @@ namespace Evolve
                 db.WrappedConnection.TryCommit();
                 stopWatch.Stop();
 
-                _logInfoDelegate(string.Format(MigrationSuccessfull, migration.Name, stopWatch.ElapsedMilliseconds));
+                _log($"Successfully applied migration {migration.Name} in {stopWatch.ElapsedMilliseconds} ms.");
                 TotalTimeElapsedInMs += stopWatch.ElapsedMilliseconds;
                 NbMigration++;
             }
@@ -436,7 +410,7 @@ namespace Evolve
                 TotalTimeElapsedInMs += stopWatch.ElapsedMilliseconds;
                 db.WrappedConnection.TryRollback();
                 metadata.SaveMigration(migration, false);
-                throw new EvolveException(string.Format(MigrationError, migration.Name, stopWatch.ElapsedMilliseconds), ex);
+                throw new EvolveException($"Error executing script: {migration.Name} after {stopWatch.ElapsedMilliseconds} ms.", ex);
             }
         }
 
@@ -452,7 +426,10 @@ namespace Evolve
                 Schemas = new List<string> { db.GetCurrentSchemaName() };                   // If no schema, get the one associated to the datasource connection
             }
 
-            _logInfoDelegate(EvolveInitialized);
+            if (Command != CommandOptions.Info)
+            {
+                _log("Evolve initialized.");
+            }
 
             return db;
         }
@@ -466,7 +443,7 @@ namespace Evolve
                     break;
                 }
 
-                _logInfoDelegate(CannotAcquireApplicationLock);
+                _log("Cannot acquire Evolve application lock. Another migration is running.");
                 Thread.Sleep(TimeSpan.FromSeconds(3));
             }
         }
@@ -482,7 +459,7 @@ namespace Evolve
                     break;
                 }
 
-                _logInfoDelegate(CannotAcquireMetadatatableLock);
+                _log("Cannot acquire Evolve table lock. Another migration is running.");
                 Thread.Sleep(TimeSpan.FromSeconds(3));
             }
         }
@@ -499,20 +476,20 @@ namespace Evolve
 
                 if (!schema.IsExists())
                 {
-                    _logInfoDelegate(string.Format(SchemaNotExists, schemaName));
+                    _log($"Schema {schemaName} does not exist.");
 
                     // Create new schema
                     schema.Create();
                     metadata.Save(MetadataType.NewSchema, "0", string.Format(NewSchemaCreated, schemaName), schemaName);
-
-                    _logInfoDelegate(string.Format(SchemaCreated, schemaName));
+                    
+                    _log($"Schema {schemaName} created.");
                 }
                 else if (schema.IsEmpty())
                 {
                     // Mark schema as empty in the metadata table
-                    metadata.Save(MetadataType.EmptySchema, "0", string.Format(EmptySchemaFound, schemaName), schemaName);
+                    metadata.Save(MetadataType.EmptySchema, "0", $"Empty schema found: {schemaName}.", schemaName);
 
-                    _logInfoDelegate(string.Format(SchemaMarkedEmpty, schemaName));
+                    _log($"Mark schema {schemaName} as empty.");
                 }
             }
         }
@@ -534,16 +511,16 @@ namespace Evolve
 
             if (currentStartVersion != MigrationVersion.MinVersion)
             { // Metadatatable StartVersion found and do not match the StartVersion parameter
-                throw new EvolveConfigurationException(string.Format(MultipleStartVersionError, currentStartVersion));
+                throw new EvolveConfigurationException($"The database has already been flagged with a StartVersion ({currentStartVersion}). Only one StartVersion parameter is allowed.");
             }
 
             if (metadata.GetAllMigrationMetadata().Any())
             { // At least one migration has already been applied, StartVersion parameter not allowed anymore
-                throw new EvolveConfigurationException(StartVersionNotAllowed);
+                throw new EvolveConfigurationException("Use of the StartVersion parameter is not allowed when migrations have already been applied.");
             }
 
             // Apply StartVersion parameter
-            metadata.Save(MetadataType.StartVersion, StartVersion.Label, string.Format(StartVersionMetadataDesc, StartVersion.Label), string.Format(StartVersionMetadataName, StartVersion.Label));
+            metadata.Save(MetadataType.StartVersion, StartVersion.Label, $"Skip migrations until version {StartVersion.Label} excluded.", $"StartVersion = {StartVersion.Label}");
         }
 
         private void ValidateAndRepairMetadata(DatabaseHelper db)
@@ -553,14 +530,14 @@ namespace Evolve
             var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
             if (!metadata.IsExists())
             { // Nothing to validate
-                _logInfoDelegate(NoMetadataFound);
+                _log("No metadata found.");
                 return;
             }
 
             var appliedMigrations = metadata.GetAllMigrationMetadata(); // Load all applied migrations metadata
             if (appliedMigrations.Count() == 0)
             { // Nothing to validate
-                _logInfoDelegate(NoMetadataFound);
+                _log("No metadata found.");
                 return;
             }
 
@@ -582,7 +559,7 @@ namespace Evolve
                     }
                     else
                     { // Validation error
-                        throw new EvolveValidationException(string.Format(MigrationMetadataNotFound, migration.Name));
+                        throw new EvolveValidationException($"Validation failed: script {migration.Name} not found in the metadata table of applied migrations.");
                     }
                 }
 
@@ -597,7 +574,7 @@ namespace Evolve
                         metadata.UpdateChecksum(appliedMigration.Id, migration.CalculateChecksum());
                         NbReparation++;
 
-                        _logInfoDelegate(string.Format(ChecksumFixed, migration.Name));
+                        _log($"Checksum fixed for migration: {migration.Name}.");
                     }
                     else
                     {
@@ -606,7 +583,7 @@ namespace Evolve
                 }
             }
 
-            _logInfoDelegate(ValidateSuccessfull);
+            _log("Metadata validated.");
         }
 
         private IEnumerable<string> FindSchemas()

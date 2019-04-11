@@ -1,7 +1,7 @@
 {
   "Evolve.Command": "migrate",
   "Evolve.Database": "sqlite",
-  "Evolve.ConnectionString": "Data Source=C:\\Windows\\Temp\\mydb.dev.db;",
+  "Evolve.ConnectionString": "Data Source=C:/Windows/Temp/mydb.dev.db;",
   "Evolve.Locations": "db",
   "Evolve.EraseOnValidationError": true,
   "Evolve.OutOfOrder": true,

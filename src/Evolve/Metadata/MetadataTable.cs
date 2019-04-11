@@ -80,6 +80,8 @@ namespace Evolve.Metadata
             });
         }
 
+        public IEnumerable<MigrationMetadata> GetAllMetadata() => Execute(() => InternalGetAllMetadata(), createIfNotExists: false);
+
         public IEnumerable<MigrationMetadata> GetAllMigrationMetadata()
         {
             return Execute(() =>

@@ -44,7 +44,8 @@ namespace Evolve.Tests.Integration.Cassandra
             };
 
             // Assert
-            evolve.AssertMigrateIsSuccessful(cnn, expectedNbMigration, locations: CassandraDb.MigrationFolder)
+            evolve.AssertInfoIsSuccessful(cnn, expectedNbRows: 0)
+                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration, locations: CassandraDb.MigrationFolder)
                   .AssertMigrateThrows<EvolveConfigurationException>(cnn, e => e.StartVersion = new MigrationVersion("3.0"))
                   .AssertMigrateThrows<EvolveValidationException>(cnn, e => e.StartVersion = MigrationVersion.MinVersion, CassandraDb.ChecksumMismatchFolder)
                   .AssertRepairIsSuccessful(cnn, expectedNbReparation: 1)
@@ -63,6 +64,7 @@ namespace Evolve.Tests.Integration.Cassandra
                   .AssertRepairIsSuccessful(cnn, expectedNbReparation: 0, locations: CassandraDb.RepeatableFolder)
                   .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 1)
                   .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 0)
+                  .AssertInfoIsSuccessful(cnn, expectedNbRows: expectedNbMigration + 2)
                   .AssertEraseIsSuccessful(cnn, e => e.StartVersion = MigrationVersion.MinVersion);
 
             //DefaultKeyspaceReplicationStrategy

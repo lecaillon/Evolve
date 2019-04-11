@@ -30,7 +30,8 @@ namespace Evolve.Tests.Integration.Sqlite
             };
 
             // Assert
-            evolve.AssertMigrateIsSuccessful(cnn, expectedNbMigration, locations: SQLite.MigrationFolder)
+            evolve.AssertInfoIsSuccessful(cnn, expectedNbRows: 0)
+                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration, locations: SQLite.MigrationFolder)
                   .AssertMigrateThrows<EvolveValidationException>(cnn, locations: SQLite.ChecksumMismatchFolder)
                   .AssertRepairIsSuccessful(cnn, expectedNbReparation: 1)
                   .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 0)
@@ -42,7 +43,8 @@ namespace Evolve.Tests.Integration.Sqlite
                   .AssertMigrateIsSuccessful(cnn, expectedNbMigration, null, locations: SQLite.MigrationFolder)
                   .AssertRepairIsSuccessful(cnn, expectedNbReparation: 0, locations: SQLite.RepeatableFolder)
                   .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 1)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 0);
+                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 0)
+                  .AssertInfoIsSuccessful(cnn, expectedNbRows: expectedNbMigration + 2);
         }
     }
 }

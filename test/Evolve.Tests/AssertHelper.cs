@@ -243,5 +243,15 @@ namespace Evolve.Tests
 
             return evolve;
         }
+
+        public static Evolve AssertInfoIsSuccessful(this Evolve evolve, IDbConnection cnn, int expectedNbRows)
+        {
+            var rows = evolve.Info();
+            int nbRows = rows?.Count() ?? 0;
+            Assert.True(nbRows == expectedNbRows, $"{expectedNbRows} rows should have been returned, not {nbRows}.");
+            Assert.True(cnn.State == ConnectionState.Closed);
+
+            return evolve;
+        }
     }
 }
