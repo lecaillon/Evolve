@@ -480,8 +480,8 @@ namespace Evolve
 
                     // Create new schema
                     schema.Create();
-                    metadata.Save(MetadataType.NewSchema, "0", string.Format(NewSchemaCreated, schemaName), schemaName);
-                    
+                    metadata.Save(MetadataType.NewSchema, "0", $"Create new schema: {schemaName}.", schemaName);
+
                     _log($"Schema {schemaName} created.");
                 }
                 else if (schema.IsEmpty())
