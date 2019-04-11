@@ -502,10 +502,8 @@ namespace Evolve
                     _logInfoDelegate(string.Format(SchemaNotExists, schemaName));
 
                     // Create new schema
-                    db.WrappedConnection.BeginTransaction();
                     schema.Create();
                     metadata.Save(MetadataType.NewSchema, "0", string.Format(NewSchemaCreated, schemaName), schemaName);
-                    db.WrappedConnection.Commit();
 
                     _logInfoDelegate(string.Format(SchemaCreated, schemaName));
                 }

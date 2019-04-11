@@ -49,12 +49,11 @@ namespace Evolve.Tests
 
         public static class CockroachDB
         {
-            public static string ResourcesFolder => Path.Combine(ProjectFolder, "Integration/Cockroach/Resources");
+            public static string ResourcesFolder => Path.Combine(ProjectFolder, "Integration/CockroachDB/Resources");
             public static string SqlScriptsFolder => Path.Combine(ResourcesFolder, "Sql_Scripts");
             public static string MigrationFolder => Path.Combine(SqlScriptsFolder, "Migration");
             public static string ChecksumMismatchFolder => Path.Combine(SqlScriptsFolder, "Checksum_mismatch");
             public static string RepeatableFolder => Path.Combine(SqlScriptsFolder, "Repeatable");
-            public static string OutOfOrderFolder => Path.Combine(SqlScriptsFolder, "OutOfOrder");
         }
 
         public static class MySQL
