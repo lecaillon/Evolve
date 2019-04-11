@@ -23,7 +23,7 @@ namespace Evolve.Tests.Integration.CockroachDb
             }
         }
 
-        [Fact]
+        [FactSkippedOnAppVeyor]
         [Category(Test.CockroachDB)]
         public void Run_all_CockroachDB_migrations_work()
         {
