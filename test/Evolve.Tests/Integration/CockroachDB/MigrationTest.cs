@@ -33,8 +33,7 @@ namespace Evolve.Tests.Integration.CockroachDb
             var cnn = _dbContainer.CreateDbConnection();
             var evolve = new Evolve(cnn, msg => _output.WriteLine(msg))
             {
-                //Schemas = new[] { "MyDatabase" },
-                //MetadataTableSchema = "unittest",
+                Schemas = new[] { "evolve", "defaultdb" }, // MetadataTableSchema = evolve | migrations = defaultdb
             };
 
             // Assert
@@ -44,7 +43,8 @@ namespace Evolve.Tests.Integration.CockroachDb
                   .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 0)
                   .AssertEraseThrows<EvolveConfigurationException>(cnn, e => e.IsEraseDisabled = true)
                   .AssertEraseIsSuccessful(cnn, e => e.IsEraseDisabled = false)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration, locations: CockroachDB.MigrationFolder);
+                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration, locations: CockroachDB.MigrationFolder)
+                  .AssertInfoIsSuccessful(cnn, expectedNbRows: expectedNbMigration + 2);
         }
     }
 }
