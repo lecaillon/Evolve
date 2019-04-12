@@ -86,6 +86,9 @@
                 case DBMS.Cassandra:
                     cnn = new CqlConnection(cnnStr);
                     break;
+                case DBMS.CockroachDB:
+                    cnn = new NpgsqlConnection(cnnStr);
+                    break;
                 default:
                     break;
             }
