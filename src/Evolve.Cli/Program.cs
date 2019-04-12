@@ -35,9 +35,9 @@
         [AllowedValues("migrate", "erase", "repair", "info", IgnoreCase = true)]
         public CommandOptions Command { get; }
 
-        [Argument(1, Description = "postgresql | sqlite | sqlserver | mysql | mariadb | cassandra")]
+        [Argument(1, Description = "postgresql | sqlite | sqlserver | mysql | mariadb | cassandra | cockroachdb")]
         [Required]
-        [AllowedValues("postgresql", "sqlite", "sqlserver", "mysql", "mariadb", "cassandra", IgnoreCase = true)]
+        [AllowedValues("postgresql", "sqlite", "sqlserver", "mysql", "mariadb", "cassandra", "cockroachdb", IgnoreCase = true)]
         public DBMS Database { get; }
 
         [Option("-c|--connection-string", "The connection string to the target database engine. Must have the necessary privileges to execute ddl.", CommandOptionType.SingleValue)]

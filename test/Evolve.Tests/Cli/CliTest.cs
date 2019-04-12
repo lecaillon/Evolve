@@ -15,14 +15,16 @@ namespace Evolve.Tests.Cli
         private readonly MySQLFixture _mySQLContainer;
         private readonly SQLServerFixture _sqlServerContainer;
         private readonly CassandraFixture _cassandraContainer;
+        private readonly CockroachDBFixture _cockroachDBContainer;
         private readonly ITestOutputHelper _output;
 
-        public CliTest(PostgreSqlFixture pgContainer, MySQLFixture mySQLContainer, SQLServerFixture sqlServerContainer, CassandraFixture cassandraContainer, ITestOutputHelper output)
+        public CliTest(PostgreSqlFixture pgContainer, MySQLFixture mySQLContainer, SQLServerFixture sqlServerContainer, CassandraFixture cassandraContainer, CockroachDBFixture cockroachDBContainer, ITestOutputHelper output)
         {
             _pgContainer = pgContainer;
             _mySQLContainer = mySQLContainer;
             _sqlServerContainer = sqlServerContainer;
             _cassandraContainer = cassandraContainer;
+            _cockroachDBContainer = cockroachDBContainer;
             _output = output;
 
             if (TestContext.Local || TestContext.AzureDevOps)
@@ -30,10 +32,28 @@ namespace Evolve.Tests.Cli
                 pgContainer.Run();
                 sqlServerContainer.Run();
                 cassandraContainer.Run();
+                cockroachDBContainer.Run();
                 if (TestContext.Local)
                 {
                     mySQLContainer.Run();
                 }
+            }
+        }
+
+        [FactSkippedOnAppVeyor]
+        [Category(Test.Cli, Test.CockroachDB)]
+        public void CockroachDB_Should_Run_All_Cli_Commands()
+        {
+            foreach (var command in new[] { "erase", "migrate", "repair", "info" })
+            {
+                string stderr = RunCli(
+                    db: "cockroachdb",
+                    command: command,
+                    cnxStr: _cockroachDBContainer.CnxStr,
+                    location: TestContext.CockroachDB.MigrationFolder,
+                    args: "-s evolve -s defaultdb");
+
+                Assert.True(stderr == string.Empty, stderr);
             }
         }
 

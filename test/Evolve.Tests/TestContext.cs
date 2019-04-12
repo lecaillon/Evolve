@@ -53,7 +53,6 @@ namespace Evolve.Tests
             public static string SqlScriptsFolder => Path.Combine(ResourcesFolder, "Sql_Scripts");
             public static string MigrationFolder => Path.Combine(SqlScriptsFolder, "Migration");
             public static string ChecksumMismatchFolder => Path.Combine(SqlScriptsFolder, "Checksum_mismatch");
-            public static string RepeatableFolder => Path.Combine(SqlScriptsFolder, "Repeatable");
         }
 
         public static class MySQL
