@@ -23,7 +23,7 @@ namespace Evolve.Dialect
             [DBMS.MariaDB]          = wcnn => new MySQLDatabase(wcnn),
             [DBMS.SQLServer]        = wcnn => new SQLServerDatabase(wcnn),
             [DBMS.Cassandra]        = wcnn => new CassandraCluster(wcnn),
-            [DBMS.CockroachDB]      = wcnn => new CockroachDBDatabase(wcnn),
+            [DBMS.CockroachDB]      = wcnn => new CockroachDBCluster(wcnn),
         };
 
         public static DatabaseHelper GetDatabaseHelper(DBMS dbmsType, WrappedConnection connection)

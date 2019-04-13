@@ -1,40 +1,92 @@
+﻿using System.Linq;
 using Evolve.Connection;
-using Evolve.Metadata;
 
 namespace Evolve.Dialect.CockroachDB
 {
-    public class CockroachDBDatabase : DatabaseHelper
+    public class CockroachDBDatabase : Schema
     {
-        public CockroachDBDatabase(WrappedConnection wrappedConnection) : base(wrappedConnection)
+        public CockroachDBDatabase(string schemaName, WrappedConnection wrappedConnection)
+            : base(schemaName, wrappedConnection)
         {
         }
 
-        public override string DatabaseName => "CockroachDB";
+        public override bool IsExists() => _wrappedConnection.QueryForLong($"SELECT COUNT(*) FROM pg_database WHERE datname = '{Name}'") > 0;
 
-        public override string CurrentUser => "current_user";
-
-        public override SqlStatementBuilderBase SqlStatementBuilder => new SimpleSqlStatementBuilder();
-
-        public override string GetCurrentSchemaName() => WrappedConnection.QueryForString("SHOW database");
-
-        public override IEvolveMetadata GetMetadataTable(string schema, string tableName) => new CockroachDbMetadataTable(schema, tableName, this);
-
-        public override Schema GetSchema(string schemaName) => new CockroachDbSchema(schemaName, WrappedConnection);
-
-        public override bool TryAcquireApplicationLock() => true;
-
-        public override bool ReleaseApplicationLock() => true;
-
-        protected override void InternalChangeSchema(string toSchemaName)
+        public override bool IsEmpty()
         {
-            if (toSchemaName.IsNullOrWhiteSpace())
-            {
-                WrappedConnection.ExecuteNonQuery("SET database = DEFAULT");
-            }
-            else
-            {
-                WrappedConnection.ExecuteNonQuery($"SET database = \"{toSchemaName}\"");
-            }
+            string sql = "SELECT " +
+                            $"(SELECT COUNT(*) " +
+                            $"FROM \"{Name}\".information_schema.tables " +
+                            $"WHERE table_catalog = '{Name}' AND table_schema = 'public' AND table_type = 'BASE TABLE') " +
+                             " + " +
+                            $"(SELECT COUNT(*) " +
+                            $"FROM \"{Name}\".information_schema.sequences " +
+                            $"WHERE sequence_catalog = '{Name}' AND sequence_schema = 'public')";
+
+            return _wrappedConnection.QueryForLong(sql) == 0;
         }
+
+        public override bool Create()
+        {
+            _wrappedConnection.ExecuteNonQuery($"CREATE DATABASE \"{Name}\"");
+            return true;
+        }
+
+        public override bool Drop()
+        {
+            _wrappedConnection.ExecuteNonQuery($"DROP DATABASE IF EXISTS \"{Name}\"");
+            return true;
+        }
+
+        public override bool Erase()
+        {
+            DropViews();
+            DropTables();
+            DropSequences();
+
+            return true;
+        }
+
+        protected void DropViews()
+        {
+            string sql = "SELECT table_name " +
+                        $"FROM \"{Name}\".information_schema.views " +
+                        $"WHERE table_catalog = '{Name}' " +
+                         "AND table_schema = 'public'";
+
+            _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(view =>
+            {
+                _wrappedConnection.ExecuteNonQuery($"DROP VIEW IF EXISTS \"{Name}\".\"{Quote(view)}\" CASCADE");
+            });
+        }
+
+        protected void DropTables()
+        {
+            string sql = "SELECT table_name " +
+                        $"FROM \"{Name}\".information_schema.tables " +
+                        $"WHERE table_catalog = '{Name}' " +
+                         "AND table_schema = 'public' " +
+                         "AND table_type = 'BASE TABLE'";
+
+            _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(table =>
+            {
+                _wrappedConnection.ExecuteNonQuery($"DROP TABLE IF EXISTS \"{Name}\".\"{Quote(table)}\" CASCADE");
+            });
+        }
+
+        protected void DropSequences()
+        {
+            string sql = "SELECT sequence_name " +
+                        $"FROM \"{Name}\".information_schema.sequences " +
+                        $"WHERE sequence_catalog = '{Name}' " +
+                         "AND sequence_schema = 'public'";
+
+            _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(seq =>
+            {
+                _wrappedConnection.ExecuteNonQuery($"DROP SEQUENCE IF EXISTS \"{Name}\".\"{Quote(seq)}\"");
+            });
+        }
+
+        private string Quote(string dbObject) => dbObject.Replace("\"", "\"\"");
     }
 }
