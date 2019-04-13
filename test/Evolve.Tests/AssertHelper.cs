@@ -56,7 +56,6 @@ namespace Evolve.Tests
             Assert.True(metadataTable.TryLock());
             Assert.False(metadataTable.TryLock());
             Assert.True(metadataTable.ReleaseLock());
-            Assert.False(metadataTable.ReleaseLock());
             return metadataTable;
         }
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Evolve.Metadata;
 using Evolve.Migration;
 
@@ -7,25 +8,73 @@ namespace Evolve.Dialect.CockroachDB
 {
     public class CockroachDBMetadataTable : MetadataTable
     {
-        public CockroachDBMetadataTable(string schema, string tableName, DatabaseHelper database) : base(schema, tableName, database)
+        public CockroachDBMetadataTable(string schema, string tableName, DatabaseHelper database)
+            : base(schema, tableName, database)
         {
         }
 
-        protected override bool InternalTryLock() => true;
+        /// <summary>
+        ///     Implementing advisory locks in CockroachDB is being discussed, see:
+        ///     https://forum.cockroachlabs.com/t/alternatives-to-pg-advisory-locks/742
+        /// </summary>
+        protected override bool InternalTryLock()
+        {
+            string sqlGetLock = $"SELECT * FROM \"{Schema}\".\"{TableName}\" WHERE id = 0";
+            string sqlAddLock = $"INSERT INTO \"{Schema}\".\"{TableName}\" (id, type, version, description, name, checksum, installed_by, success) " +
+                                $"values(0, 0, '0', 'lock', 'lock', '', '{_database.CurrentUser}', true)";
+            try
+            {
+                _database.WrappedConnection.BeginTransaction();
+                var locks = _database.WrappedConnection.QueryForList(sqlGetLock, r => r.GetInt32(0));
+                if (locks.Count() == 0)
+                {
+                    _database.WrappedConnection.ExecuteNonQuery(sqlAddLock);
+                    _database.WrappedConnection.Commit();
+                    return true;
+                }
+                else
+                {
+                    _database.WrappedConnection.Commit();
+                    return false;
+                }
+            }
+            catch
+            {
+                _database.WrappedConnection.TryRollback();
+                return false;
+            }
+        }
 
-        protected override bool InternalReleaseLock() => true;
+        protected override bool InternalReleaseLock()
+        {
+            try
+            {
+                _database.WrappedConnection.ExecuteNonQuery($"DELETE FROM \"{Schema}\".\"{TableName}\" WHERE id = 0");
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
 
-        protected override bool InternalIsExists() => 
-            _database.WrappedConnection.QueryForLong($"SELECT COUNT(*) FROM information_schema.tables " +
-                                                     $"WHERE table_catalog = '{Schema}' " +
-                                                     $"AND table_schema = 'public' " +
-                                                     $"AND table_name = '{TableName}'") == 1;
+        protected override bool InternalIsExists()
+        {
+            if (!_database.GetSchema(Schema).IsExists())
+            { // database does not exist, so the metadatatable
+                return false;
+            }
+
+            return _database.WrappedConnection.QueryForLong($"SELECT COUNT(*) FROM \"{Schema}\".information_schema.tables " +
+                                                            $"WHERE table_catalog = '{Schema}' " +
+                                                            $"AND table_schema = 'public' " +
+                                                            $"AND table_name = '{TableName}'") == 1;
+        }
 
         protected override void InternalCreate()
         {
-            var sequenceName = $"{TableName}_id_seq";
-            string createSequenceSql = $"CREATE SEQUENCE \"{sequenceName}\" MAXVALUE {Int32.MaxValue};";
-
+            string sequenceName = $"{TableName}_id_seq";
+            string createSequenceSql = $"CREATE SEQUENCE \"{Schema}\".\"{sequenceName}\" MAXVALUE {Int32.MaxValue};";
             string createTableSql = $"CREATE TABLE \"{Schema}\".\"{TableName}\" " +
              "( " +
                 $"id INT4 PRIMARY KEY NOT NULL DEFAULT nextval('{sequenceName}'), " +

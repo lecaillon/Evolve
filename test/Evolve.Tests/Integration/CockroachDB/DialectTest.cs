@@ -40,6 +40,7 @@ namespace Evolve.Tests.Integration.CockroachDb
 
             db.AssertDefaultSchemaName("defaultdb")
               .AssertMetadataTableCreation(schemaName, "changelog")
+              .AssertMetadataTableLockEx()
               .AssertSchemaIsDroppableWhenNewSchemaFound(schemaName) // id:1
               .AssertVersionedMigrationSave() // id:2
               .AssertVersionedMigrationChecksumUpdate()
