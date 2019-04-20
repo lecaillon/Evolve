@@ -34,7 +34,7 @@ namespace Evolve.Dialect.PostgreSQL
 
         public override bool Drop()
         {
-            _wrappedConnection.ExecuteNonQuery($"DROP SCHEMA \"{Name}\" CASCADE");
+            _wrappedConnection.ExecuteNonQuery($"DROP SCHEMA IF EXISTS \"{Name}\" CASCADE");
 
             return true;
         }

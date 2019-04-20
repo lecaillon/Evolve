@@ -20,6 +20,7 @@ namespace Evolve.Tests.Infrastructure
             ExposedPort = setupOptions.ExposedPort;
             HostPort = setupOptions.HostPort;
             RemovePreviousContainer = setupOptions.RemovePreviousContainer;
+            Cmd = setupOptions.Cmd;
 
             _client = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
                 ? new DockerClientConfiguration(new Uri("npipe://./pipe/docker_engine")).CreateClient()
@@ -33,6 +34,7 @@ namespace Evolve.Tests.Infrastructure
         public string ExposedPort { get; }
         public string HostPort { get; }
         public bool RemovePreviousContainer { get; }
+        public IList<string> Cmd { get; }
 
         public DockerContainer Build()
         {
@@ -59,6 +61,7 @@ namespace Evolve.Tests.Infrastructure
                 Name = Name,
                 Env = Env,
                 ExposedPorts = new Dictionary<string, EmptyStruct> { { ExposedPort, new EmptyStruct() } },
+                Cmd = Cmd,
                 HostConfig = new HostConfig
                 {
                     PortBindings = new Dictionary<string, IList<PortBinding>>

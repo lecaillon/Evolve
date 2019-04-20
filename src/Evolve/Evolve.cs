@@ -479,10 +479,8 @@ namespace Evolve
                     _log($"Schema {schemaName} does not exist.");
 
                     // Create new schema
-                    db.WrappedConnection.BeginTransaction();
                     schema.Create();
                     metadata.Save(MetadataType.NewSchema, "0", $"Create new schema: {schemaName}.", schemaName);
-                    db.WrappedConnection.Commit();
 
                     _log($"Schema {schemaName} created.");
                 }

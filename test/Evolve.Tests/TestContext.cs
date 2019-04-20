@@ -47,6 +47,14 @@ namespace Evolve.Tests
             public static string RepeatableFolder => Path.Combine(SqlScriptsFolder, "Repeatable");
         }
 
+        public static class CockroachDB
+        {
+            public static string ResourcesFolder => Path.Combine(ProjectFolder, "Integration/CockroachDB/Resources");
+            public static string SqlScriptsFolder => Path.Combine(ResourcesFolder, "Sql_Scripts");
+            public static string MigrationFolder => Path.Combine(SqlScriptsFolder, "Migration");
+            public static string ChecksumMismatchFolder => Path.Combine(SqlScriptsFolder, "Checksum_mismatch");
+        }
+
         public static class MySQL
         {
             public static string ResourcesFolder => Path.Combine(ProjectFolder, "Integration/MySQL/Resources");
@@ -92,6 +100,9 @@ namespace Evolve.Tests
     [CollectionDefinition("Cassandra collection")]
     public class CassandraCollection : IClassFixture<CassandraFixture> { }
 
+    [CollectionDefinition("CockroachDB collection")]
+    public class CockroachDbCollection : IClassFixture<CockroachDBFixture> { }
+
     [CollectionDefinition("MySQL collection")]
     public class MySQLCollection : IClassFixture<MySQLFixture> { }
 
@@ -105,5 +116,6 @@ namespace Evolve.Tests
     public class DatabaseCollection : IClassFixture<MySQLFixture>,
                                       IClassFixture<PostgreSqlFixture>,
                                       IClassFixture<SQLServerFixture>,
-                                      IClassFixture<CassandraFixture> { }
+                                      IClassFixture<CassandraFixture>,
+                                      IClassFixture<CockroachDBFixture> { }
 }

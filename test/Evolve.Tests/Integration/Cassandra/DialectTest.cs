@@ -23,13 +23,13 @@ namespace Evolve.Tests.Integration.Cassandra
             var wcnn = new WrappedConnection(cnn).AssertDatabaseServerType(DBMS.Cassandra);
             var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.Cassandra, wcnn);
             string keyspaceName = "my_keyspace_2";
-            var schema = new CassandraKeyspace(keyspaceName, CassandraKeyspace.CreateSimpleStrategy(1), wcnn);
+            Schema keyspace = new CassandraKeyspace(keyspaceName, CassandraKeyspace.CreateSimpleStrategy(1), wcnn);
 
             // Assert
-            schema.AssertIsNotExists();
-            schema.AssertCreation();
-            schema.AssertExists();
-            schema.AssertIsEmpty();
+            keyspace.AssertIsNotExists();
+            keyspace.AssertCreation();
+            keyspace.AssertExists();
+            keyspace.AssertIsEmpty();
 
             //Lock & Unlock
             //..Applicaiton level: return true if the cluster lock keyspace/table is not present
@@ -52,11 +52,11 @@ namespace Evolve.Tests.Integration.Cassandra
             //.AssertVersionedMigrationChecksumUpdate()
               .AssertRepeatableMigrationSave();
 
-            schema.AssertIsNotEmpty();
-            schema.Erase();
-            schema.AssertIsEmpty();
-            schema.Drop();
-            schema.AssertIsNotExists();
+            keyspace.AssertIsNotEmpty();
+            keyspace.Erase();
+            keyspace.AssertIsEmpty();
+            keyspace.Drop();
+            keyspace.AssertIsNotExists();
 
             db.AssertCloseConnection();
         }

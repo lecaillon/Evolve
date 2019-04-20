@@ -8,6 +8,7 @@ namespace Evolve.Tests
     public enum Test
     {
         Cassandra,
+        CockroachDB,
         MySQL,
         PostgreSQL,
         SQLite,
