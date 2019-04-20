@@ -91,7 +91,7 @@ namespace Evolve.Tests
                 Assert.True(metadata.Id == 2, $"Migration metadata id should be: 2, but found {metadata.Id}.");
             }
             Assert.True(metadata.Type == MetadataType.Migration, $"Migration metadata type should be: Migration, but found {metadata.Type}.");
-            Assert.True(metadata.InstalledOn.Date == DateTime.UtcNow.Date, $"Migration metadata InstalledOn date {metadata.InstalledOn} should be equals to {DateTime.UtcNow.Date}.");
+            Assert.True(metadata.InstalledOn.Date == DateTime.UtcNow.Date, $"Migration metadata InstalledOn date {metadata.InstalledOn.Date} should be equals to {DateTime.UtcNow.Date}.");
             return metadataTable;
         }
 
@@ -119,7 +119,7 @@ namespace Evolve.Tests
                 Assert.True(metadata.Id == 3, $"Repeatable migration metadata id should be: 3, but found {metadata.Id}.");
             }
             Assert.True(metadata.Type == MetadataType.RepeatableMigration, $"Repeatable migration metadata type should be: RepeatableMigration, but found {metadata.Type}.");
-            Assert.True(metadata.InstalledOn.Date == DateTime.UtcNow.Date, $"Repeatable migration metadata InstalledOn date {metadata.InstalledOn} should be equals to {DateTime.UtcNow.Date}.");
+            Assert.True(metadata.InstalledOn.Date == DateTime.UtcNow.Date, $"Repeatable migration metadata InstalledOn date {metadata.InstalledOn.Date} should be equals to {DateTime.UtcNow.Date}.");
             return metadataTable;
         }
 
