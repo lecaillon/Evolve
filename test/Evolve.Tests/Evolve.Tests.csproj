@@ -32,7 +32,7 @@
     <Content Include="Integration\**\*.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <EmbeddedResource Include="Resources\**\*.sql">
+    <EmbeddedResource Include="Resources\**\*.*ql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
     <Content Include="Integration\Cassandra\**\*.cql">

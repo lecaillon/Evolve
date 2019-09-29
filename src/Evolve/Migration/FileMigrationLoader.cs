@@ -29,7 +29,6 @@ namespace Evolve.Migration
             Check.NotNullOrEmpty(suffix, nameof(suffix)); // .sql
 
             var migrations = new List<FileMigrationScript>();
-            string searchPattern = $"{prefix}*{suffix}"; // "V*.sql"
             encoding = encoding ?? Encoding.UTF8;
 
             foreach (string location in _locations.Distinct(StringComparer.OrdinalIgnoreCase)) // Remove duplicate locations if any
@@ -37,8 +36,10 @@ namespace Evolve.Migration
                 DirectoryInfo dirToScan = ResolveDirectory(location);
                 if(!dirToScan.Exists) continue;
 
-                dirToScan.GetFiles(searchPattern, SearchOption.AllDirectories)   // Get scripts recursively
-                         .Where(f => !migrations.Any(m => m.Path == f.FullName)) // Scripts not already loaded
+                dirToScan.GetFiles("*", SearchOption.AllDirectories) // Get scripts recursively
+                         .Where(f => !migrations.Any(m => m.Path == f.FullName) // Scripts not already loaded
+                                  && f.Name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) // "V*"
+                                  && f.Name.EndsWith(suffix, StringComparison.OrdinalIgnoreCase)) // "*.sql"
                          .Select(f =>
                          {
                              MigrationUtil.ExtractVersionAndDescription(f.FullName, prefix, separator, out string version, out string description);
@@ -62,7 +63,6 @@ namespace Evolve.Migration
             Check.NotNullOrEmpty(suffix, nameof(suffix)); // .sql
 
             var migrations = new List<FileMigrationScript>();
-            string searchPattern = $"{prefix}*{suffix}"; // "R*.sql"
             encoding = encoding ?? Encoding.UTF8;
 
             foreach (string location in _locations.Distinct(StringComparer.OrdinalIgnoreCase)) // Remove duplicate locations if any
@@ -70,8 +70,10 @@ namespace Evolve.Migration
                 DirectoryInfo dirToScan = ResolveDirectory(location);
                 if (!dirToScan.Exists) continue;
 
-                dirToScan.GetFiles(searchPattern, SearchOption.AllDirectories)   // Get scripts recursively
-                         .Where(f => !migrations.Any(m => m.Path == f.FullName)) // Scripts not already loaded
+                dirToScan.GetFiles("*", SearchOption.AllDirectories)   // Get scripts recursively
+                         .Where(f => !migrations.Any(m => m.Path == f.FullName) // Scripts not already loaded
+                             && f.Name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) // "R*"
+                             && f.Name.EndsWith(suffix, StringComparison.OrdinalIgnoreCase)) // "*.sql"
                          .Select(f =>
                          {
                              MigrationUtil.ExtractDescription(f.FullName, prefix, separator, out string description);

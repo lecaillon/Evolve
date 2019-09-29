@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Evolve.Migration;
@@ -18,7 +19,7 @@ namespace Evolve.Utilities
             => ExtractVersionAndDescription(script, prefix, separator, out version, out description, throwIfNoVersion: true);
 
         public static void ExtractDescription(string script, string prefix, string separator, out string description)
-            => ExtractVersionAndDescription(script, prefix, separator, out string version, out description, throwIfNoVersion: false);
+            => ExtractVersionAndDescription(script, prefix, separator, out _, out description, throwIfNoVersion: false);
 
         private static void ExtractVersionAndDescription(string script, string prefix, string separator, out string version, out string description, bool throwIfNoVersion)
         {
@@ -27,7 +28,7 @@ namespace Evolve.Utilities
             Check.NotNullOrEmpty(separator, nameof(separator)); // __
 
             // Check prefix
-            if (!Path.GetFileNameWithoutExtension(script).Substring(0, prefix.Length).Equals(prefix))
+            if (!Path.GetFileNameWithoutExtension(script).Substring(0, prefix.Length).Equals(prefix, StringComparison.OrdinalIgnoreCase))
                 throw new EvolveConfigurationException(string.Format(MigrationNamePrefixNotFound, prefix, script));
 
             string migrationName = Path.GetFileNameWithoutExtension(script).Substring(prefix.Length); // 1_3_1__Migration_description
