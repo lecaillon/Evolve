@@ -1,4 +1,4 @@
-#tool nuget:?package=ReportGenerator&version=4.1.1
+#tool nuget:?package=ReportGenerator&version=4.2.20
 
 ///////////////////////////////////////////////////////////////////////////////
 // ARGUMENTS
