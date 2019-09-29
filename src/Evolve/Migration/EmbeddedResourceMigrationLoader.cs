@@ -39,8 +39,8 @@ namespace Evolve.Migration
             {
                 assembly.GetManifestResourceNames()
                         .Where(x => _filters.Any() ? _filters.Any(f => x.StartsWith(f, StringComparison.OrdinalIgnoreCase)) : true)
-                        .Where(x => x.EndsWith(suffix, StringComparison.CurrentCultureIgnoreCase))
-                        .Where(x => GetFileName(x).StartsWith(prefix))
+                        .Where(x => x.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
+                        .Where(x => GetFileName(x).StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
                         .Select(x =>
                         {
                             MigrationUtil.ExtractVersionAndDescription(GetFileName(x), prefix, separator, out string version, out string description);
@@ -76,8 +76,8 @@ namespace Evolve.Migration
             {
                 assembly.GetManifestResourceNames()
                         .Where(x => _filters.Any() ? _filters.Any(f => x.StartsWith(f, StringComparison.OrdinalIgnoreCase)) : true)
-                        .Where(x => x.EndsWith(suffix, StringComparison.CurrentCultureIgnoreCase))
-                        .Where(x => GetFileName(x).StartsWith(prefix))
+                        .Where(x => x.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
+                        .Where(x => GetFileName(x).StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
                         .Select(x =>
                         {
                             MigrationUtil.ExtractDescription(GetFileName(x), prefix, separator, out string description);
