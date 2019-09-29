@@ -30,7 +30,7 @@ namespace Evolve.Migration
 
             var migrations = new List<FileMigrationScript>();
             string searchPattern = $"{prefix}*{suffix}"; // "V*.sql"
-            encoding = encoding ?? Encoding.UTF8;
+            encoding ??= Encoding.UTF8;
 
             foreach (string location in _locations.Distinct(StringComparer.OrdinalIgnoreCase)) // Remove duplicate locations if any
             {
@@ -63,7 +63,7 @@ namespace Evolve.Migration
 
             var migrations = new List<FileMigrationScript>();
             string searchPattern = $"{prefix}*{suffix}"; // "R*.sql"
-            encoding = encoding ?? Encoding.UTF8;
+            encoding ??= Encoding.UTF8;
 
             foreach (string location in _locations.Distinct(StringComparer.OrdinalIgnoreCase)) // Remove duplicate locations if any
             {
