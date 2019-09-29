@@ -34,7 +34,7 @@ namespace Evolve.Tests.Migration
             AssertMigration(scripts[6], "3.0.0", "v3_0_0__CI.sql", "CI");
             AssertMigration(scripts[7], "3.0.1", "V3_0_1__CI.Sql", "CI");
 
-            static void AssertMigration(MigrationScript migration, string version, string name, string description)
+            void AssertMigration(MigrationScript migration, string version, string name, string description)
             {
                 Assert.Equal(MetadataType.Migration, migration.Type);
                 Assert.Equal(version, migration.Version.Label);
@@ -74,7 +74,7 @@ namespace Evolve.Tests.Migration
             AssertMigration(scripts[2], "R__desc_c.sql", "desc c");
             AssertMigration(scripts[3], "r__desc_ci.sql", "desc ci");
 
-            static void AssertMigration(MigrationScript migration, string name, string description)
+            void AssertMigration(MigrationScript migration, string name, string description)
             {
                 Assert.Equal(MetadataType.RepeatableMigration, migration.Type);
                 Assert.Null(migration.Version);
