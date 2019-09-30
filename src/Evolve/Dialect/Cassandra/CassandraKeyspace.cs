@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Evolve.Connection;
-using TinyJson;
+using SimpleJSON;
 
 namespace Evolve.Dialect.Cassandra
 {
@@ -81,17 +81,17 @@ namespace Evolve.Dialect.Cassandra
         {
             if (Configuration.ConfigurationFileExists())
             {
-                var configuration = Configuration.GetConfiguration()
-                                 .FromJson<Dictionary<string, Dictionary<string, object>>>()
-                                 .GetValue("keyspaces", new Dictionary<string, object>());
+                var keyspaces = JSON.Parse(Configuration.GetConfiguration()).Linq
+                                    .SingleOrDefault(x => x.Key.Equals("keyspaces", StringComparison.OrdinalIgnoreCase)).Value?.Linq
+                                    .ToDictionary(x => x.Key, x => x.Value, StringComparer.OrdinalIgnoreCase);
 
-                if (configuration.GetValue(keyspaceName) != null)
+                if (keyspaces.GetValue(keyspaceName) != null)
                 {
-                    return ReplicationStrategy.FromSortedDictionary(new SortedDictionary<string, string>((configuration[keyspaceName] as Dictionary<string, object>).ToDictionary(kv => kv.Key, kv => kv.Value as string)));
+                    return ReplicationStrategy.FromSortedDictionary(new SortedDictionary<string, string>((keyspaces[keyspaceName].Linq.ToDictionary(x => x.Key, x => x.Value.Value))));
                 }
-                else if (configuration.GetValue(Configuration.DefaultKeyspaceKey) != null)
+                else if (keyspaces.GetValue(Configuration.DefaultKeyspaceKey) != null)
                 {
-                    return ReplicationStrategy.FromSortedDictionary(new SortedDictionary<string, string>((configuration[Configuration.DefaultKeyspaceKey] as Dictionary<string, object>).ToDictionary(kv => kv.Key, kv => kv.Value as string)));
+                    return ReplicationStrategy.FromSortedDictionary(new SortedDictionary<string, string>((keyspaces[Configuration.DefaultKeyspaceKey].Linq.ToDictionary(x => x.Key, x => x.Value.Value))));
                 }
                 else
                 {

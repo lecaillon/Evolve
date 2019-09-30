@@ -46,7 +46,7 @@ namespace Evolve.Tests.Configuration
         {
             var builder = new JsonCliArgsBuilder(TestContext.Evolve2JsonPath, env: "staging");
 
-            Assert.Equal("Server=srv1;Port=5432;Database=myDataBase;User Id=myUsername;Password=myPassword;", builder.ConnectionString);
+            Assert.Equal(@"Server=srv1\dbserver;Port=5432;Database=myDataBase;User Id=myUsername;Password=myPassword;", builder.ConnectionString);
             Assert.Equal("postgresql", builder.Database);
             Assert.True(new List<string>() { "migration" }.SequenceEqual(builder.Locations));
             Assert.Equal("utf-16", builder.Encoding);

@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Include="..\Evolve\Utilities\JSONParser.cs" Link="Util\JSONParser.cs" />
+    <Compile Include="..\Evolve\Utilities\SimpleJSON.cs" Link="Util\SimpleJSON.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using TinyJson;
+using SimpleJSON;
 
 namespace Evolve.MSBuild
 {
@@ -65,10 +65,9 @@ namespace Evolve.MSBuild
 
         private Dictionary<string, string> LoadConfigurationFromFile(string file)
         {
-            return File.ReadAllText(file)
-                       .FromJson<Dictionary<string, object>>()
+            return JSON.Parse(File.ReadAllText(file)).Linq
                        .Where(kv => kv.Key.StartsWith("Evolve.", StringComparison.OrdinalIgnoreCase))
-                       .ToDictionary(x => x.Key, x => x.Value.ToString(), StringComparer.OrdinalIgnoreCase);
+                       .ToDictionary(x => x.Key, x => x.Value.Value, StringComparer.OrdinalIgnoreCase);
         }
     }
 }
