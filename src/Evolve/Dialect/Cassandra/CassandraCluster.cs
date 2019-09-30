@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Linq;
 using Evolve.Connection;
 using Evolve.Metadata;
-using TinyJson;
+using SimpleJSON;
 
 namespace Evolve.Dialect.Cassandra
 {
@@ -47,20 +48,17 @@ namespace Evolve.Dialect.Cassandra
         /// </summary>
         public override bool TryAcquireApplicationLock()
         {
-            const string DefaultClusterLockKeyspaceName = "cluster_lock";
-            const string DefaultClusterLockTableName = "lock";
-
-            var clusterLockKeyspaceName = DefaultClusterLockKeyspaceName;
-            var clusterLockTableName = DefaultClusterLockTableName;
+            string clusterLockKeyspaceName = "cluster_lock";
+            string clusterLockTableName = "lock";
 
             if (Configuration.ConfigurationFileExists())
             {
-                var configuration = Configuration.GetConfiguration()
-                                                 .FromJson<Dictionary<string, Dictionary<string, object>>>()
-                                                 .GetValue("clusterLock", new Dictionary<string, object>());
+                var clusterLock = JSON.Parse(Configuration.GetConfiguration()).Linq
+                                      .SingleOrDefault(x => x.Key.Equals("clusterLock", StringComparison.OrdinalIgnoreCase)).Value?.Linq
+                                      .ToDictionary(x => x.Key, x => x.Value.Value, StringComparer.OrdinalIgnoreCase);
 
-                clusterLockKeyspaceName = configuration.GetValue("defaultClusterLockKeyspace", DefaultClusterLockKeyspaceName) as string;
-                clusterLockTableName = configuration.GetValue("defaultClusterLockTable", DefaultClusterLockTableName) as string;
+                clusterLockKeyspaceName = clusterLock.GetValue("defaultClusterLockKeyspace", clusterLockKeyspaceName);
+                clusterLockTableName = clusterLock.GetValue("defaultClusterLockTable", clusterLockTableName);
             }
 
             try
