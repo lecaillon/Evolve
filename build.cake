@@ -76,7 +76,7 @@ Task("test").Does(() =>
                                             .Append("/p:AltCoverCallContext=[Fact]|[Theory]")
                                             .Append("/p:AltCoverAssemblyFilter=Evolve.Tests|xunit.runner")
                                             .Append($"/p:AltCoverPathFilter={pathFilter}")
-                                            .Append("/p:AltCoverTypeFilter=Evolve.MSBuild.EvolveBoot|Evolve.MSBuild.AppConfigCliArgsBuilder|Evolve.Utilities.Check|TinyJson.JSONParser")
+                                            .Append("/p:AltCoverTypeFilter=Evolve.MSBuild.EvolveBoot|Evolve.MSBuild.AppConfigCliArgsBuilder|Evolve.Utilities.Check|SimpleJSON.JSON|SimpleJSON.JSONArray|SimpleJSON.JSONBool|SimpleJSON.JSONLazyCreator|SimpleJSON.JSONNode|SimpleJSON.JSONNull|SimpleJSON.JSONNumber|SimpleJSON.JSONObject|SimpleJSON.JSONString")
                                             .Append($"/p:AltCoverXmlReport={publishDirFullPath}/coverage.xml")
     });
 });
