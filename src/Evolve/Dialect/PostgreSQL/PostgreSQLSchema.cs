@@ -148,9 +148,9 @@ namespace Evolve.Dialect.PostgreSQL
                           "LEFT JOIN pg_depend dep ON dep.objid = pg_proc.oid AND dep.deptype = 'e' " +
                          $"WHERE ns.nspname = '{Name}' AND dep.objid IS NULL";
 
-            _wrappedConnection.QueryForList(sql, r => new { ProName = r.GetString(0), Args = r.GetString(1), Agg = r.GetString(2) }).ToList().ForEach(x =>
+            _wrappedConnection.QueryForList(sql, r => new { ProName = r.GetString(0), Args = r.GetString(1), Agg = r.GetBoolean(2) }).ToList().ForEach(x =>
             {
-                string objectType = x.Agg != null && x.Agg.ToLower().StartsWith("t") ? "AGGREGATE" : "FUNCTION";
+                string objectType = x.Agg ? "AGGREGATE" : "FUNCTION";
 
                 _wrappedConnection.ExecuteNonQuery($"DROP {objectType} IF EXISTS \"{Name}\".\"{Quote(x.ProName)}\" ({x.Args}) CASCADE");
             });
