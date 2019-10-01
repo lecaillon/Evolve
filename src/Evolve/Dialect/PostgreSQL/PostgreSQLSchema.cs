@@ -20,9 +20,28 @@ namespace Evolve.Dialect.PostgreSQL
 
         public override bool IsEmpty()
         {
-            string sql = $"SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '{Name}' AND table_type='BASE TABLE'";
+            string sql = $"SELECT EXISTS " +
+                          "(" +
+                          "  SELECT c.oid " +
+                          "  FROM pg_catalog.pg_class c " +
+                          "  JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace " +
+                          "  LEFT JOIN pg_catalog.pg_depend d ON d.objid = c.oid AND d.deptype = 'e' " +
+                         $"  WHERE  n.nspname = '{Name}' AND d.objid IS NULL AND c.relkind IN ('r', 'v', 'S', 't') " +
+                          " UNION ALL " +
+                          "  SELECT t.oid " +
+                          "  FROM pg_catalog.pg_type t " +
+                          "  JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace " +
+                          "  LEFT JOIN pg_catalog.pg_depend d ON d.objid = t.oid AND d.deptype = 'e' " +
+                         $"  WHERE n.nspname = '{Name}' AND d.objid IS NULL AND t.typcategory NOT IN ('A', 'C') " +
+                          " UNION ALL " +
+                          "  SELECT p.oid " +
+                          "  FROM pg_catalog.pg_proc p " +
+                          "  JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace " +
+                          "  LEFT JOIN pg_catalog.pg_depend d ON d.objid = p.oid AND d.deptype = 'e' " +
+                         $"  WHERE n.nspname = '{Name}' AND d.objid IS NULL " +
+                         $")";
 
-            return _wrappedConnection.QueryForLong(sql) == 0;
+            return !_wrappedConnection.QueryForBool(sql);
         }
 
         public override bool Create()
@@ -44,12 +63,12 @@ namespace Evolve.Dialect.PostgreSQL
             DropMaterializedViews(); // PostgreSQL >= 9.3
             DropViews();
             DropTables();
-            DropSequences();
             DropBaseTypes(true);
-            DropBaseAggregates(); // PostgreSQL < 11
             DropRoutines();
             DropEnums();
             DropDomains();
+            DropSequences();
+            DropBaseAggregates(); // PostgreSQL < 11
             DropBaseTypes(false);
 
             return true;
@@ -121,6 +140,7 @@ namespace Evolve.Dialect.PostgreSQL
             });
         }
 
+
         protected void DropRoutines()
         {
             if (Version < 110000)
@@ -174,7 +194,13 @@ namespace Evolve.Dialect.PostgreSQL
 
         protected void DropDomains()
         {
-            string sql = $"SELECT domain_name FROM information_schema.domains WHERE domain_schema = '{Name}'";
+            string sql = "SELECT t.typname " +
+                         "FROM pg_catalog.pg_type t " +
+                         "LEFT JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace " +
+                         "LEFT JOIN pg_depend dep ON dep.objid = t.oid AND dep.deptype = 'e' " +
+                         "WHERE t.typtype = 'd' " +
+                        $"AND n.nspname = '{Name}' " +
+                         "AND dep.objid IS NULL";
             _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(domain =>
             {
                 _wrappedConnection.ExecuteNonQuery($"DROP DOMAIN \"{Name}\".\"{Quote(domain)}\"");
@@ -199,8 +225,10 @@ namespace Evolve.Dialect.PostgreSQL
         {
             string sql = "SELECT t.table_name " +
                          "FROM information_schema.tables t " +
+                         "LEFT JOIN pg_depend dep ON dep.objid = (quote_ident(t.table_schema)||'.'||quote_ident(t.table_name))::regclass::oid AND dep.deptype = 'e' " +
                         $"WHERE table_schema = '{Name}' " +
                          "AND table_type='BASE TABLE' " +
+                         "AND dep.objid IS NULL " +
                          "AND NOT (SELECT EXISTS (SELECT inhrelid FROM pg_catalog.pg_inherits WHERE inhrelid = (quote_ident(t.table_schema)||'.'||quote_ident(t.table_name))::regclass::oid))";
 
             _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(table =>
