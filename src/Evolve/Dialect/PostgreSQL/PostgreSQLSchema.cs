@@ -63,12 +63,12 @@ namespace Evolve.Dialect.PostgreSQL
             DropMaterializedViews(); // PostgreSQL >= 9.3
             DropViews();
             DropTables();
-            DropSequences();
             DropBaseTypes(true);
-            DropBaseAggregates(); // PostgreSQL < 11
             DropRoutines();
             DropEnums();
             DropDomains();
+            DropSequences();
+            DropBaseAggregates(); // PostgreSQL < 11
             DropBaseTypes(false);
 
             return true;
@@ -140,20 +140,47 @@ namespace Evolve.Dialect.PostgreSQL
             });
         }
 
+
         protected void DropRoutines()
         {
-            string isAggregate = Version < 110000 ? "pg_proc.proisagg" : "pg_proc.prokind = 'a'";
-            string sql = $"SELECT proname, oidvectortypes(proargtypes) AS args, {isAggregate} as agg " +
-                          "FROM pg_proc INNER JOIN pg_namespace ns ON (pg_proc.pronamespace = ns.oid) " +
-                          "LEFT JOIN pg_depend dep ON dep.objid = pg_proc.oid AND dep.deptype = 'e' " +
-                         $"WHERE ns.nspname = '{Name}' AND dep.objid IS NULL";
-
-            _wrappedConnection.QueryForList(sql, r => new { ProName = r.GetString(0), Args = r.GetString(1), Agg = r.GetBoolean(2) }).ToList().ForEach(x =>
+            if (Version < 110000)
             {
-                string objectType = x.Agg ? "AGGREGATE" : "FUNCTION";
+                string sql = "SELECT proname, oidvectortypes(proargtypes) AS args " +
+                             "FROM pg_proc INNER JOIN pg_namespace ns ON (pg_proc.pronamespace = ns.oid) " +
+                             "LEFT JOIN pg_depend dep ON dep.objid = pg_proc.oid AND dep.deptype = 'e' " +
+                            $"WHERE pg_proc.proisagg = false AND ns.nspname = '{Name}' AND dep.objid IS NULL";
 
-                _wrappedConnection.ExecuteNonQuery($"DROP {objectType} IF EXISTS \"{Name}\".\"{Quote(x.ProName)}\" ({x.Args}) CASCADE");
-            });
+                _wrappedConnection.QueryForList(sql, r => new { ProName = r.GetString(0), Args = r.GetString(1) }).ToList().ForEach(x =>
+                {
+                    _wrappedConnection.ExecuteNonQuery($"DROP FUNCTION IF EXISTS \"{Name}\".\"{Quote(x.ProName)}\" ({x.Args}) CASCADE");
+                });
+            }
+            else
+            {
+                string sql = "SELECT proname, oidvectortypes(proargtypes) AS args, pg_proc.prokind AS kind " +
+                             "FROM pg_proc INNER JOIN pg_namespace ns ON (pg_proc.pronamespace = ns.oid) " +
+                             "LEFT JOIN pg_depend dep ON dep.objid = pg_proc.oid AND dep.deptype = 'e' " +
+                            $"WHERE ns.nspname = '{Name}' AND dep.objid IS NULL";
+
+                _wrappedConnection.QueryForList(sql, r => new { ProName = r.GetString(0), Args = r.GetString(1), Kind = r.GetChar(2) }).ToList().ForEach(x =>
+                {
+                    string objectType = null;
+                    switch (x.Kind)
+                    {
+                        case 'a': objectType = "AGGREGATE"; break;
+                        case 'f': objectType = "FUNCTION"; break;
+                        case 'p': objectType = "PROCEDURE"; break;
+                        default: break;
+                    }
+
+                    if (objectType is null)
+                    {
+                        return;
+                    }
+
+                    _wrappedConnection.ExecuteNonQuery($"DROP {objectType} IF EXISTS \"{Name}\".\"{Quote(x.ProName)}\" ({x.Args}) CASCADE");
+                });
+            }
         }
 
         protected void DropEnums()
