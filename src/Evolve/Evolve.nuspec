@@ -11,7 +11,7 @@ Every time you build your project, it will automatically ensure that your databa
     <license type="expression">MIT</license>
     <projectUrl>https://evolve-db.netlify.com</projectUrl>
     <repository type="git" url="https://github.com/lecaillon/Evolve.git" />
-    <icon>images\logo128.png</icon>
+    <iconUrl>https://raw.githubusercontent.com/lecaillon/Evolve/master/images/logo128.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <releaseNotes>- #104 Add configuration file support in Evolve CLI
 - #108 Add new command info
@@ -29,7 +29,6 @@ Every time you build your project, it will automatically ensure that your databa
     </dependencies>
   </metadata>
   <files>
-    <file src="..\..\logo128.png" target="images\" />
     <file src="bin\Release\net35\Evolve.dll" target="lib\net35" />
     <file src="bin\Release\net35\Evolve.pdb" target="lib\net35" />
     <file src="bin\Release\net461\Evolve.dll" target="lib\net461" />
