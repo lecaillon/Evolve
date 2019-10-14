@@ -11,9 +11,16 @@ Every time you build your project, it will automatically ensure that your databa
     <license type="expression">MIT</license>
     <projectUrl>https://evolve-db.netlify.com</projectUrl>
     <repository type="git" url="https://github.com/lecaillon/Evolve.git" />
-    <iconUrl>https://raw.githubusercontent.com/lecaillon/Evolve/master/images/logo128.png</iconUrl>
+    <icon>images\logo128.png</icon>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <releaseNotes></releaseNotes>
+    <releaseNotes>- #104 Add configuration file support in Evolve CLI
+- #108 Add new command info
+- #115 Add CockroachDB support
+- #121 Make migration loading case insensitive
+- #128 Improve PostgreSQL erase command
+- #126 Evolve.MSBuild json configuration file now supports special characters
+- #122 Evolve CLI displays less verbose errors
+- #120 Fix Evolve Cli wrong return code</releaseNotes>
     <tags>Evolve MSBuild Windows x64 Flyway sql database migration database-migration</tags>
     <dependencies>
       <group targetFramework="net35" />
@@ -24,6 +31,7 @@ Every time you build your project, it will automatically ensure that your databa
     </dependencies>
   </metadata>
   <files>
+    <file src="..\..\logo128.png" target="images\" />
     <file src="..\..\dist\evolve.exe" target="tools" />
     <file src="Targets\**" target="build" />
     <file src="bin\Release\net35\*.dll" target="build\net35" />
