@@ -120,6 +120,16 @@ Task("linux-publish-cli").WithCriteria(() => IsRunningOnUnix()).Does(() =>
     });
 });
 
+Task("linux-musl-publish-cli").WithCriteria(() => IsRunningOnUnix()).Does(() =>
+{
+    DotNetCorePublish("./src/Evolve.Cli", new DotNetCorePublishSettings
+    {
+        Configuration = configuration,
+        OutputDirectory = publishDir + "/cli/linux-musl-x64",
+        Runtime = "linux-musl-x64"
+    });
+});
+
 Task("win-warp-cli").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 {
     StartProcess(winWarpPacker, new ProcessSettings().WithArguments
@@ -139,6 +149,17 @@ Task("linux-warp-cli").WithCriteria(() => IsRunningOnUnix()).Does(() =>
                     .Append($"--input_dir {publishDir}/cli/linux-x64")
                     .Append($"--exec Evolve.Cli")
                     .Append($"--output {distDir}/evolve")
+    ));
+});
+
+Task("linux-musl-warp-cli").WithCriteria(() => IsRunningOnUnix()).Does(() =>
+{
+    StartProcess(linuxWarpPacker, new ProcessSettings().WithArguments
+    (
+        args => args.Append($"--arch linux-x64")
+                    .Append($"--input_dir {publishDir}/cli/linux-musl-x64")
+                    .Append($"--exec Evolve.Cli")
+                    .Append($"--output {distDir}/evolve-musl")
     ));
 });
 
@@ -208,7 +229,9 @@ Task("default")
     .IsDependentOn("win-publish-cli")
     .IsDependentOn("win-warp-cli")
     .IsDependentOn("linux-publish-cli")
+    .IsDependentOn("linux-musl-publish-cli")
     .IsDependentOn("linux-warp-cli")
+    .IsDependentOn("linux-musl-warp-cli")
     .IsDependentOn("test-cli")
     .IsDependentOn("pack-evolve.msbuild.windows.x64")
     .IsDependentOn("test-msbuild.windows.x64-for-net")
