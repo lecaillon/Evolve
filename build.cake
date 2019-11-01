@@ -126,7 +126,7 @@ Task("linux-musl-publish-cli").WithCriteria(() => IsRunningOnUnix()).Does(() =>
     {
         Configuration = configuration,
         OutputDirectory = distDir + "/linux-musl-x64",
-        Runtime = "linux-musl-x64"
+        Runtime = "linux-musl-x64",
         ArgumentCustomization = args => args.Append("/p:PublishSingleFile=true")
     });
 });
