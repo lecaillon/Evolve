@@ -8,12 +8,14 @@ This makes it an ideal tool for continuous integration / delivery.
 
 Over all Evolve embraces simplicity. Every time you build or run your project, it will automatically ensure that your database is up-to-date. Install it and forget it!
 
+Evolve is available as a NuGet lib, a dotnet tool, a MSBuild task and a standalone CLI.
+
 ## Installation
 
 | Package | Repository |
 |---------|------------|
 | Evolve | [![NuGet](https://buildstats.info/nuget/Evolve)](https://www.nuget.org/packages/Evolve) |
-| Evolve Tool | [![NuGet](https://buildstats.info/nuget/Evolve.Tool)](https://www.nuget.org/packages/Evolve.Tool/) |
+| Evolve Tool | [![NuGet](https://buildstats.info/nuget/Evolve.Tool)](https://www.nuget.org/packages/Evolve.Tool) |
 | Evolve MSBuild | [![NuGet](https://buildstats.info/nuget/Evolve.MSBuild.Windows.x64)](https://www.nuget.org/packages/Evolve.MSBuild.Windows.x64) |
 | Evolve CLI | [![NuGet](https://img.shields.io/badge/GitHub-releases-brightgreen.svg?logo=github)](https://github.com/lecaillon/Evolve/releases) |
 
