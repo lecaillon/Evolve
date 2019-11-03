@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\build\common.props" />
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>netcoreapp2.2;netcoreapp3.0</TargetFrameworks>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>evolve</ToolCommandName>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>Evolve.Tool</PackageId>
+    <Title>Database migration tool for .NET. Inspired by Flyway.</Title>
+    <Authors>Philippe Lécaillon</Authors>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Copyright>Copyright © P.Lécaillon 2019</Copyright>
+    <Description>Evolve is an easy migration tool that uses plain old sql scripts. Its purpose is to automate your database changes, and help keep those changes synchronized through all your environments and developpement teams.
+Every time you build your project, it will automatically ensure that your database is up-to-date, without having to do anything other than build. Install it and forget it !</Description>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://evolve-db.netlify.com</PackageProjectUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/lecaillon/Evolve/master/images/logo128.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/lecaillon/Evolve.git</RepositoryUrl>
+    <PackageTags>Evolve Flyway sql database migration database-migration continuous-integration continuous-delivery</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Evolve.Cli\EvolveFactory.cs" Link="EvolveFactory.cs" />
+    <Compile Include="..\Evolve.Cli\Program.cs" Link="Program.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CassandraCSharpDriver" Version="3.11.0" />
+    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.4.2" />
+    <PackageReference Include="MySqlConnector" Version="0.59.0" />
+    <PackageReference Include="Npgsql" Version="4.1.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.6.1" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.111" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Evolve\Evolve.csproj" />
+  </ItemGroup>
+
+</Project>

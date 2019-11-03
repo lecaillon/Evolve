@@ -161,6 +161,17 @@ Task("pack-evolve.msbuild.windows.x64").WithCriteria(() => IsRunningOnWindows())
     });
 });
 
+Task("pack-evolve-tool").WithCriteria(() => IsRunningOnWindows()).Does(() =>
+{
+    DotNetCorePack("./src/Evolve.Tool/", new DotNetCorePackSettings 
+    {
+        OutputDirectory = distDir,
+		Configuration = configuration,
+		NoRestore = false,
+		NoBuild = false
+    });
+});
+
 Task("test-msbuild.windows.x64-for-net").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 {
     foreach(var file in GetFiles("./test-msbuild-package/Windows.x64/**/packages.config"))
@@ -213,6 +224,7 @@ Task("default")
     .IsDependentOn("pack-evolve.msbuild.windows.x64")
     .IsDependentOn("test-msbuild.windows.x64-for-net")
     .IsDependentOn("test-msbuild.windows.x64-for-netcore")
-    .IsDependentOn("pack-evolve");
+    .IsDependentOn("pack-evolve")
+	.IsDependentOn("pack-evolve-tool");
 
 RunTarget(target);
