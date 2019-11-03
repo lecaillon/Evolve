@@ -25,8 +25,4 @@ You can read the latest documentation at [https://evolve-db.netlify.com](https:/
 - [x] MySQL / MariaDB
 - [x] SQLite
 - [x] Cassandra
-
-## Supported Frameworks
-- [x] .NET 3.5+
-- [x] .NET 4.6.1+
-- [x] .NET Standard 2.0
+- [x] CockroachDB
