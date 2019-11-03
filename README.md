@@ -8,7 +8,7 @@ This makes it an ideal tool for continuous integration / delivery.
 
 Over all Evolve embraces simplicity. Every time you build or run your project, it will automatically ensure that your database is up-to-date. Install it and forget it!
 
-Evolve is available as a NuGet lib, a dotnet tool, a MSBuild task and a standalone CLI.
+Evolve is available as a NuGet **lib**, a **dotnet tool**, a **MSBuild task** and a standalone **CLI**.
 
 ## Installation
 
