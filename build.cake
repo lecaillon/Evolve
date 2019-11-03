@@ -1,4 +1,4 @@
-#tool nuget:?package=ReportGenerator&version=4.2.20
+#tool nuget:?package=ReportGenerator&version=4.3.5
 
 ///////////////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -74,7 +74,7 @@ Task("test").Does(() =>
                                             .Append("/p:AltCover=true")
                                             .Append("/p:AltCoverForce=true")
                                             .Append("/p:AltCoverCallContext=[Fact]|[Theory]")
-                                            .Append("/p:AltCoverAssemblyFilter=Evolve.Tests|xunit.runner")
+                                            .Append("/p:AltCoverAssemblyFilter=Evolve.Tests|xunit.runner|MySqlConnector|xunit.assert|xunit.core|xunit.execution.dotnet")
                                             .Append($"/p:AltCoverPathFilter={pathFilter}")
                                             .Append("/p:AltCoverTypeFilter=Evolve.MSBuild.EvolveBoot|Evolve.MSBuild.AppConfigCliArgsBuilder|Evolve.Utilities.Check|SimpleJSON.JSON|SimpleJSON.JSONArray|SimpleJSON.JSONBool|SimpleJSON.JSONLazyCreator|SimpleJSON.JSONNode|SimpleJSON.JSONNull|SimpleJSON.JSONNumber|SimpleJSON.JSONObject|SimpleJSON.JSONString")
                                             .Append($"/p:AltCoverXmlReport={publishDirFullPath}/coverage.xml")
