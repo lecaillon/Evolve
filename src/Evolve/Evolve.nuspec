@@ -14,7 +14,7 @@ Every time you build your project, it will automatically ensure that your databa
     <iconUrl>https://raw.githubusercontent.com/lecaillon/Evolve/master/images/logo128.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <releaseNotes></releaseNotes>
-    <tags>Evolve Flyway sql database migration database-migration continuous-integration continuous-delivery</tags>
+    <tags>evolve flyway sql database migration mysql sqlserver cassandra mariadb sqlite postgresql cockroachdb</tags>
     <dependencies>
       <group targetFramework="net35" />
       <group targetFramework="net461" />

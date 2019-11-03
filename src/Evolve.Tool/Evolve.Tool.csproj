@@ -20,7 +20,7 @@ Every time you build your project, it will automatically ensure that your databa
     <PackageProjectUrl>https://evolve-db.netlify.com</PackageProjectUrl>
     <PackageIconUrl>https://raw.githubusercontent.com/lecaillon/Evolve/master/images/logo128.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/lecaillon/Evolve.git</RepositoryUrl>
-    <PackageTags>Evolve Flyway sql database migration database-migration continuous-integration continuous-delivery</PackageTags>
+    <PackageTags>evolve flyway dotnet tool sql database migration mysql sqlserver cassandra mariadb sqlite postgresql cockroachdb</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
