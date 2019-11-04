@@ -20,7 +20,10 @@ namespace Evolve.Dialect.SQLServer
 
         private IEnumerable<string> ParseBatchDelimiter(string sqlScript)
         {
-            if (sqlScript.IsNullOrWhiteSpace()) return new List<string>();
+            if (sqlScript.IsNullOrWhiteSpace())
+            {
+                return new List<string>();
+            }
 
             // Split by delimiter
             var statements = Regex.Split(sqlScript, $@"^[\t ]*{BatchDelimiter}(?!\w)[\t ]*\d*[\t ]*(?:--.*)?", RegexOptions.Multiline | RegexOptions.IgnoreCase);
