@@ -17,10 +17,7 @@ namespace Evolve.Dialect
                 return new List<SqlStatement>();
             }
 
-            return new[]
-            {
-                new SqlStatement(sqlScript, transactionEnabled)
-            };
+            return new[] { new SqlStatement(sqlScript, transactionEnabled) };
         }
     }
 }
