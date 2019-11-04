@@ -79,14 +79,14 @@ namespace Evolve.Tests.Migration
 
         [Fact]
         [Category(Test.Migration)]
-        public void IsTransactionEnabled_should_be_false_when_found_in_the_first_line_of_a_script()
+        public void IsTransactionEnabled_should_be_false_when_tx_off_is_found_in_the_script()
         {
             Assert.False(BuildFileMigrationScript(PostgreSQL.VacuumScriptPath).IsTransactionEnabled());
         }
 
         [Fact]
         [Category(Test.Migration)]
-        public void IsTransactionEnabled_should_be_true_when_not_found_in_the_script()
+        public void IsTransactionEnabled_should_be_true_when_tx_off_is_not_found_in_the_script()
         {
             Assert.True(BuildFileMigrationScript(SQLite.ChinookScriptPath).IsTransactionEnabled());
         }
