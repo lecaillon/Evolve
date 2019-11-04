@@ -13,7 +13,7 @@ namespace Evolve.Dialect.Cassandra
 
         public override string BatchDelimiter => null;
 
-        protected override IEnumerable<SqlStatement> Parse(string sqlScript)
+        protected override IEnumerable<SqlStatement> Parse(string sqlScript, bool transactionEnabled)
         {
             int lineNumber = 0;
             int currentStatementLineStart = 0;

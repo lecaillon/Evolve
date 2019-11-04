@@ -12,10 +12,9 @@ namespace Evolve.Dialect.SQLServer
         /// <inheritdoc />
         public override string BatchDelimiter => "GO";
 
-        protected override IEnumerable<SqlStatement> Parse(string migrationScript)
+        protected override IEnumerable<SqlStatement> Parse(string migrationScript, bool transactionEnabled)
         {
-            return ParseBatchDelimiter(migrationScript)
-                .Select(x => new SqlStatement(sql: x, mustExecuteInTransaction: true));
+            return ParseBatchDelimiter(migrationScript).Select(sql => new SqlStatement(sql, transactionEnabled));
         }
 
         private IEnumerable<string> ParseBatchDelimiter(string sqlScript)

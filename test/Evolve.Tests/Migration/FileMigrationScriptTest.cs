@@ -77,6 +77,20 @@ namespace Evolve.Tests.Migration
             Assert.NotEqual(File.ReadAllText(CrLfScriptPath), File.ReadAllText(LfScriptPath));
         }
 
+        [Fact]
+        [Category(Test.Migration)]
+        public void IsTransactionEnabled_should_be_false_when_found_in_the_first_line_of_a_script()
+        {
+            Assert.False(BuildFileMigrationScript(PostgreSQL.VacuumScriptPath).IsTransactionEnabled());
+        }
+
+        [Fact]
+        [Category(Test.Migration)]
+        public void IsTransactionEnabled_should_be_true_when_not_found_in_the_script()
+        {
+            Assert.True(BuildFileMigrationScript(SQLite.ChinookScriptPath).IsTransactionEnabled());
+        }
+
         /// <summary>
         ///     Calculate the checksum with the pre v1.8.0 version.
         /// </summary>

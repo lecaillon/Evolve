@@ -36,9 +36,9 @@ namespace Evolve.Dialect
                 sql = sql.Replace(entry.Key, entry.Value);
             }
 
-            return Parse(sql);
+            return Parse(sql, migrationScript.IsTransactionEnabled());
         }
 
-        protected abstract IEnumerable<SqlStatement> Parse(string sqlScript);
+        protected abstract IEnumerable<SqlStatement> Parse(string sqlScript, bool transactionEnabled);
     }
 }
