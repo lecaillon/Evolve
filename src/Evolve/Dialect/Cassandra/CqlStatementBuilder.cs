@@ -24,7 +24,7 @@ namespace Evolve.Dialect.Cassandra
 
                 if (line.TrimEnd(' ').EndsWith(StatementTerminationCharacter))
                 {
-                    yield return new SqlStatement(sb.ToString(), false, currentStatementLineStart);
+                    yield return new SqlStatement(sb.ToString(), mustExecuteInTransaction: false, currentStatementLineStart);
                     currentStatementLineStart = lineNumber + 1;
                     sb = new StringBuilder();
                 }
@@ -38,7 +38,9 @@ namespace Evolve.Dialect.Cassandra
                 {
                     string line;
                     while ((line = sr.ReadLine()) != null)
+                    {
                         yield return line;
+                    }
                 }
             }
         }
