@@ -70,10 +70,10 @@ namespace Evolve.Tests
             public static string ResourcesFolder => Path.Combine(ProjectFolder, "Integration/PostgreSQL/Resources");
             public static string SqlScriptsFolder => Path.Combine(ResourcesFolder, "Sql_Scripts");
             public static string MigrationFolder => Path.Combine(SqlScriptsFolder, "Migration");
+            public static string VacuumScriptPath => Path.Combine(MigrationFolder, "R__Vacuum.sql");
             public static string Migration11Folder => Path.Combine(SqlScriptsFolder, "Migration11"); // PostgreSQL 11
             public static string ChecksumMismatchFolder => Path.Combine(SqlScriptsFolder, "Checksum_mismatch");
             public static string RepeatableFolder => Path.Combine(SqlScriptsFolder, "Repeatable");
-            public static string VacuumScriptPath => Path.Combine(RepeatableFolder, "R__Vacuum.sql");
             public static string OutOfOrderFolder => Path.Combine(SqlScriptsFolder, "OutOfOrder");
         }
 
