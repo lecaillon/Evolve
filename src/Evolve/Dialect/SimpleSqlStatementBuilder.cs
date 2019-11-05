@@ -10,17 +10,14 @@ namespace Evolve.Dialect
     {
         public override string BatchDelimiter => null;
 
-        protected override IEnumerable<SqlStatement> Parse(string sqlScript)
+        protected override IEnumerable<SqlStatement> Parse(string sqlScript, bool transactionEnabled)
         {
             if (sqlScript.IsNullOrWhiteSpace())
             {
                 return new List<SqlStatement>();
             }
 
-            return new List<SqlStatement>
-            {
-                new SqlStatement(sqlScript, mustExecuteInTransaction: true)
-            };
+            return new[] { new SqlStatement(sqlScript, transactionEnabled) };
         }
     }
 }

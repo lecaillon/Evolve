@@ -12,15 +12,17 @@ namespace Evolve.Dialect.SQLServer
         /// <inheritdoc />
         public override string BatchDelimiter => "GO";
 
-        protected override IEnumerable<SqlStatement> Parse(string migrationScript)
+        protected override IEnumerable<SqlStatement> Parse(string migrationScript, bool transactionEnabled)
         {
-            return ParseBatchDelimiter(migrationScript)
-                .Select(x => new SqlStatement(sql: x, mustExecuteInTransaction: true));
+            return ParseBatchDelimiter(migrationScript).Select(sql => new SqlStatement(sql, transactionEnabled));
         }
 
         private IEnumerable<string> ParseBatchDelimiter(string sqlScript)
         {
-            if (sqlScript.IsNullOrWhiteSpace()) return new List<string>();
+            if (sqlScript.IsNullOrWhiteSpace())
+            {
+                return new List<string>();
+            }
 
             // Split by delimiter
             var statements = Regex.Split(sqlScript, $@"^[\t ]*{BatchDelimiter}(?!\w)[\t ]*\d*[\t ]*(?:--.*)?", RegexOptions.Multiline | RegexOptions.IgnoreCase);

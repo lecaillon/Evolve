@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using Evolve.Metadata;
@@ -13,7 +14,7 @@ namespace Evolve.Migration
     {
         private const string IncorrectMigrationChecksum = "Validate failed: invalid checksum for migration: {0}.";
 
-        public MigrationScript(string version, string description, string name, string content, MetadataType type) 
+        protected MigrationScript(string version, string description, string name, string content, MetadataType type) 
             : base(version, description, name, type)
         {
             Content = Check.NotNull(content, nameof(content));
@@ -23,6 +24,23 @@ namespace Evolve.Migration
         ///     Gets the raw content of a migration script.
         /// </summary>
         public string Content { get; }
+
+        /// <summary>
+        ///     Returns false if the special comment "evolve-tx-off" is found in the first line of the script, true otherwise.
+        /// </summary>
+        public virtual bool IsTransactionEnabled()
+        {
+            if (Content.IsNullOrWhiteSpace())
+            {
+                return true;
+            }
+
+            using (var file = new StringReader(Content))
+            {
+                string first = file.ReadLine();
+                return first is null ? true : first.IndexOf("evolve-tx-off", StringComparison.OrdinalIgnoreCase) == -1;
+            }
+        }
 
         /// <summary>
         ///     Validates the <paramref name="checksum"/> against the actual migration one.
