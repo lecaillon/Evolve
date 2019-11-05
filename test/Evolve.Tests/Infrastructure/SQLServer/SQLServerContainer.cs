@@ -21,7 +21,7 @@ namespace Evolve.Tests.Infrastructure
         {
             _container = new DockerContainerBuilder(new DockerContainerBuilderOptions
             {
-                FromImage = "docker pull mcr.microsoft.com/mssql/server",
+                FromImage = "mcr.microsoft.com/mssql/server",
                 Tag = "latest",
                 Name = "mssql-evolve",
                 Env = new[] { $"ACCEPT_EULA=Y", $"SA_PASSWORD={DbPwd}" },
