@@ -20,7 +20,7 @@ namespace Evolve
     {
         #region Fields
 
-        private readonly IDbConnection _userDbConnection;
+        private readonly IDbConnection _userCnn;
         private readonly Action<string> _log;
 
         #endregion
@@ -32,7 +32,7 @@ namespace Evolve
         /// <param name="logDelegate"> An optional logger. </param>
         public Evolve(IDbConnection dbConnection, Action<string> logDelegate = null)
         {
-            _userDbConnection = Check.NotNull(dbConnection, nameof(dbConnection));
+            _userCnn = Check.NotNull(dbConnection, nameof(dbConnection));
             _log = logDelegate ?? new Action<string>((msg) => { });
         }
 
@@ -112,25 +112,22 @@ namespace Evolve
         {
             Command = CommandOptions.Info;
 
-            var db = InitiateDatabaseConnection();
             try
             {
+                using var db = InitiateDatabaseConnection();
                 var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
                 var rows = metadata.GetAllMetadata().ToList();
                 var table = new ConsoleTable("Id", "Version", "Category", "Description", "Installed on", "Installed by", "Success", "Checksum")
                     .Configure(o => o.EnableCount = false);
                 rows.ForEach(x => table.AddRow(x.Id, x.Version, x.Type, x.Description, x.InstalledOn, x.InstalledBy, x.Success, x.Checksum));
                 _log(table.ToStringAlternative());
+
                 return rows;
             }
             catch
             {
                 _log("Evolve metadata table cannot be found.");
                 return null;
-            }
-            finally
-            {
-                db.CloseConnection();
             }
         }
 
@@ -336,7 +333,7 @@ namespace Evolve
             NbSchemaToEraseSkipped = 0;
             TotalTimeElapsedInMs = 0;
 
-            var db = InitiateDatabaseConnection();
+            using var db = InitiateDatabaseConnection();
 
             if (EnableClusterMode)
             {
@@ -366,8 +363,6 @@ namespace Evolve
                         _log("Error trying to release Evolve lock.");
                     }
                 }
-
-                db.CloseConnection();
             }
         }
 
@@ -416,14 +411,13 @@ namespace Evolve
 
         private DatabaseHelper InitiateDatabaseConnection()
         {
-            var connectionProvider = new ConnectionProvider(_userDbConnection);             // Get a database connection provider
-            var evolveConnection = connectionProvider.GetConnection();                      // Get a connection to the database
-            evolveConnection.Validate();                                                    // Validate the reliabilty of the initiated connection
-            var dbmsType = evolveConnection.GetDatabaseServerType();                        // Get the DBMS type
-            var db = DatabaseHelperFactory.GetDatabaseHelper(dbmsType, evolveConnection);   // Get the DatabaseHelper
-            if (Schemas == null || Schemas.Count() == 0)
-            {
-                Schemas = new List<string> { db.GetCurrentSchemaName() };                   // If no schema, get the one associated to the datasource connection
+            var evolveCnn = new WrappedConnection(_userCnn).Validate();
+            var dbmsType = evolveCnn.GetDatabaseServerType();
+            var db = DatabaseHelperFactory.GetDatabaseHelper(dbmsType, evolveCnn);
+
+            if (Schemas is null || Schemas.Count() == 0)
+            { // If no schema, get the one associated to the datasource connection
+                Schemas = new[] { db.GetCurrentSchemaName() };
             }
 
             if (Command != CommandOptions.Info)

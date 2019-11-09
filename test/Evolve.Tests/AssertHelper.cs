@@ -171,11 +171,10 @@ namespace Evolve.Tests
             return db;
         }
 
-        public static DatabaseHelper AssertCloseConnection(this DatabaseHelper db)
+        public static void AssertCloseConnection(this DatabaseHelper db)
         {
-            db.CloseConnection();
+            db.Dispose();
             Assert.True(db.WrappedConnection.DbConnection.State == ConnectionState.Closed, "Database connection should be closed.");
-            return db;
         }
 
         public static Evolve AssertMigrateIsSuccessful(this Evolve evolve, IDbConnection cnn, int expectedNbMigration, Action<Evolve> arrange = null, params string[] locations)
