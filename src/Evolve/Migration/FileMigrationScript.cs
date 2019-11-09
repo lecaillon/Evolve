@@ -7,7 +7,7 @@ using Evolve.Utilities;
 
 namespace Evolve.Migration
 {
-    public class FileMigrationScript : MigrationScript
+    internal class FileMigrationScript : MigrationScript
     {
         private const string IncorrectMigrationChecksum = "Validate failed: invalid checksum for migration: {0}.";
         private const string IncorrectMigrationType = "File migration {0} must be of type MetadataType.Migration or MetadataType.RepeatableMigration";

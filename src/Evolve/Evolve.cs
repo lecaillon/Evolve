@@ -4,6 +4,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using ConsoleTables;
@@ -14,6 +15,7 @@ using Evolve.Metadata;
 using Evolve.Migration;
 using Evolve.Utilities;
 
+[assembly: InternalsVisibleTo("Evolve.Tests")]
 namespace Evolve
 {
     public class Evolve : IEvolveConfiguration

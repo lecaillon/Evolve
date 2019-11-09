@@ -8,7 +8,7 @@ using Evolve.Utilities;
 
 namespace Evolve.Migration
 {
-    public class FileMigrationLoader : IMigrationLoader
+    internal class FileMigrationLoader : IMigrationLoader
     {
         private const string InvalidMigrationScriptLocation = "Invalid migration script location: {0}.";
         private readonly IEnumerable<string> _locations;

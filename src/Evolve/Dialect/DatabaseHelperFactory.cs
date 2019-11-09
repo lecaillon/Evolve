@@ -11,7 +11,7 @@ using Evolve.Utilities;
 
 namespace Evolve.Dialect
 {
-    public static class DatabaseHelperFactory
+    internal static class DatabaseHelperFactory
     {
         private const string UnknownDBMS = "Unknown DBMS {0}.";
 

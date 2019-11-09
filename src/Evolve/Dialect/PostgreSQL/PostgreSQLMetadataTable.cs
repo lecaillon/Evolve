@@ -5,7 +5,7 @@ using Evolve.Migration;
 
 namespace Evolve.Dialect.PostgreSQL
 {
-    public class PostgreSQLMetadataTable : MetadataTable
+    internal class PostgreSQLMetadataTable : MetadataTable
     {
         /// <summary>
         ///     Constructor.

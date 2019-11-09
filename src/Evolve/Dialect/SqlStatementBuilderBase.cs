@@ -8,7 +8,7 @@ namespace Evolve.Dialect
     ///     A base class used to parse a SQL script and return a list of sql statements.
     ///     Each statement can then be executed depending its own database constraints,enlisted or not in a transaction.
     /// </summary>
-    public abstract class SqlStatementBuilderBase
+    internal abstract class SqlStatementBuilderBase
     {
         /// <summary>
         ///     Gets the database bacth delimiter.

@@ -4,7 +4,7 @@ using Evolve.Migration;
 
 namespace Evolve.Dialect.SQLite
 {
-    public class SQLiteMetadataTable : MetadataTable
+    internal class SQLiteMetadataTable : MetadataTable
     {
         /// <summary>
         ///     Constructor.

@@ -10,7 +10,7 @@ using static Evolve.Tests.TestContext;
 
 namespace Evolve.Tests
 {
-    public static class AssertHelper
+    internal static class AssertHelper
     {
         public static WrappedConnection AssertDatabaseServerType(this WrappedConnection wcnn, DBMS expectedDBMS)
         {

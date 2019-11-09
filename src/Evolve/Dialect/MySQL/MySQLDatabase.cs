@@ -4,7 +4,7 @@ using Evolve.Metadata;
 
 namespace Evolve.Dialect.MySQL
 {
-    public class MySQLDatabase : DatabaseHelper
+    internal class MySQLDatabase : DatabaseHelper
     {
         private const string LOCK_ID = "Evolve";
 

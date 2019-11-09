@@ -8,7 +8,7 @@ namespace Evolve.Utilities
     /// <summary>
     /// Static convenience methods to check that a method or a constructor is invoked with proper parameter or not.
     /// </summary>
-    public static class Check
+    internal static class Check
     {
         private const string ArgumentIsEmpty = "The string cannot be empty.";
         private const string CollectionArgumentIsEmpty = "The collection must contain at least one element.";

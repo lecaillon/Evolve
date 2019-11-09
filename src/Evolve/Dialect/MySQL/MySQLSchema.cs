@@ -4,7 +4,7 @@ using Evolve.Connection;
 
 namespace Evolve.Dialect.MySQL
 {
-    public class MySQLSchema : Schema
+    internal class MySQLSchema : Schema
     {
         public MySQLSchema(string schemaName, WrappedConnection wrappedConnection) : base(schemaName, wrappedConnection)
         {

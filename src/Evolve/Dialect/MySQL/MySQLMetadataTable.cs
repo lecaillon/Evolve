@@ -4,7 +4,7 @@ using Evolve.Migration;
 
 namespace Evolve.Dialect.MySQL
 {
-    public class MySQLMetadataTable : MetadataTable
+    internal class MySQLMetadataTable : MetadataTable
     {
         /// <summary>
         ///     Constructor.

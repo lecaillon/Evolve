@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Evolve
 {
-    public static class MiscEx
+    internal static class MiscEx
     {
         /// <summary>
         ///     Truncates a string to be no longer than a certain length.

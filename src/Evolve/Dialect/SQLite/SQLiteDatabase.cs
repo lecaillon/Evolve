@@ -3,7 +3,7 @@ using Evolve.Metadata;
 
 namespace Evolve.Dialect.SQLite
 {
-    public class SQLiteDatabase : DatabaseHelper
+    internal class SQLiteDatabase : DatabaseHelper
     {
         public SQLiteDatabase(WrappedConnection wrappedConnection) : base(wrappedConnection)
         {

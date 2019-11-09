@@ -7,7 +7,7 @@ namespace Evolve.Dialect.SQLServer
     /// <summary>
     ///     A SQL Server dedicated builder which handles the statement delimiter GO.
     /// </summary>
-    public class SQLServerStatementBuilder : SqlStatementBuilderBase
+    internal class SQLServerStatementBuilder : SqlStatementBuilderBase
     {
         /// <inheritdoc />
         public override string BatchDelimiter => "GO";

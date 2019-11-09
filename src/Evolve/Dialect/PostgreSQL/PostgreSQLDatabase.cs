@@ -3,7 +3,7 @@ using Evolve.Metadata;
 
 namespace Evolve.Dialect.PostgreSQL
 {
-    public class PostgreSQLDatabase : DatabaseHelper
+    internal class PostgreSQLDatabase : DatabaseHelper
     {
         private const int LOCK_ID = 12345;
 

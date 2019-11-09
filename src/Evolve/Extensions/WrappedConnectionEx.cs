@@ -7,7 +7,7 @@ using Evolve.Utilities;
 
 namespace Evolve
 {
-    public static class WrappedConnectionEx
+    internal static class WrappedConnectionEx
     {
         private const string DBMSNotSupported = "Connection to this DBMS is not supported.";
 

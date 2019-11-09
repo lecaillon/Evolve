@@ -3,7 +3,7 @@ using Evolve.Connection;
 
 namespace Evolve.Dialect.CockroachDB
 {
-    public class CockroachDBDatabase : Schema
+    internal class CockroachDBDatabase : Schema
     {
         public CockroachDBDatabase(string schemaName, WrappedConnection wrappedConnection)
             : base(schemaName, wrappedConnection)
