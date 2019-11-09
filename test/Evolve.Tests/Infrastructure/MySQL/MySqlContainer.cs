@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using MySql.Data.MySqlClient;
 
 namespace Evolve.Tests.Infrastructure
@@ -12,11 +13,13 @@ namespace Evolve.Tests.Infrastructure
         public const string DbUser = "root";
 
         private DockerContainer _container;
+        private bool _disposedValue = false;
 
         public string Id => _container?.Id;
         public string CnxStr => $"Server=127.0.0.1;Port={HostPort};Database={DbName};Uid={DbUser};Pwd={DbPwd};SslMode=none;Allow User Variables=True";
         public int TimeOutInSec => 10;
 
+        [SuppressMessage("Qualité du code", "IDE0068: Utilisez le modèle de suppression recommandé")]
         public bool Start(bool fromScratch = false)
         {
             _container = new DockerContainerBuilder(new DockerContainerBuilderOptions
@@ -35,6 +38,22 @@ namespace Evolve.Tests.Infrastructure
 
         public IDbConnection CreateDbConnection() => new MySqlConnection(CnxStr);
 
-        public void Dispose() => _container?.Dispose();
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposedValue)
+            {
+                if (disposing)
+                {
+                    _container?.Dispose();
+                }
+
+                _disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
     }
 }

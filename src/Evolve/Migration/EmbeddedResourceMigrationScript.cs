@@ -13,11 +13,17 @@ namespace Evolve.Migration
             : base(version, 
                    description, 
                    name, 
-                   content: new StreamReader(content, encoding ?? Encoding.UTF8).ReadToEnd(),
+                   content: ReadContent(content, encoding),
                    type == MetadataType.Migration || type == MetadataType.RepeatableMigration 
                        ? type 
                        : throw new NotSupportedException(string.Format(IncorrectMigrationType, name)))
         {
+        }
+
+        private static string ReadContent(Stream content, Encoding encoding)
+        {
+            using var reader = new StreamReader(content, encoding ?? Encoding.UTF8);
+            return reader.ReadToEnd();
         }
     }
 }

@@ -96,14 +96,10 @@ namespace Evolve.Tests.Migration
         /// </summary>
         private string FallbackCheck(string path)
         {
-            using (var md5 = MD5.Create())
-            {
-                using (FileStream stream = File.OpenRead(path))
-                {
-                    byte[] checksum = md5.ComputeHash(stream);
-                    return BitConverter.ToString(checksum).Replace("-", string.Empty);
-                }
-            }
+            using var md5 = MD5.Create();
+            using FileStream stream = File.OpenRead(path);
+            byte[] checksum = md5.ComputeHash(stream);
+            return BitConverter.ToString(checksum).Replace("-", string.Empty);
         }
     }
 }

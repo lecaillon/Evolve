@@ -18,7 +18,7 @@ namespace Evolve.Dialect.Cassandra
             int lineNumber = 0;
             int currentStatementLineStart = 0;
             var sb = new StringBuilder();
-            foreach (var line in getLines(sqlScript))
+            foreach (var line in GetLines(sqlScript))
             {
                 sb.Append(line + Environment.NewLine);
 
@@ -32,15 +32,13 @@ namespace Evolve.Dialect.Cassandra
                 lineNumber++;
             }
 
-            IEnumerable<string> getLines(string s)
+            static IEnumerable<string> GetLines(string s)
             {
-                using (var sr = new StringReader(s))
+                using var sr = new StringReader(s);
+                string line;
+                while ((line = sr.ReadLine()) != null)
                 {
-                    string line;
-                    while ((line = sr.ReadLine()) != null)
-                    {
-                        yield return line;
-                    }
+                    yield return line;
                 }
             }
         }

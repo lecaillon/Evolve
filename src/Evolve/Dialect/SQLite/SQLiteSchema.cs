@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Evolve.Connection;
 
@@ -6,13 +7,14 @@ namespace Evolve.Dialect.SQLite
 {
     internal class SQLiteSchema : Schema
     {
-        private static List<string> IgnoredSystemTableNames = new List<string> { "android_metadata", "sqlite_sequence" };
-        private static List<string> UndroppableTableNames = new List<string> { "sqlite_sequence" };
+        private static readonly List<string> IgnoredSystemTableNames = new List<string> { "android_metadata", "sqlite_sequence" };
+        private static readonly List<string> UndroppableTableNames = new List<string> { "sqlite_sequence" };
 
         public SQLiteSchema(WrappedConnection wrappedConnection) : base("main", wrappedConnection)
         {
         }
 
+        [SuppressMessage("Design", "CA1031: Do not catch general exception types")]
         public override bool IsExists()
         {
             try

@@ -8,7 +8,7 @@ namespace Evolve.Migration
     {
         private const string InvalidObjectType = "Object must be of type MigrationBase.";
 
-        public MigrationBase(string version, string description, string name, MetadataType type)
+        protected MigrationBase(string version, string description, string name, MetadataType type)
         {
             Description = Check.NotNullOrEmpty(description, nameof(description));
             Name = Check.NotNull(name, nameof(name));
@@ -54,9 +54,9 @@ namespace Evolve.Migration
 
         public static bool operator ==(MigrationBase operand1, MigrationBase operand2)
         {
-            if (ReferenceEquals(operand1, null))
+            if (operand1 is null)
             {
-                return ReferenceEquals(operand2, null);
+                return operand2 is null;
             }
 
             return operand1.Equals(operand2);

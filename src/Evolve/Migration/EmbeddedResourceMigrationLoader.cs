@@ -33,7 +33,7 @@ namespace Evolve.Migration
             Check.NotNullOrEmpty(suffix, nameof(suffix)); // .sql
 
             var migrations = new List<EmbeddedResourceMigrationScript>();
-            encoding = encoding ?? Encoding.UTF8;
+            encoding ??= Encoding.UTF8;
 
             foreach (var assembly in _assemblies)
             {
@@ -70,7 +70,7 @@ namespace Evolve.Migration
             Check.NotNullOrEmpty(suffix, nameof(suffix)); // .sql
 
             var migrations = new List<EmbeddedResourceMigrationScript>();
-            encoding = encoding ?? Encoding.UTF8;
+            encoding ??= Encoding.UTF8;
 
             foreach (var assembly in _assemblies)
             {

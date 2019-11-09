@@ -41,23 +41,29 @@ namespace Evolve.Migration
 
         public int CompareTo(MigrationVersion other)
         {
-            if (other == null) return 1;
-
-            using (IEnumerator<long> e1 = VersionParts.GetEnumerator())
-            using (IEnumerator<long> e2 = other.VersionParts.GetEnumerator())
+            if (other is null)
             {
-                while (e1.MoveNext())
-                {
-                    if (!e2.MoveNext())
-                        return 1;
-
-                    if (e1.Current.CompareTo(e2.Current) == 0)
-                        continue;
-
-                    return e1.Current.CompareTo(e2.Current);
-                }
-                return e2.MoveNext() ? -1 : 0;
+                return 1;
             }
+
+            using IEnumerator<long> e1 = VersionParts.GetEnumerator();
+            using IEnumerator<long> e2 = other.VersionParts.GetEnumerator();
+            while (e1.MoveNext())
+            {
+                if (!e2.MoveNext())
+                {
+                    return 1;
+                }
+
+                if (e1.Current.CompareTo(e2.Current) == 0)
+                {
+                    continue;
+                }
+
+                return e1.Current.CompareTo(e2.Current);
+            }
+
+            return e2.MoveNext() ? -1 : 0;
         }
 
         public int CompareTo(object obj)
@@ -76,9 +82,9 @@ namespace Evolve.Migration
 
         public static bool operator ==(MigrationVersion operand1, MigrationVersion operand2)
         {
-            if (ReferenceEquals(operand1, null))
+            if (operand1 is null)
             {
-                return ReferenceEquals(operand2, null);
+                return operand2 is null;
             }
 
             return operand1.Equals(operand2);

@@ -23,7 +23,7 @@ namespace Evolve.Tests
 
     [TraitDiscoverer("Evolve.Tests.CategoryDiscover", "Evolve.Tests")]
     [AttributeUsage(AttributeTargets.Method)]
-    public class CategoryAttribute : Attribute, ITraitAttribute
+    public sealed class CategoryAttribute : Attribute, ITraitAttribute
     {
         public CategoryAttribute(params Test[] categories)
         {

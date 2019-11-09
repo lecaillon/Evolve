@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Evolve
 {
+    [SuppressMessage("Design", "CA1032: Implement standard exception constructors")]
     public class EvolveSqlException : EvolveException
     {
         public EvolveSqlException(string sql, Exception innerEx) 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Docker.DotNet;
@@ -7,10 +8,12 @@ using Docker.DotNet.Models;
 
 namespace Evolve.Tests.Infrastructure
 {
-    internal class DockerContainerBuilder
+    internal class DockerContainerBuilder : IDisposable
     {
         private readonly DockerClient _client;
+        private bool _disposedValue = false;
 
+        [SuppressMessage("Qualité du code", "IDE0067: Supprimer les objets avant la mise hors de portée")]
         public DockerContainerBuilder(DockerContainerBuilderOptions setupOptions)
         {
             FromImage = setupOptions.FromImage;
@@ -48,7 +51,7 @@ namespace Evolve.Tests.Infrastructure
 
             if (container != null && RemovePreviousContainer)
             {
-                var oldContainer = new DockerContainer(container.ID);
+                using var oldContainer = new DockerContainer(container.ID);
                 oldContainer.Stop();
                 oldContainer.Remove();
             }
@@ -72,6 +75,24 @@ namespace Evolve.Tests.Infrastructure
             }).ConfigureAwait(false).GetAwaiter().GetResult();
 
             return new DockerContainer(newContainer.ID);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposedValue)
+            {
+                if (disposing)
+                {
+                    _client.Dispose();
+                }
+
+                _disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
         }
     }
 }

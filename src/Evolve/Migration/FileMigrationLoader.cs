@@ -29,7 +29,7 @@ namespace Evolve.Migration
             Check.NotNullOrEmpty(suffix, nameof(suffix)); // .sql
 
             var migrations = new List<FileMigrationScript>();
-            encoding = encoding ?? Encoding.UTF8;
+            encoding ??= Encoding.UTF8;
 
             foreach (string location in _locations.Distinct(StringComparer.OrdinalIgnoreCase)) // Remove duplicate locations if any
             {
@@ -63,7 +63,7 @@ namespace Evolve.Migration
             Check.NotNullOrEmpty(suffix, nameof(suffix)); // .sql
 
             var migrations = new List<FileMigrationScript>();
-            encoding = encoding ?? Encoding.UTF8;
+            encoding ??= Encoding.UTF8;
 
             foreach (string location in _locations.Distinct(StringComparer.OrdinalIgnoreCase)) // Remove duplicate locations if any
             {

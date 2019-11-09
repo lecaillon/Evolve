@@ -129,6 +129,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -161,21 +162,21 @@ namespace SimpleJSON
         public struct Enumerator
         {
             private enum Type { None, Array, Object }
-            private Type type;
+            private readonly Type type;
             private Dictionary<string, JSONNode>.Enumerator m_Object;
             private List<JSONNode>.Enumerator m_Array;
             public bool IsValid { get { return type != Type.None; } }
             public Enumerator(List<JSONNode>.Enumerator aArrayEnum)
             {
                 type = Type.Array;
-                m_Object = default(Dictionary<string, JSONNode>.Enumerator);
+                m_Object = default;
                 m_Array = aArrayEnum;
             }
             public Enumerator(Dictionary<string, JSONNode>.Enumerator aDictEnum)
             {
                 type = Type.Object;
                 m_Object = aDictEnum;
-                m_Array = default(List<JSONNode>.Enumerator);
+                m_Array = default;
             }
             public KeyValuePair<string, JSONNode> Current
             {
@@ -362,10 +363,7 @@ namespace SimpleJSON
         {
             get
             {
-                double v = 0.0;
-                if (double.TryParse(Value, NumberStyles.Float, CultureInfo.InvariantCulture, out v))
-                    return v;
-                return 0.0;
+                return double.TryParse(Value, NumberStyles.Float, CultureInfo.InvariantCulture, out double v) ? v : 0.0;
             }
             set
             {
@@ -389,10 +387,7 @@ namespace SimpleJSON
         {
             get
             {
-                bool v = false;
-                if (bool.TryParse(Value, out v))
-                    return v;
-                return !string.IsNullOrEmpty(Value);
+                return bool.TryParse(Value, out bool v) ? v : !string.IsNullOrEmpty(Value);
             }
             set
             {
@@ -404,10 +399,7 @@ namespace SimpleJSON
         {
             get
             {
-                long val = 0;
-                if (long.TryParse(Value, out val))
-                    return val;
-                return 0L;
+                return long.TryParse(Value, out long val) ? val : 0L;
             }
             set
             {
@@ -442,7 +434,7 @@ namespace SimpleJSON
         }
         public static implicit operator string(JSONNode d)
         {
-            return (d == null) ? null : d.Value;
+            return d?.Value;
         }
 
         public static implicit operator JSONNode(double n)
@@ -501,8 +493,8 @@ namespace SimpleJSON
         {
             if (ReferenceEquals(a, b))
                 return true;
-            bool aIsNull = a is JSONNull || ReferenceEquals(a, null) || a is JSONLazyCreator;
-            bool bIsNull = b is JSONNull || ReferenceEquals(b, null) || b is JSONLazyCreator;
+            bool aIsNull = a is JSONNull || a is null || a is JSONLazyCreator;
+            bool bIsNull = b is JSONNull || b is null || b is JSONLazyCreator;
             if (aIsNull && bIsNull)
                 return true;
             return !aIsNull && a.Equals(b);
@@ -592,11 +584,7 @@ namespace SimpleJSON
                 return tmp == "true";
             if (tmp == "null")
                 return JSONNull.CreateOrGet();
-            double val;
-            if (double.TryParse(token, NumberStyles.Float, CultureInfo.InvariantCulture, out val))
-                return val;
-            else
-                return token;
+            return double.TryParse(token, NumberStyles.Float, CultureInfo.InvariantCulture, out double val) ? (JSONNode)val : (JSONNode)token;
         }
 
         public static JSONNode Parse(string aJSON)
@@ -690,7 +678,6 @@ namespace SimpleJSON
                         }
                         if (Token.Length > 0 || TokenIsQuoted)
                             ctx.Add(TokenName, ParseElement(Token.ToString(), TokenIsQuoted));
-                        TokenIsQuoted = false;
                         TokenName = "";
                         Token.Length = 0;
                         TokenIsQuoted = false;
@@ -774,7 +761,7 @@ namespace SimpleJSON
 
     internal partial class JSONArray : JSONNode
     {
-        private List<JSONNode> m_List = new List<JSONNode>();
+        private readonly List<JSONNode> m_List = new List<JSONNode>();
         private bool inline = false;
         public override bool Inline
         {
@@ -879,7 +866,7 @@ namespace SimpleJSON
 
     internal partial class JSONObject : JSONNode
     {
-        private Dictionary<string, JSONNode> m_Dict = new Dictionary<string, JSONNode>();
+        private readonly Dictionary<string, JSONNode> m_Dict = new Dictionary<string, JSONNode>();
 
         private bool inline = false;
         public override bool Inline
@@ -972,6 +959,7 @@ namespace SimpleJSON
             return item.Value;
         }
 
+        [SuppressMessage("Design", "CA1031: Do not catch general exception types")]
         public override JSONNode Remove(JSONNode aNode)
         {
             try
@@ -993,10 +981,7 @@ namespace SimpleJSON
 
         public override JSONNode GetValueOrDefault(string aKey, JSONNode aDefault)
         {
-            JSONNode res;
-            if (m_Dict.TryGetValue(aKey, out res))
-                return res;
-            return aDefault;
+            return m_Dict.TryGetValue(aKey, out JSONNode res) ? res : aDefault;
         }
 
         public override IEnumerable<JSONNode> Children
@@ -1070,8 +1055,7 @@ namespace SimpleJSON
         {
             if (base.Equals(obj))
                 return true;
-            string s = obj as string;
-            if (s != null)
+            if (obj is string s)
                 return m_Data == s;
             JSONString s2 = obj as JSONString;
             if (s2 != null)
@@ -1098,8 +1082,7 @@ namespace SimpleJSON
             get { return m_Data.ToString(CultureInfo.InvariantCulture); }
             set
             {
-                double v;
-                if (double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out v))
+                if (double.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out double v))
                     m_Data = v;
             }
         }
@@ -1171,8 +1154,7 @@ namespace SimpleJSON
             get { return m_Data.ToString(); }
             set
             {
-                bool v;
-                if (bool.TryParse(value, out v))
+                if (bool.TryParse(value, out bool v))
                     m_Data = v;
             }
         }
@@ -1213,7 +1195,7 @@ namespace SimpleJSON
 
     internal partial class JSONNull : JSONNode
     {
-        static JSONNull m_StaticInstance = new JSONNull();
+        static readonly JSONNull m_StaticInstance = new JSONNull();
         public static bool reuseSameInstance = true;
         public static JSONNull CreateOrGet()
         {
@@ -1259,7 +1241,7 @@ namespace SimpleJSON
     internal partial class JSONLazyCreator : JSONNode
     {
         private JSONNode m_Node = null;
-        private string m_Key = null;
+        private readonly string m_Key = null;
         public override JSONNodeType Tag { get { return JSONNodeType.None; } }
         public override Enumerator GetEnumerator() { return new Enumerator(); }
 

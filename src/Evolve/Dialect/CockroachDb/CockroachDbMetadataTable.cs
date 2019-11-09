@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Evolve.Metadata;
 using Evolve.Migration;
@@ -13,10 +14,12 @@ namespace Evolve.Dialect.CockroachDB
         {
         }
 
+
         /// <summary>
         ///     Implementing advisory locks in CockroachDB is being discussed, see:
         ///     https://forum.cockroachlabs.com/t/alternatives-to-pg-advisory-locks/742
         /// </summary>
+        [SuppressMessage("Design", "CA1031: Do not catch general exception types")]
         protected override bool InternalTryLock()
         {
             string sqlGetLock = $"SELECT * FROM \"{Schema}\".\"{TableName}\" WHERE id = 0";
@@ -45,6 +48,7 @@ namespace Evolve.Dialect.CockroachDB
             }
         }
 
+        [SuppressMessage("Design", "CA1031: Do not catch general exception types")]
         protected override bool InternalReleaseLock()
         {
             try

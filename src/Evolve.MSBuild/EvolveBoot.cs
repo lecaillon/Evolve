@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
@@ -62,9 +63,11 @@ namespace Evolve.MSBuild
         /// <exception cref="EvolveConfigurationException"> When configuration file is not found. </exception>
         public string EvolveConfigurationFile => IsDotNetCoreProject ? FindJsonConfigurationFile() : TargetPath + ".config";
 
+
         /// <summary>
         ///     Runs the task.
         /// </summary>
+        [SuppressMessage("Design", "CA1031: Do not catch general exception types")]
         public override bool Execute()
         {
             string originalCurrentDirectory = Directory.GetCurrentDirectory();
@@ -82,7 +85,7 @@ namespace Evolve.MSBuild
                 }
 
                 CopyMigrationProjectDirToTargetDir(args.Locations);
-                var proc = new Process
+                using var proc = new Process
                 {
                     StartInfo = new ProcessStartInfo
                     {
@@ -216,7 +219,5 @@ namespace Evolve.MSBuild
             Log.LogMessage(MessageImportance.High, @"_  /___  __ |/ // /_/ /  / __ |/ //  __/");
             Log.LogMessage(MessageImportance.High, @"/_____/  _____/ \____//_/  _____/ \___/ ");
         }
-
-        private void WriteNewLine() => Log.LogMessage(MessageImportance.High, string.Empty);
     }
 }

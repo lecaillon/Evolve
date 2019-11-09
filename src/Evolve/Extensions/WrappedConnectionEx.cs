@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using Evolve.Connection;
 using Evolve.Dialect;
 using Evolve.Utilities;
@@ -11,9 +12,10 @@ namespace Evolve
     {
         private const string DBMSNotSupported = "Connection to this DBMS is not supported.";
 
+        [SuppressMessage("Design", "CA1031: Do not catch general exception types")]
         public static DBMS GetDatabaseServerType(this WrappedConnection wrappedConnection)
         {
-            string dbVersion = null;
+            string dbVersion;
 
             try
             {
@@ -195,15 +197,12 @@ namespace Evolve
             try
             {
                 wrappedConnection.Open();
+                using var cmd = wrappedConnection.DbConnection.CreateCommand();
+                cmd.CommandText = sql;
+                cmd.Transaction = wrappedConnection.CurrentTx;
+                setupDbCommand?.Invoke(cmd);
 
-                using (IDbCommand cmd = wrappedConnection.DbConnection.CreateCommand())
-                {
-                    cmd.CommandText = sql;
-                    cmd.Transaction = wrappedConnection.CurrentTx;
-                    setupDbCommand?.Invoke(cmd);
-
-                    return query(cmd);
-                }
+                return query(cmd);
             }
             catch (Exception ex)
             {
