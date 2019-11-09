@@ -6,7 +6,7 @@ using Evolve.Migration;
 
 namespace Evolve.Utilities
 {
-    public static class MigrationUtil
+    internal static class MigrationUtil
     {
         private const string MigrationNamePrefixNotFound = "Prefix {0} not found in sql file name: {1}.";
         private const string MigrationNameSeparatorNotFound = "Separator {0} not found in sql file name: {1}.";

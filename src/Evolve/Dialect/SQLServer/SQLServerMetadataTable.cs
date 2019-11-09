@@ -4,7 +4,7 @@ using Evolve.Migration;
 
 namespace Evolve.Dialect.SQLServer
 {
-    public class SQLServerMetadataTable : MetadataTable
+    internal class SQLServerMetadataTable : MetadataTable
     {
         /// <summary>
         ///     Constructor.

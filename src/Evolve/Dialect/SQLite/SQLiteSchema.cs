@@ -4,7 +4,7 @@ using Evolve.Connection;
 
 namespace Evolve.Dialect.SQLite
 {
-    public class SQLiteSchema : Schema
+    internal class SQLiteSchema : Schema
     {
         private static List<string> IgnoredSystemTableNames = new List<string> { "android_metadata", "sqlite_sequence" };
         private static List<string> UndroppableTableNames = new List<string> { "sqlite_sequence" };

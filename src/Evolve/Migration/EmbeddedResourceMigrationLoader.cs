@@ -8,7 +8,7 @@ using Evolve.Utilities;
 
 namespace Evolve.Migration
 {
-    public class EmbeddedResourceMigrationLoader : IMigrationLoader
+    internal class EmbeddedResourceMigrationLoader : IMigrationLoader
     {
         private const string InvalidEmbeddedResourceFormat = "Embedded resource {0} has an invalid format.";
 

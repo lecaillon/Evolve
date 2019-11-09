@@ -3,7 +3,7 @@ using Evolve.Connection;
 
 namespace Evolve.Dialect.PostgreSQL
 {
-    public class PostgreSQLSchema : Schema
+    internal class PostgreSQLSchema : Schema
     {
         public PostgreSQLSchema(string schemaName, WrappedConnection wrappedConnection) : base(schemaName, wrappedConnection)
         {

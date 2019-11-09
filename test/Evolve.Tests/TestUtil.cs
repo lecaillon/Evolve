@@ -8,7 +8,7 @@ using Evolve.Migration;
 
 namespace Evolve.Tests
 {
-    public static class TestUtil
+    internal static class TestUtil
     {
         public static void CreateSqlServerDatabase(string dbName, string cnxStr)
         {

@@ -5,7 +5,7 @@ using Evolve.Metadata;
 
 namespace Evolve.Migration
 {
-    public class EmbeddedResourceMigrationScript : MigrationScript
+    internal class EmbeddedResourceMigrationScript : MigrationScript
     {
         private const string IncorrectMigrationType = "Embedded resource migration {0} must be of type MetadataType.Migration or MetadataType.RepeatableMigration";
 

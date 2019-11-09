@@ -5,7 +5,7 @@ using Evolve.Utilities;
 
 namespace Evolve.Dialect
 {
-    public abstract class DatabaseHelper : IDisposable
+    internal abstract class DatabaseHelper : IDisposable
     {
         private const string SchemaNotFound = "Cannot change schema to {0}. This schema does not exist.";
         protected readonly string _originalSchemaName;

@@ -4,7 +4,7 @@ using Evolve.Connection;
 
 namespace Evolve.Dialect.SQLServer
 {
-    public class SQLServerSchema : Schema
+    internal class SQLServerSchema : Schema
     {
         private long _version = 0;
 

@@ -6,7 +6,7 @@ using Evolve.Migration;
 
 namespace Evolve.Dialect.CockroachDB
 {
-    public class CockroachDBMetadataTable : MetadataTable
+    internal class CockroachDBMetadataTable : MetadataTable
     {
         public CockroachDBMetadataTable(string schema, string tableName, DatabaseHelper database)
             : base(schema, tableName, database)

@@ -3,7 +3,7 @@ using Evolve.Utilities;
 
 namespace Evolve.Dialect
 {
-    public abstract class Schema
+    internal abstract class Schema
     {
         protected readonly WrappedConnection _wrappedConnection;
 

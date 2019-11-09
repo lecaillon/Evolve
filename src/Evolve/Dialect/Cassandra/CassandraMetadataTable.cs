@@ -6,7 +6,7 @@ using Evolve.Migration;
 
 namespace Evolve.Dialect.Cassandra
 {
-    public sealed class CassandraMetadataTable : MetadataTable
+    internal sealed class CassandraMetadataTable : MetadataTable
     {
         public CassandraMetadataTable(string schema, string tableName, DatabaseHelper database)
             : base(schema, tableName, database)

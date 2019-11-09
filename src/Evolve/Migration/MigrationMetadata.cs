@@ -11,13 +11,9 @@ namespace Evolve.Migration
         }
 
         public int Id { get; set; }
-
         public string Checksum { get; set; }
-
         public string InstalledBy { get; set; }
-
         public DateTime InstalledOn { get; set; }
-
         public bool Success { get; set; }
     }
 }

@@ -4,7 +4,7 @@ using Evolve.Metadata;
 
 namespace Evolve.Dialect.SQLServer
 {
-    public class SQLServerDatabase : DatabaseHelper
+    internal class SQLServerDatabase : DatabaseHelper
     {
         private const string LOCK_ID = "Evolve";
 

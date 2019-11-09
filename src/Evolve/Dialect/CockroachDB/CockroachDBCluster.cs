@@ -3,7 +3,7 @@ using Evolve.Metadata;
 
 namespace Evolve.Dialect.CockroachDB
 {
-    public class CockroachDBCluster : DatabaseHelper
+    internal class CockroachDBCluster : DatabaseHelper
     {
         public CockroachDBCluster(WrappedConnection wrappedConnection) : base(wrappedConnection)
         {

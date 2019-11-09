@@ -7,7 +7,7 @@ using Evolve.Utilities;
 
 namespace Evolve.Metadata
 {
-    public abstract class MetadataTable : IEvolveMetadata
+    internal abstract class MetadataTable : IEvolveMetadata
     {
         protected const string MigrationMetadataTypeNotSupported = "This method does not support the save of migration metadata. Use SaveMigration() instead.";
         protected readonly DatabaseHelper _database;

@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Evolve.Dialect.Cassandra
 {
-    public sealed class Configuration
+    internal sealed class Configuration
     {
         public const string ConfigurationFile = "evolve.cassandra.json";
         public const string DefaultKeyspaceKey = "_default";

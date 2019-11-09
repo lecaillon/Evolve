@@ -15,7 +15,7 @@ namespace ConsoleTables
     /// <summary>
     ///     Print out a nicely formatted table in a console application C#
     /// </summary>
-    public class ConsoleTable
+    internal class ConsoleTable
     {
         public IList<object> Columns { get; set; }
         public IList<object[]> Rows { get; protected set; }

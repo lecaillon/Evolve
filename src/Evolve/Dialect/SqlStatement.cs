@@ -3,7 +3,7 @@
     /// <summary>
     ///     A SQL statement from a script that can be executed at once against a database.
     /// </summary>
-    public class SqlStatement
+    internal class SqlStatement
     {
         /// <summary>
         ///     Initialize a instance of the <see cref="SqlStatement"/> class.

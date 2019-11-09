@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Evolve.Tests
 {
-    public static class TestContext
+    internal static class TestContext
     {
         static TestContext()
         {

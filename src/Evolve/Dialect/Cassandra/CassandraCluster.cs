@@ -6,7 +6,7 @@ using SimpleJSON;
 
 namespace Evolve.Dialect.Cassandra
 {
-    public sealed class CassandraCluster : DatabaseHelper
+    internal sealed class CassandraCluster : DatabaseHelper
     {
         private string _currentKeyspaceName;
         

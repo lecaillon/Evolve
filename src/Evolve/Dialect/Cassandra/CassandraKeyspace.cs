@@ -6,7 +6,7 @@ using SimpleJSON;
 
 namespace Evolve.Dialect.Cassandra
 {
-    public sealed class CassandraKeyspace : Schema
+    internal sealed class CassandraKeyspace : Schema
     {
         private readonly ReplicationStrategy _replicationStrategy;
 
