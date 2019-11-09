@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -110,6 +111,7 @@ namespace Evolve
             }
         }
 
+        [SuppressMessage("Design", "CA1031: Do not catch general exception types")]
         public IEnumerable<MigrationMetadata> Info()
         {
             Command = CommandOptions.Info;

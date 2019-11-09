@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 
 namespace Evolve.Tests.Infrastructure
@@ -10,6 +11,7 @@ namespace Evolve.Tests.Infrastructure
 
         public string CnxStr => _container.CnxStr;
 
+        [SuppressMessage("Design", "CA1031: Do not catch general exception types")]
         public virtual void Run(bool fromScratch = false)
         {
             int retries = 1;
@@ -27,11 +29,9 @@ namespace Evolve.Tests.Infrastructure
                 Thread.Sleep(TimeSpan.FromSeconds(1));
                 try
                 {
-                    using (var cnn = CreateDbConnection())
-                    {
-                        cnn.Open();
-                        isDbStarted = cnn.State == ConnectionState.Open;
-                    }
+                    using var cnn = CreateDbConnection();
+                    cnn.Open();
+                    isDbStarted = cnn.State == ConnectionState.Open;
                 }
                 catch { }
                 retries++;

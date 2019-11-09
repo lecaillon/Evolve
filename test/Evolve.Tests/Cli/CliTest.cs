@@ -53,7 +53,7 @@ namespace Evolve.Tests.Cli
                     location: TestContext.CockroachDB.MigrationFolder,
                     args: "-s evolve -s defaultdb");
 
-                Assert.True(stderr == string.Empty, stderr);
+                Assert.True(string.IsNullOrEmpty(stderr), stderr);
             }
         }
 
@@ -72,7 +72,7 @@ namespace Evolve.Tests.Cli
                     location: TestContext.CassandraDb.MigrationFolder,
                     args: $"--scripts-suffix .cql -p keyspace:{metadataKeyspaceName} --keyspace {metadataKeyspaceName} --metadata-table-keyspace evolve_change_log");
 
-                Assert.True(stderr == string.Empty, stderr);
+                Assert.True(string.IsNullOrEmpty(stderr), stderr);
             }
         }
 
@@ -89,7 +89,7 @@ namespace Evolve.Tests.Cli
                     location: null,
                     args: $"-a Evolve.Tests.dll -f {TestContext.MySQL.MigrationFolderFilter}");
 
-                Assert.True(stderr == string.Empty, stderr);
+                Assert.True(string.IsNullOrEmpty(stderr), stderr);
             }
         }
 
@@ -106,7 +106,7 @@ namespace Evolve.Tests.Cli
                     location: TestContext.PostgreSQL.MigrationFolder,
                     args: "-s public -s unittest --metadata-table-schema unittest --erase-disabled false -p schema1:unittest");
 
-                Assert.True(stderr == string.Empty, stderr);
+                Assert.True(string.IsNullOrEmpty(stderr), stderr);
             }
         }
 
@@ -126,7 +126,7 @@ namespace Evolve.Tests.Cli
                     location: TestContext.SqlServer.MigrationFolder,
                     args: $"-p db:{dbName} -p schema2:dbo --target-version 8_9");
 
-                Assert.True(stderr == string.Empty, stderr);
+                Assert.True(string.IsNullOrEmpty(stderr), stderr);
             }
         }
 
@@ -145,7 +145,7 @@ namespace Evolve.Tests.Cli
                     location: TestContext.SQLite.MigrationFolder,
                     args: "-p table4:table_4");
 
-                Assert.True(stderr == string.Empty, stderr);
+                Assert.True(string.IsNullOrEmpty(stderr), stderr);
             }
         }
 
@@ -155,7 +155,7 @@ namespace Evolve.Tests.Cli
                 ? $"{command} {db} -c \"{cnxStr}\" {args}"
                 : $"{command} {db} -c \"{cnxStr}\" -l {location} {args}";
 
-            var proc = new Process
+            using var proc = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {

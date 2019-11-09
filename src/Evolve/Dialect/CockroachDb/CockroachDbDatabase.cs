@@ -87,6 +87,6 @@ namespace Evolve.Dialect.CockroachDB
             });
         }
 
-        private string Quote(string dbObject) => dbObject.Replace("\"", "\"\"");
+        private static string Quote(string dbObject) => dbObject.Replace("\"", "\"\"");
     }
 }

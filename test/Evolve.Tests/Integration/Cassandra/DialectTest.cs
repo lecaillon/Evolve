@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Evolve.Tests.Integration.Cassandra
 {
-    public class DialectTest
+    public static class DialectTest
     {
         /// <summary>
         ///     Second part of the integration test.

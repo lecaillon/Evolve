@@ -35,11 +35,9 @@ namespace Evolve.Migration
                 return true;
             }
 
-            using (var file = new StringReader(Content))
-            {
-                string first = file.ReadLine();
-                return first is null ? true : first.IndexOf("evolve-tx-off", StringComparison.OrdinalIgnoreCase) == -1;
-            }
+            using var file = new StringReader(Content);
+            string first = file.ReadLine();
+            return first is null ? true : first.IndexOf("evolve-tx-off", StringComparison.OrdinalIgnoreCase) == -1;
         }
 
         /// <summary>
@@ -64,11 +62,9 @@ namespace Evolve.Migration
         /// <returns></returns>
         public virtual string CalculateChecksum()
         {
-            using (var md5 = MD5.Create())
-            {
-                byte[] checksum = md5.ComputeHash(Encoding.UTF8.GetBytes(NormalizeLineEndings(Content)));
-                return BitConverter.ToString(checksum).Replace("-", string.Empty);
-            }
+            using var md5 = MD5.Create();
+            byte[] checksum = md5.ComputeHash(Encoding.UTF8.GetBytes(NormalizeLineEndings(Content)));
+            return BitConverter.ToString(checksum).Replace("-", string.Empty);
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using Cassandra.Data;
 
 namespace Evolve.Tests.Infrastructure
@@ -12,11 +13,13 @@ namespace Evolve.Tests.Infrastructure
         public const string DbUser = "postgres";
 
         private DockerContainer _container;
+        private bool _disposedValue = false;
 
         public string Id => _container?.Id;
         public string CnxStr => $"Contact Points=127.0.0.1;Port={HostPort};Cluster Name={ClusterName}";
         public int TimeOutInSec => 45;
 
+        [SuppressMessage("Qualité du code", "IDE0068: Utilisez le modèle de suppression recommandé")]
         public bool Start(bool fromScratch = false)
         {
             _container = new DockerContainerBuilder(new DockerContainerBuilderOptions
@@ -35,6 +38,22 @@ namespace Evolve.Tests.Infrastructure
 
         public IDbConnection CreateDbConnection() => new CqlConnection(CnxStr);
 
-        public void Dispose() => _container?.Dispose();
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposedValue)
+            {
+                if (disposing)
+                {
+                    _container?.Dispose();
+                }
+
+                _disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
     }
 }

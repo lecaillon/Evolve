@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -13,7 +14,7 @@ namespace Evolve.MSBuild
         private const string EnvVarSuffix = @"}";
         protected const string IncorrectFileFormat = "Incorrect Evolve configuration file format at: {0}.";
 
-        public CliArgsBuilder(string configFile, string env = null)
+        protected CliArgsBuilder(string configFile, string env = null)
         {
             ConfigFile = configFile;
             Env = env;
@@ -141,16 +142,18 @@ namespace Evolve.MSBuild
             return builder.ToString().TrimEnd();
         }
 
+
         /// <summary>
         ///     Read the value of a variable from the configuration file.
         ///     Replace environment variables by their values if needed.
         /// </summary>
+        [SuppressMessage("Performance", "CA1820:Test for empty strings using string length", Justification = ".NET35 does not support IsNullOrWhiteSpace")]
         protected string ReadValue(string key)
         {
             if (Datasource.TryGetValue(key, out string value))
             {
                 value = Normalize(value);
-                if (value is null || value.Trim() == string.Empty) // .NET35 does not support IsNullOrWhiteSpace()
+                if (value is null || value.Trim() == string.Empty)
                 {
                     return null;
                 }
@@ -180,6 +183,7 @@ namespace Evolve.MSBuild
             return value;
         }
 
+        [SuppressMessage("Performance", "CA1820:Test for empty strings using string length", Justification = ".NET35 does not support IsNullOrWhiteSpace")]
         private static string[] SplitCommaSeparatedString(string value) 
             => value?.Split(';')?.Where(s => s != null && s.Trim() != string.Empty)?.Distinct(StringComparer.OrdinalIgnoreCase)?.ToArray();
 

@@ -9,7 +9,6 @@ namespace Evolve.Migration
 {
     internal class FileMigrationScript : MigrationScript
     {
-        private const string IncorrectMigrationChecksum = "Validate failed: invalid checksum for migration: {0}.";
         private const string IncorrectMigrationType = "File migration {0} must be of type MetadataType.Migration or MetadataType.RepeatableMigration";
 
         public FileMigrationScript(string path, string version, string description, MetadataType type, Encoding encoding = null)
@@ -57,14 +56,10 @@ namespace Evolve.Migration
         /// </summary>
         private string FallbackCheck()
         {
-            using (var md5 = MD5.Create())
-            {
-                using (FileStream stream = File.OpenRead(Path))
-                {
-                    byte[] checksum = md5.ComputeHash(stream);
-                    return BitConverter.ToString(checksum).Replace("-", string.Empty);
-                }
-            }
+            using var md5 = MD5.Create();
+            using FileStream stream = File.OpenRead(Path);
+            byte[] checksum = md5.ComputeHash(stream);
+            return BitConverter.ToString(checksum).Replace("-", string.Empty);
         }
     }
 }

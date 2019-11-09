@@ -237,6 +237,6 @@ namespace Evolve.Dialect.PostgreSQL
             });
         }
 
-        private string Quote(string dbObject) => dbObject.Replace("\"", "\"\"");
+        private static string Quote(string dbObject) => dbObject.Replace("\"", "\"\"");
     }
 }

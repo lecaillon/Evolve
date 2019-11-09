@@ -91,90 +91,76 @@ namespace Evolve.Tests.Connection
         [Category(Test.Connection)]
         public void When_commit_transaction_is_cleared()
         {
-            using (var wrappedConnection = TestUtil.CreateSQLiteWrappedCnx())
-            {
-                var tx = wrappedConnection.BeginTransaction();
-                wrappedConnection.Commit();
+            using var wrappedConnection = TestUtil.CreateSQLiteWrappedCnx();
+            var tx = wrappedConnection.BeginTransaction();
+            wrappedConnection.Commit();
 
-                Assert.Null(wrappedConnection.CurrentTx);
-            }
+            Assert.Null(wrappedConnection.CurrentTx);
         }
 
         [Fact]
         [Category(Test.Connection)]
         public void When_rollback_transaction_is_cleared()
         {
-            using (var wrappedConnection = TestUtil.CreateSQLiteWrappedCnx())
-            {
-                var tx = wrappedConnection.BeginTransaction();
-                wrappedConnection.Rollback();
+            using var wrappedConnection = TestUtil.CreateSQLiteWrappedCnx();
+            var tx = wrappedConnection.BeginTransaction();
+            wrappedConnection.Rollback();
 
-                Assert.Null(wrappedConnection.CurrentTx);
-            }
+            Assert.Null(wrappedConnection.CurrentTx);
         }
 
         [Fact]
         [Category(Test.Connection)]
         public void When_dbconnection_is_ok_validation_works()
         {
-            using (var wrappedConnection = TestUtil.CreateSQLiteWrappedCnx())
-            {
-                wrappedConnection.Validate();
-            }
+            using var wrappedConnection = TestUtil.CreateSQLiteWrappedCnx();
+            wrappedConnection.Validate();
         }
 
         [Fact(Skip = "Skip test bescause it oddly fails on Linux")]
         [Category(Test.Connection)]
         public void When_dbconnection_is_not_ok_validation_fails()
         {
-            using (var wrappedConnection = new WrappedConnection(new SQLiteConnection("Data Source=:fails")))
-            {
-                Assert.ThrowsAny<Exception>(() => wrappedConnection.Validate());
-            }
+            using var wrappedConnection = new WrappedConnection(new SQLiteConnection("Data Source=:fails"));
+            Assert.ThrowsAny<Exception>(() => wrappedConnection.Validate());
         }
 
         [Fact]
         [Category(Test.Connection)]
         public void TryBeginTransaction_creates_a_tx_when_needed()
         {
-            using (var cnx = TestUtil.CreateSQLiteWrappedCnx())
-            {
-                Assert.True(cnx.TryBeginTransaction());
-                Assert.NotNull(cnx.CurrentTx);
+            using var cnx = TestUtil.CreateSQLiteWrappedCnx();
+            Assert.True(cnx.TryBeginTransaction());
+            Assert.NotNull(cnx.CurrentTx);
 
-                Assert.False(cnx.TryBeginTransaction());
-                Assert.NotNull(cnx.CurrentTx);
-            }
+            Assert.False(cnx.TryBeginTransaction());
+            Assert.NotNull(cnx.CurrentTx);
         }
 
         [Fact]
         [Category(Test.Connection)]
         public void TryCommit_returns_true_when_a_tx_exists()
         {
-            using (var cnx = TestUtil.CreateSQLiteWrappedCnx())
-            {
-                Assert.False(cnx.TryCommit());
-                Assert.Null(cnx.CurrentTx);
+            using var cnx = TestUtil.CreateSQLiteWrappedCnx();
+            Assert.False(cnx.TryCommit());
+            Assert.Null(cnx.CurrentTx);
 
-                cnx.BeginTransaction();
-                Assert.True(cnx.TryCommit());
-                Assert.Null(cnx.CurrentTx);
-            }
+            cnx.BeginTransaction();
+            Assert.True(cnx.TryCommit());
+            Assert.Null(cnx.CurrentTx);
         }
 
         [Fact]
         [Category(Test.Connection)]
         public void TryRollback_returns_true_when_a_tx_exists()
         {
-            using (var cnx = TestUtil.CreateSQLiteWrappedCnx())
-            {
-                Assert.False(cnx.TryRollback());
-                Assert.Null(cnx.CurrentTx);
+            using var cnx = TestUtil.CreateSQLiteWrappedCnx();
+            Assert.False(cnx.TryRollback());
+            Assert.Null(cnx.CurrentTx);
 
-                cnx.BeginTransaction();
-                Assert.True(cnx.TryRollback());
-                Assert.Null(cnx.CurrentTx);
-            }
+            cnx.BeginTransaction();
+            Assert.True(cnx.TryRollback());
+            Assert.Null(cnx.CurrentTx);
         }
     }
 }

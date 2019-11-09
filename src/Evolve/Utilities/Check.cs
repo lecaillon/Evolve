@@ -27,7 +27,7 @@ namespace Evolve.Utilities
         public static string NotNullOrEmpty(string text, string parameterName)
         {
             Exception e = null;
-            if (ReferenceEquals(text, null))
+            if (text is null)
             {
                 e = new ArgumentNullException(parameterName);
             }
@@ -55,7 +55,7 @@ namespace Evolve.Utilities
         /// <exception cref="ArgumentException"> Throws ArgumentException if the string is empty. </exception>
         public static string NullableButNotEmpty(string text, string parameterName)
         {
-            if (!ReferenceEquals(text, null) && (text.Length == 0))
+            if (text is object && (text.Length == 0))
             {
                 NotNullOrEmpty(parameterName, nameof(parameterName));
 
@@ -75,7 +75,7 @@ namespace Evolve.Utilities
         /// <exception cref="ArgumentNullException"> Throws ArgumentNullException if the reference is null. </exception>
         public static T NotNull<T>(T reference, string parameterName)
         {
-            if (ReferenceEquals(reference, null))
+            if (reference == null)
             {
                 NotNullOrEmpty(parameterName, nameof(parameterName));
 

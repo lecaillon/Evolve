@@ -12,7 +12,7 @@ namespace Evolve.Dialect.Cassandra
         
         public CassandraCluster(WrappedConnection wrappedConnection) : base(wrappedConnection)
         {
-            _currentKeyspaceName = _currentKeyspaceName ?? GetFirstAvailableKeyspace(wrappedConnection);
+            _currentKeyspaceName ??= GetFirstAvailableKeyspace(wrappedConnection);
         }
 
         public override string DatabaseName => "Cassandra";

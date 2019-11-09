@@ -1,5 +1,6 @@
 ﻿using System.Data.SqlClient;
 using System.Data.SQLite;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 using Evolve.Connection;
@@ -10,6 +11,7 @@ namespace Evolve.Tests
 {
     internal static class TestUtil
     {
+        [SuppressMessage("Security", "CA2100: Review SQL queries for security vulnerabilities")]
         public static void CreateSqlServerDatabase(string dbName, string cnxStr)
         {
             var cnn = new SqlConnection(cnxStr);

@@ -2,6 +2,7 @@
 {
     using System;
     using System.ComponentModel.DataAnnotations;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using Configuration;
     using Dialect;
@@ -14,6 +15,8 @@
 
         static int Main(string[] args) => CommandLineApplication.Execute<Program>(args);
 
+        [SuppressMessage("Design", "CA1031: Do not catch general exception types")]
+        [SuppressMessage("Qualité du code", "IDE0051: Supprimer les membres privés non utilisés")]
         private int OnExecute(CommandLineApplication app, IConsole console)
         {
             try
