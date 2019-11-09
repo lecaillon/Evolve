@@ -26,7 +26,7 @@ namespace Evolve.Tests.Integration.PostgregSql
         public void Run_all_PostgreSQL_integration_tests_work()
         {
             // Arrange
-            var cnn = _dbContainer.CreateDbConnection().AssertIsOpenned();
+            var cnn = _dbContainer.CreateDbConnection();
             var wcnn = new WrappedConnection(cnn).AssertDatabaseServerType(DBMS.PostgreSQL);
             var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.PostgreSQL, wcnn);
             string schemaName = "My metadata schema";

@@ -12,13 +12,6 @@ namespace Evolve.Tests
 {
     public static class AssertHelper
     {
-        public static IDbConnection AssertIsOpenned(this IDbConnection cnn)
-        {
-            cnn.Open();
-            Assert.True(cnn.State == ConnectionState.Open, "Cannot open a connection to the database.");
-            return cnn;
-        }
-
         public static WrappedConnection AssertDatabaseServerType(this WrappedConnection wcnn, DBMS expectedDBMS)
         {
             Assert.Equal(expectedDBMS, wcnn.GetDatabaseServerType());

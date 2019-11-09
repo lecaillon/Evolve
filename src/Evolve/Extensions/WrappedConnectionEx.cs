@@ -194,10 +194,7 @@ namespace Evolve
 
             try
             {
-                if (wasClosed)
-                {
-                    wrappedConnection.Open();
-                }
+                wrappedConnection.Open();
 
                 using (IDbCommand cmd = wrappedConnection.DbConnection.CreateCommand())
                 {
@@ -211,13 +208,6 @@ namespace Evolve
             catch (Exception ex)
             {
                 throw new EvolveSqlException(sql, ex);
-            }
-            finally
-            {
-                if (wasClosed)
-                {
-                    wrappedConnection.Close();
-                }
             }
         }
     }

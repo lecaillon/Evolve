@@ -26,7 +26,7 @@ namespace Evolve.Tests.Integration.CockroachDb
         public void Run_all_CockroachDB_integration_tests_work()
         {
             // Arrange
-            var cnn = _dbContainer.CreateDbConnection().AssertIsOpenned();
+            var cnn = _dbContainer.CreateDbConnection();
             var wcnn = new WrappedConnection(cnn).AssertDatabaseServerType(DBMS.CockroachDB);
             var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.CockroachDB, wcnn);
             string schemaName = "MyDatabase";

@@ -1,5 +1,4 @@
-﻿using System.Data;
-using Evolve.Connection;
+﻿using Evolve.Connection;
 using Evolve.Metadata;
 
 namespace Evolve.Dialect.PostgreSQL

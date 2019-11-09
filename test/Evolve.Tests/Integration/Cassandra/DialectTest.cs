@@ -19,7 +19,7 @@ namespace Evolve.Tests.Integration.Cassandra
         public static void Run_all_Cassandra_integration_tests_work(CassandraFixture dbContainer)
         {
             // Arrange
-            var cnn = dbContainer.CreateDbConnection().AssertIsOpenned();
+            var cnn = dbContainer.CreateDbConnection();
             var wcnn = new WrappedConnection(cnn).AssertDatabaseServerType(DBMS.Cassandra);
             var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.Cassandra, wcnn);
             string keyspaceName = "my_keyspace_2";
