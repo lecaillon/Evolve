@@ -31,7 +31,7 @@ namespace Evolve.Tests.Integration.SQLServer
         public void Run_all_SQLServer_integration_tests_work()
         {
             // Arrange
-            var cnn = new SqlConnection(_dbContainer.GetCnxStr(DbName)).AssertIsOpenned();
+            var cnn = new SqlConnection(_dbContainer.GetCnxStr(DbName));
             var wcnn = new WrappedConnection(cnn).AssertDatabaseServerType(DBMS.SQLServer);
             var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLServer, wcnn);
             string schemaName = "dbo";

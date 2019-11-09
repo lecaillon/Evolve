@@ -31,7 +31,7 @@ namespace Evolve.Dialect
             Check.NotNull(connection, nameof(connection));
 
             _dbmsMap.TryGetValue(dbmsType, out Func<WrappedConnection, DatabaseHelper> dbHelperCreationDelegate);
-            if(dbHelperCreationDelegate == null)
+            if(dbHelperCreationDelegate is null)
             {
                 throw new EvolveException(string.Format(UnknownDBMS, dbmsType));
             }

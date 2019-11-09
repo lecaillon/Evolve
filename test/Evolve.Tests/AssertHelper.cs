@@ -12,13 +12,6 @@ namespace Evolve.Tests
 {
     public static class AssertHelper
     {
-        public static IDbConnection AssertIsOpenned(this IDbConnection cnn)
-        {
-            cnn.Open();
-            Assert.True(cnn.State == ConnectionState.Open, "Cannot open a connection to the database.");
-            return cnn;
-        }
-
         public static WrappedConnection AssertDatabaseServerType(this WrappedConnection wcnn, DBMS expectedDBMS)
         {
             Assert.Equal(expectedDBMS, wcnn.GetDatabaseServerType());
@@ -171,11 +164,10 @@ namespace Evolve.Tests
             return db;
         }
 
-        public static DatabaseHelper AssertCloseConnection(this DatabaseHelper db)
+        public static void AssertCloseConnection(this DatabaseHelper db)
         {
-            db.CloseConnection();
+            db.Dispose();
             Assert.True(db.WrappedConnection.DbConnection.State == ConnectionState.Closed, "Database connection should be closed.");
-            return db;
         }
 
         public static Evolve AssertMigrateIsSuccessful(this Evolve evolve, IDbConnection cnn, int expectedNbMigration, Action<Evolve> arrange = null, params string[] locations)

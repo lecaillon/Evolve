@@ -9,22 +9,19 @@ namespace Evolve.Connection
     /// </summary>
     public class WrappedConnection : IDisposable
     {
-        private readonly bool _connectionOwned;
-        private int _openedCount;
-        private bool _openedInternally;
         private const string TransactionAlreadyStarted = "The connection is already in a transaction and cannot participate in another transaction.";
         private const string NoActiveTransaction = "The connection does not have any active transactions.";
         private const string ConnectionValidationError = "Validation of the database connection failed.";
+        private bool _openedInternally = false;
+        private bool _disposedValue = false;
 
         /// <summary>
         ///     Initializes a new instance of <see cref="WrappedConnection"/>.
         /// </summary>
         /// <param name="connection"> The connection used to interact with the database. </param>
-        /// <param name="connectionOwned"> true if Evolve is responsible of disposing the underlying connection, otherwise false. </param>
-        public WrappedConnection(IDbConnection connection, bool connectionOwned = true)
+        public WrappedConnection(IDbConnection connection)
         {
             DbConnection = Check.NotNull(connection, nameof(connection));
-            _connectionOwned = connectionOwned;
         }
 
         /// <summary>
@@ -38,7 +35,7 @@ namespace Evolve.Connection
         public IDbTransaction CurrentTx { get; private set; }
 
         /// <summary>
-        ///     Return true if we are connected to an in-memomry SQLite database, false otherwisee.
+        ///     Return true if we are connected to an in-memomry SQLite database, false otherwise.
         /// </summary>
         public bool SQLiteInMemoryDatabase => DbConnection.ConnectionString.Contains(":memory:");
 
@@ -68,7 +65,7 @@ namespace Evolve.Connection
         /// </summary>
         public void Commit()
         {
-            if (CurrentTx == null)
+            if (CurrentTx is null)
             {
                 throw new InvalidOperationException(NoActiveTransaction);
             }
@@ -82,7 +79,7 @@ namespace Evolve.Connection
         /// </summary>
         public void Rollback()
         {
-            if (CurrentTx == null)
+            if (CurrentTx is null)
             {
                 throw new InvalidOperationException(NoActiveTransaction);
             }
@@ -108,16 +105,7 @@ namespace Evolve.Connection
             if (DbConnection.State != ConnectionState.Open)
             {
                 DbConnection.Open();
-
-                if (_openedCount == 0)
-                {
-                    _openedInternally = true;
-                    _openedCount++;
-                }
-            }
-            else
-            {
-                _openedCount++;
+                _openedInternally = true;
             }
         }
 
@@ -127,11 +115,11 @@ namespace Evolve.Connection
         /// </summary>
         public void Close()
         {
-            if (_openedCount > 0 && --_openedCount == 0 && _openedInternally && !SQLiteInMemoryDatabase)
+            if (_openedInternally && !SQLiteInMemoryDatabase)
             {
                 if (DbConnection.State != ConnectionState.Closed)
                 {
-                    //DbConnection.Close();
+                    DbConnection.Close();
                 }
                 _openedInternally = false;
             }
@@ -141,17 +129,19 @@ namespace Evolve.Connection
         ///     Validate the database connection by opening and closing it.
         /// </summary>
         /// <exception cref="EvolveException"> Throws EvolveException if validation fails. </exception>
-        public void Validate()
+        public WrappedConnection Validate()
         {
             try
             {
                 if (DbConnection.State == ConnectionState.Open)
                 {
-                    return;
+                    return this;
                 }
 
                 Open();
                 Close();
+
+                return this;
             }
             catch (Exception ex)
             {
@@ -159,21 +149,32 @@ namespace Evolve.Connection
             }
         }
 
+        /// <summary>
+        ///     Close the underlying connection.
+        /// </summary>
         public void Dispose()
         {
-            CurrentTx?.Dispose();
+            Dispose(true);
+        }
 
-            if (_connectionOwned)
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposedValue)
             {
-                DbConnection.Dispose();
-                _openedCount = 0;
+                if (disposing)
+                {
+                    ClearTransaction();
+                    Close();
+                }
+
+                _disposedValue = true;
             }
         }
 
         private void ClearTransaction()
         {
+            CurrentTx?.Dispose();
             CurrentTx = null;
-            Close();
         }
     }
 }

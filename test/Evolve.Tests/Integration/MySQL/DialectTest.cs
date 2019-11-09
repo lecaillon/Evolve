@@ -26,7 +26,7 @@ namespace Evolve.Tests.Integration.MySql
         public void Run_all_MySQL_integration_tests_work()
         {
             // Arrange
-            var cnn = _dbContainer.CreateDbConnection().AssertIsOpenned();
+            var cnn = _dbContainer.CreateDbConnection();
             var wcnn = new WrappedConnection(cnn).AssertDatabaseServerType(DBMS.MySQL);
             var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.MySQL, wcnn);
             string schemaName = "My metadata schema";

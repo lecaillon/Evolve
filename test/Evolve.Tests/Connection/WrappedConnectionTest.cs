@@ -47,25 +47,6 @@ namespace Evolve.Tests.Connection
 
         [Fact]
         [Category(Test.Connection)]
-        public void When_opened_multiple_times_a_single_call_to_close_is_not_enought()
-        {
-            var cnn = _pgContainer.CreateDbConnection();
-            using (var wrappedConnection = new WrappedConnection(cnn))
-            {
-                wrappedConnection.Open();
-                wrappedConnection.Open();
-                wrappedConnection.Open();
-
-                wrappedConnection.Close();
-
-                Assert.True(wrappedConnection.DbConnection.State == ConnectionState.Open);
-            }
-
-            Assert.True(cnn.State == ConnectionState.Closed);
-        }
-
-        [Fact]
-        [Category(Test.Connection)]
         public void Commit_a_null_transaction_throws_InvalidOperationException()
         {
             var cnn = _pgContainer.CreateDbConnection();

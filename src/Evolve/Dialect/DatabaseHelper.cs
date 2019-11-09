@@ -1,16 +1,17 @@
-﻿using System.Data;
+﻿using System;
 using Evolve.Connection;
 using Evolve.Metadata;
 using Evolve.Utilities;
 
 namespace Evolve.Dialect
 {
-    public abstract class DatabaseHelper
+    public abstract class DatabaseHelper : IDisposable
     {
         private const string SchemaNotFound = "Cannot change schema to {0}. This schema does not exist.";
         protected readonly string _originalSchemaName;
+        private bool _disposedValue = false;
 
-        public DatabaseHelper(WrappedConnection wrappedConnection)
+        protected DatabaseHelper(WrappedConnection wrappedConnection)
         {
             WrappedConnection = Check.NotNull(wrappedConnection, nameof(wrappedConnection));
             _originalSchemaName = GetCurrentSchemaName();
@@ -28,7 +29,9 @@ namespace Evolve.Dialect
         {
             var schema = GetSchema(toSchemaName);
             if (!schema.IsExists())
+            {
                 throw new EvolveException(string.Format(SchemaNotFound, toSchemaName));
+            }
 
             InternalChangeSchema(toSchemaName);
             return schema;
@@ -48,11 +51,21 @@ namespace Evolve.Dialect
 
         public abstract bool ReleaseApplicationLock();
 
-        public virtual void CloseConnection()
+        public void Dispose()
         {
-            if (WrappedConnection.DbConnection.State != ConnectionState.Closed)
+            Dispose(true);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposedValue)
             {
-                WrappedConnection.DbConnection.Close();
+                if (disposing)
+                {
+                    WrappedConnection.Dispose();
+                }
+
+                _disposedValue = true;
             }
         }
     }
