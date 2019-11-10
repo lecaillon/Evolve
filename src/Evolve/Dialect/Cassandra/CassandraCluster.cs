@@ -12,7 +12,7 @@ namespace Evolve.Dialect.Cassandra
         
         public CassandraCluster(WrappedConnection wrappedConnection) : base(wrappedConnection)
         {
-            _currentKeyspaceName ??= GetFirstAvailableKeyspace(wrappedConnection);
+            _currentKeyspaceName = GetFirstAvailableKeyspace(wrappedConnection);
         }
 
         public override string DatabaseName => "Cassandra";
@@ -57,8 +57,8 @@ namespace Evolve.Dialect.Cassandra
                                       .SingleOrDefault(x => x.Key.Equals("clusterLock", StringComparison.OrdinalIgnoreCase)).Value?.Linq
                                       .ToDictionary(x => x.Key, x => x.Value.Value, StringComparer.OrdinalIgnoreCase);
 
-                clusterLockKeyspaceName = clusterLock.GetValue("defaultClusterLockKeyspace", clusterLockKeyspaceName);
-                clusterLockTableName = clusterLock.GetValue("defaultClusterLockTable", clusterLockTableName);
+                clusterLockKeyspaceName = clusterLock!.GetValue("defaultClusterLockKeyspace", clusterLockKeyspaceName);
+                clusterLockTableName = clusterLock!.GetValue("defaultClusterLockTable", clusterLockTableName);
             }
 
             try

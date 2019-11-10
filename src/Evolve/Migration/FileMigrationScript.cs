@@ -11,7 +11,7 @@ namespace Evolve.Migration
     {
         private const string IncorrectMigrationType = "File migration {0} must be of type MetadataType.Migration or MetadataType.RepeatableMigration";
 
-        public FileMigrationScript(string path, string version, string description, MetadataType type, Encoding encoding = null)
+        public FileMigrationScript(string path, string? version, string description, MetadataType type, Encoding? encoding = null)
             : base(version,
                    description,
                    name: System.IO.Path.GetFileName(Check.FileExists(path, nameof(path))),
@@ -34,7 +34,7 @@ namespace Evolve.Migration
         /// </summary>
         /// <param name="checksum"> The given checksum. </param>
         /// <exception cref="Exception"> Throws when the validation fails. </exception>
-        public override void ValidateChecksum(string checksum)
+        public override void ValidateChecksum(string? checksum)
         {
             Check.NotNull(checksum, nameof(checksum));
 

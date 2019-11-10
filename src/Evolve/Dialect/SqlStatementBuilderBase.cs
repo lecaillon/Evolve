@@ -13,7 +13,7 @@ namespace Evolve.Dialect
         /// <summary>
         ///     Gets the database bacth delimiter.
         /// </summary>
-        public abstract string BatchDelimiter { get; }
+        public abstract string? BatchDelimiter { get; }
 
         /// <summary>
         ///     Returns a <see cref="List{SqlStatement}"/> given a <paramref name="migrationScript"/>.

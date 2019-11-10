@@ -18,9 +18,7 @@ namespace Evolve.Dialect.Cassandra
 
         public override bool Create()
         {
-            var cql = $"create keyspace if not exists {Name} " +
-                $"with replication = {this._replicationStrategy.ToCql()}";
-
+            var cql = $"create keyspace if not exists {Name} with replication = {_replicationStrategy.ToCql()}";
             _wrappedConnection.ExecuteNonQuery(cql);
 
             return true;
@@ -36,23 +34,33 @@ namespace Evolve.Dialect.Cassandra
         {
             var functions = _wrappedConnection.QueryForListOfString($"select function_name from system_schema.functions where keyspace_name = '{Name}'");
             foreach (var function in functions)
+            {
                 _wrappedConnection.ExecuteNonQuery($"drop function if exists {Name}.{function}");
+            }
 
             var triggers = _wrappedConnection.QueryForList($"select table_name, trigger_name from system_schema.triggers where keyspace_name = '{Name}'", r => new { Table = r.GetString(0), Name = r.GetString(1) });
             foreach (var trigger in triggers)
+            {
                 _wrappedConnection.ExecuteNonQuery($"drop trigger if exists {trigger.Name} on {Name}.{trigger.Table}");
+            }
 
             var views = _wrappedConnection.QueryForListOfString($"select view_name from system_schema.views where keyspace_name = '{Name}'");
             foreach (var view in views)
+            {
                 _wrappedConnection.ExecuteNonQuery($"drop materialized view if exists {Name}.{view}");
+            }
 
             var indexes = _wrappedConnection.QueryForListOfString($"select index_name from system_schema.indexes where keyspace_name = '{Name}'");
             foreach (var index in indexes)
+            {
                 _wrappedConnection.ExecuteNonQuery($"drop index if exists {Name}.{index}");
+            }
 
             var tables = _wrappedConnection.QueryForListOfString($"select table_name from system_schema.tables where keyspace_name = '{Name}'");
             foreach (var table in tables)
+            {
                 _wrappedConnection.ExecuteNonQuery($"drop table if exists {Name}.{table}");
+            }
 
             return true;
         }
@@ -85,11 +93,11 @@ namespace Evolve.Dialect.Cassandra
                                     .SingleOrDefault(x => x.Key.Equals("keyspaces", StringComparison.OrdinalIgnoreCase)).Value?.Linq
                                     .ToDictionary(x => x.Key, x => x.Value, StringComparer.OrdinalIgnoreCase);
 
-                if (keyspaces.GetValue(keyspaceName) != null)
+                if (keyspaces?.GetValue(keyspaceName) != null)
                 {
                     return ReplicationStrategy.FromSortedDictionary(new SortedDictionary<string, string>((keyspaces[keyspaceName].Linq.ToDictionary(x => x.Key, x => x.Value.Value))));
                 }
-                else if (keyspaces.GetValue(Configuration.DefaultKeyspaceKey) != null)
+                else if (keyspaces?.GetValue(Configuration.DefaultKeyspaceKey) != null)
                 {
                     return ReplicationStrategy.FromSortedDictionary(new SortedDictionary<string, string>((keyspaces[Configuration.DefaultKeyspaceKey].Linq.ToDictionary(x => x.Key, x => x.Value.Value))));
                 }

@@ -139,7 +139,10 @@ namespace Evolve
                 {
                     while (reader.Read())
                     {
-                        list.Add(reader[0] is DBNull ? null : reader[0].ToString());
+                        if (reader[0] != DBNull.Value)
+                        {
+                            list.Add(reader[0].ToString());
+                        }
                     }
                 }
 
@@ -186,13 +189,11 @@ namespace Evolve
             return Execute(wrappedConnection, sql, query, setupDbCommand);
         }
 
-        private static T Execute<T>(WrappedConnection wrappedConnection, string sql, Func<IDbCommand, T> query, Action<IDbCommand> setupDbCommand = null)
+        private static T Execute<T>(WrappedConnection wrappedConnection, string sql, Func<IDbCommand, T> query, Action<IDbCommand>? setupDbCommand = null)
         {
             Check.NotNull(wrappedConnection, nameof(wrappedConnection));
             Check.NotNullOrEmpty(sql, nameof(sql));
             Check.NotNull(query, nameof(query));
-
-            bool wasClosed = wrappedConnection.DbConnection.State == ConnectionState.Closed;
 
             try
             {
@@ -201,6 +202,9 @@ namespace Evolve
                 cmd.CommandText = sql;
                 cmd.Transaction = wrappedConnection.CurrentTx;
                 setupDbCommand?.Invoke(cmd);
+
+                // Do not close the connection since it will release the database 
+                // lock used to prevent concurrent execution of Evolve.
 
                 return query(cmd);
             }

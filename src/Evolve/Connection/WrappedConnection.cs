@@ -32,7 +32,7 @@ namespace Evolve.Connection
         /// <summary>
         ///     Gets the current transaction.
         /// </summary>
-        public IDbTransaction CurrentTx { get; private set; }
+        public IDbTransaction? CurrentTx { get; private set; }
 
         /// <summary>
         ///     Return true if we are connected to an in-memomry SQLite database, false otherwise.

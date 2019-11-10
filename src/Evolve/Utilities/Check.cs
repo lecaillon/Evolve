@@ -6,15 +6,13 @@ using System.Linq;
 namespace Evolve.Utilities
 {
     /// <summary>
-    /// Static convenience methods to check that a method or a constructor is invoked with proper parameter or not.
+    ///     Static convenience methods to check that a method or a constructor is invoked with proper parameter or not.
     /// </summary>
     internal static class Check
     {
         private const string ArgumentIsEmpty = "The string cannot be empty.";
-        private const string CollectionArgumentIsEmpty = "The collection must contain at least one element.";
         private const string CollectionArgumentHasNullElement = "The collection must not contain any null element.";
         private const string FileNotFound = "The file does not exist.";
-        private const string DirectoryNotFound = "Directory not found at: {0}";
 
         /// <summary>
         ///     Ensures that the string passed as a parameter is neither null or empty.
@@ -24,38 +22,15 @@ namespace Evolve.Utilities
         /// <returns> The not null or empty string that was validated. </returns>
         /// <exception cref="ArgumentNullException"> Throws ArgumentNullException if the string is null. </exception>
         /// <exception cref="ArgumentException"> Throws ArgumentException if the string is empty. </exception>
-        public static string NotNullOrEmpty(string text, string parameterName)
+        public static string NotNullOrEmpty(string? text, string parameterName)
         {
-            Exception e = null;
             if (text is null)
-            {
-                e = new ArgumentNullException(parameterName);
-            }
-            else if (text.Trim().Length == 0)
-            {
-                e = new ArgumentException(ArgumentIsEmpty, parameterName);
-            }
-
-            if (e != null)
             {
                 NotNullOrEmpty(parameterName, nameof(parameterName));
 
-                throw e;
+                throw new ArgumentNullException(parameterName);
             }
-
-            return text;
-        }
-
-        /// <summary>
-        ///     Ensures that a string is not empty, but can be null.
-        /// </summary>
-        /// <param name="text"> The string to test. </param>
-        /// <param name="parameterName"> The name of the parameter to test. </param>
-        /// <returns> The non empty string that was validated. </returns>
-        /// <exception cref="ArgumentException"> Throws ArgumentException if the string is empty. </exception>
-        public static string NullableButNotEmpty(string text, string parameterName)
-        {
-            if (text is object && (text.Length == 0))
+            else if (text.Trim().Length == 0)
             {
                 NotNullOrEmpty(parameterName, nameof(parameterName));
 
@@ -73,9 +48,9 @@ namespace Evolve.Utilities
         /// <param name="parameterName"> The name of the parameter to test. </param>
         /// <returns> The non-null reference that was validated. </returns>
         /// <exception cref="ArgumentNullException"> Throws ArgumentNullException if the reference is null. </exception>
-        public static T NotNull<T>(T reference, string parameterName)
+        public static T NotNull<T>(T? reference, string parameterName) where T : class
         {
-            if (reference == null)
+            if (reference is null)
             {
                 NotNullOrEmpty(parameterName, nameof(parameterName));
 
@@ -83,52 +58,6 @@ namespace Evolve.Utilities
             }
 
             return reference;
-        }
-
-        /// <summary>
-        ///     Ensures that a <paramref name="collection"/> contains at least one element.
-        /// </summary>
-        /// <typeparam name="T"> The type of the collection to test. </typeparam>
-        /// <param name="collection"> The collection to test. </param>
-        /// <param name="parameterName"> The name of the parameter to test. </param>
-        /// <returns> The non-empty collection that was validated. </returns>
-        /// <exception cref="ArgumentNullException"> Throws ArgumentNullException if the collection is null. </exception>
-        /// <exception cref="ArgumentException"> Throws ArgumentException when the collection has no element. </exception>
-        public static ICollection<T> NotEmpty<T>(ICollection<T> collection, string parameterName)
-        {
-            NotNull(collection, parameterName);
-
-            if (collection.Count == 0)
-            {
-                NotNullOrEmpty(parameterName, nameof(parameterName));
-
-                throw new ArgumentException(CollectionArgumentIsEmpty, parameterName);
-            }
-
-            return collection;
-        }
-
-        /// <summary>
-        ///     Ensures that a <paramref name="enumerable"/> contains at least one element.
-        /// </summary>
-        /// <typeparam name="T"> The type of the enumerable to test. </typeparam>
-        /// <param name="enumerable"> The enumerable to test. </param>
-        /// <param name="parameterName"> The name of the parameter to test. </param>
-        /// <returns> The non-empty enumerable that was validated. </returns>
-        /// <exception cref="ArgumentNullException"> Throws ArgumentNullException if the enumerable is null. </exception>
-        /// <exception cref="ArgumentException"> Throws ArgumentException when the enumerable has no element. </exception>
-        public static IEnumerable<T> NotEmpty<T>(IEnumerable<T> enumerable, string parameterName)
-        {
-            NotNull(enumerable, parameterName);
-
-            if (!enumerable.Any())
-            {
-                NotNullOrEmpty(parameterName, nameof(parameterName));
-
-                throw new ArgumentException(CollectionArgumentIsEmpty, parameterName);
-            }
-
-            return enumerable;
         }
 
         /// <summary>
@@ -144,7 +73,7 @@ namespace Evolve.Utilities
         {
             NotNull(enumerable, parameterName);
 
-            if (enumerable.Any(e => e == null))
+            if (enumerable.Any(e => e is null))
             {
                 NotNullOrEmpty(parameterName, nameof(parameterName));
 
@@ -166,7 +95,7 @@ namespace Evolve.Utilities
         {
             NotNullOrEmpty(filePath, parameterName);
 
-            if(!File.Exists(filePath))
+            if (!File.Exists(filePath))
             {
                 NotNullOrEmpty(parameterName, nameof(parameterName));
 
@@ -174,29 +103,6 @@ namespace Evolve.Utilities
             }
 
             return filePath;
-        }
-
-        /// <summary>
-        ///     Ensures that the specified directory exists.
-        /// </summary>
-        /// <param name="path"> The full path of the directory to test. </param>
-        /// <param name="parameterName"> The name of the parameter to test. </param>
-        /// <returns> The full path of the directory tested and found. </returns>
-        /// <exception cref="ArgumentNullException"> Throws ArgumentNullException if the path is null. </exception>
-        /// <exception cref="ArgumentException"> Throws ArgumentException (with an inner DirectoryNotFoundException) if the directory is not found. </exception>
-        public static string DirectoryExists(string path, string parameterName)
-        {
-            NotNullOrEmpty(path, parameterName);
-
-            if (!Directory.Exists(path))
-            {
-                NotNullOrEmpty(parameterName, nameof(parameterName));
-
-                throw new ArgumentException(string.Format(DirectoryNotFound, path), parameterName,
-                                            new DirectoryNotFoundException(path));
-            }
-
-            return path;
         }
     }
 }
