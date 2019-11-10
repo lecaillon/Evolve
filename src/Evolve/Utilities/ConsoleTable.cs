@@ -240,21 +240,6 @@ namespace ConsoleTables
                     throw new ArgumentOutOfRangeException(nameof(format), format, null);
             }
         }
-
-        private static IEnumerable<string> GetColumns<T>()
-        {
-            return typeof(T).GetProperties().Select(x => x.Name).ToArray();
-        }
-
-        private static object GetColumnValue<T>(object target, string column)
-        {
-            return typeof(T).GetProperty(column).GetValue(target, null);
-        }
-
-        private static IEnumerable<Type> GetColumnsType<T>()
-        {
-            return typeof(T).GetProperties().Select(x => x.PropertyType).ToArray();
-        }
     }
 
     public class ConsoleTableOptions
