@@ -14,7 +14,7 @@ namespace Evolve.Migration
     {
         private const string IncorrectMigrationChecksum = "Validate failed: invalid checksum for migration: {0}.";
 
-        protected MigrationScript(string version, string description, string name, string content, MetadataType type) 
+        protected MigrationScript(string? version, string description, string name, string content, MetadataType type) 
             : base(version, description, name, type)
         {
             Content = Check.NotNull(content, nameof(content));
@@ -46,7 +46,7 @@ namespace Evolve.Migration
         /// </summary>
         /// <param name="checksum"> The applied migration checksum. </param>
         /// <exception cref="EvolveValidationException"></exception>
-        public virtual void ValidateChecksum(string checksum)
+        public virtual void ValidateChecksum(string? checksum)
         {
             Check.NotNull(checksum, nameof(checksum));
 

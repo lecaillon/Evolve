@@ -1,8 +1,8 @@
-﻿using Evolve.Utilities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Evolve.Utilities;
 
 namespace Evolve.Migration
 {
@@ -19,7 +19,7 @@ namespace Evolve.Migration
         public MigrationVersion(string version)
         {
             Check.NotNullOrEmpty(version, nameof(version));
-            
+
             Label = version.Replace('_', '.');
             if (!MatchPattern.IsMatch(Label))
                 throw new EvolveConfigurationException(string.Format(InvalidVersionPatternMatching, Label));
@@ -39,37 +39,31 @@ namespace Evolve.Migration
 
         #region IComparable
 
-        public int CompareTo(MigrationVersion other)
+        public int CompareTo(MigrationVersion? other)
         {
-            if (other is null)
-            {
-                return 1;
-            }
+            if (other is null) return 1;
 
             using IEnumerator<long> e1 = VersionParts.GetEnumerator();
             using IEnumerator<long> e2 = other.VersionParts.GetEnumerator();
             while (e1.MoveNext())
             {
                 if (!e2.MoveNext())
-                {
                     return 1;
-                }
 
                 if (e1.Current.CompareTo(e2.Current) == 0)
-                {
                     continue;
-                }
 
                 return e1.Current.CompareTo(e2.Current);
             }
-
             return e2.MoveNext() ? -1 : 0;
         }
 
-        public int CompareTo(object obj)
+        public int CompareTo(object? obj)
         {
             if (obj != null && !(obj is MigrationVersion))
+            {
                 throw new ArgumentException(InvalidObjectType);
+            }
 
             return CompareTo(obj as MigrationVersion);
         }
@@ -78,9 +72,9 @@ namespace Evolve.Migration
 
         #region Operators
 
-        public override bool Equals(object obj) => (CompareTo(obj as MigrationVersion) == 0);
+        public override bool Equals(object? obj) => (CompareTo(obj as MigrationVersion) == 0);
 
-        public static bool operator ==(MigrationVersion operand1, MigrationVersion operand2)
+        public static bool operator ==(MigrationVersion? operand1, MigrationVersion? operand2)
         {
             if (operand1 is null)
             {
@@ -90,15 +84,15 @@ namespace Evolve.Migration
             return operand1.Equals(operand2);
         }
 
-        public static bool operator !=(MigrationVersion operand1, MigrationVersion operand2) => !(operand1 == operand2);
+        public static bool operator !=(MigrationVersion? operand1, MigrationVersion? operand2) => !(operand1 == operand2);
 
-        public static bool operator >(MigrationVersion operand1, MigrationVersion operand2) => operand1.CompareTo(operand2) == 1;
+        public static bool operator >(MigrationVersion? operand1, MigrationVersion? operand2) => operand1?.CompareTo(operand2) == 1;
 
-        public static bool operator <(MigrationVersion operand1, MigrationVersion operand2) => operand1.CompareTo(operand2) == -1;
+        public static bool operator <(MigrationVersion? operand1, MigrationVersion? operand2) => operand1?.CompareTo(operand2) == -1;
 
-        public static bool operator >=(MigrationVersion operand1, MigrationVersion operand2) => operand1.CompareTo(operand2) >= 0;
+        public static bool operator >=(MigrationVersion? operand1, MigrationVersion? operand2) => operand1?.CompareTo(operand2) >= 0;
 
-        public static bool operator <=(MigrationVersion operand1, MigrationVersion operand2) => operand1.CompareTo(operand2) <= 0;
+        public static bool operator <=(MigrationVersion? operand1, MigrationVersion? operand2) => operand1?.CompareTo(operand2) <= 0;
 
         #endregion
 

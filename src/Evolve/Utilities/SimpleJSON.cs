@@ -1,4 +1,5 @@
-﻿/* * * * *
+﻿#nullable disable
+/* * * * *
  * A simple JSON Parser / builder
  * ------------------------------
  * 

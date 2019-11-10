@@ -18,10 +18,9 @@ namespace ConsoleTables
     internal class ConsoleTable
     {
         public IList<object> Columns { get; set; }
-        public IList<object[]> Rows { get; protected set; }
+        public IList<object?[]> Rows { get; protected set; }
 
         public ConsoleTableOptions Options { get; protected set; }
-        public Type[] ColumnTypes { get; private set; }
 
         public static HashSet<Type> NumericTypes = new HashSet<Type>
         {
@@ -39,7 +38,7 @@ namespace ConsoleTables
         public ConsoleTable(ConsoleTableOptions options)
         {
             Options = options ?? throw new ArgumentNullException(nameof(options));
-            Rows = new List<object[]>();
+            Rows = new List<object?[]>();
             Columns = new List<object>(options.Columns.Cast<object>());
         }
 
@@ -50,7 +49,7 @@ namespace ConsoleTables
             return this;
         }
 
-        public ConsoleTable AddRow(params object[] values)
+        public ConsoleTable AddRow(params object?[] values)
         {
             if (values == null)
                 throw new ArgumentNullException(nameof(values));
@@ -70,25 +69,6 @@ namespace ConsoleTables
         {
             action(Options);
             return this;
-        }
-
-        public static ConsoleTable From<T>(IEnumerable<T> values)
-        {
-            var table = new ConsoleTable
-            {
-                ColumnTypes = GetColumnsType<T>().ToArray()
-            };
-
-            var columns = GetColumns<T>();
-
-            table.AddColumn(columns);
-
-            foreach (
-                var propertyValues
-                in values.Select(value => columns.Select(column => GetColumnValue<T>(value, column)))
-            ) table.AddRow(propertyValues.ToArray());
-
-            return table;
         }
 
         public override string ToString()
@@ -226,11 +206,7 @@ namespace ConsoleTables
 
         private string GetNumberAlignment(int i)
         {
-            return Options.NumberAlignment == Alignment.Right
-                    && ColumnTypes != null
-                    && NumericTypes.Contains(ColumnTypes[i])
-                ? ""
-                : "-";
+            return Options.NumberAlignment == Alignment.Right ? "" : "-";
         }
 
         private List<int> ColumnLengths()
@@ -239,7 +215,7 @@ namespace ConsoleTables
                 .Select((t, i) => Rows.Select(x => x[i])
                     .Union(new[] { Columns[i] })
                     .Where(x => x != null)
-                    .Select(x => x.ToString().Length).Max())
+                    .Select(x => x!.ToString().Length).Max())
                 .ToList();
             return columnLengths;
         }
@@ -263,21 +239,6 @@ namespace ConsoleTables
                 default:
                     throw new ArgumentOutOfRangeException(nameof(format), format, null);
             }
-        }
-
-        private static IEnumerable<string> GetColumns<T>()
-        {
-            return typeof(T).GetProperties().Select(x => x.Name).ToArray();
-        }
-
-        private static object GetColumnValue<T>(object target, string column)
-        {
-            return typeof(T).GetProperty(column).GetValue(target, null);
-        }
-
-        private static IEnumerable<Type> GetColumnsType<T>()
-        {
-            return typeof(T).GetProperties().Select(x => x.PropertyType).ToArray();
         }
     }
 

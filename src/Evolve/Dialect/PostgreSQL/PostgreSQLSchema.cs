@@ -164,7 +164,7 @@ namespace Evolve.Dialect.PostgreSQL
 
                 _wrappedConnection.QueryForList(sql, r => new { ProName = r.GetString(0), Args = r.GetString(1), Kind = r.GetChar(2) }).ToList().ForEach(x =>
                 {
-                    string objectType = null;
+                    string? objectType = null;
                     switch (x.Kind)
                     {
                         case 'a': objectType = "AGGREGATE"; break;

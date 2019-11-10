@@ -33,7 +33,7 @@ namespace Evolve
         /// </summary>
         /// <param name="dbConnection"> The database connection used to apply the migrations. </param>
         /// <param name="logDelegate"> An optional logger. </param>
-        public Evolve(IDbConnection dbConnection, Action<string> logDelegate = null)
+        public Evolve(IDbConnection dbConnection, Action<string>? logDelegate = null)
         {
             _userCnn = Check.NotNull(dbConnection, nameof(dbConnection));
             _log = logDelegate ?? new Action<string>((msg) => { });
@@ -49,10 +49,10 @@ namespace Evolve
         public IEnumerable<string> Locations { get; set; } = new List<string> { "Sql_Scripts" };
         public string MetadataTableName { get; set; } = "changelog";
 
-        private string _metadaTableSchema;
+        private string? _metadaTableSchema;
         public string MetadataTableSchema
         {
-            get => _metadaTableSchema.IsNullOrWhiteSpace() ? Schemas?.FirstOrDefault() : _metadaTableSchema;
+            get => _metadaTableSchema.IsNullOrWhiteSpace() ? Schemas.First() : _metadaTableSchema!;
             set => _metadaTableSchema = value;
         }
         public string PlaceholderPrefix { get; set; } = "${";
@@ -131,7 +131,7 @@ namespace Evolve
             catch
             {
                 _log("Evolve metadata table cannot be found.");
-                return null;
+                return Enumerable.Empty<MigrationMetadata>();
             }
         }
 
@@ -206,9 +206,7 @@ namespace Evolve
                 ExecuteMigration(migration, db);
             }
 
-            return migrations.Any() 
-                ? migrations.Last().Version 
-                : lastAppliedVersion;
+            return migrations.Any() ? migrations.Last().Version! : lastAppliedVersion;
         }
 
         /// <summary>
@@ -548,7 +546,7 @@ namespace Evolve
             foreach (var migration in migrations)
             { // Search script in the applied migrations
                 var appliedMigration = appliedMigrations.SingleOrDefault(x => x.Version == migration.Version);
-                if (appliedMigration == null)
+                if (appliedMigration is null)
                 { // Script not found
                     if (Command == CommandOptions.Migrate && OutOfOrder)
                     { // Apply migration

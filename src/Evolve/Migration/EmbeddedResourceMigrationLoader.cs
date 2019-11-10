@@ -26,7 +26,7 @@ namespace Evolve.Migration
             _filters = filters is null ? new List<string>() : Check.HasNoNulls(filters, nameof(filters));
         }
 
-        public IEnumerable<MigrationScript> GetMigrations(string prefix, string separator, string suffix, Encoding encoding = null)
+        public IEnumerable<MigrationScript> GetMigrations(string prefix, string separator, string suffix, Encoding? encoding = null)
         {
             Check.NotNullOrEmpty(prefix, nameof(prefix)); // V
             Check.NotNullOrEmpty(separator, nameof(separator)); // __
@@ -63,7 +63,7 @@ namespace Evolve.Migration
                              .ToList();
         }
 
-        public IEnumerable<MigrationScript> GetRepeatableMigrations(string prefix, string separator, string suffix, Encoding encoding = null)
+        public IEnumerable<MigrationScript> GetRepeatableMigrations(string prefix, string separator, string suffix, Encoding? encoding = null)
         {
             Check.NotNullOrEmpty(prefix, nameof(prefix)); // R
             Check.NotNullOrEmpty(separator, nameof(separator)); // __

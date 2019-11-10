@@ -57,7 +57,7 @@ namespace Evolve.Utilities
 
             var duplicates = migrations.GroupBy(x => x.Version)
                                        .Where(grp => grp.Count() > 1)
-                                       .Select(grp => grp.Key.Label)
+                                       .Select(grp => grp.Key?.Label)
                                        .ToArray();
 
             if (duplicates.Count() > 0)
