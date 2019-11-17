@@ -194,7 +194,7 @@ namespace Evolve
         private MigrationVersion ExecuteAllMigration(DatabaseHelper db)
         {
             var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
-            var lastAppliedVersion = metadata.GetAllMigrationMetadata().LastOrDefault()?.Version ?? MigrationVersion.MinVersion;
+            var lastAppliedVersion = metadata.FindLastAppliedVersion();
             var startVersion = metadata.FindStartVersion(); // Load start version from metadata
             var migrations = MigrationLoader.GetMigrations(SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding)
                                             .SkipWhile(x => x.Version < startVersion)

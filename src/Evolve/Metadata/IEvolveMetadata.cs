@@ -118,5 +118,10 @@ namespace Evolve.Metadata
         /// </summary>
         /// <returns> The migration starting point. </returns>
         MigrationVersion FindStartVersion();
+
+        /// <summary>
+        ///     Returns the version of the last applied migration.
+        /// </summary>
+        MigrationVersion FindLastAppliedVersion();
     }
 }

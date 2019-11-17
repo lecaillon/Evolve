@@ -92,6 +92,14 @@ namespace Evolve.Metadata
             });
         }
 
+        public MigrationVersion FindLastAppliedVersion()
+        {
+            return Execute(() =>
+            {
+                return GetAllMigrationMetadata().LastOrDefault()?.Version ?? MigrationVersion.MinVersion;
+            });
+        }
+
         public IEnumerable<MigrationMetadata> GetAllRepeatableMigrationMetadata()
         {
             return Execute(() =>
