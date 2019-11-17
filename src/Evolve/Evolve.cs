@@ -215,7 +215,7 @@ namespace Evolve
         private void ExecuteAllRepeatableMigration(DatabaseHelper db)
         {
             var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
-            var appliedMigrations = metadata.GetAllRepeatableMigrationMetadata();
+            var appliedMigrations = metadata.GetAllAppliedRepeatableMigration();
             var migrations = MigrationLoader.GetRepeatableMigrations(SqlRepeatableMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding);
             foreach (var migration in migrations)
             {
@@ -510,7 +510,7 @@ namespace Evolve
                 throw new EvolveConfigurationException($"The database has already been flagged with a StartVersion ({currentStartVersion}). Only one StartVersion parameter is allowed.");
             }
 
-            if (metadata.GetAllMigrationMetadata().Any())
+            if (metadata.GetAllAppliedMigration().Any())
             { // At least one migration has already been applied, StartVersion parameter not allowed anymore
                 throw new EvolveConfigurationException("Use of the StartVersion parameter is not allowed when migrations have already been applied.");
             }
@@ -530,7 +530,7 @@ namespace Evolve
                 return;
             }
 
-            var appliedMigrations = metadata.GetAllMigrationMetadata(); // Load all applied migrations metadata
+            var appliedMigrations = metadata.GetAllAppliedMigration(); // Load all applied migrations metadata
             if (appliedMigrations.Count() == 0)
             { // Nothing to validate
                 _log("No metadata found.");

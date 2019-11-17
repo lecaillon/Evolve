@@ -82,7 +82,7 @@ namespace Evolve.Metadata
 
         public IEnumerable<MigrationMetadata> GetAllMetadata() => Execute(() => InternalGetAllMetadata(), createIfNotExists: false);
 
-        public IEnumerable<MigrationMetadata> GetAllMigrationMetadata()
+        public IEnumerable<MigrationMetadata> GetAllAppliedMigration()
         {
             return Execute(() =>
             {
@@ -96,11 +96,11 @@ namespace Evolve.Metadata
         {
             return Execute(() =>
             {
-                return GetAllMigrationMetadata().LastOrDefault()?.Version ?? MigrationVersion.MinVersion;
+                return GetAllAppliedMigration().LastOrDefault()?.Version ?? MigrationVersion.MinVersion;
             });
         }
 
-        public IEnumerable<MigrationMetadata> GetAllRepeatableMigrationMetadata()
+        public IEnumerable<MigrationMetadata> GetAllAppliedRepeatableMigration()
         {
             return Execute(() =>
             {

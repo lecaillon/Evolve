@@ -32,8 +32,8 @@ namespace Evolve.Tests
             Assert.True(metadataTable.CreateIfNotExists(), "MetadataTable creation failed.");
             Assert.True(metadataTable.IsExists(), "MetadataTable should exist.");
             Assert.False(metadataTable.CreateIfNotExists(), "MetadataTable already exists. Creation should return false.");
-            Assert.True(metadataTable.GetAllMigrationMetadata().Count() == 0, "No migration metadata should be found.");
-            Assert.True(metadataTable.GetAllRepeatableMigrationMetadata().Count() == 0, "No repeatable migration metadata should be found.");
+            Assert.True(metadataTable.GetAllAppliedMigration().Count() == 0, "No migration metadata should be found.");
+            Assert.True(metadataTable.GetAllAppliedRepeatableMigration().Count() == 0, "No repeatable migration metadata should be found.");
             return metadataTable;
         }
 
@@ -71,9 +71,9 @@ namespace Evolve.Tests
         public static IEvolveMetadata AssertVersionedMigrationSave(this IEvolveMetadata metadataTable)
         {
             metadataTable.SaveMigration(FileMigrationScriptV, true);
-            Assert.True(metadataTable.GetAllMigrationMetadata().Count() == 1, $"1 migration metadata should have been found, instead of {metadataTable.GetAllMigrationMetadata().Count()}.");
-            Assert.True(metadataTable.GetAllRepeatableMigrationMetadata().Count() == 0, $"0 repeatable migration metadata should have been found, instead of {metadataTable.GetAllRepeatableMigrationMetadata().Count()}.");
-            var metadata = metadataTable.GetAllMigrationMetadata().First();
+            Assert.True(metadataTable.GetAllAppliedMigration().Count() == 1, $"1 migration metadata should have been found, instead of {metadataTable.GetAllAppliedMigration().Count()}.");
+            Assert.True(metadataTable.GetAllAppliedRepeatableMigration().Count() == 0, $"0 repeatable migration metadata should have been found, instead of {metadataTable.GetAllAppliedRepeatableMigration().Count()}.");
+            var metadata = metadataTable.GetAllAppliedMigration().First();
             Assert.True(metadata.Version == FileMigrationScriptV.Version, $"Migration metadata version should be: 2.3.1, but found {metadata.Version}.");
             Assert.True(metadata.Checksum == FileMigrationScriptV.CalculateChecksum(), $"Migration metadata checksum should be: 6C7E36422F79696602E19079534B4076, but found {metadata.Checksum}.");
             Assert.True(metadata.Description == FileMigrationScriptV.Description, $"Migration metadata description should be: Duplicate migration script, but found {metadata.Description}.");
@@ -91,7 +91,7 @@ namespace Evolve.Tests
         public static IEvolveMetadata AssertVersionedMigrationChecksumUpdate(this IEvolveMetadata metadataTable, int metadataId = 2)
         {
             metadataTable.UpdateChecksum(metadataId, "Hi !");
-            var metadata = metadataTable.GetAllMigrationMetadata().Single(x => x.Id == metadataId);
+            var metadata = metadataTable.GetAllAppliedMigration().Single(x => x.Id == metadataId);
             Assert.True(metadata.Checksum == "Hi !", $"Updated checksum should be: Hi!, but found {metadata.Checksum}");
             return metadataTable;
         }
@@ -99,9 +99,9 @@ namespace Evolve.Tests
         public static IEvolveMetadata AssertRepeatableMigrationSave(this IEvolveMetadata metadataTable)
         {
             metadataTable.SaveMigration(FileMigrationScriptR, true);
-            Assert.True(metadataTable.GetAllMigrationMetadata().Count() == 1, $"1 migration metadata should have been found, instead of {metadataTable.GetAllMigrationMetadata().Count()}.");
-            Assert.True(metadataTable.GetAllRepeatableMigrationMetadata().Count() == 1, $"1 repeatable migration metadata should have been found, instead of {metadataTable.GetAllRepeatableMigrationMetadata().Count()}.");
-            var metadata = metadataTable.GetAllRepeatableMigrationMetadata().First();
+            Assert.True(metadataTable.GetAllAppliedMigration().Count() == 1, $"1 migration metadata should have been found, instead of {metadataTable.GetAllAppliedMigration().Count()}.");
+            Assert.True(metadataTable.GetAllAppliedRepeatableMigration().Count() == 1, $"1 repeatable migration metadata should have been found, instead of {metadataTable.GetAllAppliedRepeatableMigration().Count()}.");
+            var metadata = metadataTable.GetAllAppliedRepeatableMigration().First();
             Assert.True(metadata.Version == FileMigrationScriptR.Version, $"Repeatable migration metadata version should be: null, but found {metadata.Version}.");
             Assert.True(metadata.Checksum == FileMigrationScriptR.CalculateChecksum(), $"Repeatable migration metadata checksum should be; 71568061B2970A4B7C5160FE75356E10, but found {metadata.Checksum}.");
             Assert.True(metadata.Description == FileMigrationScriptR.Description, $"Repeatable migration metadata description should be: desc b, but found {metadata.Description}.");
