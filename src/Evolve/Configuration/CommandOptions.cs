@@ -29,8 +29,7 @@
         Erase,
 
         /// <summary>
-        ///     Prints the details about all the migrations. 
-        ///     Displays the content of the EvolveMetadata table.
+        ///     Prints details about migrations mainly based on the EvolveMetadata table.
         /// </summary>
         Info
     }
