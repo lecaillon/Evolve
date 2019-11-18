@@ -530,15 +530,15 @@ namespace Evolve
                 return;
             }
 
-            var appliedMigrations = metadata.GetAllAppliedMigration(); // Load all applied migrations metadata
+            var appliedMigrations = metadata.GetAllAppliedMigration();
             if (appliedMigrations.Count() == 0)
             { // Nothing to validate
                 _log("No metadata found.");
                 return;
             }
 
-            var lastAppliedVersion = appliedMigrations.Last().Version; // Get the last applied migration version
-            var startVersion = metadata.FindStartVersion(); // Load start version from metadata
+            var lastAppliedVersion = metadata.FindLastAppliedVersion();
+            var startVersion = metadata.FindStartVersion();
             var migrations = MigrationLoader.GetMigrations(SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding)
                                             .SkipWhile(x => x.Version < startVersion)
                                             .TakeWhile(x => x.Version <= lastAppliedVersion); // Keep scripts between first and last applied migration

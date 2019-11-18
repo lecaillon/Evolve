@@ -96,7 +96,7 @@ namespace Evolve.Metadata
         {
             return Execute(() =>
             {
-                return GetAllAppliedMigration().LastOrDefault()?.Version ?? MigrationVersion.MinVersion;
+                return GetAllAppliedMigration().OrderBy(x => x.Version).LastOrDefault()?.Version ?? MigrationVersion.MinVersion;
             });
         }
 
