@@ -11,7 +11,7 @@ namespace Evolve.Migration
             Category = category;
         }
 
-        public MigrationMetadataUI(MigrationMetadata migration)
+        internal MigrationMetadataUI(MigrationMetadata migration)
         {
             Id = migration.Id;
             Version = migration.Version?.Label;

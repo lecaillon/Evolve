@@ -242,7 +242,7 @@ namespace ConsoleTables
         }
     }
 
-    public class ConsoleTableOptions
+    internal class ConsoleTableOptions
     {
         public IEnumerable<string> Columns { get; set; } = new List<string>();
         public bool EnableCount { get; set; } = true;
@@ -253,7 +253,7 @@ namespace ConsoleTables
         public Alignment NumberAlignment { get; set; } = Alignment.Left;
     }
 
-    public enum Format
+    internal enum Format
     {
         Default = 0,
         MarkDown = 1,
@@ -261,7 +261,7 @@ namespace ConsoleTables
         Minimal = 3
     }
 
-    public enum Alignment
+    internal enum Alignment
     {
         Left,
         Right

@@ -79,7 +79,7 @@ namespace Evolve
         public int NbSchemaErased { get; private set; }
         public int NbSchemaToEraseSkipped { get; private set; }
         public long TotalTimeElapsedInMs { get; private set; }
-        public IMigrationLoader MigrationLoader
+        internal IMigrationLoader MigrationLoader
         {
             get => EmbeddedResourceAssemblies.Any() ? new EmbeddedResourceMigrationLoader(EmbeddedResourceAssemblies, EmbeddedResourceFilters)
                                                     : new FileMigrationLoader(Locations) as IMigrationLoader;

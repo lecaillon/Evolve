@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Evolve.Migration
 {
-    public interface IMigrationLoader
+    internal interface IMigrationLoader
     {
         /// <summary>
         ///     Returns a list of migration scripts ordered by version.

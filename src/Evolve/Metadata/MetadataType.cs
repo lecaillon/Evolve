@@ -1,6 +1,6 @@
 ﻿namespace Evolve.Metadata
 {
-    public enum MetadataType
+    internal enum MetadataType
     {
         Migration,
         NewSchema,
