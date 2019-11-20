@@ -119,7 +119,7 @@ namespace Evolve
             var table = new ConsoleTable("Id", "Version", "Category", "Description", "Installed on", "Installed by", "Success", "Checksum").Configure(o => o.EnableCount = false);
             using var db = InitiateDatabaseConnection();
             var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
-            bool isEvolveInitialized = metadata.IsExists();
+            bool isEvolveInitialized = IsEvolveInitialized(metadata);
             var lastAppliedVersion = isEvolveInitialized ? metadata.FindLastAppliedVersion() : MigrationVersion.MinVersion;
             var startVersion = isEvolveInitialized ? metadata.FindStartVersion() : MigrationVersion.MinVersion;
             if (startVersion == MigrationVersion.MinVersion)
@@ -142,6 +142,18 @@ namespace Evolve
             rows.ForEach(x => table.AddRow(x.Id, x.Version, x.Category, x.Description, x.InstalledOn, x.InstalledBy, x.Success, x.Checksum));
             _log(table.ToStringAlternative());
             return rows;
+
+            static bool IsEvolveInitialized(IEvolveMetadata metadata)
+            {
+                try
+                {
+                    return metadata.IsExists();
+                }
+                catch
+                {
+                    return false;
+                }
+            }
 
             static IEnumerable<MigrationMetadataUI> GetAllBeforeFirstMigrationUI(IEvolveMetadata metadata)
             {
@@ -199,7 +211,7 @@ namespace Evolve
 
             IEnumerable<MigrationMetadataUI> GetAllPendingRepeatableMigrationUI(IEvolveMetadata metadata)
             {
-                var pendingMigrations = metadata.IsExists()
+                var pendingMigrations = IsEvolveInitialized(metadata)
                     ? GetAllPendingRepeatableMigration(metadata)
                     : MigrationLoader.GetRepeatableMigrations(SqlRepeatableMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding);
 

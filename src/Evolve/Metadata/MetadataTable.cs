@@ -192,7 +192,7 @@ namespace Evolve.Metadata
         private void Execute(Action action, bool createIfNotExists = true)
         {
             bool restoreSchema = false;
-            if(!_database.GetCurrentSchemaName().Equals(Schema, StringComparison.OrdinalIgnoreCase))
+            if (!_database.GetCurrentSchemaName().Equals(Schema, StringComparison.OrdinalIgnoreCase))
             {
                 _database.ChangeSchema(Schema);
                 restoreSchema = true;
@@ -205,7 +205,7 @@ namespace Evolve.Metadata
 
             action();
 
-            if(restoreSchema)
+            if (restoreSchema)
             {
                 _database.RestoreOriginalSchema();
             }
