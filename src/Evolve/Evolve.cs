@@ -116,37 +116,32 @@ namespace Evolve
         {
             Command = CommandOptions.Info;
 
-            try
+            var table = new ConsoleTable("Id", "Version", "Category", "Description", "Installed on", "Installed by", "Success", "Checksum").Configure(o => o.EnableCount = false);
+            using var db = InitiateDatabaseConnection();
+            var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
+            bool isEvolveInitialized = metadata.IsExists();
+            var lastAppliedVersion = isEvolveInitialized ? metadata.FindLastAppliedVersion() : MigrationVersion.MinVersion;
+            var startVersion = isEvolveInitialized ? metadata.FindStartVersion() : MigrationVersion.MinVersion;
+            if (startVersion == MigrationVersion.MinVersion)
             {
-                var table = new ConsoleTable("Id", "Version", "Category", "Description", "Installed on", "Installed by", "Success", "Checksum").Configure(o => o.EnableCount = false);
-                using var db = InitiateDatabaseConnection();
-                var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
-                var lastAppliedVersion = metadata.FindLastAppliedVersion();
-                var startVersion = metadata.FindStartVersion();
-                if (startVersion == MigrationVersion.MinVersion)
-                {
-                    startVersion = StartVersion;
-                }
+                startVersion = StartVersion;
+            }
                 
-                var rows = new List<MigrationMetadataUI>();
+            var rows = new List<MigrationMetadataUI>();
+            if (isEvolveInitialized)
+            {
                 rows.AddRange(GetAllBeforeFirstMigrationUI(metadata));
                 rows.AddRange(GetAllIgnoredMigrationUI());
                 rows.AddRange(GetAllExecutedMigrationUI(metadata));
                 rows.AddRange(GetAllOutOfOrderPendingMigrationUI(metadata, startVersion, lastAppliedVersion));
-                rows.AddRange(GetAllPendingMigrationUI(startVersion, lastAppliedVersion));
-                rows.AddRange(GetAllPendingRepeatableMigrationUI(metadata));
-                rows.AddRange(GetAllOffTargetMigrationUI());
-
-                rows.ForEach(x => table.AddRow(x.Id, x.Version, x.Category, x.Description, x.InstalledOn, x.InstalledBy, x.Success, x.Checksum));
-                _log(table.ToStringAlternative());
-
-                return rows;
             }
-            catch
-            {
-                _log("Evolve metadata table cannot be found.");
-                return Enumerable.Empty<MigrationMetadataUI>();
-            }
+            rows.AddRange(GetAllPendingMigrationUI(startVersion, lastAppliedVersion));
+            rows.AddRange(GetAllPendingRepeatableMigrationUI(metadata));
+            rows.AddRange(GetAllOffTargetMigrationUI());
+
+            rows.ForEach(x => table.AddRow(x.Id, x.Version, x.Category, x.Description, x.InstalledOn, x.InstalledBy, x.Success, x.Checksum));
+            _log(table.ToStringAlternative());
+            return rows;
 
             static IEnumerable<MigrationMetadataUI> GetAllBeforeFirstMigrationUI(IEvolveMetadata metadata)
             {
@@ -204,8 +199,11 @@ namespace Evolve
 
             IEnumerable<MigrationMetadataUI> GetAllPendingRepeatableMigrationUI(IEvolveMetadata metadata)
             {
-                return GetAllPendingRepeatableMigration(metadata)
-                    .Select(x => new MigrationMetadataUI(x.Version?.Label, x.Description, "Pending"));
+                var pendingMigrations = metadata.IsExists()
+                    ? GetAllPendingRepeatableMigration(metadata)
+                    : MigrationLoader.GetRepeatableMigrations(SqlRepeatableMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding);
+
+                return pendingMigrations.Select(x => new MigrationMetadataUI(x.Version?.Label, x.Description, "Pending"));
             }
 
             IEnumerable<MigrationMetadataUI> GetAllOffTargetMigrationUI()
