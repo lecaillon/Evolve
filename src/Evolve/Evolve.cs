@@ -118,21 +118,24 @@ namespace Evolve
 
             try
             {
-                using var db = InitiateDatabaseConnection();
-                ManageSchemas(db); // Ensures all schema are created before using the metadatatable
-
-                var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
-                var startVersion = metadata.FindStartVersion();
-                var lastAppliedVersion = metadata.FindLastAppliedVersion();
                 var table = new ConsoleTable("Id", "Version", "Category", "Description", "Installed on", "Installed by", "Success", "Checksum").Configure(o => o.EnableCount = false);
+                using var db = InitiateDatabaseConnection();
+                var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
+                var lastAppliedVersion = metadata.FindLastAppliedVersion();
+                var startVersion = metadata.FindStartVersion();
+                if (startVersion == MigrationVersion.MinVersion)
+                {
+                    startVersion = StartVersion;
+                }
                 
                 var rows = new List<MigrationMetadataUI>();
-                rows.AddRange(GetAllBeforeFirstMigration(metadata));
-                rows.AddRange(GetAllIgnoredMigration());
-                rows.AddRange(GetAllExecutedMigration(metadata));
-                rows.AddRange(GetAllOutOfOrderPendingMigration(metadata, startVersion, lastAppliedVersion));
-                rows.AddRange(GetAllPendingMigration(metadata, startVersion, lastAppliedVersion));
-                rows.AddRange(GetAllOffTargetMigration());
+                rows.AddRange(GetAllBeforeFirstMigrationUI(metadata));
+                rows.AddRange(GetAllIgnoredMigrationUI());
+                rows.AddRange(GetAllExecutedMigrationUI(metadata));
+                rows.AddRange(GetAllOutOfOrderPendingMigrationUI(metadata, startVersion, lastAppliedVersion));
+                rows.AddRange(GetAllPendingMigrationUI(startVersion, lastAppliedVersion));
+                rows.AddRange(GetAllPendingRepeatableMigrationUI(metadata));
+                rows.AddRange(GetAllOffTargetMigrationUI());
 
                 rows.ForEach(x => table.AddRow(x.Id, x.Version, x.Category, x.Description, x.InstalledOn, x.InstalledBy, x.Success, x.Checksum));
                 _log(table.ToStringAlternative());
@@ -145,7 +148,7 @@ namespace Evolve
                 return Enumerable.Empty<MigrationMetadataUI>();
             }
 
-            static IEnumerable<MigrationMetadataUI> GetAllBeforeFirstMigration(IEvolveMetadata metadata)
+            static IEnumerable<MigrationMetadataUI> GetAllBeforeFirstMigrationUI(IEvolveMetadata metadata)
             {
                 return metadata.GetAllMetadata()
                                .OrderBy(x => x.Id)
@@ -153,14 +156,14 @@ namespace Evolve
                                .Select(x => new MigrationMetadataUI(x));
             }
 
-            IEnumerable<MigrationMetadataUI> GetAllIgnoredMigration()
+            IEnumerable<MigrationMetadataUI> GetAllIgnoredMigrationUI()
             {
                 return MigrationLoader.GetMigrations(SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding)
                                       .TakeWhile(x => x.Version < StartVersion)
                                       .Select(x => new MigrationMetadataUI(x.Version?.Label, x.Description, "Ignored"));
             }
 
-            static IEnumerable<MigrationMetadataUI> GetAllExecutedMigration(IEvolveMetadata metadata)
+            static IEnumerable<MigrationMetadataUI> GetAllExecutedMigrationUI(IEvolveMetadata metadata)
             {
                 return metadata.GetAllMetadata()
                                .Where(x => x.Type == MetadataType.Migration || x.Type == MetadataType.RepeatableMigration)
@@ -168,7 +171,7 @@ namespace Evolve
                                .Select(x => new MigrationMetadataUI(x));
             }
 
-            IEnumerable<MigrationMetadataUI> GetAllOutOfOrderPendingMigration(IEvolveMetadata metadata, MigrationVersion startVersion, MigrationVersion lastAppliedVersion)
+            IEnumerable<MigrationMetadataUI> GetAllOutOfOrderPendingMigrationUI(IEvolveMetadata metadata, MigrationVersion startVersion, MigrationVersion lastAppliedVersion)
             {
                 if (!OutOfOrder)
                 {
@@ -193,16 +196,19 @@ namespace Evolve
                 return pendingMigrations;
             }
 
-            IEnumerable<MigrationMetadataUI> GetAllPendingMigration(IEvolveMetadata metadata, MigrationVersion startVersion, MigrationVersion lastAppliedVersion)
+            IEnumerable<MigrationMetadataUI> GetAllPendingMigrationUI(MigrationVersion startVersion, MigrationVersion lastAppliedVersion)
             {
-                return MigrationLoader.GetMigrations(SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding)
-                                      .SkipWhile(x => x.Version < startVersion)
-                                      .SkipWhile(x => x.Version <= lastAppliedVersion)
-                                      .TakeWhile(x => x.Version <= TargetVersion)
-                                      .Select(x => new MigrationMetadataUI(x.Version?.Label, x.Description, "Pending"));
+                return GetAllPendingMigration(startVersion, lastAppliedVersion)
+                    .Select(x => new MigrationMetadataUI(x.Version?.Label, x.Description, "Pending"));
             }
 
-            IEnumerable<MigrationMetadataUI> GetAllOffTargetMigration()
+            IEnumerable<MigrationMetadataUI> GetAllPendingRepeatableMigrationUI(IEvolveMetadata metadata)
+            {
+                return GetAllPendingRepeatableMigration(metadata)
+                    .Select(x => new MigrationMetadataUI(x.Version?.Label, x.Description, "Pending"));
+            }
+
+            IEnumerable<MigrationMetadataUI> GetAllOffTargetMigrationUI()
             {
                 return MigrationLoader.GetMigrations(SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding)
                                       .TakeWhile(x => x.Version > TargetVersion)
@@ -271,10 +277,7 @@ namespace Evolve
             var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
             var startVersion = metadata.FindStartVersion();
             var lastAppliedVersion = metadata.FindLastAppliedVersion();
-            var migrations = MigrationLoader.GetMigrations(SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding)
-                                            .SkipWhile(x => x.Version < startVersion)
-                                            .SkipWhile(x => x.Version <= lastAppliedVersion)
-                                            .TakeWhile(x => x.Version <= TargetVersion);
+            var migrations = GetAllPendingMigration(startVersion, lastAppliedVersion);
 
             foreach (var migration in migrations)
             {
@@ -284,25 +287,44 @@ namespace Evolve
             return migrations.Any() ? migrations.Last().Version! : lastAppliedVersion;
         }
 
+        private IEnumerable<MigrationScript> GetAllPendingMigration(MigrationVersion startVersion, MigrationVersion lastAppliedVersion)
+        {
+            return MigrationLoader.GetMigrations(SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding)
+                                  .SkipWhile(x => x.Version < startVersion)
+                                  .SkipWhile(x => x.Version <= lastAppliedVersion)
+                                  .TakeWhile(x => x.Version <= TargetVersion);
+        }
+
         /// <summary>
         ///     Execute new repeatable migrations and all those for which the checksum has changed since the last execution.
         /// </summary>
         private void ExecuteAllRepeatableMigration(DatabaseHelper db)
         {
             var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
-            var appliedMigrations = metadata.GetAllAppliedRepeatableMigration();
-            var migrations = MigrationLoader.GetRepeatableMigrations(SqlRepeatableMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding);
-            foreach (var migration in migrations)
+            var pendingMigrations = GetAllPendingRepeatableMigration(metadata);
+
+            foreach (var migration in pendingMigrations)
             {
-                var appliedMigration = appliedMigrations.Where(x => x.Name == migration.Name)
-                                                        .OrderBy(x => x.InstalledOn)
-                                                        .LastOrDefault();
-                if (appliedMigration is null
-                 || appliedMigration.Checksum != migration.CalculateChecksum())
+                ExecuteMigration(migration, db);
+            }
+        }
+
+        private IEnumerable<MigrationScript> GetAllPendingRepeatableMigration(IEvolveMetadata metadata)
+        {
+            var pendingMigrations = new List<MigrationScript>();
+            var appliedMigrations = metadata.GetAllAppliedRepeatableMigration();
+            var scripts = MigrationLoader.GetRepeatableMigrations(SqlRepeatableMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding);
+            
+            foreach (var script in scripts)
+            {
+                var appliedMigration = appliedMigrations.Where(x => x.Name == script.Name).OrderBy(x => x.InstalledOn).LastOrDefault();
+                if (appliedMigration is null || appliedMigration.Checksum != script.CalculateChecksum())
                 {
-                    ExecuteMigration(migration, db);
+                    pendingMigrations.Add(script);
                 }
             }
+
+            return pendingMigrations;
         }
 
         public void Repair()

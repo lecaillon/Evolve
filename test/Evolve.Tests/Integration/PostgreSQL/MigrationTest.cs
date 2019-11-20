@@ -47,6 +47,7 @@ namespace Evolve.Tests.Integration.PostgregSql
                   .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 0)
                   .AssertMigrateThrows<EvolveValidationException>(cnn, locations: PostgreSQL.OutOfOrderFolder)
                   .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 1, e => e.OutOfOrder = true)
+                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 0, e => e.OutOfOrder = true)
                   .AssertEraseThrows<EvolveConfigurationException>(cnn, e => e.IsEraseDisabled = true)
                   .AssertEraseIsSuccessful(cnn, e => e.IsEraseDisabled = false)
                   .AssertMigrateIsSuccessful(cnn, expectedNbMigration, null, locations)
