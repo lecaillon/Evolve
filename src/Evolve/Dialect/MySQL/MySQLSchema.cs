@@ -38,7 +38,11 @@ namespace Evolve.Dialect.MySQL
 
         public override bool Drop()
         {
-            _wrappedConnection.ExecuteNonQuery($"DROP SCHEMA `{Name}`");
+            _wrappedConnection.ExecuteNonQuery("SET FOREIGN_KEY_CHECKS = 0");
+
+            _wrappedConnection.ExecuteNonQuery($"DROP SCHEMA IF EXISTS `{Name}`");
+
+            _wrappedConnection.ExecuteNonQuery("SET FOREIGN_KEY_CHECKS = 1");
 
             return true;
         }
