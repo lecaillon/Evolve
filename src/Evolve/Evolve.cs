@@ -170,8 +170,10 @@ namespace Evolve
             static IEnumerable<MigrationMetadataUI> GetAllBeforeFirstMigrationUI(IEvolveMetadata metadata)
             {
                 return metadata.GetAllMetadata()
-                               .Where(x => x.Version == MigrationVersion.MinVersion)
-                               .OrderBy(x => x.InstalledOn)
+                               .Where(x => x.Version != null)
+                               .OrderBy(x => x.Version)
+                               .ThenBy(x => x.InstalledOn)
+                               .TakeWhile(x => x.Type != MetadataType.Migration)
                                .Select(x => new MigrationMetadataUI(x));
             }
 
