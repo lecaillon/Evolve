@@ -11,7 +11,7 @@
     [Command(ResponseFileHandling = ResponseFileHandling.ParseArgsAsSpaceSeparated)]
     class Program
     {
-        private static readonly Evolve Default = new Evolve(new System.Data.SQLite.SQLiteConnection());
+        private static readonly Evolve Default = new Evolve(new System.Data.SQLite.SQLiteConnection("Data Source=:memory:"));
 
         static int Main(string[] args) => CommandLineApplication.Execute<Program>(args);
 
