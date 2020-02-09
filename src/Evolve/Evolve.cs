@@ -37,6 +37,9 @@ namespace Evolve
         {
             _userCnn = Check.NotNull(dbConnection, nameof(dbConnection));
             _log = logDelegate ?? new Action<string>((msg) => { });
+
+            using var evolveCnn = new WrappedConnection(_userCnn).Validate();
+            DBMS = evolveCnn.GetDatabaseServerType();
         }
 
         #region IEvolveConfiguration
@@ -79,6 +82,7 @@ namespace Evolve
         public int NbSchemaErased { get; private set; }
         public int NbSchemaToEraseSkipped { get; private set; }
         public long TotalTimeElapsedInMs { get; private set; }
+        public DBMS DBMS { get; }
         internal IMigrationLoader MigrationLoader
         {
             get => EmbeddedResourceAssemblies.Any() ? new EmbeddedResourceMigrationLoader(EmbeddedResourceAssemblies, EmbeddedResourceFilters)
@@ -119,7 +123,7 @@ namespace Evolve
             var table = new ConsoleTable("Id", "Version", "Category", "Description", "Installed on", "Installed by", "Success", "Checksum").Configure(o => o.EnableCount = false);
             using var db = InitiateDatabaseConnection();
             var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
-            bool isEvolveInitialized = IsEvolveInitialized(metadata);
+            bool isEvolveInitialized = metadata.IsEvolveInitialized();
             var lastAppliedVersion = isEvolveInitialized ? metadata.FindLastAppliedVersion() : MigrationVersion.MinVersion;
             var startVersion = isEvolveInitialized ? metadata.FindStartVersion() : MigrationVersion.MinVersion;
             if (startVersion == MigrationVersion.MinVersion)
@@ -128,6 +132,7 @@ namespace Evolve
             }
                 
             var rows = new List<MigrationMetadataUI>();
+            rows.AddRange(GetAllPendingSchemaUI(db, metadata));
             if (isEvolveInitialized)
             {
                 rows.AddRange(GetAllBeforeFirstMigrationUI(metadata));
@@ -143,23 +148,30 @@ namespace Evolve
             _log(table.ToStringAlternative());
             return rows;
 
-            static bool IsEvolveInitialized(IEvolveMetadata metadata)
+            IEnumerable<MigrationMetadataUI> GetAllPendingSchemaUI(DatabaseHelper db, IEvolveMetadata metadata)
             {
-                try
+                var pendingSchemas = new List<MigrationMetadataUI>();
+                foreach (var schemaName in FindSchemas())
                 {
-                    return metadata.IsExists();
+                    var schema = db.GetSchema(schemaName);
+                    if (!schema.IsExists())
+                    {
+                        pendingSchemas.Add(new MigrationMetadataUI("0", $"Create new schema: {schemaName}.", "Pending"));
+                    }
+                    else if (schema.IsEmpty() && !metadata.IsEmptySchemaMetadataExists(schemaName))
+                    {
+                        pendingSchemas.Add(new MigrationMetadataUI("0", $"Empty schema found: {schemaName}.", "Pending"));
+                    }
                 }
-                catch
-                {
-                    return false;
-                }
+
+                return pendingSchemas;
             }
 
             static IEnumerable<MigrationMetadataUI> GetAllBeforeFirstMigrationUI(IEvolveMetadata metadata)
             {
                 return metadata.GetAllMetadata()
-                               .OrderBy(x => x.Id)
-                               .TakeWhile(x => x.Type != MetadataType.Migration)
+                               .Where(x => x.Version == MigrationVersion.MinVersion)
+                               .OrderBy(x => x.InstalledOn)
                                .Select(x => new MigrationMetadataUI(x));
             }
 
@@ -170,8 +182,18 @@ namespace Evolve
                                       .Select(x => new MigrationMetadataUI(x.Version?.Label, x.Description, "Ignored"));
             }
 
-            static IEnumerable<MigrationMetadataUI> GetAllExecutedMigrationUI(IEvolveMetadata metadata)
+            IEnumerable<MigrationMetadataUI> GetAllExecutedMigrationUI(IEvolveMetadata metadata)
             {
+                if (DBMS == DBMS.Cassandra)
+                { // Cassandra has not a monotonic Id. We have to customize the order.
+                    var executedMigrations = metadata.GetAllAppliedMigration().ToList();
+                    executedMigrations.AddRange(metadata.GetAllAppliedRepeatableMigration()
+                                                        .OrderBy(x => x.InstalledOn)
+                                                        .ThenBy(x => x.Name));
+
+                    return executedMigrations.Select(x => new MigrationMetadataUI(x));
+                }
+
                 return metadata.GetAllMetadata()
                                .Where(x => x.Type == MetadataType.Migration || x.Type == MetadataType.RepeatableMigration)
                                .OrderBy(x => x.Id)
@@ -211,7 +233,7 @@ namespace Evolve
 
             IEnumerable<MigrationMetadataUI> GetAllPendingRepeatableMigrationUI(IEvolveMetadata metadata)
             {
-                var pendingMigrations = IsEvolveInitialized(metadata)
+                var pendingMigrations = metadata.IsEvolveInitialized()
                     ? GetAllPendingRepeatableMigration(metadata)
                     : MigrationLoader.GetRepeatableMigrations(SqlRepeatableMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding);
 
@@ -221,7 +243,7 @@ namespace Evolve
             IEnumerable<MigrationMetadataUI> GetAllOffTargetMigrationUI()
             {
                 return MigrationLoader.GetMigrations(SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding)
-                                      .TakeWhile(x => x.Version > TargetVersion)
+                                      .SkipWhile(x => x.Version < TargetVersion)
                                       .Select(x => new MigrationMetadataUI(x.Version?.Label, x.Description, "Ignored"));
             }
         }
@@ -521,8 +543,7 @@ namespace Evolve
         private DatabaseHelper InitiateDatabaseConnection()
         {
             var evolveCnn = new WrappedConnection(_userCnn).Validate();
-            var dbmsType = evolveCnn.GetDatabaseServerType();
-            var db = DatabaseHelperFactory.GetDatabaseHelper(dbmsType, evolveCnn);
+            var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS, evolveCnn);
 
             if (Schemas is null || Schemas.Count() == 0)
             { // If no schema, get the one associated to the datasource connection
@@ -584,10 +605,9 @@ namespace Evolve
                     // Create new schema
                     schema.Create();
                     metadata.Save(MetadataType.NewSchema, "0", $"Create new schema: {schemaName}.", schemaName);
-
                     _log($"Schema {schemaName} created.");
                 }
-                else if (schema.IsEmpty())
+                else if (schema.IsEmpty() && !metadata.IsEmptySchemaMetadataExists(schemaName))
                 {
                     // Mark schema as empty in the metadata table
                     metadata.Save(MetadataType.EmptySchema, "0", $"Empty schema found: {schemaName}.", schemaName);
@@ -689,7 +709,7 @@ namespace Evolve
             _log("Metadata validated.");
         }
 
-        private IEnumerable<string> FindSchemas()
+        internal IEnumerable<string> FindSchemas()
         {
             return new List<string>().Union(new List<string> { MetadataTableSchema ?? string.Empty })
                                      .Union(Schemas ?? new List<string>())

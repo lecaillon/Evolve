@@ -69,7 +69,7 @@ namespace Evolve.Metadata
         void UpdateChecksum(int migrationId, string checksum);
 
         /// <summary>
-        ///     Returns all metadata ordered by date.
+        ///     Returns all metadata ordered by id.
         /// </summary>
         /// <returns> The ordered list of all metadata. </returns>
         IEnumerable<MigrationMetadata> GetAllMetadata();

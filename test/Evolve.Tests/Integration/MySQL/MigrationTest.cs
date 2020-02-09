@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
-using Evolve.Tests.Infrastructure;
+﻿using Evolve.Tests.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
 using static Evolve.Tests.TestContext;
@@ -30,7 +27,6 @@ namespace Evolve.Tests.Integration.MySql
         public void Run_all_MySQL_migrations_work()
         {
             // Arrange
-            int expectedNbMigration = Directory.GetFiles(MySQL.MigrationFolder).Length;
             var cnn = _dbContainer.CreateDbConnection();
             var evolve = new Evolve(cnn, msg => _output.WriteLine(msg))
             {
@@ -40,21 +36,39 @@ namespace Evolve.Tests.Integration.MySql
             };
 
             // Assert
-            evolve.AssertInfoIsSuccessful(cnn, expectedNbRows: 0)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration)
-                  .AssertMigrateThrows<EvolveValidationException>(cnn, e => e.EmbeddedResourceAssemblies = new List<Assembly>(), locations: MySQL.ChecksumMismatchFolder)
+            evolve.ChangeLocations(MySQL.MigrationFolder)
+                  .AssertInfoIsSuccessfulV2(cnn)
+                  .AssertMigrateIsSuccessfulV2(cnn)
+                  .AssertInfoIsSuccessfulV2(cnn);
+
+            evolve.UseFileMigrationLoader()
+                  .ChangeLocations(MySQL.ChecksumMismatchFolder)
+                  .AssertMigrateThrows<EvolveValidationException>(cnn)
                   .AssertRepairIsSuccessful(cnn, expectedNbReparation: 1)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 0)
+                  .ChangeLocations(MySQL.MigrationFolder)
+                  .AssertInfoIsSuccessfulV2(cnn);
+
+            evolve.ChangeLocations()
                   .AssertEraseThrows<EvolveConfigurationException>(cnn, e => e.IsEraseDisabled = true)
                   .AssertEraseIsSuccessful(cnn, e => e.IsEraseDisabled = false)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration, null, locations: MySQL.MigrationFolder)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 1, e => e.MustEraseOnValidationError = true, locations: MySQL.ChecksumMismatchFolder)
+                  .AssertInfoIsSuccessfulV2(cnn);
+
+            evolve.ChangeLocations(MySQL.MigrationFolder)
+                  .AssertMigrateIsSuccessfulV2(cnn)
+                  .AssertInfoIsSuccessfulV2(cnn);
+
+            evolve.ChangeLocations(MySQL.ChecksumMismatchFolder)
+                  .AssertMigrateIsSuccessfulV2(cnn, e => e.MustEraseOnValidationError = true)
+                  .AssertInfoIsSuccessfulV2(cnn);
+
+            evolve.ChangeLocations(MySQL.MigrationFolder)
                   .AssertEraseIsSuccessful(cnn, e => e.IsEraseDisabled = false)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration, null, locations: MySQL.MigrationFolder)
-                  .AssertRepairIsSuccessful(cnn, expectedNbReparation: 0, locations: MySQL.RepeatableFolder)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 1)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 0)
-                  .AssertInfoIsSuccessful(cnn, expectedNbRows: expectedNbMigration + 2);
+                  .AssertMigrateIsSuccessfulV2(cnn)
+                  .AssertInfoIsSuccessfulV2(cnn);
+
+            evolve.ChangeLocations(MySQL.RepeatableFolder)
+                  .AssertRepairIsSuccessful(cnn, expectedNbReparation: 0)
+                  .AssertMigrateIsSuccessfulV2(cnn);
         }
     }
 }

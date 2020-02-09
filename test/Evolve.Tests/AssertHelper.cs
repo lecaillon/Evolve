@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Reflection;
+using System.Text;
 using Evolve.Connection;
 using Evolve.Dialect;
 using Evolve.Dialect.Cassandra;
 using Evolve.Metadata;
+using Evolve.Migration;
 using Xunit;
 using static Evolve.Tests.TestContext;
 
@@ -170,19 +174,54 @@ namespace Evolve.Tests
             Assert.True(db.WrappedConnection.DbConnection.State == ConnectionState.Closed, "Database connection should be closed.");
         }
 
-        public static Evolve AssertMigrateIsSuccessful(this Evolve evolve, IDbConnection cnn, int expectedNbMigration, Action<Evolve> arrange = null, params string[] locations)
+        public static Evolve ChangeLocations(this Evolve evolve, params string[] locations)
         {
             if (locations.Any())
             {
                 evolve.Locations = locations;
             }
+            else
+            {
+                evolve.Locations = new List<string> { "Sql_Scripts" };
+            }
 
+            return evolve;
+        }
+
+        public static Evolve UseFileMigrationLoader(this Evolve evolve)
+        {
+            evolve.EmbeddedResourceAssemblies = new List<Assembly>();
+            return evolve;
+        }
+
+        public static Evolve AssertInfoIsSuccessfulV2(this Evolve evolve, IDbConnection cnn)
+        {
+            // Act
+            var rows = evolve.Info();
+            int nbRows = rows?.Count() ?? 0;
+
+            // Assert
+            Assert.True(nbRows == evolve.GetExpectedNbUiRow(), $"{evolve.GetExpectedNbUiRow()} rows should have been returned, not {nbRows}.");
+            Assert.True(cnn.State == ConnectionState.Closed);
+
+            return evolve;
+        }
+
+        public static Evolve AssertMigrateIsSuccessfulV2(this Evolve evolve, IDbConnection cnn, Action<Evolve> arrange = null)
+        {
+            // Arrange
             arrange?.Invoke(evolve);
+            int expectedNbMigration = evolve.GetExpectedNbMigration();
+
+            // Act
             evolve.Migrate();
+            // Assert
             Assert.True(evolve.NbMigration == expectedNbMigration, $"{expectedNbMigration} migrations should have been applied, not {evolve.NbMigration}.");
             Assert.True(cnn.State == ConnectionState.Closed);
 
+            // Act
             evolve.Migrate();
+            // Assert
             Assert.True(evolve.NbMigration == 0, $"There should be no migration applied after a successful one, not {evolve.NbMigration}.");
             Assert.True(cnn.State == ConnectionState.Closed);
 
@@ -191,12 +230,14 @@ namespace Evolve.Tests
 
         public static Evolve AssertMigrateThrows<T>(this Evolve evolve, IDbConnection cnn, Action<Evolve> arrange = null, params string[] locations) where T : Exception
         {
+            // Arrange
             if (locations.Any())
             {
                 evolve.Locations = locations;
             }
-
             arrange?.Invoke(evolve);
+
+            // Act & Assert
             Assert.Throws<T>(() => evolve.Migrate());
             Assert.True(cnn.State == ConnectionState.Closed);
 
@@ -235,14 +276,38 @@ namespace Evolve.Tests
             return evolve;
         }
 
-        public static Evolve AssertInfoIsSuccessful(this Evolve evolve, IDbConnection cnn, int expectedNbRows)
+        private static int GetExpectedNbUiRow(this Evolve evolve)
         {
-            var rows = evolve.Info();
-            int nbRows = rows?.Count() ?? 0;
-            Assert.True(nbRows == expectedNbRows, $"{expectedNbRows} rows should have been returned, not {nbRows}.");
-            Assert.True(cnn.State == ConnectionState.Closed);
+            try
+            {
+                return evolve.MigrationLoader
+                    .GetMigrations("V", "__", evolve.SqlMigrationSuffix, Encoding.UTF8)
+                    .Union(evolve.MigrationLoader.GetRepeatableMigrations("R", "__", evolve.SqlMigrationSuffix, Encoding.UTF8))
+                    .Count()
+                    + evolve.FindSchemas().Where(x => x != "system_auth").Count() // Hack for Cassandra
+                    + (evolve.StartVersion != MigrationVersion.MinVersion ? 1 : 0);
+            }
+            catch
+            {
+                return 0;
+            }
+        }
 
-            return evolve;
+        private static int GetExpectedNbMigration(this Evolve evolve)
+        {
+            try
+            {
+                return evolve.MigrationLoader
+                    .GetMigrations("V", "__", evolve.SqlMigrationSuffix, Encoding.UTF8)
+                    .SkipWhile(x => x.Version < evolve.StartVersion)
+                    .TakeWhile(x => x.Version <= evolve.TargetVersion)
+                    .Union(evolve.MigrationLoader.GetRepeatableMigrations("R", "__", evolve.SqlMigrationSuffix, Encoding.UTF8))
+                    .Count();
+            }
+            catch
+            {
+                return 0;
+            }
         }
     }
 }
