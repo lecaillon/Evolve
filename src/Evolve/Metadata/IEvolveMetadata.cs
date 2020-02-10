@@ -1,4 +1,5 @@
 ﻿using Evolve.Migration;
+using System;
 using System.Collections.Generic;
 
 namespace Evolve.Metadata
@@ -35,7 +36,8 @@ namespace Evolve.Metadata
         /// </summary>
         /// <param name="migration"> The migration script metadata. </param>
         /// <param name="success"> True if the migration succeeded, false otherwise. </param>
-        void SaveMigration(MigrationScript migration, bool success);
+        /// <param name="elapsed"> Optional execution time. </param>
+        void SaveMigration(MigrationScript migration, bool success, TimeSpan? elapsed = null);
 
         /// <summary>
         ///     <para>

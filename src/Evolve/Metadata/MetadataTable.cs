@@ -34,13 +34,17 @@ namespace Evolve.Metadata
             return Execute(() => InternalCreateIfNotExists(), false);
         }
 
-        public void SaveMigration(MigrationScript migration, bool success)
+        public void SaveMigration(MigrationScript migration, bool success, TimeSpan? elapsed = null)
         {
             Check.NotNull(migration, nameof(migration));
 
             Execute(() =>
             {
-                InternalSave(new MigrationMetadata(migration.Version?.Label, migration.Description, migration.Name, migration.Type)
+                string description = elapsed is null
+                    ? migration.Description 
+                    : $"{migration.Description} ({Math.Round(elapsed.Value.TotalMilliseconds)} ms)";
+
+                InternalSave(new MigrationMetadata(migration.Version?.Label, description, migration.Name, migration.Type)
                 {
                     Checksum = migration.CalculateChecksum(),
                     Success = success

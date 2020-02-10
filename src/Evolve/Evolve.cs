@@ -524,9 +524,9 @@ namespace Evolve
                     db.WrappedConnection.ExecuteNonQuery(statement.Sql, CommandTimeout);
                 }
 
-                metadata.SaveMigration(migration, true);
-                db.WrappedConnection.TryCommit();
                 stopWatch.Stop();
+                metadata.SaveMigration(migration, true, stopWatch.Elapsed);
+                db.WrappedConnection.TryCommit();
 
                 _log($"Successfully applied migration {migration.Name} in {stopWatch.ElapsedMilliseconds} ms.");
                 TotalTimeElapsedInMs += stopWatch.ElapsedMilliseconds;
@@ -537,7 +537,7 @@ namespace Evolve
                 stopWatch.Stop();
                 TotalTimeElapsedInMs += stopWatch.ElapsedMilliseconds;
                 db.WrappedConnection.TryRollback();
-                metadata.SaveMigration(migration, false);
+                metadata.SaveMigration(migration, false, stopWatch.Elapsed);
                 throw new EvolveException($"Error executing script: {migration.Name} after {stopWatch.ElapsedMilliseconds} ms.", ex);
             }
         }
