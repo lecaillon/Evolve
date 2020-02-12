@@ -46,7 +46,7 @@ namespace Evolve.Configuration
         ///                                               with the ones from migration scripts.
         ///     </para>
         ///     <para>
-        ///         <see cref="CommandOptions.Info"/> : Prints details about migrations mainly based on the EvolveMetadata table.
+        ///         <see cref="CommandOptions.Info"/> : Prints details about migrations, what has been applied and what is pending.
         ///     </para>
         /// </summary>
         CommandOptions Command { get; set; }
