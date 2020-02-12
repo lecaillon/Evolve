@@ -17,7 +17,7 @@ namespace Evolve.Tests.Infrastructure
 
         public string Id => _container?.Id;
         public string CnxStr => $"Server=127.0.0.1;Port={HostPort};Database={DbName};Uid={DbUser};Pwd={DbPwd};SslMode=none;Allow User Variables=True";
-        public int TimeOutInSec => 10;
+        public int TimeOutInSec => 25;
 
         [SuppressMessage("Qualité du code", "IDE0068: Utilisez le modèle de suppression recommandé")]
         public bool Start(bool fromScratch = false)

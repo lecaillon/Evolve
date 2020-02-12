@@ -45,6 +45,9 @@ namespace Evolve.Configuration
         ///         <see cref="CommandOptions.Repair"/> : Corrects checksums of the applied migrations in the metadata table,
         ///                                               with the ones from migration scripts.
         ///     </para>
+        ///     <para>
+        ///         <see cref="CommandOptions.Info"/> : Prints details about migrations, what has been applied and what is pending.
+        ///     </para>
         /// </summary>
         CommandOptions Command { get; set; }
 

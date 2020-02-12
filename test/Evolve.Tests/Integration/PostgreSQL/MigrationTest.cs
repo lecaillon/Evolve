@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using Evolve.Tests.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
@@ -30,7 +29,6 @@ namespace Evolve.Tests.Integration.PostgregSql
         {
             // Arrange
             string[] locations = AppVeyor ? new[] { PostgreSQL.MigrationFolder } : new[] { PostgreSQL.MigrationFolder, PostgreSQL.Migration11Folder }; // Add specific PostgreSQL 11 scripts
-            int expectedNbMigration = AppVeyor ? Directory.GetFiles(PostgreSQL.MigrationFolder).Length : Directory.GetFiles(PostgreSQL.MigrationFolder).Length + 1;
             var cnn = _dbContainer.CreateDbConnection();
             var evolve = new Evolve(cnn, msg => _output.WriteLine(msg))
             {
@@ -40,23 +38,42 @@ namespace Evolve.Tests.Integration.PostgregSql
             };
 
             // Assert
-            evolve.AssertInfoIsSuccessful(cnn, expectedNbRows: 0)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration, null, locations)
-                  .AssertMigrateThrows<EvolveValidationException>(cnn, locations: PostgreSQL.ChecksumMismatchFolder)
+            evolve.AssertInfoIsSuccessfulV2(cnn)
+                  .ChangeLocations(locations)
+                  .AssertInfoIsSuccessfulV2(cnn)
+                  .AssertMigrateIsSuccessfulV2(cnn)
+                  .AssertInfoIsSuccessfulV2(cnn);
+
+            evolve.ChangeLocations(PostgreSQL.ChecksumMismatchFolder)
+                  .AssertMigrateThrows<EvolveValidationException>(cnn)
                   .AssertRepairIsSuccessful(cnn, expectedNbReparation: 1)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 0)
-                  .AssertMigrateThrows<EvolveValidationException>(cnn, locations: PostgreSQL.OutOfOrderFolder)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 1, e => e.OutOfOrder = true)
+                  .ChangeLocations(locations)
+                  .AssertInfoIsSuccessfulV2(cnn);
+
+            evolve.ChangeLocations(PostgreSQL.OutOfOrderFolder)
+                  .AssertMigrateIsSuccessfulV2(cnn, e => e.OutOfOrder = true);
+
+            evolve.ChangeLocations()
                   .AssertEraseThrows<EvolveConfigurationException>(cnn, e => e.IsEraseDisabled = true)
                   .AssertEraseIsSuccessful(cnn, e => e.IsEraseDisabled = false)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration, null, locations)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 1, e => e.MustEraseOnValidationError = true, locations: PostgreSQL.ChecksumMismatchFolder)
+                  .AssertInfoIsSuccessfulV2(cnn);
+
+            evolve.ChangeLocations(locations)
+                  .AssertMigrateIsSuccessfulV2(cnn)
+                  .AssertInfoIsSuccessfulV2(cnn);
+
+            evolve.ChangeLocations(PostgreSQL.ChecksumMismatchFolder)
+                  .AssertMigrateIsSuccessfulV2(cnn, e => e.MustEraseOnValidationError = true)
+                  .AssertInfoIsSuccessfulV2(cnn);
+
+            evolve.ChangeLocations(locations)
                   .AssertEraseIsSuccessful(cnn, e => e.IsEraseDisabled = false)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration, null, locations)
-                  .AssertRepairIsSuccessful(cnn, expectedNbReparation: 0, locations: PostgreSQL.RepeatableFolder)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 1)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 0)
-                  .AssertInfoIsSuccessful(cnn, expectedNbRows: expectedNbMigration + 3);
+                  .AssertMigrateIsSuccessfulV2(cnn)
+                  .AssertInfoIsSuccessfulV2(cnn);
+
+            evolve.ChangeLocations(PostgreSQL.RepeatableFolder)
+                  .AssertRepairIsSuccessful(cnn, expectedNbReparation: 0)
+                  .AssertMigrateIsSuccessfulV2(cnn);
         }
     }
 }

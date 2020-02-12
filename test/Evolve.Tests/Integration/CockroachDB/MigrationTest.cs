@@ -1,5 +1,4 @@
-﻿using System.IO;
-using Evolve.Tests.Infrastructure;
+﻿using Evolve.Tests.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
 using static Evolve.Tests.TestContext;
@@ -28,8 +27,6 @@ namespace Evolve.Tests.Integration.CockroachDb
         public void Run_all_CockroachDB_migrations_work()
         {
             // Arrange
-            string[] locations = new[] { CockroachDB.MigrationFolder };
-            int expectedNbMigration = Directory.GetFiles(CockroachDB.MigrationFolder).Length;
             var cnn = _dbContainer.CreateDbConnection();
             var evolve = new Evolve(cnn, msg => _output.WriteLine(msg))
             {
@@ -37,14 +34,26 @@ namespace Evolve.Tests.Integration.CockroachDb
             };
 
             // Assert
-            evolve.AssertMigrateIsSuccessful(cnn, expectedNbMigration, null, locations)
-                  .AssertMigrateThrows<EvolveValidationException>(cnn, locations: CockroachDB.ChecksumMismatchFolder)
+            evolve.AssertInfoIsSuccessfulV2(cnn)
+                  .ChangeLocations(CockroachDB.MigrationFolder)
+                  .AssertInfoIsSuccessfulV2(cnn)
+                  .AssertMigrateIsSuccessfulV2(cnn)
+                  .AssertInfoIsSuccessfulV2(cnn);
+
+            evolve.ChangeLocations(CockroachDB.ChecksumMismatchFolder)
+                  .AssertMigrateThrows<EvolveValidationException>(cnn)
                   .AssertRepairIsSuccessful(cnn, expectedNbReparation: 1)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 0)
+                  .ChangeLocations(CockroachDB.MigrationFolder)
+                  .AssertInfoIsSuccessfulV2(cnn);
+
+            evolve.ChangeLocations()
                   .AssertEraseThrows<EvolveConfigurationException>(cnn, e => e.IsEraseDisabled = true)
                   .AssertEraseIsSuccessful(cnn, e => e.IsEraseDisabled = false)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration, locations: CockroachDB.MigrationFolder)
-                  .AssertInfoIsSuccessful(cnn, expectedNbRows: expectedNbMigration + 2);
+                  .AssertInfoIsSuccessfulV2(cnn);
+
+            evolve.ChangeLocations(CockroachDB.MigrationFolder)
+                  .AssertMigrateIsSuccessfulV2(cnn)
+                  .AssertInfoIsSuccessfulV2(cnn);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Evolve.Migration;
+using System;
 using System.Collections.Generic;
 
 namespace Evolve.Metadata
@@ -35,7 +36,8 @@ namespace Evolve.Metadata
         /// </summary>
         /// <param name="migration"> The migration script metadata. </param>
         /// <param name="success"> True if the migration succeeded, false otherwise. </param>
-        void SaveMigration(MigrationScript migration, bool success);
+        /// <param name="elapsed"> Optional execution time. </param>
+        void SaveMigration(MigrationScript migration, bool success, TimeSpan? elapsed = null);
 
         /// <summary>
         ///     <para>
@@ -69,7 +71,7 @@ namespace Evolve.Metadata
         void UpdateChecksum(int migrationId, string checksum);
 
         /// <summary>
-        ///     Returns all metadata ordered by date.
+        ///     Returns all metadata ordered by id.
         /// </summary>
         /// <returns> The ordered list of all metadata. </returns>
         IEnumerable<MigrationMetadata> GetAllMetadata();
@@ -78,13 +80,13 @@ namespace Evolve.Metadata
         ///     Returns all the applied migration metadata ordered by version.
         /// </summary>
         /// <returns> The ordered by version list of all applied migration metadata. </returns>
-        IEnumerable<MigrationMetadata> GetAllMigrationMetadata();
+        IEnumerable<MigrationMetadata> GetAllAppliedMigration();
 
         /// <summary>
         ///     Returns all the applied repeatable migration metadata ordered by name.
         /// </summary>
         /// <returns> The ordered by name list of all applied repeatable migration metadata. </returns>
-        IEnumerable<MigrationMetadata> GetAllRepeatableMigrationMetadata();
+        IEnumerable<MigrationMetadata> GetAllAppliedRepeatableMigration();
 
         /// <summary>
         ///     <para>
@@ -118,5 +120,10 @@ namespace Evolve.Metadata
         /// </summary>
         /// <returns> The migration starting point. </returns>
         MigrationVersion FindStartVersion();
+
+        /// <summary>
+        ///     Returns the version of the last applied migration.
+        /// </summary>
+        MigrationVersion FindLastAppliedVersion();
     }
 }

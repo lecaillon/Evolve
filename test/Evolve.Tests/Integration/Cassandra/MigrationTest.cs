@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using Evolve.Migration;
 using Evolve.Tests.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
@@ -31,7 +30,6 @@ namespace Evolve.Tests.Integration.Cassandra
         public void Run_all_Cassandra_integration_tests_work()
         {
             // Arrange
-            int expectedNbMigration = Directory.GetFiles(CassandraDb.MigrationFolder).Length;
             string metadataKeyspaceName = "my_keyspace_1"; // this name must also be declared in _evolve.cassandra.json
             var cnn = _dbContainer.CreateDbConnection();
             var evolve = new Evolve(cnn, msg => _output.WriteLine(msg))
@@ -44,31 +42,30 @@ namespace Evolve.Tests.Integration.Cassandra
             };
 
             // Assert
-            evolve.AssertInfoIsSuccessful(cnn, expectedNbRows: 0)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration, locations: CassandraDb.MigrationFolder)
-                  .AssertMigrateThrows<EvolveConfigurationException>(cnn, e => e.StartVersion = new MigrationVersion("3.0"))
-                  .AssertMigrateThrows<EvolveValidationException>(cnn, e => e.StartVersion = MigrationVersion.MinVersion, CassandraDb.ChecksumMismatchFolder)
+            evolve.AssertInfoIsSuccessfulV2(cnn)
+                  .ChangeLocations(CassandraDb.MigrationFolder)
+                  .AssertInfoIsSuccessfulV2(cnn)
+                  .AssertMigrateIsSuccessfulV2(cnn)
+                  .AssertInfoIsSuccessfulV2(cnn);
+
+            evolve.ChangeLocations(CassandraDb.ChecksumMismatchFolder)
+                  .AssertMigrateThrows<EvolveValidationException>(cnn)
                   .AssertRepairIsSuccessful(cnn, expectedNbReparation: 1)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 0)
+                  .ChangeLocations(CassandraDb.MigrationFolder)
+                  .AssertInfoIsSuccessfulV2(cnn);
+
+            evolve.ChangeLocations()
                   .AssertEraseThrows<EvolveConfigurationException>(cnn, e => e.IsEraseDisabled = true)
                   .AssertEraseIsSuccessful(cnn, e => e.IsEraseDisabled = false)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration, locations: CassandraDb.MigrationFolder)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 1, e => e.MustEraseOnValidationError = true, CassandraDb.ChecksumMismatchFolder)
-                  .AssertEraseIsSuccessful(cnn, e => e.IsEraseDisabled = false)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration - 2, e => e.StartVersion = new MigrationVersion("3"), CassandraDb.MigrationFolder)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 0, e => e.StartVersion = MigrationVersion.MinVersion)
-                  .AssertMigrateThrows<EvolveConfigurationException>(cnn, e => e.StartVersion = new MigrationVersion("3.0"))
-                  .AssertEraseIsSuccessful(cnn, e => e.StartVersion = MigrationVersion.MinVersion)
-                  .AssertEraseIsSuccessful(cnn, e => e.IsEraseDisabled = false)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration, null, locations: CassandraDb.MigrationFolder)
-                  .AssertRepairIsSuccessful(cnn, expectedNbReparation: 0, locations: CassandraDb.RepeatableFolder)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 1)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 0)
-                  .AssertInfoIsSuccessful(cnn, expectedNbRows: expectedNbMigration + 2)
-                  .AssertEraseIsSuccessful(cnn, e => e.StartVersion = MigrationVersion.MinVersion);
+                  .AssertInfoIsSuccessfulV2(cnn);
+
+            evolve.ChangeLocations(CassandraDb.MigrationFolder)
+                  .AssertMigrateIsSuccessfulV2(cnn)
+                  .AssertInfoIsSuccessfulV2(cnn);
+
+            evolve.AssertEraseIsSuccessful(cnn, e => e.IsEraseDisabled = false);
 
             //DefaultKeyspaceReplicationStrategy
-            evolve.Locations = new[] { CassandraDb.MigrationFolder };
             var configurationFileName = ConfigurationFile;
             File.Copy($"_{configurationFileName}", configurationFileName);
             var ex = Assert.Throws<EvolveSqlException>(() => evolve.Migrate());

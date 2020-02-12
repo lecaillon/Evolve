@@ -34,13 +34,17 @@ namespace Evolve.Metadata
             return Execute(() => InternalCreateIfNotExists(), false);
         }
 
-        public void SaveMigration(MigrationScript migration, bool success)
+        public void SaveMigration(MigrationScript migration, bool success, TimeSpan? elapsed = null)
         {
             Check.NotNull(migration, nameof(migration));
 
             Execute(() =>
             {
-                InternalSave(new MigrationMetadata(migration.Version?.Label, migration.Description, migration.Name, migration.Type)
+                string description = elapsed is null
+                    ? migration.Description 
+                    : $"{migration.Description} ({Math.Round(elapsed.Value.TotalMilliseconds)} ms)";
+
+                InternalSave(new MigrationMetadata(migration.Version?.Label, description, migration.Name, migration.Type)
                 {
                     Checksum = migration.CalculateChecksum(),
                     Success = success
@@ -82,7 +86,7 @@ namespace Evolve.Metadata
 
         public IEnumerable<MigrationMetadata> GetAllMetadata() => Execute(() => InternalGetAllMetadata(), createIfNotExists: false);
 
-        public IEnumerable<MigrationMetadata> GetAllMigrationMetadata()
+        public IEnumerable<MigrationMetadata> GetAllAppliedMigration()
         {
             return Execute(() =>
             {
@@ -92,7 +96,15 @@ namespace Evolve.Metadata
             });
         }
 
-        public IEnumerable<MigrationMetadata> GetAllRepeatableMigrationMetadata()
+        public MigrationVersion FindLastAppliedVersion()
+        {
+            return Execute(() =>
+            {
+                return GetAllAppliedMigration().OrderBy(x => x.Version).LastOrDefault()?.Version ?? MigrationVersion.MinVersion;
+            });
+        }
+
+        public IEnumerable<MigrationMetadata> GetAllAppliedRepeatableMigration()
         {
             return Execute(() =>
             {
@@ -184,7 +196,7 @@ namespace Evolve.Metadata
         private void Execute(Action action, bool createIfNotExists = true)
         {
             bool restoreSchema = false;
-            if(!_database.GetCurrentSchemaName().Equals(Schema, StringComparison.OrdinalIgnoreCase))
+            if (!_database.GetCurrentSchemaName().Equals(Schema, StringComparison.OrdinalIgnoreCase))
             {
                 _database.ChangeSchema(Schema);
                 restoreSchema = true;
@@ -197,7 +209,7 @@ namespace Evolve.Metadata
 
             action();
 
-            if(restoreSchema)
+            if (restoreSchema)
             {
                 _database.RestoreOriginalSchema();
             }

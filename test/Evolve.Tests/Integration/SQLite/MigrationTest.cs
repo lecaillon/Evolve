@@ -22,7 +22,6 @@ namespace Evolve.Tests.Integration.Sqlite
         public void Run_all_SQLite_migrations_work()
         {
             // Arrange
-            int expectedNbMigration = Directory.GetFiles(SQLite.MigrationFolder).Length;
             var cnn = new SQLiteConnection($@"Data Source={Path.GetTempPath() + Guid.NewGuid().ToString()}.db;");
             var evolve = new Evolve(cnn, msg => _output.WriteLine(msg))
             {
@@ -30,21 +29,30 @@ namespace Evolve.Tests.Integration.Sqlite
             };
 
             // Assert
-            evolve.AssertInfoIsSuccessful(cnn, expectedNbRows: 0)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration, locations: SQLite.MigrationFolder)
-                  .AssertMigrateThrows<EvolveValidationException>(cnn, locations: SQLite.ChecksumMismatchFolder)
+            evolve.AssertInfoIsSuccessfulV2(cnn)
+                  .ChangeLocations(SQLite.MigrationFolder)
+                  .AssertInfoIsSuccessfulV2(cnn)
+                  .AssertMigrateIsSuccessfulV2(cnn)
+                  .AssertInfoIsSuccessfulV2(cnn);
+
+            evolve.ChangeLocations(SQLite.ChecksumMismatchFolder)
+                  .AssertMigrateThrows<EvolveValidationException>(cnn)
                   .AssertRepairIsSuccessful(cnn, expectedNbReparation: 1)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 0)
+                  .ChangeLocations(SQLite.MigrationFolder)
+                  .AssertInfoIsSuccessfulV2(cnn);
+
+            evolve.ChangeLocations()
                   .AssertEraseThrows<EvolveConfigurationException>(cnn, e => e.IsEraseDisabled = true)
                   .AssertEraseIsSuccessful(cnn, e => e.IsEraseDisabled = false)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration, null, locations: SQLite.MigrationFolder)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 1, e => e.MustEraseOnValidationError = true, locations: SQLite.ChecksumMismatchFolder)
-                  .AssertEraseIsSuccessful(cnn, e => e.IsEraseDisabled = false)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration, null, locations: SQLite.MigrationFolder)
-                  .AssertRepairIsSuccessful(cnn, expectedNbReparation: 0, locations: SQLite.RepeatableFolder)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 1)
-                  .AssertMigrateIsSuccessful(cnn, expectedNbMigration: 0)
-                  .AssertInfoIsSuccessful(cnn, expectedNbRows: expectedNbMigration + 2);
+                  .AssertInfoIsSuccessfulV2(cnn);
+
+            evolve.ChangeLocations(SQLite.MigrationFolder)
+                  .AssertMigrateIsSuccessfulV2(cnn)
+                  .AssertInfoIsSuccessfulV2(cnn);
+
+            evolve.ChangeLocations(SQLite.ChecksumMismatchFolder)
+                  .AssertMigrateIsSuccessfulV2(cnn, e => e.MustEraseOnValidationError = true)
+                  .AssertInfoIsSuccessfulV2(cnn);
         }
     }
 }

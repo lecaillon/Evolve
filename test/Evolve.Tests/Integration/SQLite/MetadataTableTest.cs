@@ -57,7 +57,7 @@ namespace Evolve.Tests.Integration.Sqlite
             metadataTable.SaveMigration(FileMigrationScriptV, true);
 
             // Assert
-            AssertMigrationMetadata(metadataTable.GetAllMigrationMetadata().First());
+            AssertMigrationMetadata(metadataTable.GetAllAppliedMigration().First());
         }
 
         [Fact]
@@ -71,7 +71,7 @@ namespace Evolve.Tests.Integration.Sqlite
             metadataTable.SaveMigration(FileMigrationScriptR, true);
 
             // Assert
-            AssertMigrationMetadata(metadataTable.GetAllRepeatableMigrationMetadata().First(),
+            AssertMigrationMetadata(metadataTable.GetAllAppliedRepeatableMigration().First(),
                                     expectedName: "R__desc_b.sql",
                                     expectedDescription: "desc b",
                                     expectedVersion: null,
@@ -90,11 +90,11 @@ namespace Evolve.Tests.Integration.Sqlite
             metadataTable.SaveMigration(FileMigrationScriptV, true);
 
             // Act
-            var appliedMigration = metadataTable.GetAllMigrationMetadata().First();
+            var appliedMigration = metadataTable.GetAllAppliedMigration().First();
             metadataTable.UpdateChecksum(appliedMigration.Id, "Hi !");
 
             // Assert
-            AssertMigrationMetadata(metadataTable.GetAllMigrationMetadata().First(), expectedChecksum: "Hi !");
+            AssertMigrationMetadata(metadataTable.GetAllAppliedMigration().First(), expectedChecksum: "Hi !");
         }
 
         [Fact]
@@ -109,8 +109,8 @@ namespace Evolve.Tests.Integration.Sqlite
             metadataTable.SaveMigration(FileMigrationScriptR, true);
 
             // Assert
-            Assert.Single(metadataTable.GetAllMigrationMetadata());
-            AssertMigrationMetadata(metadataTable.GetAllMigrationMetadata().First());
+            Assert.Single(metadataTable.GetAllAppliedMigration());
+            AssertMigrationMetadata(metadataTable.GetAllAppliedMigration().First());
         }
 
         [Fact]
@@ -125,8 +125,8 @@ namespace Evolve.Tests.Integration.Sqlite
             metadataTable.SaveMigration(FileMigrationScriptR, true);
 
             // Assert
-            Assert.Single(metadataTable.GetAllRepeatableMigrationMetadata());
-            AssertMigrationMetadata(metadataTable.GetAllRepeatableMigrationMetadata().First(),
+            Assert.Single(metadataTable.GetAllAppliedRepeatableMigration());
+            AssertMigrationMetadata(metadataTable.GetAllAppliedRepeatableMigration().First(),
                     expectedId: 2,
                     expectedName: "R__desc_b.sql",
                     expectedDescription: "desc b",
