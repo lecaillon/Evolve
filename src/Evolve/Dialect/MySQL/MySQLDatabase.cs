@@ -27,21 +27,5 @@ namespace Evolve.Dialect.MySQL
         public override bool TryAcquireApplicationLock() => WrappedConnection.QueryForLong($"SELECT GET_LOCK('{LOCK_ID}', 0);") == 1;
 
         public override bool ReleaseApplicationLock() => WrappedConnection.QueryForLong($"SELECT RELEASE_LOCK('{LOCK_ID}');") == 1;
-
-        protected override void InternalChangeSchema(string toSchemaName)
-        {
-            if (toSchemaName.IsNullOrWhiteSpace())
-            {
-                // Hack to switch back to no database selected...
-                String tempDb = "`" + Guid.NewGuid() + "`";
-                WrappedConnection.ExecuteNonQuery($"CREATE SCHEMA {tempDb}");
-                WrappedConnection.ExecuteNonQuery($"USE {tempDb}");
-                WrappedConnection.ExecuteNonQuery($"DROP SCHEMA {tempDb}");
-            }
-            else
-            {
-                WrappedConnection.ExecuteNonQuery($"USE `{toSchemaName}`");
-            }
-        }
     }
 }

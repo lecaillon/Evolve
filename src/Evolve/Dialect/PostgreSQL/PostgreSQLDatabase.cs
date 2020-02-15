@@ -27,18 +27,6 @@ namespace Evolve.Dialect.PostgreSQL
 
         public override bool ReleaseApplicationLock() => WrappedConnection.QueryForBool($"SELECT pg_advisory_unlock({LOCK_ID})");
 
-        protected override void InternalChangeSchema(string toSchemaName)
-        {
-            if(toSchemaName.IsNullOrWhiteSpace())
-            {
-                WrappedConnection.ExecuteNonQuery("SELECT set_config('search_path', '', false)");
-            }
-            else
-            {
-                WrappedConnection.ExecuteNonQuery($"SET search_path = \"{toSchemaName}\"");
-            }
-        }
-
         private string CleanSchemaName(string schemaName)
         {
             if(schemaName.IsNullOrWhiteSpace())

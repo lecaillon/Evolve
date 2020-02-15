@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using Evolve.Connection;
 using Evolve.Metadata;
 
@@ -102,11 +103,22 @@ namespace Evolve.Dialect.SQLServer
             }) >= 0;
         }
 
-        public override string GetCurrentSchemaName() => WrappedConnection.QueryForString("SELECT SCHEMA_NAME()");
 
         /// <summary>
-        ///     SQL Server does not support changing the schema in a session.
+        ///     In SQL Server, when using Windows Groups as a database user, it is possible to set the DEFAULT_SCHEMA to NULL.
+        ///     https://github.com/lecaillon/Evolve/issues/156
         /// </summary>
-        protected override void InternalChangeSchema(string toSchemaName) { }
+        [SuppressMessage("Design", "CA1031: Do not catch general exception types")]
+        public override string? GetCurrentSchemaName()
+        {
+            try
+            {
+                return WrappedConnection.QueryForString("SELECT SCHEMA_NAME()");
+            }
+            catch
+            {
+                return null;
+            }
+        }
     }
 }

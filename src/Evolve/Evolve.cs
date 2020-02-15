@@ -548,8 +548,15 @@ namespace Evolve
             var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS, evolveCnn);
 
             if (Schemas is null || Schemas.Count() == 0)
-            { // If no schema, get the one associated to the datasource connection
-                Schemas = new[] { db.GetCurrentSchemaName() };
+            { // If no schema declared, get the one associated to the datasource connection
+                string? currentSchema = db.GetCurrentSchemaName();
+                if (string.IsNullOrEmpty(currentSchema))
+                {
+                    throw new EvolveConfigurationException("No schema found. At least one schema must be configured either " +
+                        "via the Evolve.Schemas option, the Evolve.MetadataTableSchema option or the datasource connection.");
+                }
+
+                Schemas = new List<string> { currentSchema };
             }
 
             if (Command != CommandOptions.Info)
