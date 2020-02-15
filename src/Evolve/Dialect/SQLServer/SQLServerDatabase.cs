@@ -120,10 +120,5 @@ namespace Evolve.Dialect.SQLServer
                 return null;
             }
         }
-
-        /// <summary>
-        ///     SQL Server does not support changing the schema in a session.
-        /// </summary>
-        protected override void InternalChangeSchema(string toSchemaName) { }
     }
 }

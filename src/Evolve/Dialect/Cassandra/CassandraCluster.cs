@@ -32,12 +32,6 @@ namespace Evolve.Dialect.Cassandra
 
         public override Schema GetSchema(string schemaName) => CassandraKeyspace.Retreive(schemaName, WrappedConnection);
 
-        protected override void InternalChangeSchema(string toSchemaName)
-        {
-            WrappedConnection.ExecuteNonQuery($"Use {toSchemaName}");
-            _currentKeyspaceName = toSchemaName;
-        }
-
         public override IEvolveMetadata GetMetadataTable(string schema, string tableName) =>
             new CassandraMetadataTable(schema, tableName, this);
 

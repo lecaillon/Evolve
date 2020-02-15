@@ -24,17 +24,5 @@ namespace Evolve.Dialect.CockroachDB
         public override bool TryAcquireApplicationLock() => true;
 
         public override bool ReleaseApplicationLock() => true;
-
-        protected override void InternalChangeSchema(string toSchemaName)
-        {
-            if (toSchemaName.IsNullOrWhiteSpace())
-            {
-                WrappedConnection.ExecuteNonQuery("SET database = DEFAULT");
-            }
-            else
-            {
-                WrappedConnection.ExecuteNonQuery($"SET database = \"{toSchemaName}\"");
-            }
-        }
     }
 }

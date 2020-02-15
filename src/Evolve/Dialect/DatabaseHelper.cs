@@ -26,8 +26,6 @@ namespace Evolve.Dialect
 
         public abstract Schema GetSchema(string schemaName);
 
-        protected abstract void InternalChangeSchema(string toSchemaName);
-
         public abstract IEvolveMetadata GetMetadataTable(string schema, string tableName);
 
         public abstract bool TryAcquireApplicationLock();
