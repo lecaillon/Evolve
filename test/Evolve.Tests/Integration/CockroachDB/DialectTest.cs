@@ -30,13 +30,13 @@ namespace Evolve.Tests.Integration.CockroachDb
             var wcnn = new WrappedConnection(cnn).AssertDatabaseServerType(DBMS.CockroachDB);
             var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.CockroachDB, wcnn);
             string schemaName = "MyDatabase";
-            Schema database = new CockroachDBDatabase(schemaName, wcnn);
+            Schema schema = new CockroachDBDatabase(schemaName, wcnn);
 
             // Assert
-            database.AssertIsNotExists();
-            database.AssertCreation();
-            database.AssertExists();
-            database.AssertIsEmpty();
+            schema.AssertIsNotExists();
+            schema.AssertCreation();
+            schema.AssertExists();
+            schema.AssertIsEmpty();
 
             db.AssertDefaultSchemaName("defaultdb")
               .AssertMetadataTableCreation(schemaName, "changelog")
@@ -46,11 +46,11 @@ namespace Evolve.Tests.Integration.CockroachDb
               .AssertVersionedMigrationChecksumUpdate()
               .AssertRepeatableMigrationSave(); // id:3
 
-            database.AssertIsNotEmpty();
-            database.Erase();
-            database.AssertIsEmpty();
-            database.Drop();
-            database.AssertIsNotExists();
+            schema.AssertIsNotEmpty();
+            schema.Erase();
+            schema.AssertIsEmpty();
+            schema.Drop();
+            schema.AssertIsNotExists();
 
             db.AssertCloseConnection();
         }

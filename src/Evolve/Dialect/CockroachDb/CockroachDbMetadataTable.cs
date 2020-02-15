@@ -81,7 +81,7 @@ namespace Evolve.Dialect.CockroachDB
             string createSequenceSql = $"CREATE SEQUENCE \"{Schema}\".\"{sequenceName}\" MAXVALUE {Int32.MaxValue};";
             string createTableSql = $"CREATE TABLE \"{Schema}\".\"{TableName}\" " +
              "( " +
-                $"id INT4 PRIMARY KEY NOT NULL DEFAULT nextval('{Schema}.{sequenceName}'), " +
+                $"id INT4 PRIMARY KEY NOT NULL DEFAULT nextval('\"{Schema}\".\"{sequenceName}\"'), " +
                  "type SMALLINT, " +
                  "version VARCHAR(50), " +
                  "description VARCHAR(200) NOT NULL, " +
