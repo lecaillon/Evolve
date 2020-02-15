@@ -195,46 +195,22 @@ namespace Evolve.Metadata
 
         private void Execute(Action action, bool createIfNotExists = true)
         {
-            bool restoreSchema = false;
-            if (!_database.GetCurrentSchemaName().Equals(Schema, StringComparison.OrdinalIgnoreCase))
-            {
-                _database.ChangeSchema(Schema);
-                restoreSchema = true;
-            }
-
             if (createIfNotExists)
             {
                 InternalCreateIfNotExists();
             }
 
             action();
-
-            if (restoreSchema)
-            {
-                _database.RestoreOriginalSchema();
-            }
         }
 
         private T Execute<T>(Func<T> func, bool createIfNotExists = true)
         {
-            bool restoreSchema = false;
-            if (!_database.GetCurrentSchemaName().Equals(Schema, StringComparison.OrdinalIgnoreCase))
-            {
-                _database.ChangeSchema(Schema);
-                restoreSchema = true;
-            }
-
             if (createIfNotExists)
             {
                 InternalCreateIfNotExists();
             }
 
             T result = func();
-
-            if (restoreSchema)
-            {
-                _database.RestoreOriginalSchema();
-            }
 
             return result;
         }
