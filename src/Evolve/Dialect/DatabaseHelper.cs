@@ -22,7 +22,7 @@ namespace Evolve.Dialect
         
         public abstract SqlStatementBuilderBase SqlStatementBuilder { get; }
 
-        public abstract string GetCurrentSchemaName();
+        public abstract string? GetCurrentSchemaName();
 
         public abstract Schema GetSchema(string schemaName);
 
