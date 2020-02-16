@@ -14,8 +14,8 @@ var distDir = "./dist";
 var distDirFullPath = MakeAbsolute(Directory($"{distDir}")).FullPath;
 var publishDir = "./publish";
 var publishDirFullPath = MakeAbsolute(Directory($"{publishDir}")).FullPath;
-var winWarpPacker = "./warp/windows-x64.warp-packer.exe";
-var linuxWarpPacker = "./warp/linux-x64.warp-packer";
+var winWarpPacker = "./build/warp/windows-x64.warp-packer.exe";
+var linuxWarpPacker = "./build/warp/linux-x64.warp-packer";
 var framework = "netcoreapp3.0";
 var logger = Environment.GetEnvironmentVariable("TF_BUILD") == "True" ? $"-l:trx --results-directory {publishDirFullPath}" : "-l:console;verbosity=normal";
 
