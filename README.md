@@ -66,7 +66,7 @@ Evolve is available as a NuGet **lib**, a **dotnet tool**, a **MSBuild task** an
 </table>
 
 ## Documentation
-You can read the latest documentation at [https://evolve-db.netlify.com](https://evolve-db.netlify.com).
+You can read the latest documentation at [https://evolve-db.netlify.com](https://evolve-db.netlify.com) and find samples [here](https://github.com/lecaillon/Evolve/tree/master/samples).
 
 ## Changelog
 Detailed changes for each release are documented in the [release notes](https://github.com/lecaillon/Evolve/releases).
