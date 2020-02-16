@@ -8,11 +8,11 @@ This makes it an ideal tool for continuous integration / delivery.
 
 Over all Evolve embraces simplicity. Every time you build or run your project, it will automatically ensure that your database is up-to-date. Install it and forget it!
 
+## Supporting Evolve
 If you like Evolve don't forget to support it by adding a star :star: or even more, by [sponsoring](https://github.com/sponsors/lecaillon) it. :muscle:
 Doing so, you will help me spend more time maintaining Evolve, so that this software continues being the best supported and feature-complete possible.
 
 ## Installation
-
 Evolve is available as a NuGet **lib**, a **dotnet tool**, a **MSBuild task** and a standalone **CLI**.
 
 | Package | Repository |
@@ -24,6 +24,9 @@ Evolve is available as a NuGet **lib**, a **dotnet tool**, a **MSBuild task** an
 
 ## Documentation
 You can read the latest documentation at [https://evolve-db.netlify.com](https://evolve-db.netlify.com).
+
+## Changelog
+Detailed changes for each release are documented in the [release notes](https://github.com/lecaillon/Evolve/releases).
 
 ## Supported Databases
 - [x] PostgreSQL
