@@ -34,37 +34,37 @@ Detailed changes for each release are documented in the [release notes](https://
     <tr>
       <td align="center" valign="middle">
         <a href="https://evolve-db.netlify.com/requirements/sqlserver" target="_blank">
-          <img width="100px" src="https://raw.githubusercontent.com/lecaillon/Evolve/master/images/sqlserver.png">
+          <img src="https://raw.githubusercontent.com/lecaillon/Evolve/master/images/sqlserver.png">
         </a>
       </td>
       <td align="center" valign="middle">
         <a href="https://evolve-db.netlify.com/requirements/postgresql" target="_blank">
-          <img width="100px" src="https://raw.githubusercontent.com/lecaillon/Evolve/master/images/postgresql.png">
+          <img src="https://raw.githubusercontent.com/lecaillon/Evolve/master/images/postgresql.png">
         </a>
       </td>
       <td align="center" valign="middle">
         <a href="https://evolve-db.netlify.com/requirements/mysql" target="_blank">
-          <img width="100px" src="https://raw.githubusercontent.com/lecaillon/Evolve/master/images/mysql.png">
+          <img src="https://raw.githubusercontent.com/lecaillon/Evolve/master/images/mysql.png">
         </a>
       </td>
       <td align="center" valign="middle">
         <a href="https://evolve-db.netlify.com/requirements/mariadb" target="_blank">
-          <img width="100px" src="https://raw.githubusercontent.com/lecaillon/Evolve/master/images/mariadb.png">
+          <img src="https://raw.githubusercontent.com/lecaillon/Evolve/master/images/mariadb.png">
         </a>
       </td>
       <td align="center" valign="middle">
         <a href="https://evolve-db.netlify.com/requirements/sqlite" target="_blank">
-          <img width="100px" src="https://raw.githubusercontent.com/lecaillon/Evolve/master/images/sqlite.png">
+          <img src="https://raw.githubusercontent.com/lecaillon/Evolve/master/images/sqlite.png">
         </a>
       </td>
       <td align="center" valign="middle">
         <a href="https://evolve-db.netlify.com/requirements/cassandra" target="_blank">
-          <img width="100px" src="https://raw.githubusercontent.com/lecaillon/Evolve/master/images/cassandra.png">
+          <img src="https://raw.githubusercontent.com/lecaillon/Evolve/master/images/cassandra.png">
         </a>
       </td>
       <td align="center" valign="middle">
         <a href="https://evolve-db.netlify.com/requirements/cockroachdb" target="_blank">
-          <img width="100px" src="https://raw.githubusercontent.com/lecaillon/Evolve/master/images/cockroachdb.png">
+          <img src="https://raw.githubusercontent.com/lecaillon/Evolve/master/images/cockroachdb.png">
         </a>
       </td>
     </tr>
