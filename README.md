@@ -29,9 +29,44 @@ You can read the latest documentation at [https://evolve-db.netlify.com](https:/
 Detailed changes for each release are documented in the [release notes](https://github.com/lecaillon/Evolve/releases).
 
 ## Supported Databases
-- [x] PostgreSQL
-- [x] SQL Server
-- [x] MySQL / MariaDB
-- [x] SQLite
-- [x] Cassandra
-- [x] CockroachDB
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="middle">
+        <a href="https://evolve-db.netlify.com/requirements/sqlserver" target="_blank">
+          <img width="100px" src="https://raw.githubusercontent.com/lecaillon/Evolve/master/images/sqlserver.png">
+        </a>
+      </td>
+      <td align="center" valign="middle">
+        <a href="https://evolve-db.netlify.com/requirements/postgresql" target="_blank">
+          <img width="100px" src="https://raw.githubusercontent.com/lecaillon/Evolve/master/images/postgresql.png">
+        </a>
+      </td>
+      <td align="center" valign="middle">
+        <a href="https://evolve-db.netlify.com/requirements/mysql" target="_blank">
+          <img width="100px" src="https://raw.githubusercontent.com/lecaillon/Evolve/master/images/mysql.png">
+        </a>
+      </td>
+      <td align="center" valign="middle">
+        <a href="https://evolve-db.netlify.com/requirements/mariadb" target="_blank">
+          <img width="100px" src="https://raw.githubusercontent.com/lecaillon/Evolve/master/images/mariadb.png">
+        </a>
+      </td>
+      <td align="center" valign="middle">
+        <a href="https://evolve-db.netlify.com/requirements/sqlite" target="_blank">
+          <img width="100px" src="https://raw.githubusercontent.com/lecaillon/Evolve/master/images/sqlite.png">
+        </a>
+      </td>
+      <td align="center" valign="middle">
+        <a href="https://evolve-db.netlify.com/requirements/cassandra" target="_blank">
+          <img width="100px" src="https://raw.githubusercontent.com/lecaillon/Evolve/master/images/cassandra.png">
+        </a>
+      </td>
+      <td align="center" valign="middle">
+        <a href="https://evolve-db.netlify.com/requirements/cockroachdb" target="_blank">
+          <img width="100px" src="https://raw.githubusercontent.com/lecaillon/Evolve/master/images/cockroachdb.png">
+        </a>
+      </td>
+    </tr>
+  </tbody>
+</table>
