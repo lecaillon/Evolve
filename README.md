@@ -9,7 +9,7 @@ This makes it an ideal tool for continuous integration / delivery.
 Over all Evolve embraces simplicity. Every time you build or run your project, it will automatically ensure that your database is up-to-date. Install it and forget it!
 
 ## Supporting Evolve
-If you like Evolve don't forget to support it by adding a star :star: and even more, by [sponsoring](https://github.com/sponsors/lecaillon) it :heart: Doing so, you will help me spend more time maintaining Evolve, so that this software continues being the best supported and feature-complete possible.
+If you like Evolve don't forget to support it by adding a star :star: and even better, by [sponsoring](https://github.com/sponsors/lecaillon) it :heart: Doing so, you will help me spend more time maintaining Evolve, so that this software continues being the best supported and feature-complete possible.
 
 ## Installation
 Evolve is available as a NuGet **lib**, a **dotnet tool**, a **MSBuild task** and a standalone **CLI**.
