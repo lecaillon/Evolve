@@ -174,7 +174,7 @@ Task("pack-evolve-tool").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 
 Task("test-msbuild.windows.x64-for-net").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 {
-    foreach(var file in GetFiles("./test-msbuild-package/Windows.x64/**/packages.config"))
+    foreach(var file in GetFiles("./test/Evolve.MSBuild.Tests/Windows.x64/**/packages.config"))
     {
         XmlPoke(file, "/packages/package[@id = 'Evolve.MSBuild.Windows.x64']/@version", version);
     }
@@ -199,7 +199,7 @@ Task("test-msbuild.windows.x64-for-netcore").WithCriteria(() => IsRunningOnWindo
         Source = new[] { "https://api.nuget.org/v3/index.json", distDirFullPath.Replace('/', '\\') }
     });
 
-    foreach(var project in GetFiles("./test-msbuild-package/Windows.x64/**/Evolve.*Core*.Test.csproj"))
+    foreach(var project in GetFiles("./test/Evolve.MSBuild.Tests/Windows.x64/**/Evolve.*Core*.Test.csproj"))
     {
         DotNetCoreBuild(project.FullPath, new DotNetCoreBuildSettings 
         {
