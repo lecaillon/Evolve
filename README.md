@@ -16,9 +16,9 @@ Evolve is available as a NuGet **lib**, a **dotnet tool**, a **MSBuild task** an
 
 | Package | Repository |
 |---------|------------|
-| Evolve | [![NuGet](https://buildstats.info/nuget/Evolve)](https://www.nuget.org/packages/Evolve) |
-| Evolve Tool | [![NuGet](https://buildstats.info/nuget/Evolve.Tool)](https://www.nuget.org/packages/Evolve.Tool) |
-| Evolve MSBuild | [![NuGet](https://buildstats.info/nuget/Evolve.MSBuild.Windows.x64)](https://www.nuget.org/packages/Evolve.MSBuild.Windows.x64) |
+| Evolve | [![NuGet](https://img.shields.io/nuget/dt/evolve)](https://www.nuget.org/packages/Evolve) |
+| Evolve Tool | [![NuGet](https://img.shields.io/nuget/dt/Evolve.Tool)](https://www.nuget.org/packages/Evolve.Tool) |
+| Evolve MSBuild | [![NuGet](https://img.shields.io/nuget/dt/Evolve.MSBuild.Windows.x64)](https://www.nuget.org/packages/Evolve.MSBuild.Windows.x64) |
 | Evolve CLI | [![NuGet](https://img.shields.io/badge/GitHub-releases-brightgreen.svg?logo=github)](https://github.com/lecaillon/Evolve/releases) |
 
 ## Supported databases
