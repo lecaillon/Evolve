@@ -95,6 +95,9 @@
         [Option("--out-of-order", "Allows migration scripts to be run “out of order”. Default: false", CommandOptionType.SingleValue)]
         public bool OutOfOrder { get; } = Default.OutOfOrder;
 
+        [Option("--validation-required", "Runs all the scripts in validation mode”. Default: false", CommandOptionType.SingleValue)]
+        public bool IsValidationRequired { get; } = Default.IsValidationRequired;
+
         [Option("--erase-disabled", "When set, ensures that Evolve will never erase schemas. Highly recommended in production. Default: false", CommandOptionType.SingleValue)]
         public bool EraseDisabled { get; } = Default.IsEraseDisabled;
 

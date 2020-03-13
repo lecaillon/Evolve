@@ -48,6 +48,7 @@ namespace Evolve
         public CommandOptions Command { get; set; } = CommandOptions.DoNothing;
         public bool IsEraseDisabled { get; set; }
         public bool MustEraseOnValidationError { get; set; }
+        public bool IsValidationRequired { get; set; } = false;
         public Encoding Encoding { get; set; } = Encoding.UTF8;
         public IEnumerable<string> Locations { get; set; } = new List<string> { "Sql_Scripts" };
         public string MetadataTableName { get; set; } = "changelog";
@@ -509,6 +510,7 @@ namespace Evolve
 
             try
             {
+                
                 stopWatch.Start();
                 foreach (var statement in db.SqlStatementBuilder.LoadSqlStatements(migration, Placeholders))
                 {
@@ -525,11 +527,19 @@ namespace Evolve
                 }
 
                 stopWatch.Stop();
-                metadata.SaveMigration(migration, true, stopWatch.Elapsed);
-                db.WrappedConnection.TryCommit();
+                if (IsValidationRequired)
+                {
+                    _log($"Successfully validation completed for migration {migration.Name} in {stopWatch.ElapsedMilliseconds} ms.");
+                    db.WrappedConnection.TryRollback();
+                }
+                else
+                {
+                    metadata.SaveMigration(migration, true, stopWatch.Elapsed);
+                    db.WrappedConnection.TryCommit();
 
-                _log($"Successfully applied migration {migration.Name} in {stopWatch.ElapsedMilliseconds} ms.");
-                TotalTimeElapsedInMs += stopWatch.ElapsedMilliseconds;
+                    _log($"Successfully applied migration {migration.Name} in {stopWatch.ElapsedMilliseconds} ms.");
+                    TotalTimeElapsedInMs += stopWatch.ElapsedMilliseconds;
+                }
                 NbMigration++;
             }
             catch (Exception ex)
@@ -537,6 +547,7 @@ namespace Evolve
                 stopWatch.Stop();
                 TotalTimeElapsedInMs += stopWatch.ElapsedMilliseconds;
                 db.WrappedConnection.TryRollback();
+                if(!IsValidationRequired)
                 metadata.SaveMigration(migration, false, stopWatch.Elapsed);
                 throw new EvolveException($"Error executing script: {migration.Name} after {stopWatch.ElapsedMilliseconds} ms.", ex);
             }
