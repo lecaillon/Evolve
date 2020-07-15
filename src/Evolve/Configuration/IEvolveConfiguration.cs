@@ -178,5 +178,10 @@ namespace Evolve.Configuration
         ///     When set, exclude embedded migration scripts that do not start with one of these filters.
         /// </summary>
         IEnumerable<string> EmbeddedResourceFilters { get; set; }
+
+        /// <summary>
+        ///     Defines order of versioned and repeatable migrations.
+        /// </summary>
+        MigrationsOrderOptions MigrationsOrder { get; set; }
     }
 }

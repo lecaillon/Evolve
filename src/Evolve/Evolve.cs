@@ -72,7 +72,7 @@ namespace Evolve
         public int? CommandTimeout { get; set; }
         public IEnumerable<Assembly> EmbeddedResourceAssemblies { get; set; } = new List<Assembly>();
         public IEnumerable<string> EmbeddedResourceFilters { get; set; } = new List<string>();
-
+        public MigrationsOrderOptions MigrationsOrder { get; set; } = MigrationsOrderOptions.VersionedMigrationsFirst;
         #endregion
 
         #region Properties
@@ -289,9 +289,18 @@ namespace Evolve
                 return;
             }
 
-            var lastAppliedVersion = ExecuteAllMigration(db);
-            ExecuteAllRepeatableMigration(db);
-
+            MigrationVersion lastAppliedVersion = null;
+            if (MigrationsOrder == MigrationsOrderOptions.VersionedMigrationsFirst)
+            {
+                lastAppliedVersion = ExecuteAllMigration(db);
+                ExecuteAllRepeatableMigration(db);
+            }
+            else
+            {
+                ExecuteAllRepeatableMigration(db);
+                lastAppliedVersion = ExecuteAllMigration(db);
+            }
+            
             if (NbMigration == 0)
             {
                 _log("Database is up to date. No migration needed.");
