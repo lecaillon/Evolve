@@ -23,24 +23,24 @@ namespace Evolve.Utilities
 
         private static void ExtractVersionAndDescription(string script, string prefix, string separator, out string version, out string description, bool throwIfNoVersion)
         {
-            Check.NotNullOrEmpty(script, nameof(script)); // V1_3_1__Migration_description.sql
+            Check.NotNullOrEmpty(script, nameof(script)); // Migration_description__V1_3_1.sql
             Check.NotNullOrEmpty(prefix, nameof(prefix)); // V
             Check.NotNullOrEmpty(separator, nameof(separator)); // __
 
             // Check prefix
-            if (!Path.GetFileNameWithoutExtension(script).Substring(0, prefix.Length).Equals(prefix, StringComparison.OrdinalIgnoreCase))
+            if (!Path.GetFileNameWithoutExtension(script).Substring(script.IndexOf(separator) + separator.Length, prefix.Length).Equals(prefix, StringComparison.OrdinalIgnoreCase))
                 throw new EvolveConfigurationException(string.Format(MigrationNamePrefixNotFound, prefix, script));
 
-            string migrationName = Path.GetFileNameWithoutExtension(script).Substring(prefix.Length); // 1_3_1__Migration_description
+            string migrationName = Path.GetFileNameWithoutExtension(script).Replace(prefix, ""); // Migration_description__1_3_1
 
             // Check separator
             int indexOfSeparator = migrationName.IndexOf(separator);
             if (indexOfSeparator == -1)
                 throw new EvolveConfigurationException(string.Format(MigrationNameSeparatorNotFound, separator, script));
 
-            version = new string(migrationName.Take(indexOfSeparator).ToArray());
-            description = migrationName.Substring(indexOfSeparator + separator.Length)
-                                       .Replace("_", " ");
+            description = new string(migrationName.Take(indexOfSeparator).ToArray()); // Migration_description
+            version = migrationName.Substring(indexOfSeparator + separator.Length)
+                                       .Replace("_", " "); // 1 3 1
 
             // Check version
             if (version.IsNullOrWhiteSpace() && throwIfNoVersion)
