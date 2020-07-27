@@ -38,7 +38,8 @@ namespace Evolve.Migration
 
                 dirToScan.GetFiles("*", SearchOption.AllDirectories) // Get scripts recursively
                          .Where(f => !migrations.Any(m => m.Path == f.FullName) // Scripts not already loaded
-                                  && f.Name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) // "V*"
+                                  //&& f.Name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) // "V*"
+                                  && f.Name.Substring(f.Name.IndexOf(separator) + separator.Length, prefix.Length).Equals(prefix, StringComparison.OrdinalIgnoreCase) // "*V*"
                                   && f.Name.EndsWith(suffix, StringComparison.OrdinalIgnoreCase)) // "*.sql"
                          .Select(f =>
                          {
@@ -72,7 +73,8 @@ namespace Evolve.Migration
 
                 dirToScan.GetFiles("*", SearchOption.AllDirectories)   // Get scripts recursively
                          .Where(f => !migrations.Any(m => m.Path == f.FullName) // Scripts not already loaded
-                             && f.Name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) // "R*"
+                             //&& f.Name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) // "R*"
+                                  && f.Name.Substring(f.Name.IndexOf(separator) + separator.Length, prefix.Length).Equals(prefix, StringComparison.OrdinalIgnoreCase) // "*R*"
                              && f.Name.EndsWith(suffix, StringComparison.OrdinalIgnoreCase)) // "*.sql"
                          .Select(f =>
                          {
