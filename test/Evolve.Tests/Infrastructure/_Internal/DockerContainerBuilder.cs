@@ -25,9 +25,20 @@ namespace Evolve.Tests.Infrastructure
             RemovePreviousContainer = setupOptions.RemovePreviousContainer;
             Cmd = setupOptions.Cmd;
 
-            _client = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-                ? new DockerClientConfiguration(new Uri("npipe://./pipe/docker_engine")).CreateClient()
-                : new DockerClientConfiguration(new Uri("unix:///var/run/docker.sock")).CreateClient();
+            try
+            {
+                _client = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                    ? new DockerClientConfiguration(new Uri("npipe://./pipe/docker_engine")).CreateClient()
+                    : new DockerClientConfiguration(new Uri("unix:///var/run/docker.sock")).CreateClient();
+            }
+            catch
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                { // hack wsl
+                    _client = new DockerClientConfiguration(new Uri("unix:///var/run/docker.sock")).CreateClient();
+                }
+            }
+
         }
 
         public string FromImage { get; }
@@ -43,15 +54,16 @@ namespace Evolve.Tests.Infrastructure
         {
             var container = _client.Containers.ListContainersAsync(new ContainersListParameters { All = true }).ConfigureAwait(false).GetAwaiter().GetResult()
                                               .FirstOrDefault(x => x.Names.Any(n => n.Equals("/" + Name, StringComparison.OrdinalIgnoreCase)));
-
+            
+            bool isRunning = container?.State == "running";
             if (container != null && !RemovePreviousContainer)
             {
-                return new DockerContainer(container.ID);
+                return new DockerContainer(_client, container.ID, isRunning);
             }
 
             if (container != null && RemovePreviousContainer)
             {
-                using var oldContainer = new DockerContainer(container.ID);
+                using var oldContainer = new DockerContainer(_client, container.ID, isRunning);
                 oldContainer.Stop();
                 oldContainer.Remove();
             }
@@ -74,7 +86,7 @@ namespace Evolve.Tests.Infrastructure
                 }
             }).ConfigureAwait(false).GetAwaiter().GetResult();
 
-            return new DockerContainer(newContainer.ID);
+            return new DockerContainer(_client, newContainer.ID, isRunning: false);
         }
 
         protected virtual void Dispose(bool disposing)

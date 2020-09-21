@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.InteropServices;
 using Docker.DotNet;
 using Docker.DotNet.Models;
+using Evolve.Utilities;
 
 namespace Evolve.Tests.Infrastructure
 {
@@ -12,18 +12,25 @@ namespace Evolve.Tests.Infrastructure
         private bool _disposedValue = false;
 
         [SuppressMessage("Qualité du code", "IDE0067: Supprimer les objets avant la mise hors de portée")]
-        public DockerContainer(string id)
+        public DockerContainer(DockerClient client, string id, bool isRunning)
         {
+            _client = Check.NotNull(client, nameof(client));
             Id = id;
-
-            _client = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-                ? new DockerClientConfiguration(new Uri("npipe://./pipe/docker_engine")).CreateClient()
-                : new DockerClientConfiguration(new Uri("unix:///var/run/docker.sock")).CreateClient();
+            IsRunning = isRunning;
         }
 
         public string Id { get; }
+        public bool IsRunning { get; private set; }
 
-        public bool Start() => _client.Containers.StartContainerAsync(Id, null).ConfigureAwait(false).GetAwaiter().GetResult();
+        public bool Start()
+        {
+            if (!IsRunning)
+            {
+                IsRunning = _client.Containers.StartContainerAsync(Id, null).ConfigureAwait(false).GetAwaiter().GetResult();
+            }
+
+            return IsRunning;
+        }
 
         public bool Stop() => _client.Containers.StopContainerAsync(Id, new ContainerStopParameters()).ConfigureAwait(false).GetAwaiter().GetResult();
 
