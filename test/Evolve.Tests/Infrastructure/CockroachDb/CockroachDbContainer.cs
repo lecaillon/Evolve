@@ -28,7 +28,7 @@ namespace Evolve.Tests.Infrastructure
                 ExposedPort = $"{ExposedPort}/tcp",
                 HostPort = HostPort,
                 RemovePreviousContainer = fromScratch,
-                Cmd = new[] { "start", "--insecure" }
+                Cmd = new[] { "start-single-node", "--insecure" }
             }).Build();
 
             return _container.Start();
