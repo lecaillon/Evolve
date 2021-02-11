@@ -1,3 +1,5 @@
+#tool nuget:?package=ReportGenerator&version=4.8.5
+
 ///////////////////////////////////////////////////////////////////////////////
 // ARGUMENTS
 ///////////////////////////////////////////////////////////////////////////////
@@ -81,7 +83,7 @@ Task("test").Does(() =>
 
 Task("report-coverage").Does(() =>
 {
-    ReportGenerator($"FilePath: {publishDir}/coverage.xml", $"DirectoryPath: {publishDir}/coverage", new ReportGeneratorSettings
+    ReportGenerator(FilePath: $"{publishDir}/coverage.xml", DirectoryPath: $"{publishDir}/coverage", new ReportGeneratorSettings
     {
         ReportTypes = new[] { ReportGeneratorReportType.Badges, ReportGeneratorReportType.Cobertura, ReportGeneratorReportType.HtmlInline_AzurePipelines_Dark },
         Verbosity = ReportGeneratorVerbosity.Info
