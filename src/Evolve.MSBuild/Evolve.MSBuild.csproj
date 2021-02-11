@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net35;net461;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net35;net472;netstandard2.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
@@ -9,7 +9,7 @@
     <PackageReference Include="Microsoft.Build.Utilities.Core" Version="15.9.20" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net461'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
     <Reference Include="Microsoft.Build.Framework" />
     <Reference Include="Microsoft.Build.Utilities.v4.0" />
     <Reference Include="System.Configuration" />

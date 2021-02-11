@@ -22,13 +22,7 @@ Every time you build your project, it will automatically ensure that your databa
     <RepositoryUrl>https://github.com/lecaillon/Evolve.git</RepositoryUrl>
     <PackageTags>evolve flyway dotnet tool sql database migration mysql sqlserver cassandra mariadb sqlite postgresql cockroachdb</PackageTags>
     <PackageReleaseNotes>## Features
-- #81 Add possibility to execute a migration outside of a transaction (-- evolve-tx-off)
-- #123 Enhance the command info with pending and ignored migration
-- #162 Upgrade to .NET Core 3.1 Evolve.CLI, Evolve.Tool and the samples
-
-## Bug fix
-- #156 Evolve fails if SQL Server current schema is not set
-- #157 Drop MySql schema fails on dependent schemas</PackageReleaseNotes>
+- #191 Migrate from .NET 4.6.1 to .NET 4.7.2</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

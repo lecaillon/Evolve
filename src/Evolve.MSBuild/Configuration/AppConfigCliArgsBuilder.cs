@@ -1,4 +1,4 @@
-﻿#if NET35 || NET461
+﻿#if NET35 || NET472
 
 using System;
 using System.Collections.Generic;
