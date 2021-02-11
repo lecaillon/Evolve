@@ -24,7 +24,7 @@ Every time you build your project, it will automatically ensure that your databa
     <tags>evolve  msbuild windows x64 flyway sql database migration mysql sqlserver cassandra mariadb sqlite postgresql cockroachdb</tags>
     <dependencies>
       <group targetFramework="net35" />
-      <group targetFramework="net461" />
+      <group targetFramework="net472" />
       <group targetFramework="netstandard2.0">
         <dependency id="Microsoft.Build.Utilities.Core" version="15.9.20" />
       </group>
@@ -34,7 +34,7 @@ Every time you build your project, it will automatically ensure that your databa
     <file src="..\..\dist\evolve.exe" target="tools" />
     <file src="Targets\**" target="build" />
     <file src="bin\Release\net35\*.dll" target="build\net35" />
-    <file src="bin\Release\net461\*.dll" target="build\net461" />
+    <file src="bin\Release\net472\*.dll" target="build\net472" />
     <file src="bin\Release\netstandard2.0\*.dll" target="build\netstandard2.0" />
   </files>
 </package>
