@@ -9,7 +9,6 @@ var configuration = Argument("configuration", "Release");
 var version = XmlPeek(File("./build/common.props"), "/Project/PropertyGroup/Version/text()");
 
 var sln = "./Evolve.sln";
-var slnTestMsbuildWinx64 = "./Evolve.Test.MSBuild.Windows.x64.sln";
 var distDir = "./dist";
 var distDirFullPath = MakeAbsolute(Directory($"{distDir}")).FullPath;
 var publishDir = "./publish";
@@ -76,7 +75,7 @@ Task("test").Does(() =>
                                             .Append("/p:AltCoverCallContext=[Fact]|[Theory]")
                                             .Append("/p:AltCoverAssemblyFilter=Evolve.Tests|xunit.runner|MySqlConnector|xunit.assert|xunit.core|xunit.execution.dotnet")
                                             .Append($"/p:AltCoverPathFilter={pathFilter}")
-                                            .Append("/p:AltCoverTypeFilter=Evolve.MSBuild.EvolveBoot|Evolve.MSBuild.AppConfigCliArgsBuilder|Evolve.Utilities.Check|SimpleJSON.JSON|SimpleJSON.JSONArray|SimpleJSON.JSONBool|SimpleJSON.JSONLazyCreator|SimpleJSON.JSONNode|SimpleJSON.JSONNull|SimpleJSON.JSONNumber|SimpleJSON.JSONObject|SimpleJSON.JSONString|ConsoleTables.ConsoleTable|ConsoleTables.ConsoleTableOptions")
+                                            .Append("/p:AltCoverTypeFilter=Evolve.Utilities.Check|SimpleJSON.JSON|SimpleJSON.JSONArray|SimpleJSON.JSONBool|SimpleJSON.JSONLazyCreator|SimpleJSON.JSONNode|SimpleJSON.JSONNull|SimpleJSON.JSONNumber|SimpleJSON.JSONObject|SimpleJSON.JSONString|ConsoleTables.ConsoleTable|ConsoleTables.ConsoleTableOptions")
                                             .Append($"/p:AltCoverXmlReport={publishDirFullPath}/coverage.xml")
     });
 });
@@ -151,16 +150,6 @@ Task("pack-evolve").WithCriteria(() => IsRunningOnWindows()).Does(() =>
     });
 });
 
-Task("pack-evolve.msbuild.windows.x64").WithCriteria(() => IsRunningOnWindows()).Does(() =>
-{
-    NuGetPack("./src/Evolve.MSBuild/Evolve.MSBuild.Windows.x64.nuspec", new NuGetPackSettings 
-    {
-        DevelopmentDependency = true,
-        OutputDirectory = distDir,
-        Version = version
-    });
-});
-
 Task("pack-evolve-tool").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 {
     DotNetCorePack("./src/Evolve.Tool/", new DotNetCorePackSettings 
@@ -170,44 +159,6 @@ Task("pack-evolve-tool").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 		NoRestore = false,
 		NoBuild = false
     });
-});
-
-Task("test-msbuild.windows.x64-for-net").WithCriteria(() => IsRunningOnWindows()).Does(() =>
-{
-    foreach(var file in GetFiles("./test/Evolve.MSBuild.Tests/Windows.x64/**/packages.config"))
-    {
-        XmlPoke(file, "/packages/package[@id = 'Evolve.MSBuild.Windows.x64']/@version", version);
-    }
-
-    NuGetRestore(slnTestMsbuildWinx64, new NuGetRestoreSettings
-    {
-        Source = new[] { "https://api.nuget.org/v3/index.json", distDirFullPath.Replace('/', '\\') }
-    });
-
-    MSBuild(slnTestMsbuildWinx64, new MSBuildSettings
-    {
-        Configuration = configuration,
-        Verbosity = Verbosity.Minimal,
-        Restore = false
-    });
-});
-
-Task("test-msbuild.windows.x64-for-netcore").WithCriteria(() => IsRunningOnWindows()).Does(() =>
-{
-    NuGetRestore(slnTestMsbuildWinx64, new NuGetRestoreSettings
-    {
-        Source = new[] { "https://api.nuget.org/v3/index.json", distDirFullPath.Replace('/', '\\') }
-    });
-
-    foreach(var project in GetFiles("./test/Evolve.MSBuild.Tests/Windows.x64/**/Evolve.*Core*.Test.csproj"))
-    {
-        DotNetCoreBuild(project.FullPath, new DotNetCoreBuildSettings 
-        {
-            Configuration = configuration,
-            Verbosity = DotNetCoreVerbosity.Minimal,
-            NoRestore = true
-        });
-    }
 });
 
 Task("default")
@@ -221,9 +172,6 @@ Task("default")
     .IsDependentOn("linux-publish-cli")
     .IsDependentOn("linux-warp-cli")
     .IsDependentOn("test-cli")
-    .IsDependentOn("pack-evolve.msbuild.windows.x64")
-    .IsDependentOn("test-msbuild.windows.x64-for-net")
-    .IsDependentOn("test-msbuild.windows.x64-for-netcore")
     .IsDependentOn("pack-evolve")
 	.IsDependentOn("pack-evolve-tool");
 
