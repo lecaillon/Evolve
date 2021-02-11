@@ -22,7 +22,8 @@ Every time you build your project, it will automatically ensure that your databa
     <RepositoryUrl>https://github.com/lecaillon/Evolve.git</RepositoryUrl>
     <PackageTags>evolve flyway dotnet tool sql database migration mysql sqlserver cassandra mariadb sqlite postgresql cockroachdb</PackageTags>
     <PackageReleaseNotes>## Features
-- #191 Migrate from .NET 4.6.1 to .NET 4.7.2</PackageReleaseNotes>
+- #191 Migrate from .NET 4.6.1 to .NET 4.7.2
+- #193 Drop support of .NET 3.5</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

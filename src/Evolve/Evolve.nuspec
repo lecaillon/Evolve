@@ -14,17 +14,15 @@ Every time you build your project, it will automatically ensure that your databa
     <iconUrl>https://raw.githubusercontent.com/lecaillon/Evolve/master/images/logo128.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <releaseNotes>## Features
-- #191 Migrate from .NET 4.6.1 to .NET 4.7.2</releaseNotes>
+- #191 Migrate from .NET 4.6.1 to .NET 4.7.2
+- #193 Drop support of .NET 3.5</releaseNotes>
     <tags>evolve flyway sql database migration mysql sqlserver cassandra mariadb sqlite postgresql cockroachdb</tags>
     <dependencies>
-      <group targetFramework="net35" />
       <group targetFramework="net472" />
       <group targetFramework="netstandard2.0" />
     </dependencies>
   </metadata>
   <files>
-    <file src="bin\Release\net35\Evolve.dll" target="lib\net35" />
-    <file src="bin\Release\net35\Evolve.pdb" target="lib\net35" />
     <file src="bin\Release\net472\Evolve.dll" target="lib\net472" />
     <file src="bin\Release\net472\Evolve.pdb" target="lib\net472" />
     <file src="bin\Release\netstandard2.0\Evolve.dll" target="lib\netstandard2.0" />
