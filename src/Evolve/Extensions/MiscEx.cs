@@ -25,12 +25,7 @@ namespace Evolve
         /// <returns> True if the value parameter is null or String.Empty, or if value consists exclusively of white-space characters. </returns>
         public static bool IsNullOrWhiteSpace(this string? s)
         {
-#if NET35
-            if (s == null) return true;
-            return string.IsNullOrEmpty(s.Trim());
-#else
             return string.IsNullOrWhiteSpace(s);
-#endif
         }
 
         /// <summary>
