@@ -93,11 +93,13 @@ namespace Evolve.Dialect.Cassandra
                                     .SingleOrDefault(x => x.Key.Equals("keyspaces", StringComparison.OrdinalIgnoreCase)).Value?.Linq
                                     .ToDictionary(x => x.Key, x => x.Value, StringComparer.OrdinalIgnoreCase);
 
+#pragma warning disable CS8620
                 if (keyspaces?.GetValue(keyspaceName) != null)
                 {
                     return ReplicationStrategy.FromSortedDictionary(new SortedDictionary<string, string>((keyspaces[keyspaceName].Linq.ToDictionary(x => x.Key, x => x.Value.Value))));
                 }
                 else if (keyspaces?.GetValue(Configuration.DefaultKeyspaceKey) != null)
+#pragma warning restore CS8620
                 {
                     return ReplicationStrategy.FromSortedDictionary(new SortedDictionary<string, string>((keyspaces[Configuration.DefaultKeyspaceKey].Linq.ToDictionary(x => x.Key, x => x.Value.Value))));
                 }

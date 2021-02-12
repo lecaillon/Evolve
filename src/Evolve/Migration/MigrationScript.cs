@@ -36,8 +36,8 @@ namespace Evolve.Migration
             }
 
             using var file = new StringReader(Content);
-            string first = file.ReadLine();
-            return first is null ? true : first.IndexOf("evolve-tx-off", StringComparison.OrdinalIgnoreCase) == -1;
+            string? firstLine = file.ReadLine();
+            return firstLine is null || firstLine.IndexOf("evolve-tx-off", StringComparison.OrdinalIgnoreCase) == -1;
         }
 
         /// <summary>

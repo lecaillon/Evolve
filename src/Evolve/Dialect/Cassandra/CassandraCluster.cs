@@ -51,8 +51,8 @@ namespace Evolve.Dialect.Cassandra
                                       .SingleOrDefault(x => x.Key.Equals("clusterLock", StringComparison.OrdinalIgnoreCase)).Value?.Linq
                                       .ToDictionary(x => x.Key, x => x.Value.Value, StringComparer.OrdinalIgnoreCase);
 
-                clusterLockKeyspaceName = clusterLock!.GetValue("defaultClusterLockKeyspace", clusterLockKeyspaceName);
-                clusterLockTableName = clusterLock!.GetValue("defaultClusterLockTable", clusterLockTableName);
+                clusterLockKeyspaceName = clusterLock!.GetValue("defaultClusterLockKeyspace", clusterLockKeyspaceName)!;
+                clusterLockTableName = clusterLock!.GetValue("defaultClusterLockTable", clusterLockTableName)!;
             }
 
             try
@@ -60,7 +60,7 @@ namespace Evolve.Dialect.Cassandra
                 return WrappedConnection.QueryForLong($"select count(locked) from {clusterLockKeyspaceName}.{clusterLockTableName}") == 0;
             }
             catch (EvolveException ex)
-                when (ex?.InnerException.GetType().ToString() == "Cassandra.InvalidQueryException")
+                when (ex?.InnerException?.GetType().ToString() == "Cassandra.InvalidQueryException")
             {
                 //These error messages are very specific to Cassandra's drivers and could change
                 if (ex.Message.StartsWith($"Keyspace {clusterLockKeyspaceName} does not exist")

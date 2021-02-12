@@ -66,7 +66,7 @@ namespace Evolve.Dialect.SQLServer
             }, cmd =>
             {
                 cmd.ExecuteNonQuery();
-                return (int)(cmd.Parameters["@result"] as IDbDataParameter)!.Value;
+                return (int)(cmd.Parameters["@result"] as IDbDataParameter)!.Value!;
             }) >= 0;
         }
 
@@ -99,7 +99,7 @@ namespace Evolve.Dialect.SQLServer
             }, cmd =>
             {
                 cmd.ExecuteNonQuery();
-                return (int)(cmd.Parameters["@result"] as IDbDataParameter)!.Value;
+                return (int)(cmd.Parameters["@result"] as IDbDataParameter)!.Value!;
             }) >= 0;
         }
 
