@@ -7,7 +7,7 @@
     <summary>Database migration tool for .NET. Inspired by Flyway.</summary>
     <description>Evolve is an easy migration tool that uses plain old sql scripts. Its purpose is to automate your database changes, and help keep those changes synchronized through all your environments and developpement teams.
 Every time you build your project, it will automatically ensure that your database is up-to-date, without having to do anything other than build. Install it and forget it !</description>
-    <copyright>Copyright © P.Lécaillon 2019</copyright>
+    <copyright>Copyright © P.Lécaillon 2021</copyright>
     <license type="expression">MIT</license>
     <projectUrl>https://evolve-db.netlify.com</projectUrl>
     <repository type="git" url="https://github.com/lecaillon/Evolve.git" />
@@ -15,7 +15,8 @@ Every time you build your project, it will automatically ensure that your databa
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <releaseNotes>## Features
 - #191 Migrate from .NET 4.6.1 to .NET 4.7.2
-- #193 Drop support of .NET 3.5</releaseNotes>
+- #193 Drop support of .NET 3.5
+- Add support of Source Link</releaseNotes>
     <tags>evolve flyway sql database migration mysql sqlserver cassandra mariadb sqlite postgresql cockroachdb</tags>
     <dependencies>
       <group targetFramework="net472" />
