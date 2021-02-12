@@ -1,6 +1,6 @@
 ﻿using System.Data;
 using System.Diagnostics.CodeAnalysis;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
 
 namespace Evolve.Tests.Infrastructure
 {
