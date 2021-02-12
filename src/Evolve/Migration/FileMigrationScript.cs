@@ -42,11 +42,11 @@ namespace Evolve.Migration
             {
                 base.ValidateChecksum(checksum);
             }
-            catch (Exception ex)
+            catch
             {
                 if (checksum != FallbackCheck())
                 {
-                    throw ex;
+                    throw;
                 }
             }
         }

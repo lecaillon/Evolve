@@ -76,13 +76,13 @@ namespace Evolve.Dialect.Cassandra
 
         protected override bool InternalTryLock() =>
             //Insert a lock using LWT with a TTL (of one hour), in case of crash the migration can be retried 1h later with no intervention
-            _database.WrappedConnection.Query<bool>(
+            _database.WrappedConnection.QueryForBool(
                 $"insert into {Schema}.{TableName} (id, type, version, description, name, checksum, installed_by, installed_on, success) " +
                 $"values(0, 0, '0', 'lock', 'lock', '', '{Environment.MachineName}', toUnixTimestamp(now()), true) " +
                 $"if not exists using TTL {LockTtlInSeconds}");
 
         protected override bool InternalReleaseLock() =>
-            _database.WrappedConnection.Query<bool>(
+            _database.WrappedConnection.QueryForBool(
                   $"delete from {Schema}.{TableName} where id = 0 if exists");
     }
 }

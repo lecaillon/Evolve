@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -115,7 +114,6 @@ namespace Evolve
             }
         }
 
-        [SuppressMessage("Design", "CA1031: Do not catch general exception types")]
         public IEnumerable<MigrationMetadataUI> Info()
         {
             Command = CommandOptions.Info;
@@ -278,7 +276,7 @@ namespace Evolve
                 }
                 else
                 {
-                    throw ex;
+                    throw;
                 }
             }
 
@@ -699,7 +697,7 @@ namespace Evolve
                 { // Script found, verify checksum
                     script.ValidateChecksum(appliedMigration.Checksum);
                 }
-                catch (Exception ex)
+                catch
                 { // Validation error
                     if (Command == CommandOptions.Repair)
                     { // Repair by updating checksum
@@ -710,7 +708,7 @@ namespace Evolve
                     }
                     else
                     {
-                        throw ex;
+                        throw;
                     }
                 }
             }

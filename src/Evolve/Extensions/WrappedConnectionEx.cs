@@ -110,7 +110,7 @@ namespace Evolve
         {
             return Execute(wrappedConnection, sql, cmd =>
             {
-                return (string)cmd.ExecuteScalar();
+                return (string)(cmd.ExecuteScalar() ?? "");
             });
         }
 
@@ -118,11 +118,11 @@ namespace Evolve
         {
             return Execute(wrappedConnection, sql, cmd =>
             {
-                return (bool)cmd.ExecuteScalar();
+                return (bool)(cmd.ExecuteScalar() ?? false);
             });
         }
 
-        public static T Query<T>(this WrappedConnection wrappedConnection, string sql)
+        public static T? Query<T>(this WrappedConnection wrappedConnection, string sql)
         {
             return Execute(wrappedConnection, sql, cmd =>
             {
@@ -139,9 +139,9 @@ namespace Evolve
                 {
                     while (reader.Read())
                     {
-                        if (reader[0] != DBNull.Value)
+                        if (reader[0] != null && reader[0] != DBNull.Value)
                         {
-                            list.Add(reader[0].ToString());
+                            list.Add(reader[0].ToString()!);
                         }
                     }
                 }

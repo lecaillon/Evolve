@@ -48,7 +48,7 @@ namespace Evolve.Migration
                                 version,
                                 description,
                                 name: GetFileName(x),
-                                content: assembly.GetManifestResourceStream(x),
+                                content: assembly.GetManifestResourceStream(x)!,
                                 type: MetadataType.Migration,
                                 encoding);
                         })
@@ -85,7 +85,7 @@ namespace Evolve.Migration
                                 version: null,
                                 description,
                                 name: GetFileName(x),
-                                content: assembly.GetManifestResourceStream(x),
+                                content: assembly.GetManifestResourceStream(x)!,
                                 type: MetadataType.RepeatableMigration,
                                 encoding);
                         })
@@ -100,7 +100,7 @@ namespace Evolve.Migration
                              .ToList();
         }
 
-        private string GetFileName(string resource)
+        private static string GetFileName(string resource)
         {
             Check.NotNullOrEmpty(resource, nameof(resource));
 

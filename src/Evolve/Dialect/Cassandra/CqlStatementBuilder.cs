@@ -35,7 +35,7 @@ namespace Evolve.Dialect.Cassandra
             static IEnumerable<string> GetLines(string s)
             {
                 using var sr = new StringReader(s);
-                string line;
+                string? line;
                 while ((line = sr.ReadLine()) != null)
                 {
                     yield return line;

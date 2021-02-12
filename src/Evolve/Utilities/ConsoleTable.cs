@@ -215,7 +215,7 @@ namespace ConsoleTables
                 .Select((t, i) => Rows.Select(x => x[i])
                     .Union(new[] { Columns[i] })
                     .Where(x => x != null)
-                    .Select(x => x!.ToString().Length).Max())
+                    .Select(x => x!.ToString()!.Length).Max())
                 .ToList();
             return columnLengths;
         }

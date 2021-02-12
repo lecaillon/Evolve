@@ -3,7 +3,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>netcoreapp2.2;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net5.0</TargetFrameworks>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>evolve</ToolCommandName>
   </PropertyGroup>
@@ -22,8 +22,7 @@ Every time you build your project, it will automatically ensure that your databa
     <RepositoryUrl>https://github.com/lecaillon/Evolve.git</RepositoryUrl>
     <PackageTags>evolve flyway dotnet tool sql database migration mysql sqlserver cassandra mariadb sqlite postgresql cockroachdb</PackageTags>
     <PackageReleaseNotes>## Features
-- #191 Migrate from .NET 4.6.1 to .NET 4.7.2
-- #193 Drop support of .NET 3.5</PackageReleaseNotes>
+- #196 Replace support of netcoreapp2.2 by net5.0 </PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
