@@ -12,7 +12,7 @@
     using Cassandra.Data;
     using Dialect;
     using Migration;
-    using MySql.Data.MySqlClient;
+    using MySqlConnector;
     using Npgsql;
 
     internal static class EvolveFactory
