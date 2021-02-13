@@ -71,7 +71,8 @@ namespace Evolve
         public int? CommandTimeout { get; set; }
         public IEnumerable<Assembly> EmbeddedResourceAssemblies { get; set; } = new List<Assembly>();
         public IEnumerable<string> EmbeddedResourceFilters { get; set; } = new List<string>();
-
+        public bool RetryRepeatableMigrationsUntilNoError { get; set; }
+        
         #endregion
 
         #region Properties
