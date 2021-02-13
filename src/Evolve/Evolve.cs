@@ -334,11 +334,54 @@ namespace Evolve
         private void ExecuteAllRepeatableMigration(DatabaseHelper db)
         {
             var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
-            var pendingMigrations = GetAllPendingRepeatableMigration(metadata);
-
-            foreach (var migration in pendingMigrations)
+            var pendingMigrations = GetAllPendingRepeatableMigration(metadata).ToList();
+            if (pendingMigrations.Count == 0)
             {
-                ExecuteMigration(migration, db);
+                return;
+            }
+
+            if (!RetryRepeatableMigrationsUntilNoError)
+            { // default
+                foreach (var migration in pendingMigrations)
+                {
+                    ExecuteMigration(migration, db);
+                }
+            }
+            else
+            { // RetryRepeatableMigrationsUntilNoError
+                List<MigrationScript> executedMigrations = new();
+                List<Exception> exceptions;
+                int executedCount;
+
+                do
+                {
+                    exceptions = new();
+                    executedCount = 0;
+
+                    try
+                    {
+                        foreach (var migration in pendingMigrations)
+                        {
+                            if (!executedMigrations.Contains(migration))
+                            {
+                                ExecuteMigration(migration, db);
+
+                                executedMigrations.Add(migration);
+                                executedCount += 1;
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        exceptions.Add(ex);
+                    }
+
+                } while (executedMigrations.Count == pendingMigrations.Count || executedCount == 0);
+
+                if (exceptions.Any())
+                {
+                    throw exceptions.First();
+                }
             }
         }
 
