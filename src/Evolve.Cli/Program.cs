@@ -33,12 +33,12 @@
             }
         }
 
-        [Argument(0)]
+        [Argument(0, Description = "migrate | erase | repair | info")]
         [Required]
         [AllowedValues("migrate", "erase", "repair", "info", IgnoreCase = true)]
         public CommandOptions Command { get; }
 
-        [Argument(1)]
+        [Argument(1, Description = "postgresql | sqlite | sqlserver | mysql | mariadb | cassandra | cockroachdb")]
         [Required]
         [AllowedValues("postgresql", "sqlite", "sqlserver", "mysql", "mariadb", "cassandra", "cockroachdb", IgnoreCase = true)]
         public DBMS Database { get; }
