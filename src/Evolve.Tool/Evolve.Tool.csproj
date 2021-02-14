@@ -22,7 +22,8 @@ Every time you build your project, it will automatically ensure that your databa
     <RepositoryUrl>https://github.com/lecaillon/Evolve.git</RepositoryUrl>
     <PackageTags>evolve flyway dotnet tool sql database migration mysql sqlserver cassandra mariadb sqlite postgresql cockroachdb</PackageTags>
     <PackageReleaseNotes>## Features
-- #196 Replace support of netcoreapp2.2 by net5.0 </PackageReleaseNotes>
+- #196 Replace support of netcoreapp2.2 by net5.0
+- #187 Add new option : RetryRepeatableMigrationsUntilNoError</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
