@@ -109,6 +109,9 @@
 
         [Option("-f|--embedded-resource-filter", "When set, exclude embedded migration scripts that do not start with one of these filters.", CommandOptionType.MultipleValue)]
         public string[] EmbeddedResourceFilters { get; }
+     
+        [Option("--retry-repeatable", "When set, execute repeatedly all repeatable migrations for as long as the number of errors decreases, so that you can name them more easily. Default: false", CommandOptionType.SingleValue)]
+        public bool RetryRepeatableMigrationsUntilNoError { get; }
 
         // Cassandra
         [Option("--keyspace", "A list of keyspaces managed by Evolve (Cassandra only).", CommandOptionType.MultipleValue)]
