@@ -181,7 +181,7 @@ namespace Evolve.Configuration
 
         /// <summary>
         ///     When true, Evolve will repeatedly execute all repeatable migrations for as long as the number of errors decreases.
-        ///     This option allows repeatable migrations to be executed in any order regarding their dependencies, so that you can name them more freely.
+        ///     This option allows repeatable migrations to be executed in any order regarding their dependencies, so that you can name them more easily.
         /// </summary>
         bool RetryRepeatableMigrationsUntilNoError { get; set; }
     }
