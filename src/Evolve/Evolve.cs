@@ -71,7 +71,8 @@ namespace Evolve
         public int? CommandTimeout { get; set; }
         public IEnumerable<Assembly> EmbeddedResourceAssemblies { get; set; } = new List<Assembly>();
         public IEnumerable<string> EmbeddedResourceFilters { get; set; } = new List<string>();
-
+        public bool RetryRepeatableMigrationsUntilNoError { get; set; }
+        
         #endregion
 
         #region Properties
@@ -333,11 +334,54 @@ namespace Evolve
         private void ExecuteAllRepeatableMigration(DatabaseHelper db)
         {
             var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
-            var pendingMigrations = GetAllPendingRepeatableMigration(metadata);
-
-            foreach (var migration in pendingMigrations)
+            var pendingMigrations = GetAllPendingRepeatableMigration(metadata).ToList();
+            if (pendingMigrations.Count == 0)
             {
-                ExecuteMigration(migration, db);
+                return;
+            }
+
+            if (!RetryRepeatableMigrationsUntilNoError)
+            { // default
+                foreach (var migration in pendingMigrations)
+                {
+                    ExecuteMigration(migration, db);
+                }
+            }
+            else
+            { // RetryRepeatableMigrationsUntilNoError
+                List<MigrationScript> executedMigrations = new();
+                List<Exception> exceptions;
+                int executedCount;
+
+                do
+                {
+                    exceptions = new();
+                    executedCount = 0;
+
+                    foreach (var migration in pendingMigrations)
+                    {
+                        try
+                        {
+
+                            if (!executedMigrations.Contains(migration))
+                            {
+                                ExecuteMigration(migration, db);
+
+                                executedMigrations.Add(migration);
+                                executedCount += 1;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            exceptions.Add(ex);
+                        }
+                    }
+                } while (executedMigrations.Count != pendingMigrations.Count && executedCount > 0);
+
+                if (exceptions.Any())
+                {
+                    throw exceptions.First();
+                }
             }
         }
 

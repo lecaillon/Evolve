@@ -5,7 +5,6 @@
     using System.Data;
     using System.Data.SqlClient;
     using System.Data.SQLite;
-    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Reflection;
     using System.Text;
@@ -40,7 +39,8 @@
                 OutOfOrder = options.OutOfOrder,
                 IsEraseDisabled = options.EraseDisabled,
                 MustEraseOnValidationError = options.EraseOnValidationError,
-                EnableClusterMode = options.EnableClusterMode
+                EnableClusterMode = options.EnableClusterMode,
+                RetryRepeatableMigrationsUntilNoError = options.RetryRepeatableMigrationsUntilNoError
             };
 
             if (options.Placeholders != null)
@@ -112,7 +112,6 @@
         private static MigrationVersion ParseVersion(string version, MigrationVersion defaultIfEmpty) =>
             !string.IsNullOrEmpty(version) ? new MigrationVersion(version) : defaultIfEmpty;
 
-        [SuppressMessage("Design", "CA1031: Do not catch general exception types")]
         private static Encoding ParseEncoding(string encoding)
         {
             try

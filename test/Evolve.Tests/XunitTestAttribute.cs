@@ -18,7 +18,9 @@ namespace Evolve.Tests
         Configuration,
         Connection,
         Migration,
-        Metadata
+        Metadata,
+
+        Sceanario
     }
 
     [TraitDiscoverer("Evolve.Tests.CategoryDiscover", "Evolve.Tests")]
