@@ -1,2 +1,2 @@
-CREATE VIEW scenario001.view3 AS
-	SELECT * FROM scenario001.view2;
+CREATE VIEW ${schema}.view3 AS
+	SELECT * FROM ${schema}.view2;

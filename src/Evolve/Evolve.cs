@@ -358,10 +358,11 @@ namespace Evolve
                     exceptions = new();
                     executedCount = 0;
 
-                    try
+                    foreach (var migration in pendingMigrations)
                     {
-                        foreach (var migration in pendingMigrations)
+                        try
                         {
+
                             if (!executedMigrations.Contains(migration))
                             {
                                 ExecuteMigration(migration, db);
@@ -370,13 +371,12 @@ namespace Evolve
                                 executedCount += 1;
                             }
                         }
+                        catch (Exception ex)
+                        {
+                            exceptions.Add(ex);
+                        }
                     }
-                    catch (Exception ex)
-                    {
-                        exceptions.Add(ex);
-                    }
-
-                } while (executedMigrations.Count == pendingMigrations.Count || executedCount == 0);
+                } while (executedMigrations.Count != pendingMigrations.Count && executedCount > 0);
 
                 if (exceptions.Any())
                 {
