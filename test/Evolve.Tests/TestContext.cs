@@ -75,6 +75,7 @@ namespace Evolve.Tests
             public static string ChecksumMismatchFolder => Path.Combine(SqlScriptsFolder, "Checksum_mismatch");
             public static string RepeatableFolder => Path.Combine(SqlScriptsFolder, "Repeatable");
             public static string OutOfOrderFolder => Path.Combine(SqlScriptsFolder, "OutOfOrder");
+            public static string Scenario001Folder => Path.Combine(SqlScriptsFolder, "Scenario001");
         }
 
         public static class SQLite

@@ -1,0 +1,2 @@
+CREATE VIEW scenario001.view3 AS
+	SELECT 1;
