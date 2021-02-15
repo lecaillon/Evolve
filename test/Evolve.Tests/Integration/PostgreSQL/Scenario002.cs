@@ -20,7 +20,7 @@ namespace Evolve.Tests.Integration.PostgreSql
             Evolve.RetryRepeatableMigrationsUntilNoError = true;
 
             // Assert
-            Evolve.AssertInfoIsSuccessfulV2(Cnn)
+            Evolve.AssertInfoIsSuccessful(Cnn)
                   .AssertMigrateThrows<EvolveException>(Cnn);
         }
     }

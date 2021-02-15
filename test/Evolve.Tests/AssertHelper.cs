@@ -194,7 +194,7 @@ namespace Evolve.Tests
             return evolve;
         }
 
-        public static Evolve AssertInfoIsSuccessfulV2(this Evolve evolve, IDbConnection cnn)
+        public static Evolve AssertInfoIsSuccessful(this Evolve evolve, IDbConnection cnn)
         {
             // Act
             var rows = evolve.Info();
@@ -207,7 +207,7 @@ namespace Evolve.Tests
             return evolve;
         }
 
-        public static Evolve AssertMigrateIsSuccessfulV2(this Evolve evolve, IDbConnection cnn, Action<Evolve> arrange = null)
+        public static Evolve AssertMigrateIsSuccessful(this Evolve evolve, IDbConnection cnn, Action<Evolve> arrange = null)
         {
             // Arrange
             arrange?.Invoke(evolve);

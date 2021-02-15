@@ -42,26 +42,26 @@ namespace Evolve.Tests.Integration.Cassandra
             };
 
             // Assert
-            evolve.AssertInfoIsSuccessfulV2(cnn)
+            evolve.AssertInfoIsSuccessful(cnn)
                   .ChangeLocations(CassandraDb.MigrationFolder)
-                  .AssertInfoIsSuccessfulV2(cnn)
-                  .AssertMigrateIsSuccessfulV2(cnn)
-                  .AssertInfoIsSuccessfulV2(cnn);
+                  .AssertInfoIsSuccessful(cnn)
+                  .AssertMigrateIsSuccessful(cnn)
+                  .AssertInfoIsSuccessful(cnn);
 
             evolve.ChangeLocations(CassandraDb.ChecksumMismatchFolder)
                   .AssertMigrateThrows<EvolveValidationException>(cnn)
                   .AssertRepairIsSuccessful(cnn, expectedNbReparation: 1)
                   .ChangeLocations(CassandraDb.MigrationFolder)
-                  .AssertInfoIsSuccessfulV2(cnn);
+                  .AssertInfoIsSuccessful(cnn);
 
             evolve.ChangeLocations()
                   .AssertEraseThrows<EvolveConfigurationException>(cnn, e => e.IsEraseDisabled = true)
                   .AssertEraseIsSuccessful(cnn, e => e.IsEraseDisabled = false)
-                  .AssertInfoIsSuccessfulV2(cnn);
+                  .AssertInfoIsSuccessful(cnn);
 
             evolve.ChangeLocations(CassandraDb.MigrationFolder)
-                  .AssertMigrateIsSuccessfulV2(cnn)
-                  .AssertInfoIsSuccessfulV2(cnn);
+                  .AssertMigrateIsSuccessful(cnn)
+                  .AssertInfoIsSuccessful(cnn);
 
             evolve.AssertEraseIsSuccessful(cnn, e => e.IsEraseDisabled = false);
 

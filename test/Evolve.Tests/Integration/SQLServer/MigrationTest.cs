@@ -41,11 +41,11 @@ namespace Evolve.Tests.Integration.SQLServer
             };
 
             // Assert
-            evolve.AssertInfoIsSuccessfulV2(cnn)
+            evolve.AssertInfoIsSuccessful(cnn)
                   .ChangeLocations(SqlServer.MigrationFolder)
-                  .AssertInfoIsSuccessfulV2(cnn)
-                  .AssertMigrateIsSuccessfulV2(cnn)
-                  .AssertInfoIsSuccessfulV2(cnn);
+                  .AssertInfoIsSuccessful(cnn)
+                  .AssertMigrateIsSuccessful(cnn)
+                  .AssertInfoIsSuccessful(cnn);
 
             evolve.AssertMigrateThrows<EvolveConfigurationException>(cnn, e => e.StartVersion = new MigrationVersion("3.0"));
 
@@ -53,35 +53,35 @@ namespace Evolve.Tests.Integration.SQLServer
                   .AssertMigrateThrows<EvolveValidationException>(cnn, e => e.StartVersion = MigrationVersion.MinVersion)
                   .AssertRepairIsSuccessful(cnn, expectedNbReparation: 1)
                   .ChangeLocations(SqlServer.MigrationFolder)
-                  .AssertInfoIsSuccessfulV2(cnn);
+                  .AssertInfoIsSuccessful(cnn);
 
             evolve.ChangeLocations()
                   .AssertEraseThrows<EvolveConfigurationException>(cnn, e => e.IsEraseDisabled = true)
                   .AssertEraseIsSuccessful(cnn, e => e.IsEraseDisabled = false)
-                  .AssertInfoIsSuccessfulV2(cnn);
+                  .AssertInfoIsSuccessful(cnn);
 
             evolve.ChangeLocations(SqlServer.MigrationFolder)
-                  .AssertMigrateIsSuccessfulV2(cnn)
-                  .AssertInfoIsSuccessfulV2(cnn);
+                  .AssertMigrateIsSuccessful(cnn)
+                  .AssertInfoIsSuccessful(cnn);
 
             evolve.ChangeLocations(SqlServer.ChecksumMismatchFolder)
-                  .AssertMigrateIsSuccessfulV2(cnn, e => e.MustEraseOnValidationError = true)
-                  .AssertInfoIsSuccessfulV2(cnn);
+                  .AssertMigrateIsSuccessful(cnn, e => e.MustEraseOnValidationError = true)
+                  .AssertInfoIsSuccessful(cnn);
 
             
             evolve.ChangeLocations(SqlServer.MigrationFolder)
                   .AssertEraseIsSuccessful(cnn, e => e.IsEraseDisabled = false)
-                  .AssertMigrateIsSuccessfulV2(cnn, e => e.StartVersion = new MigrationVersion("2.0"))
-                  .AssertInfoIsSuccessfulV2(cnn);
+                  .AssertMigrateIsSuccessful(cnn, e => e.StartVersion = new MigrationVersion("2.0"))
+                  .AssertInfoIsSuccessful(cnn);
 
             evolve.ChangeLocations(SqlServer.MigrationFolder)
                   .AssertEraseIsSuccessful(cnn, e => e.IsEraseDisabled = false)
-                  .AssertMigrateIsSuccessfulV2(cnn, e => e.StartVersion = MigrationVersion.MinVersion)
-                  .AssertInfoIsSuccessfulV2(cnn);
+                  .AssertMigrateIsSuccessful(cnn, e => e.StartVersion = MigrationVersion.MinVersion)
+                  .AssertInfoIsSuccessful(cnn);
 
             evolve.ChangeLocations(SqlServer.RepeatableFolder)
                   .AssertRepairIsSuccessful(cnn, expectedNbReparation: 0)
-                  .AssertMigrateIsSuccessfulV2(cnn);
+                  .AssertMigrateIsSuccessful(cnn);
         }
     }
 }
