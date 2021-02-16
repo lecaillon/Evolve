@@ -55,11 +55,12 @@ namespace Evolve.Dialect.SQLServer
         {
             DropForeignKeys();
             DropDefaultConstraints();
+            DropFunctions(throwOnError: false); // Hack to manage SCHEMABINDING dependencies
             DropProcedures();
             DropViews();
             DropSystemVersioning();  // SQLServerVersion >= 13
+            DropFunctions(throwOnError: true);
             DropTables();
-            DropFunctions();
             DropTypes();
             DropSynonyms();
             DropSequences(); // SQLServerVersion >= 11
@@ -140,12 +141,22 @@ namespace Evolve.Dialect.SQLServer
             });
         }
 
-        protected void DropFunctions()
+        protected void DropFunctions(bool throwOnError)
         {
             string sql = $"SELECT routine_name FROM INFORMATION_SCHEMA.ROUTINES WHERE routine_schema = '{Name}' AND routine_type = 'FUNCTION' ORDER BY created DESC";
             _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(fn =>
             {
-                _wrappedConnection.ExecuteNonQuery($"DROP FUNCTION [{Name}].[{fn}]");
+                try
+                {
+                    _wrappedConnection.ExecuteNonQuery($"DROP FUNCTION [{Name}].[{fn}]");
+                }
+                catch
+                {
+                    if (throwOnError)
+                    {
+                        throw;
+                    }
+                }
             });
         }
 
