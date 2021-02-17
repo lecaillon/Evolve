@@ -23,3 +23,11 @@ CREATE TABLE dbo.Employee
  WITH (SYSTEM_VERSIONING = ON (HISTORY_TABLE = dbo.EmployeeHistory));
 
 SELECT * FROM CALENDRIER;
+
+CREATE TABLE dbo.Products
+(
+    ProductID int IDENTITY (1,1) NOT NULL
+  , QtyAvailable smallint
+  , UnitPrice money
+  , InventoryValue AS QtyAvailable * UnitPrice
+);

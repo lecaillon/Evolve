@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Evolve.Connection;
 
@@ -55,12 +56,13 @@ namespace Evolve.Dialect.SQLServer
         {
             DropForeignKeys();
             DropDefaultConstraints();
-            DropFunctions(throwOnError: false); // Hack to manage SCHEMABINDING dependencies
+            DropComputedColumns(throwOnError: false); // Hack to manage SCHEMABINDING dependencies
+            DropFunctions(throwOnError: false);
             DropProcedures();
             DropViews();
             DropSystemVersioning();  // SQLServerVersion >= 13
-            DropFunctions(throwOnError: true);
             DropTables();
+            DropFunctions(throwOnError: true);
             DropTypes();
             DropSynonyms();
             DropSequences(); // SQLServerVersion >= 11
@@ -134,10 +136,30 @@ namespace Evolve.Dialect.SQLServer
 
         protected void DropTables()
         {
-            string sql = $"SELECT table_name FROM INFORMATION_SCHEMA.TABLES WHERE table_type='BASE TABLE' AND table_schema = '{Name}'";
-            _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(t =>
+            GetTables().ForEach(t =>
             {
                 _wrappedConnection.ExecuteNonQuery($"DROP TABLE [{Name}].[{t}]");
+            });
+        }
+
+        protected void DropComputedColumns(bool throwOnError)
+        {
+            GetTables().ForEach(t =>
+            {
+                _wrappedConnection.QueryForListOfString($"SELECT name FROM sys.computed_columns WHERE object_id = OBJECT_ID('[{Name}].[{t}]')").ToList().ForEach(c =>
+                {
+                    try
+                    {
+                        _wrappedConnection.ExecuteNonQuery($"ALTER TABLE [{Name}].[{t}] DROP COLUMN [{Name}].[{c}]");
+                    }
+                    catch
+                    {
+                        if (throwOnError)
+                        {
+                            throw;
+                        }
+                    }
+                });
             });
         }
 
@@ -191,6 +213,12 @@ namespace Evolve.Dialect.SQLServer
                 _wrappedConnection.ExecuteNonQuery($"DROP SEQUENCE [{Name}].[{s}]");
             });
         }
+
+        private List<string> GetTables()
+            => _wrappedConnection.QueryForListOfString("SELECT table_name " +
+                                                       "FROM INFORMATION_SCHEMA.TABLES " +
+                                                       "WHERE table_type='BASE TABLE' " +
+                                                      $"AND table_schema = '{Name}'").ToList();
 
         private long SQLServerVersion
         {
