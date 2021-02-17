@@ -19,7 +19,7 @@ Every time you build your project, it will automatically ensure that your databa
 - #198 Add support of Source Link
 - #187 Add new option : RetryRepeatableMigrationsUntilNoError
 ## Fix
-- #203 Fix Evolve fails to erase SQL Server functions WITH SCHEMABINDING that depends on each other</releaseNotes>
+- #203 Fix Evolve fails to erase SQL Server functions and computed columns WITH SCHEMABINDING that depends on each other</releaseNotes>
     <tags>evolve flyway sql database migration mysql sqlserver cassandra mariadb sqlite postgresql cockroachdb</tags>
     <dependencies>
       <group targetFramework="net472" />
