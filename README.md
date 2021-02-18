@@ -12,14 +12,11 @@ Over all Evolve embraces simplicity. Every time you build or run your project, i
 If you like Evolve don't forget to support it by adding a star :star: and even better, by [sponsoring](https://github.com/sponsors/lecaillon) it :heart: Doing so, you will help me spend more time maintaining Evolve, so that this software continues being the best supported and feature-complete possible.
 
 ## Installation
-Evolve is available as a NuGet **lib**, a **dotnet tool**, a **MSBuild task** and a standalone **CLI**.
+Evolve is available as a NuGet **lib**, a **dotnet tool** and a standalone **CLI**.
 
-| Package | Repository |
-|---------|------------|
-| Evolve | [![NuGet](https://img.shields.io/nuget/dt/evolve)](https://www.nuget.org/packages/Evolve) |
-| Evolve Tool | [![NuGet](https://img.shields.io/nuget/dt/Evolve.Tool)](https://www.nuget.org/packages/Evolve.Tool) |
-| Evolve MSBuild | [![NuGet](https://img.shields.io/nuget/dt/Evolve.MSBuild.Windows.x64)](https://www.nuget.org/packages/Evolve.MSBuild.Windows.x64) |
-| Evolve CLI | [![NuGet](https://img.shields.io/badge/GitHub-releases-brightgreen.svg?logo=github)](https://github.com/lecaillon/Evolve/releases) |
+|  | Evolve | Evolve Tool | Evolve CLI |
+|-|-|-|-|
+| Repository | [![NuGet](https://img.shields.io/nuget/dt/evolve)](https://www.nuget.org/packages/Evolve) | [![NuGet](https://img.shields.io/nuget/dt/Evolve.Tool)](https://www.nuget.org/packages/Evolve.Tool) | [![NuGet](https://img.shields.io/badge/GitHub-releases-brightgreen.svg?logo=github)](https://github.com/lecaillon/Evolve/releases) |
 
 ## Supported databases
 <table>
