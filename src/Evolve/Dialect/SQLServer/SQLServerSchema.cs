@@ -61,8 +61,9 @@ namespace Evolve.Dialect.SQLServer
             DropProcedures();
             DropViews();
             DropSystemVersioning();  // SQLServerVersion >= 13
-            DropTables();
+            DropTables(throwOnError: false);
             DropFunctions(throwOnError: true);
+            DropTables(throwOnError: true);
             DropTypes();
             DropSynonyms();
             DropSequences(); // SQLServerVersion >= 11
@@ -77,9 +78,9 @@ namespace Evolve.Dialect.SQLServer
                          "WHERE CONSTRAINT_TYPE IN ('FOREIGN KEY','CHECK') " +
                         $"AND TABLE_SCHEMA = '{Name}'";
 
-            _wrappedConnection.QueryForList(sql, (r) => new { RoutineName = r.GetString(0), RoutineType = r.GetString(1) }).ToList().ForEach(x =>
+            _wrappedConnection.QueryForList(sql, (r) => new { Table = r.GetString(0), Constraint = r.GetString(1) }).ToList().ForEach(x =>
             {
-                _wrappedConnection.ExecuteNonQuery($"ALTER TABLE [{Name}].[{x.RoutineName}] DROP CONSTRAINT [{x.RoutineType}]");
+                _wrappedConnection.ExecuteNonQuery($"ALTER TABLE [{Name}].[{x.Table}] DROP CONSTRAINT [{x.Constraint}]");
             });
         }
 
@@ -91,9 +92,9 @@ namespace Evolve.Dialect.SQLServer
                          "INNER JOIN sys.schemas s ON s.schema_id = t.schema_id " +
                         $"WHERE s.name = '{Name}'";
 
-            _wrappedConnection.QueryForList(sql, (r) => new { RoutineName = r.GetString(0), RoutineType = r.GetString(1) }).ToList().ForEach(x =>
+            _wrappedConnection.QueryForList(sql, (r) => new { Table = r.GetString(0), Constraint = r.GetString(1) }).ToList().ForEach(x =>
             {
-                _wrappedConnection.ExecuteNonQuery($"ALTER TABLE [{Name}].[{x.RoutineName}] DROP CONSTRAINT [{x.RoutineType}]");
+                _wrappedConnection.ExecuteNonQuery($"ALTER TABLE [{Name}].[{x.Table}] DROP CONSTRAINT [{x.Constraint}]");
             });
         }
 
@@ -109,9 +110,9 @@ namespace Evolve.Dialect.SQLServer
         protected void DropViews()
         {
             string sql = $"SELECT table_name FROM INFORMATION_SCHEMA.VIEWS WHERE table_schema = '{Name}'";
-            _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(vw =>
+            _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(view =>
             {
-                _wrappedConnection.ExecuteNonQuery($"DROP VIEW [{Name}].[{vw}]");
+                _wrappedConnection.ExecuteNonQuery($"DROP VIEW [{Name}].[{view}]");
             });
         }
 
@@ -134,12 +135,35 @@ namespace Evolve.Dialect.SQLServer
             });
         }
 
-        protected void DropTables()
+        protected void DropTables(bool throwOnError)
         {
-            GetTables().ForEach(t =>
+            List<Exception> exceptions;
+            int droppedCount;
+
+            do
             {
-                _wrappedConnection.ExecuteNonQuery($"DROP TABLE [{Name}].[{t}]");
-            });
+                exceptions = new();
+                droppedCount = 0;
+
+                GetTables().ForEach(table =>
+                {
+                    try
+                    {
+                        _wrappedConnection.ExecuteNonQuery($"DROP TABLE [{Name}].[{table}]");
+                        droppedCount += 1;
+                    }
+                    catch (Exception ex)
+                    {
+                        exceptions.Add(ex);
+                    }
+                });
+
+            } while (droppedCount > 0);
+
+            if (exceptions.Any() && throwOnError)
+            {
+                throw exceptions.First();
+            }
         }
 
         protected void DropComputedColumns(bool throwOnError)
@@ -150,7 +174,7 @@ namespace Evolve.Dialect.SQLServer
                 {
                     try
                     {
-                        _wrappedConnection.ExecuteNonQuery($"ALTER TABLE [{Name}].[{t}] DROP COLUMN [{Name}].[{c}]");
+                        _wrappedConnection.ExecuteNonQuery($"ALTER TABLE [{Name}].[{t}] DROP COLUMN [{c}]");
                     }
                     catch
                     {
@@ -166,20 +190,33 @@ namespace Evolve.Dialect.SQLServer
         protected void DropFunctions(bool throwOnError)
         {
             string sql = $"SELECT routine_name FROM INFORMATION_SCHEMA.ROUTINES WHERE routine_schema = '{Name}' AND routine_type = 'FUNCTION' ORDER BY created DESC";
-            _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(fn =>
+            List<Exception> exceptions;
+            int droppedCount;
+
+            do
             {
-                try
+                exceptions = new();
+                droppedCount = 0;
+
+                _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(function =>
                 {
-                    _wrappedConnection.ExecuteNonQuery($"DROP FUNCTION [{Name}].[{fn}]");
-                }
-                catch
-                {
-                    if (throwOnError)
+                    try
                     {
-                        throw;
+                        _wrappedConnection.ExecuteNonQuery($"DROP FUNCTION [{Name}].[{function}]");
+                        droppedCount += 1;
                     }
-                }
-            });
+                    catch (Exception ex)
+                    {
+                        exceptions.Add(ex);
+                    }
+                });
+
+            } while (droppedCount > 0);
+
+            if (exceptions.Any() && throwOnError)
+            {
+                throw exceptions.First();
+            }
         }
 
         protected void DropTypes()
@@ -216,9 +253,11 @@ namespace Evolve.Dialect.SQLServer
 
         private List<string> GetTables()
             => _wrappedConnection.QueryForListOfString("SELECT table_name " +
-                                                       "FROM INFORMATION_SCHEMA.TABLES " +
-                                                       "WHERE table_type='BASE TABLE' " +
-                                                      $"AND table_schema = '{Name}'").ToList();
+                                                       "FROM INFORMATION_SCHEMA.TABLES t1 " +
+                                                       "INNER JOIN sys.tables t2 ON t1.table_name = t2.name " +
+                                                       "WHERE table_type = 'BASE TABLE' " +
+                                                      $"AND table_schema = '{Name}' " +
+                                                       "ORDER BY create_date DESC").ToList();
 
         private long SQLServerVersion
         {
