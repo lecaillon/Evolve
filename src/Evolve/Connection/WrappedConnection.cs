@@ -74,7 +74,7 @@ namespace Evolve.Connection
             {
                 CurrentTx.Commit();
             }
-            catch (InvalidOperationException ex) when (ex.StackTrace.Contains("ZombieCheck()"))
+            catch (InvalidOperationException ex) when (ex.StackTrace?.Contains("ZombieCheck()") ?? false)
             { // SQL Server hack to avoid : Transaction has completed; it is no longer usable (ZombieCheck).
             }
             
