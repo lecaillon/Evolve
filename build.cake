@@ -8,14 +8,15 @@ var target = Argument("target", "default");
 var configuration = Argument("configuration", "Release");
 var version = XmlPeek(File("./build/common.props"), "/Project/PropertyGroup/Version/text()");
 
+var framework = "net5.0";
 var sln = "./Evolve.sln";
+var reportGeneratorPath = $"./tools/ReportGenerator.4.8.6/tools/{framework}/" + (IsRunningOnUnix() ? "ReportGenerator.dll" : "ReportGenerator.exe");
 var distDir = "./dist";
 var distDirFullPath = MakeAbsolute(Directory($"{distDir}")).FullPath;
 var publishDir = "./publish";
 var publishDirFullPath = MakeAbsolute(Directory($"{publishDir}")).FullPath;
 var winWarpPacker = "./build/warp/windows-x64.warp-packer.exe";
 var linuxWarpPacker = "./build/warp/linux-x64.warp-packer";
-var framework = "net5.0";
 var logger = Environment.GetEnvironmentVariable("TF_BUILD") == "True" ? $"-l:trx --results-directory {publishDirFullPath}" : "-l:console;verbosity=normal";
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -85,7 +86,8 @@ Task("report-coverage").Does(() =>
     ReportGenerator(report: $"{publishDir}/coverage.xml", targetDir: $"{publishDir}/coverage", new ReportGeneratorSettings
     {
         ReportTypes = new[] { ReportGeneratorReportType.Badges, ReportGeneratorReportType.Cobertura, ReportGeneratorReportType.HtmlInline_AzurePipelines_Dark },
-        Verbosity = ReportGeneratorVerbosity.Info
+        Verbosity = ReportGeneratorVerbosity.Info,
+        ToolPath = reportGeneratorPath
     });
 });
 
