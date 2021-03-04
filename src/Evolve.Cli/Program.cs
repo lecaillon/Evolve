@@ -113,6 +113,11 @@
         [Option("--retry-repeatable", "When set, execute repeatedly all repeatable migrations for as long as the number of errors decreases, so that you can name them more easily. Default: false", CommandOptionType.SingleValue)]
         public bool RetryRepeatableMigrationsUntilNoError { get; }
 
+        [Option("--transaction-mode", "Scope of the Evolve transaction. Default: CommitEach", CommandOptionType.SingleValue)]
+        [AllowedValues("CommitEach", "CommitAll", IgnoreCase = true)]
+        public TransactionKind TransactionMode { get; } = Default.TransactionMode;
+
+
         // Cassandra
         [Option("--keyspace", "A list of keyspaces managed by Evolve (Cassandra only).", CommandOptionType.MultipleValue)]
         public string[] Keyspaces { get; }

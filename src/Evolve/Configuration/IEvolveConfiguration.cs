@@ -184,5 +184,19 @@ namespace Evolve.Configuration
         ///     This option allows repeatable migrations to be executed in any order regarding their dependencies, so that you can named them more easily.
         /// </summary>
         bool RetryRepeatableMigrationsUntilNoError { get; set; }
+
+        /// <summary>
+        ///     <para>
+        ///         Gets or sets the Evolve transaction scope. (default: CommitEach)
+        ///     </para>
+        ///     
+        ///     <para>
+        ///         <see cref="TransactionKind.CommitEach"/> : commit each successful migration script.
+        ///     </para>
+        ///     <para>
+        ///         <see cref="TransactionKind.CommitAll"/> : commit all the scripts at once and rollback them all if one fails.
+        ///     </para>
+        /// </summary>
+        public TransactionKind TransactionMode { get; set; }
     }
 }

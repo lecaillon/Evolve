@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
@@ -73,7 +72,8 @@ namespace Evolve
         public IEnumerable<Assembly> EmbeddedResourceAssemblies { get; set; } = new List<Assembly>();
         public IEnumerable<string> EmbeddedResourceFilters { get; set; } = new List<string>();
         public bool RetryRepeatableMigrationsUntilNoError { get; set; }
-        
+        public TransactionKind TransactionMode { get; set; } = TransactionKind.CommitEach;
+
         #endregion
 
         #region Properties
