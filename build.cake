@@ -85,7 +85,8 @@ Task("report-coverage").Does(() =>
     ReportGenerator(report: $"{publishDir}/coverage.xml", targetDir: $"{publishDir}/coverage", new ReportGeneratorSettings
     {
         ReportTypes = new[] { ReportGeneratorReportType.Badges, ReportGeneratorReportType.Cobertura, ReportGeneratorReportType.HtmlInline_AzurePipelines_Dark },
-        Verbosity = ReportGeneratorVerbosity.Info
+        Verbosity = ReportGeneratorVerbosity.Info,
+        ToolPath = "./tools/ReportGenerator.4.8.6/tools/net5.0/ReportGenerator.dll"
     });
 });
 
