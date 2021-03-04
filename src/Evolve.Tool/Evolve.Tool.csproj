@@ -26,7 +26,7 @@ Every time you build your project, it will automatically ensure that your databa
 - #187 Add new option : RetryRepeatableMigrationsUntilNoError
 
 ## Fix
-- #203 Fix Evolve fails to erase SQL Server functions and computed columns WITH SCHEMABINDING that depends on each other</PackageReleaseNotes>
+- #203 Fix Evolve fails to erase SQL Server functions and computed columns WITH SCHEMABINDING that depends on each other.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

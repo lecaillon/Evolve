@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 
@@ -38,7 +39,7 @@ namespace Evolve.Tests.Infrastructure
             }
         }
 
-        public IDbConnection CreateDbConnection() => _container.CreateDbConnection();
+        public DbConnection CreateDbConnection() => _container.CreateDbConnection();
 
         public void Dispose() => _container.Dispose();
     }

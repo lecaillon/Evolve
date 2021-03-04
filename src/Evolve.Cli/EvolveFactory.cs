@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Data;
+    using System.Data.Common;
     using System.Data.SqlClient;
     using System.Data.SQLite;
     using System.Linq;
@@ -63,9 +64,9 @@
             return evolve;
         }
 
-        private static IDbConnection CreateConnection(DBMS database, string cnnStr)
+        private static DbConnection CreateConnection(DBMS database, string cnnStr)
         {
-            IDbConnection cnn = null;
+            DbConnection cnn = null;
 
             switch (database)
             {

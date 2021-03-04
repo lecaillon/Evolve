@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Data;
+using System.Data.Common;
 
 namespace Evolve.Tests.Infrastructure
 {
@@ -8,6 +8,6 @@ namespace Evolve.Tests.Infrastructure
         bool Start(bool fromScratch = false);
         string CnxStr { get; }
         int TimeOutInSec { get; }
-        IDbConnection CreateDbConnection();
+        DbConnection CreateDbConnection();
     }
 }

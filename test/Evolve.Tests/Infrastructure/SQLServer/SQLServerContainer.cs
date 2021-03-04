@@ -1,6 +1,5 @@
-﻿using System.Data;
+﻿using System.Data.Common;
 using System.Data.SqlClient;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Evolve.Tests.Infrastructure
 {
@@ -19,7 +18,6 @@ namespace Evolve.Tests.Infrastructure
         public string CnxStr => $"Server=127.0.0.1;Database={DbName};User Id={DbUser};Password={DbPwd};";
         public int TimeOutInSec => 60;
 
-        [SuppressMessage("Qualité du code", "IDE0068: Utilisez le modèle de suppression recommandé")]
         public bool Start(bool fromScratch = false)
         {
             _container = new DockerContainerBuilder(new DockerContainerBuilderOptions
@@ -36,7 +34,7 @@ namespace Evolve.Tests.Infrastructure
             return _container.Start();
         }
 
-        public IDbConnection CreateDbConnection() => new SqlConnection(CnxStr);
+        public DbConnection CreateDbConnection() => new SqlConnection(CnxStr);
 
         protected virtual void Dispose(bool disposing)
         {

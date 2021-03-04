@@ -1,4 +1,4 @@
-﻿using System.Data;
+﻿using System.Data.Common;
 using System.IO;
 using Evolve.Tests.Infrastructure;
 using Xunit.Abstractions;
@@ -32,7 +32,7 @@ namespace Evolve.Tests.Integration.PostgreSql
             };
         }
 
-        protected IDbConnection Cnn { get; }
+        protected DbConnection Cnn { get; }
         protected Evolve Evolve { get; }
         public string ScenarioName => GetType().Name.ToLower();
         public string ScenarioFolder => Path.Combine(PostgreSQL.SqlScriptsFolder, GetType().Name);

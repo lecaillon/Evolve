@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
@@ -22,7 +23,7 @@ namespace Evolve
     {
         #region Fields
 
-        private readonly IDbConnection _userCnn;
+        private readonly DbConnection _userCnn;
         private readonly Action<string> _log;
 
         #endregion
@@ -32,7 +33,7 @@ namespace Evolve
         /// </summary>
         /// <param name="dbConnection"> The database connection used to apply the migrations. </param>
         /// <param name="logDelegate"> An optional logger. </param>
-        public Evolve(IDbConnection dbConnection, Action<string>? logDelegate = null)
+        public Evolve(DbConnection dbConnection, Action<string>? logDelegate = null)
         {
             _userCnn = Check.NotNull(dbConnection, nameof(dbConnection));
             _log = logDelegate ?? new Action<string>((msg) => { });

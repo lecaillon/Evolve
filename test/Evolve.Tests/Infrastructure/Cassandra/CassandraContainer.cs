@@ -1,5 +1,4 @@
-﻿using System.Data;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Data.Common;
 using Cassandra.Data;
 
 namespace Evolve.Tests.Infrastructure
@@ -19,7 +18,6 @@ namespace Evolve.Tests.Infrastructure
         public string CnxStr => $"Contact Points=127.0.0.1;Port={HostPort};Cluster Name={ClusterName}";
         public int TimeOutInSec => 45;
 
-        [SuppressMessage("Qualité du code", "IDE0068: Utilisez le modèle de suppression recommandé")]
         public bool Start(bool fromScratch = false)
         {
             _container = new DockerContainerBuilder(new DockerContainerBuilderOptions
@@ -36,7 +34,7 @@ namespace Evolve.Tests.Infrastructure
             return _container.Start();
         }
 
-        public IDbConnection CreateDbConnection() => new CqlConnection(CnxStr);
+        public DbConnection CreateDbConnection() => new CqlConnection(CnxStr);
 
         protected virtual void Dispose(bool disposing)
         {

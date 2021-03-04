@@ -1,5 +1,4 @@
-﻿using System.Data;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Data.Common;
 using MySqlConnector;
 
 namespace Evolve.Tests.Infrastructure
@@ -19,7 +18,6 @@ namespace Evolve.Tests.Infrastructure
         public string CnxStr => $"Server=127.0.0.1;Port={HostPort};Database={DbName};Uid={DbUser};Pwd={DbPwd};SslMode=none;Allow User Variables=True";
         public int TimeOutInSec => 25;
 
-        [SuppressMessage("Qualité du code", "IDE0068: Utilisez le modèle de suppression recommandé")]
         public bool Start(bool fromScratch = false)
         {
             _container = new DockerContainerBuilder(new DockerContainerBuilderOptions
@@ -36,7 +34,7 @@ namespace Evolve.Tests.Infrastructure
             return _container.Start();
         }
 
-        public IDbConnection CreateDbConnection() => new MySqlConnection(CnxStr);
+        public DbConnection CreateDbConnection() => new MySqlConnection(CnxStr);
 
         protected virtual void Dispose(bool disposing)
         {

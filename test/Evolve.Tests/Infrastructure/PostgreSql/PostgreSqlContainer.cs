@@ -1,5 +1,4 @@
-﻿using System.Data;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Data.Common;
 using Npgsql;
 
 namespace Evolve.Tests.Infrastructure
@@ -19,7 +18,6 @@ namespace Evolve.Tests.Infrastructure
         public string CnxStr => $"Server=127.0.0.1;Port={HostPort};Database={DbName};User Id={DbUser};Password={DbPwd};";
         public int TimeOutInSec => 5;
 
-        [SuppressMessage("Qualité du code", "IDE0068: Utilisez le modèle de suppression recommandé")]
         public bool Start(bool fromScratch = false)
         {
             _container = new DockerContainerBuilder(new DockerContainerBuilderOptions
@@ -36,7 +34,7 @@ namespace Evolve.Tests.Infrastructure
             return _container.Start();
         }
 
-        public IDbConnection CreateDbConnection() => new NpgsqlConnection(CnxStr);
+        public DbConnection CreateDbConnection() => new NpgsqlConnection(CnxStr);
 
         protected virtual void Dispose(bool disposing)
         {
