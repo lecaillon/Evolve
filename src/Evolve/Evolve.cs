@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
+using System.Transactions;
 using ConsoleTables;
 using Evolve.Configuration;
 using Evolve.Connection;
@@ -289,8 +290,20 @@ namespace Evolve
                 return;
             }
 
-            var lastAppliedVersion = ExecuteAllMigration(db);
-            ExecuteAllRepeatableMigration(db);
+            MigrationVersion lastAppliedVersion;
+            if (TransactionMode == TransactionKind.CommitEach)
+            {
+                lastAppliedVersion = Migrate();
+            }
+            else
+            {
+                using var scope = new TransactionScope();
+                db.WrappedConnection.UseAmbientTransaction();
+                lastAppliedVersion = Migrate();
+
+                scope.Complete();
+            }
+
 
             if (NbMigration == 0)
             {
@@ -299,6 +312,13 @@ namespace Evolve
             else
             {
                 _log($"Database migrated to version {lastAppliedVersion}. {NbMigration} migration(s) applied in {TotalTimeElapsedInMs} ms.");
+            }
+
+            MigrationVersion Migrate()
+            {
+                var lastAppliedVersion = ExecuteAllMigration(db);
+                ExecuteAllRepeatableMigration(db);
+                return lastAppliedVersion;
             }
         }
 
