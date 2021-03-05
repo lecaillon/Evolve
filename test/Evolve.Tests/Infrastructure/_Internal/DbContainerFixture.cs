@@ -6,7 +6,15 @@ using System.Threading;
 
 namespace Evolve.Tests.Infrastructure
 {
-    public abstract class DbContainerFixture<T> where T : IDbContainer, new()
+    public interface IDbContainerFixture
+    {
+        string CnxStr { get; }
+        void Run(bool fromScratch = false);
+        DbConnection CreateDbConnection();
+        void Dispose();
+    }
+
+    public abstract class DbContainerFixture<T> : IDbContainerFixture where T : IDbContainer, new()
     {
         protected readonly T _container = new T();
 
