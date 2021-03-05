@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -152,7 +153,7 @@ namespace Evolve.Tests
             return schema;
         }
 
-        public static DatabaseHelper AssertApplicationLock(this DatabaseHelper db, IDbConnection cnn2)
+        public static DatabaseHelper AssertApplicationLock(this DatabaseHelper db, DbConnection cnn2)
         {
             // Assert lock acquisition
             Assert.True(db.TryAcquireApplicationLock(), "Cannot acquire application lock.");
