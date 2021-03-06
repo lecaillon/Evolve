@@ -24,6 +24,7 @@ Every time you build your project, it will automatically ensure that your databa
     <PackageReleaseNotes>## Features
 - #196 Drop support of netcoreapp2.2 for net5.0
 - #187 Add new option : RetryRepeatableMigrationsUntilNoError
+- #210 Add new option TransactionMode.CommitAll to commit a group of script at once
 
 ## Fix
 - #203 Fix Evolve fails to erase SQL Server functions and computed columns WITH SCHEMABINDING that depends on each other.</PackageReleaseNotes>
