@@ -155,6 +155,7 @@ namespace Evolve
                 var pendingSchemas = new List<MigrationMetadataUI>();
                 foreach (var schemaName in FindSchemas())
                 {
+                    Console.WriteLine($"PSG: {schemaName}");
                     var schema = db.GetSchema(schemaName);
                     if (!schema.IsExists())
                     {
