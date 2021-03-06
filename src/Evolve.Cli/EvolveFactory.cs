@@ -41,7 +41,8 @@
                 IsEraseDisabled = options.EraseDisabled,
                 MustEraseOnValidationError = options.EraseOnValidationError,
                 EnableClusterMode = options.EnableClusterMode,
-                RetryRepeatableMigrationsUntilNoError = options.RetryRepeatableMigrationsUntilNoError
+                RetryRepeatableMigrationsUntilNoError = options.RetryRepeatableMigrationsUntilNoError,
+                TransactionMode = options.TransactionMode,
             };
 
             if (options.Placeholders != null)

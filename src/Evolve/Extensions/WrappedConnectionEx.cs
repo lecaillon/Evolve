@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics.CodeAnalysis;
+using System.Transactions;
 using Evolve.Connection;
 using Evolve.Dialect;
 using Evolve.Utilities;
@@ -12,7 +12,6 @@ namespace Evolve
     {
         private const string DBMSNotSupported = "Connection to this DBMS is not supported.";
 
-        [SuppressMessage("Design", "CA1031: Do not catch general exception types")]
         public static DBMS GetDatabaseServerType(this WrappedConnection wrappedConnection)
         {
             string dbVersion;
@@ -70,8 +69,8 @@ namespace Evolve
 
         public static bool TryBeginTransaction(this WrappedConnection wrappedConnection)
         {
-            if (wrappedConnection.CurrentTx == null)
-            {
+            if (wrappedConnection.CurrentTx is null && Transaction.Current is null)
+            { // No current tx, no ambient tx
                 wrappedConnection.BeginTransaction();
                 return true;
             }

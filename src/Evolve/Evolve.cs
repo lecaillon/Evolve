@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
 using System.Linq;
@@ -8,6 +7,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
+using System.Transactions;
 using ConsoleTables;
 using Evolve.Configuration;
 using Evolve.Connection;
@@ -73,7 +73,8 @@ namespace Evolve
         public IEnumerable<Assembly> EmbeddedResourceAssemblies { get; set; } = new List<Assembly>();
         public IEnumerable<string> EmbeddedResourceFilters { get; set; } = new List<string>();
         public bool RetryRepeatableMigrationsUntilNoError { get; set; }
-        
+        public TransactionKind TransactionMode { get; set; } = TransactionKind.CommitEach;
+
         #endregion
 
         #region Properties
@@ -83,6 +84,7 @@ namespace Evolve
         public int NbSchemaErased { get; private set; }
         public int NbSchemaToEraseSkipped { get; private set; }
         public long TotalTimeElapsedInMs { get; private set; }
+        public List<string> AppliedMigrations { get; private set; } = new();
         public DBMS DBMS { get; }
         internal IMigrationLoader MigrationLoader
         {
@@ -289,8 +291,19 @@ namespace Evolve
                 return;
             }
 
-            var lastAppliedVersion = ExecuteAllMigration(db);
-            ExecuteAllRepeatableMigration(db);
+            MigrationVersion lastAppliedVersion;
+            if (TransactionMode == TransactionKind.CommitEach)
+            {
+                lastAppliedVersion = Migrate();
+            }
+            else
+            {
+                using var scope = new TransactionScope();
+                db.WrappedConnection.UseAmbientTransaction();
+                lastAppliedVersion = Migrate();
+
+                scope.Complete();
+            }
 
             if (NbMigration == 0)
             {
@@ -299,6 +312,13 @@ namespace Evolve
             else
             {
                 _log($"Database migrated to version {lastAppliedVersion}. {NbMigration} migration(s) applied in {TotalTimeElapsedInMs} ms.");
+            }
+
+            MigrationVersion Migrate()
+            {
+                var lastAppliedVersion = ExecuteAllMigration(db);
+                ExecuteAllRepeatableMigration(db);
+                return lastAppliedVersion;
             }
         }
 
@@ -508,6 +528,7 @@ namespace Evolve
             NbSchemaErased = 0;
             NbSchemaToEraseSkipped = 0;
             TotalTimeElapsedInMs = 0;
+            AppliedMigrations = new();
 
             using var db = InitiateDatabaseConnection();
 
@@ -574,13 +595,27 @@ namespace Evolve
                 _log($"Successfully applied migration {migration.Name} in {stopWatch.ElapsedMilliseconds} ms.");
                 TotalTimeElapsedInMs += stopWatch.ElapsedMilliseconds;
                 NbMigration++;
+                AppliedMigrations.Add(migration.Name);
             }
             catch (Exception ex)
             {
                 stopWatch.Stop();
                 TotalTimeElapsedInMs += stopWatch.ElapsedMilliseconds;
                 db.WrappedConnection.TryRollback();
-                metadata.SaveMigration(migration, false, stopWatch.Elapsed);
+                
+                if (TransactionMode == TransactionKind.CommitEach)
+                {
+                    metadata.SaveMigration(migration, false, stopWatch.Elapsed);
+                }
+                else
+                { // When a TransactionScope is used, current transaction is aborted, commands are ignored until end of transaction block
+                    foreach (string appliedMigration in new Stack<string>(AppliedMigrations))
+                    {
+                        _log($"Rollback migration {appliedMigration}.");
+                    }
+                    AppliedMigrations.Clear();
+                }
+
                 throw new EvolveException($"Error executing script: {migration.Name} after {stopWatch.ElapsedMilliseconds} ms.", ex);
             }
         }

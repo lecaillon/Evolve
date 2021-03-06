@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -152,7 +153,7 @@ namespace Evolve.Tests
             return schema;
         }
 
-        public static DatabaseHelper AssertApplicationLock(this DatabaseHelper db, IDbConnection cnn2)
+        public static DatabaseHelper AssertApplicationLock(this DatabaseHelper db, DbConnection cnn2)
         {
             // Assert lock acquisition
             Assert.True(db.TryAcquireApplicationLock(), "Cannot acquire application lock.");
@@ -196,6 +197,9 @@ namespace Evolve.Tests
 
         public static Evolve AssertInfoIsSuccessful(this Evolve evolve, IDbConnection cnn)
         {
+            // Arrange
+            cnn.TryClose();
+
             // Act
             var rows = evolve.Info();
             int nbRows = rows?.Count() ?? 0;
@@ -210,6 +214,7 @@ namespace Evolve.Tests
         public static Evolve AssertMigrateIsSuccessful(this Evolve evolve, IDbConnection cnn, Action<Evolve> arrange = null)
         {
             // Arrange
+            cnn.TryClose();
             arrange?.Invoke(evolve);
             int expectedNbMigration = evolve.GetExpectedNbMigration();
 
@@ -231,6 +236,7 @@ namespace Evolve.Tests
         public static Evolve AssertMigrateThrows<T>(this Evolve evolve, IDbConnection cnn, Action<Evolve> arrange = null, params string[] locations) where T : Exception
         {
             // Arrange
+            cnn.TryClose();
             if (locations.Any())
             {
                 evolve.Locations = locations;
@@ -246,6 +252,7 @@ namespace Evolve.Tests
 
         public static Evolve AssertRepairIsSuccessful(this Evolve evolve, IDbConnection cnn, int expectedNbReparation, params string[] locations)
         {
+            cnn.TryClose();
             if (locations.Any())
             {
                 evolve.Locations = locations;
@@ -259,6 +266,7 @@ namespace Evolve.Tests
 
         public static Evolve AssertEraseThrows<T>(this Evolve evolve, IDbConnection cnn, Action<Evolve> arrange) where T : Exception
         {
+            cnn.TryClose();
             arrange(evolve);
             Assert.Throws<T>(() => evolve.Erase());
             Assert.True(cnn.State == ConnectionState.Closed);
@@ -268,6 +276,7 @@ namespace Evolve.Tests
 
         public static Evolve AssertEraseIsSuccessful(this Evolve evolve, IDbConnection cnn, Action<Evolve> arrange = null)
         {
+            cnn.TryClose();
             arrange?.Invoke(evolve);
             evolve.Erase();
             Assert.True(evolve.NbSchemaErased == evolve.Schemas.Count(), $"{evolve.Schemas.Count()} schemas should have been erased, not {evolve.NbSchemaErased}.");
@@ -307,6 +316,14 @@ namespace Evolve.Tests
             catch
             {
                 return 0;
+            }
+        }
+
+        private static void TryClose(this IDbConnection cnn)
+        {
+            if (cnn.State != ConnectionState.Closed)
+            {
+                cnn.Close();
             }
         }
     }
