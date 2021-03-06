@@ -4,16 +4,16 @@ using Evolve.Tests.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Evolve.Tests.Integration.PostgreSql
+namespace Evolve.Tests.Integration.SQLServer
 {
-    [Collection("PostgreSql collection")]
-    public class Scenario003 : Scenario<PostgreSqlFixture>
+    [Collection("SQLServer collection")]
+    public class Scenario101 : Scenario<SQLServerFixture>
     {
-        public Scenario003(PostgreSqlFixture dbContainer, ITestOutputHelper output) : base(dbContainer, output) {}
+        public Scenario101(SQLServerFixture dbContainer, ITestOutputHelper output) : base(dbContainer, output) { }
 
         [Fact]
-        [Category(Test.PostgreSQL, Test.Sceanario)]
-        public void Scenario_postresql_tx_commit_all_only_when_every_scripts_succeed()
+        [Category(Test.SQLServer, Test.Sceanario)]
+        public void Scenario_sqlserver_tx_commit_all_only_when_every_scripts_succeed()
         {
             // Arrange
             Evolve.TransactionMode = TransactionKind.CommitAll;
