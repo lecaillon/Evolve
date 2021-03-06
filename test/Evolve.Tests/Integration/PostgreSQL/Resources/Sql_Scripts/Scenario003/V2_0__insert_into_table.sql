@@ -1,1 +1,1 @@
-INSERT INTO distributors VALUES (1, 'azerty');
+INSERT INTO ${schema}.distributors VALUES (1, 'azerty');
