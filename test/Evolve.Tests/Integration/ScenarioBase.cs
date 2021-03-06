@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Data.Common;
 using System.IO;
+using Evolve.Connection;
+using Evolve.Dialect;
+using Evolve.Metadata;
 using Evolve.Tests.Infrastructure;
 using Xunit.Abstractions;
 using static Evolve.Tests.TestContext;
@@ -23,19 +26,31 @@ namespace Evolve.Tests.Integration.PostgreSql
             }
 
             Cnn = _dbContainer.CreateDbConnection();
+            WrappedConnection = new WrappedConnection(Cnn);
             Evolve = new Evolve(Cnn, msg => _output.WriteLine(msg))
             {
 
-                Schemas = new[] { ScenarioName },
-                MetadataTableSchema = ScenarioName,
+                Schemas = new[] { SchemaName },
+                MetadataTableSchema = SchemaName,
                 Locations = new[] { ScenarioFolder },
-                Placeholders = new() { ["${schema}"] = ScenarioName },
+                Placeholders = new() { ["${schema}"] = SchemaName },
             };
         }
 
-        protected DbConnection Cnn { get; }
-        protected Evolve Evolve { get; }
-        public string ScenarioName => GetType().Name.ToLower();
+        public DbConnection Cnn { get; }
+        internal WrappedConnection WrappedConnection { get; }
+        public Evolve Evolve { get; }
+        internal DatabaseHelper DbHelper => typeof(T).Name switch
+        {
+            "CassandraFixture" => DatabaseHelperFactory.GetDatabaseHelper(DBMS.Cassandra, WrappedConnection),
+            "CockroachDbFixture" => DatabaseHelperFactory.GetDatabaseHelper(DBMS.CockroachDB, WrappedConnection),
+            "MySQLFixture" => DatabaseHelperFactory.GetDatabaseHelper(DBMS.MySQL, WrappedConnection),
+            "PostgreSqlFixture" => DatabaseHelperFactory.GetDatabaseHelper(DBMS.PostgreSQL, WrappedConnection),
+            "SQLServerFixture" => DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLServer, WrappedConnection),
+            _ => throw new NotSupportedException($"{typeof(T).Name} not supported.")
+        };
+        internal IEvolveMetadata MetadataTable => DbHelper.GetMetadataTable(SchemaName, "changelog");
+        public string SchemaName => GetType().Name.ToLower();
         public string ScenarioFolder => typeof(T).Name switch
         {
             "CassandraFixture" => Path.Combine(CassandraDb.SqlScriptsFolder, GetType().Name),
