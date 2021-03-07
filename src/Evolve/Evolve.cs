@@ -302,7 +302,14 @@ namespace Evolve
                 db.WrappedConnection.UseAmbientTransaction();
                 lastAppliedVersion = Migrate();
 
-                scope.Complete();
+                if (TransactionMode == TransactionKind.CommitAll)
+                {
+                    scope.Complete();
+                }
+                else
+                {
+                    LogRollbackAppliedMigration();
+                }
             }
 
             if (NbMigration == 0)
@@ -311,7 +318,14 @@ namespace Evolve
             }
             else
             {
-                _log($"Database migrated to version {lastAppliedVersion}. {NbMigration} migration(s) applied in {TotalTimeElapsedInMs} ms.");
+                if (TransactionMode == TransactionKind.RollbackAll)
+                {
+                    _log($"Database migration tested to version {lastAppliedVersion}. 0 migration applied. {NbMigration} migration(s) tested in {TotalTimeElapsedInMs} ms.");
+                }
+                else
+                {
+                    _log($"Database migrated to version {lastAppliedVersion}. {NbMigration} migration(s) applied in {TotalTimeElapsedInMs} ms.");
+                }
             }
 
             MigrationVersion Migrate()
@@ -592,7 +606,7 @@ namespace Evolve
                 metadata.SaveMigration(migration, true, stopWatch.Elapsed);
                 db.WrappedConnection.TryCommit();
 
-                _log($"Successfully applied migration {migration.Name} in {stopWatch.ElapsedMilliseconds} ms.");
+                _log($"Successfully {(TransactionMode == TransactionKind.CommitEach ? "applied" : "executed")} migration {migration.Name} in {stopWatch.ElapsedMilliseconds} ms.");
                 TotalTimeElapsedInMs += stopWatch.ElapsedMilliseconds;
                 NbMigration++;
                 AppliedMigrations.Add(migration.Name);
@@ -609,15 +623,20 @@ namespace Evolve
                 }
                 else
                 { // When a TransactionScope is used, current transaction is aborted, commands are ignored until end of transaction block
-                    foreach (string appliedMigration in new Stack<string>(AppliedMigrations))
-                    {
-                        _log($"Rollback migration {appliedMigration}.");
-                    }
-                    AppliedMigrations.Clear();
+                    LogRollbackAppliedMigration();
                 }
 
                 throw new EvolveException($"Error executing script: {migration.Name} after {stopWatch.ElapsedMilliseconds} ms.", ex);
             }
+        }
+
+        private void LogRollbackAppliedMigration()
+        {
+            foreach (string appliedMigration in new Stack<string>(AppliedMigrations))
+            {
+                _log($"Rollback migration {appliedMigration}.");
+            }
+            AppliedMigrations.Clear();
         }
 
         private DatabaseHelper InitiateDatabaseConnection()
