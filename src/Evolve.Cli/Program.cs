@@ -114,7 +114,7 @@
         public bool RetryRepeatableMigrationsUntilNoError { get; }
 
         [Option("--transaction-mode", "Scope of the Evolve transaction. Default: CommitEach", CommandOptionType.SingleValue)]
-        [AllowedValues("CommitEach", "CommitAll", IgnoreCase = true)]
+        [AllowedValues("CommitEach", "CommitAll", "RollbackAll", IgnoreCase = true)]
         public TransactionKind TransactionMode { get; } = Default.TransactionMode;
 
 

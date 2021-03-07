@@ -15,5 +15,11 @@
         ///     Either all succedeed or nothing is applied.
         /// </summary>
         CommitAll,
+
+        /// <summary>
+        ///     Execute the scripts of the migration and then rollback them all, in order
+        ///     to preview/validate the changes Evolve would make to the database.
+        /// </summary>
+        RollbackAll
     }
 }

@@ -17,6 +17,7 @@ Every time you build your project, it will automatically ensure that your databa
 - #187 Add new option : RetryRepeatableMigrationsUntilNoError
 - #198 Add support of Source Link
 - #210 Add new option TransactionMode.CommitAll to commit a group of script at once
+- #160 Add new option TransactionMode.RollbackAll to preview/validate the changes Evolve would make to the database.
 
 ## Fix
 - #203 Fix Evolve fails to erase SQL Server functions and computed columns WITH SCHEMABINDING that depends on each other.

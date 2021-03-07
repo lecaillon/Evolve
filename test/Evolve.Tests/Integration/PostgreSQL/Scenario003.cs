@@ -17,15 +17,15 @@ namespace Evolve.Tests.Integration.PostgreSql
         {
             // Arrange
             Evolve.TransactionMode = TransactionKind.CommitAll;
-            // Assert fails
+            // Assert migration fails on last script, nothing applied
             Evolve.AssertMigrateThrows<EvolveException>(Cnn);
-            Assert.True(Evolve.AppliedMigrations.Count == 0, $"There should be no migration applied when a migration fails in a CommitAll transaction mode.");
-            Assert.False(MetadataTable.GetAllAppliedMigration().Any(), $"There should be no versioned migration applied when a migration fails in a CommitAll transaction mode.");
-            Assert.False(MetadataTable.GetAllAppliedRepeatableMigration().Any(), $"There should be no repeatable migration applied when a migration fails in a CommitAll transaction mode.");
+            Assert.True(Evolve.AppliedMigrations.Count == 0, $"There should be no migration applied when a migration fails in CommitAll mode.");
+            Assert.False(MetadataTable.GetAllAppliedMigration().Any());
+            Assert.False(MetadataTable.GetAllAppliedRepeatableMigration().Any());
 
             // Arrange
             Evolve.TargetVersion = new("2_0");
-            // Assert succeeds
+            // Assert migration succeeds, 2 scripts applied
             Evolve.AssertMigrateIsSuccessful(Cnn);
         }
     }
