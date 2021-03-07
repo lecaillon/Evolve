@@ -222,12 +222,14 @@ namespace Evolve.Tests
             evolve.Migrate();
             // Assert
             Assert.True(evolve.NbMigration == expectedNbMigration, $"{expectedNbMigration} migrations should have been applied, not {evolve.NbMigration}.");
+            Assert.True(evolve.AppliedMigrations.Count == expectedNbMigration);
             Assert.True(cnn.State == ConnectionState.Closed);
 
             // Act
             evolve.Migrate();
             // Assert
             Assert.True(evolve.NbMigration == 0, $"There should be no migration applied after a successful one, not {evolve.NbMigration}.");
+            Assert.True(evolve.AppliedMigrations.Count == 0);
             Assert.True(cnn.State == ConnectionState.Closed);
 
             return evolve;
