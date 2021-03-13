@@ -43,6 +43,7 @@
                 EnableClusterMode = options.EnableClusterMode,
                 RetryRepeatableMigrationsUntilNoError = options.RetryRepeatableMigrationsUntilNoError,
                 TransactionMode = options.TransactionMode,
+                SkipNextMigrations = options.SkipNextMigrations,
             };
 
             if (options.Placeholders != null)
