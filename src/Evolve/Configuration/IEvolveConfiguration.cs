@@ -198,5 +198,10 @@ namespace Evolve.Configuration
         ///     </para>
         /// </summary>
         public TransactionKind TransactionMode { get; set; }
+
+        /// <summary>
+        ///     When true, mark all subsequent migrations as applied. (default: false;)
+        /// </summary>
+        bool SkipNextMigrations { get; set; }
     }
 }

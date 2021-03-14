@@ -74,6 +74,7 @@ namespace Evolve
         public IEnumerable<string> EmbeddedResourceFilters { get; set; } = new List<string>();
         public bool RetryRepeatableMigrationsUntilNoError { get; set; }
         public TransactionKind TransactionMode { get; set; } = TransactionKind.CommitEach;
+        public bool SkipNextMigrations { get; set; } = false;
 
         #endregion
 
@@ -349,7 +350,14 @@ namespace Evolve
 
             foreach (var migration in migrations)
             {
-                ExecuteMigration(migration, db);
+                if (SkipNextMigrations)
+                {
+                    SkipMigration(migration, db);
+                }
+                else
+                {
+                    ExecuteMigration(migration, db);
+                }
             }
 
             return migrations.Any() ? migrations.Last().Version! : lastAppliedVersion;
@@ -603,7 +611,7 @@ namespace Evolve
                 }
 
                 stopWatch.Stop();
-                metadata.SaveMigration(migration, true, stopWatch.Elapsed);
+                metadata.SaveMigration(migration, success: true, stopWatch.Elapsed);
                 db.WrappedConnection.TryCommit();
 
                 _log($"Successfully {(TransactionMode == TransactionKind.CommitEach ? "applied" : "executed")} migration {migration.Name} in {stopWatch.ElapsedMilliseconds} ms.");
@@ -619,7 +627,7 @@ namespace Evolve
                 
                 if (TransactionMode == TransactionKind.CommitEach)
                 {
-                    metadata.SaveMigration(migration, false, stopWatch.Elapsed);
+                    metadata.SaveMigration(migration, success: false, stopWatch.Elapsed);
                 }
                 else
                 { // When a TransactionScope is used, current transaction is aborted, commands are ignored until end of transaction block
@@ -628,6 +636,16 @@ namespace Evolve
 
                 throw new EvolveException($"Error executing script: {migration.Name} after {stopWatch.ElapsedMilliseconds} ms.", ex);
             }
+        }
+
+        private void SkipMigration(MigrationScript migration, DatabaseHelper db)
+        {
+            Check.NotNull(migration, nameof(migration));
+            Check.NotNull(db, nameof(db));
+
+            var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
+            metadata.SaveMigration(migration, success: true);
+            _log($"Mark migration {migration.Name} as applied.");
         }
 
         private void LogRollbackAppliedMigration()

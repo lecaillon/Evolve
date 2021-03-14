@@ -110,12 +110,14 @@
         public string[] EmbeddedResourceFilters { get; }
      
         [Option("--retry-repeatable", "When set, execute repeatedly all repeatable migrations for as long as the number of errors decreases, so that you can name them more easily. Default: false", CommandOptionType.SingleValue)]
-        public bool RetryRepeatableMigrationsUntilNoError { get; }
+        public bool RetryRepeatableMigrationsUntilNoError { get; } = Default.RetryRepeatableMigrationsUntilNoError;
 
         [Option("--transaction-mode", "Scope of the Evolve transaction. Default: CommitEach", CommandOptionType.SingleValue)]
         [AllowedValues("CommitEach", "CommitAll", "RollbackAll", IgnoreCase = true)]
         public TransactionKind TransactionMode { get; } = Default.TransactionMode;
 
+        [Option("--skip-next-migrations", "When set, mark all subsequent migrations as applied. Default: false", CommandOptionType.SingleValue)]
+        public bool SkipNextMigrations { get; }
 
         // Cassandra
         [Option("--keyspace", "A list of keyspaces managed by Evolve (Cassandra only).", CommandOptionType.MultipleValue)]
