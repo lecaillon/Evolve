@@ -308,12 +308,16 @@ namespace Evolve.Tests
         {
             try
             {
-                return evolve.MigrationLoader
-                    .GetMigrations("V", "__", evolve.SqlMigrationSuffix, Encoding.UTF8)
-                    .SkipWhile(x => x.Version < evolve.StartVersion)
-                    .TakeWhile(x => x.Version <= evolve.TargetVersion)
-                    .Union(evolve.MigrationLoader.GetRepeatableMigrations("R", "__", evolve.SqlMigrationSuffix, Encoding.UTF8))
-                    .Count();
+                int migrationCount = evolve.SkipNextMigrations
+                    ? 0
+                    : evolve.MigrationLoader
+                            .GetMigrations("V", "__", evolve.SqlMigrationSuffix, Encoding.UTF8)
+                            .SkipWhile(x => x.Version < evolve.StartVersion)
+                            .TakeWhile(x => x.Version <= evolve.TargetVersion)
+                            .Count();
+
+                return migrationCount
+                     + evolve.MigrationLoader.GetRepeatableMigrations("R", "__", evolve.SqlMigrationSuffix, Encoding.UTF8).Count();
             }
             catch
             {
