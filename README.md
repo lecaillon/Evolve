@@ -5,11 +5,9 @@ Evolve is a cross platform database migration tool inspired by [Flyway](https://
 
 Its purpose is to automate your database changes, and help keep those changes synchronized through all your environments and development teams. This makes it an ideal tool for continuous integration / delivery.
 
-Overall Evolve embraces simplicity. Every time you run your project, it will automatically ensure that your database is up-to-date.
+Overall Evolve embraces simplicity. Every time you run your project, it will automatically ensure that your database is up-to-date. Install it and forget it!
 
-Install it and forget it!
-
-#### Supporting Evolve
+### Supporting Evolve
 
 Evolve is a personal, free-time project with no funding. If you use Evolve in your daily work and feel that it makes your life easier, consider supporting its development via [GitHub Sponsors](https://github.com/sponsors/lecaillon) :heart: and by adding a star to this repository :star:
 
