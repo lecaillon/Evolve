@@ -13,6 +13,24 @@ Evolve is a personal, free-time project with no funding. If you use Evolve in yo
 
 I’m very passionate about doing personal projects and very grateful that other people find them useful, too. I want to share as much as possible, but it doesn’t pay the bills. With your help, I can focus on open-source work more and make it sustainable. If your company uses any of my libraries, consider donating too as a sign of gratitude and for priority support!
 
+## Evolve beloved sponsors
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="middle">
+        <a href="https://www.veepee.com">
+          <img src="https://raw.githubusercontent.com/lecaillon/Evolve.Doc/master/static/images/Veepee.png" style="margin: 0rem auto">
+        </a>
+      </td>
+      <td align="center" valign="middle">
+        <a href="https://megaslice.uk">
+          <img src="https://raw.githubusercontent.com/lecaillon/Evolve.Doc/master/static/images/Megaslice.png" style="margin: 0rem auto">
+        </a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
 ## Installation
 Evolve is available as a .NET library, a .NET tool and a standalone CLI.
 
