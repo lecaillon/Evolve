@@ -35,7 +35,7 @@ Evolve is available as a .NET library, a .NET tool and a standalone CLI.
 
 |  | Evolve | Evolve Tool | Evolve CLI |
 |-|-|-|-|
-| Repository | [![NuGet](https://img.shields.io/nuget/dt/evolve)](https://www.nuget.org/packages/Evolve) | [![NuGet](https://img.shields.io/nuget/dt/Evolve.Tool)](https://www.nuget.org/packages/Evolve.Tool) | [![NuGet](https://img.shields.io/badge/GitHub-releases-brightgreen.svg?logo=github)](https://github.com/lecaillon/Evolve/releases) |
+| Repository | [![NuGet Evolve](https://img.shields.io/nuget/dt/evolve)](https://www.nuget.org/packages/Evolve) | [![NuGet Evolve.Tool](https://img.shields.io/nuget/dt/Evolve.Tool)](https://www.nuget.org/packages/Evolve.Tool) | [![GitHub CLI](https://img.shields.io/badge/GitHub-releases-brightgreen.svg?logo=github)](https://github.com/lecaillon/Evolve/releases/latest) |
 
 ## Supported databases
 <table>
