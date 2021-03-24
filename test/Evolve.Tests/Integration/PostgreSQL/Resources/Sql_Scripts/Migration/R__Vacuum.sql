@@ -1,2 +1,2 @@
--- evolve-tx-off --evolve-repeat-always
+-- evolve-tx-off
 VACUUM;

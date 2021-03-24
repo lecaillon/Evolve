@@ -95,14 +95,14 @@ namespace Evolve.Tests.Migration
         [Category(Test.Migration)]
         public void MustRepeatAlways_should_be_true_when_repeat_always_is_found_in_the_script()
         {
-            Assert.True(BuildRepeatableFileMigrationScript(PostgreSQL.VacuumScriptPath).MustRepeatAlways);
+            Assert.True(BuildRepeatableFileMigrationScript(SQLite.ChinookScriptPath).MustRepeatAlways);
         }
 
         [Fact]
         [Category(Test.Migration)]
         public void MustRepeatAlways_should_be_false_when_repeat_always_is_found_in_the_script()
         {
-            Assert.False(BuildRepeatableFileMigrationScript(SQLite.ChinookScriptPath).MustRepeatAlways);
+            Assert.False(BuildRepeatableFileMigrationScript(PostgreSQL.VacuumScriptPath).MustRepeatAlways);
         }
 
         /// <summary>
