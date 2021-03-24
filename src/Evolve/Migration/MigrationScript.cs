@@ -31,6 +31,11 @@ namespace Evolve.Migration
         public virtual bool IsTransactionEnabled => !OptionExists("evolve-tx-off");
 
         /// <summary>
+        ///     Returns true if the special comment "evolve-repeat-always" is found in the first line of the script, false otherwise.
+        /// </summary>
+        public virtual bool MustRepeatAlways => Type == MetadataType.RepeatableMigration && OptionExists("evolve-repeat-always");
+
+        /// <summary>
         ///     Validates the <paramref name="checksum"/> against the actual migration one.
         ///     Throws on mismatch.
         /// </summary>

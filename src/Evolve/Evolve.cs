@@ -437,7 +437,9 @@ namespace Evolve
             foreach (var script in scripts)
             {
                 var appliedMigration = appliedMigrations.Where(x => x.Name == script.Name).OrderBy(x => x.InstalledOn).LastOrDefault();
-                if (appliedMigration is null || appliedMigration.Checksum != script.CalculateChecksum())
+                if (appliedMigration is null
+                 || script.MustRepeatAlways
+                 || appliedMigration.Checksum != script.CalculateChecksum())
                 {
                     pendingMigrations.Add(script);
                 }
