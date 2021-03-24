@@ -22,14 +22,7 @@ Every time you build your project, it will automatically ensure that your databa
     <RepositoryUrl>https://github.com/lecaillon/Evolve.git</RepositoryUrl>
     <PackageTags>evolve flyway dotnet tool sql database migration mysql sqlserver cassandra mariadb sqlite postgresql cockroachdb</PackageTags>
     <PackageReleaseNotes>## Features
-- #187 Add new option : RetryRepeatableMigrationsUntilNoError
-- #210 Add new option TransactionMode.CommitAll to commit a group of script at once
-- #160 Add new option TransactionMode.RollbackAll to preview/validate the changes Evolve would make to the database
-- #190 Add new option SkipNextMigrations to mark all subsequent migrations as applied
-- #196 Drop support of netcoreapp2.2 for net5.0
-
-## Fix
-- #203 Fix Evolve fails to erase SQL Server functions and computed columns WITH SCHEMABINDING that depends on each other</PackageReleaseNotes>
+- #218 Add new option -- evolve-repeat-always at the beginning of the script to always execute a repeatable migration</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
