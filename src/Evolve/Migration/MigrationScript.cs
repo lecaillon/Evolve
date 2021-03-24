@@ -14,7 +14,7 @@ namespace Evolve.Migration
     {
         private const string IncorrectMigrationChecksum = "Validate failed: invalid checksum for migration: {0}.";
 
-        protected MigrationScript(string? version, string description, string name, string content, MetadataType type) 
+        protected MigrationScript(string? version, string description, string name, string content, MetadataType type)
             : base(version, description, name, type)
         {
             Content = Check.NotNull(content, nameof(content));
@@ -28,17 +28,12 @@ namespace Evolve.Migration
         /// <summary>
         ///     Returns false if the special comment "evolve-tx-off" is found in the first line of the script, true otherwise.
         /// </summary>
-        public virtual bool IsTransactionEnabled()
-        {
-            if (Content.IsNullOrWhiteSpace())
-            {
-                return true;
-            }
+        public virtual bool IsTransactionEnabled => !OptionExists("evolve-tx-off");
 
-            using var file = new StringReader(Content);
-            string? firstLine = file.ReadLine();
-            return firstLine is null || firstLine.IndexOf("evolve-tx-off", StringComparison.OrdinalIgnoreCase) == -1;
-        }
+        /// <summary>
+        ///     Returns true if the special comment "evolve-repeat-always" is found in the first line of the script, false otherwise.
+        /// </summary>
+        public virtual bool MustRepeatAlways => Type == MetadataType.RepeatableMigration && OptionExists("evolve-repeat-always");
 
         /// <summary>
         ///     Validates the <paramref name="checksum"/> against the actual migration one.
@@ -71,5 +66,17 @@ namespace Evolve.Migration
         ///     <code>crlf</code> and <code>lf</code> line endings will be normalized to <code>lf</code>
         /// </summary>
         protected static string NormalizeLineEndings(string str) => str.Replace("\r\n", "\n");
+
+        private bool OptionExists(string option)
+        {
+            if (Content.IsNullOrWhiteSpace())
+            {
+                return false;
+            }
+
+            using var file = new StringReader(Content);
+            string? firstLine = file.ReadLine();
+            return !(firstLine is null || firstLine.IndexOf(option, StringComparison.OrdinalIgnoreCase) == -1);
+        }
     }
 }

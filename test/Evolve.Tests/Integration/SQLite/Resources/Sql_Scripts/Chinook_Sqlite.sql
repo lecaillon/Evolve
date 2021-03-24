@@ -1,4 +1,4 @@
-﻿
+﻿--evolve-repeat-always
 /*******************************************************************************
    Chinook Database - Version 1.4
    Script: Chinook_Sqlite_AutoIncrementPKs.sql
