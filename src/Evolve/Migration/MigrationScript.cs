@@ -10,7 +10,7 @@ namespace Evolve.Migration
     /// <summary>
     ///     Provide a common abstraction for versioned and repeatable migrations.
     /// </summary>
-    internal abstract class MigrationScript : MigrationBase
+    public abstract class MigrationScript : MigrationBase
     {
         private const string IncorrectMigrationChecksum = "Validate failed: invalid checksum for migration: {0}.";
 

@@ -8,7 +8,7 @@ using Evolve.Utilities;
 
 namespace Evolve.Migration
 {
-    internal class EmbeddedResourceMigrationLoader : IMigrationLoader
+    public class EmbeddedResourceMigrationLoader : IMigrationLoader
     {
         private const string InvalidEmbeddedResourceFormat = "Embedded resource {0} has an invalid format.";
 
@@ -26,7 +26,7 @@ namespace Evolve.Migration
             _filters = filters is null ? new List<string>() : Check.HasNoNulls(filters, nameof(filters));
         }
 
-        public IEnumerable<MigrationScript> GetMigrations(string prefix, string separator, string suffix, Encoding? encoding = null)
+        public virtual IEnumerable<MigrationScript> GetMigrations(string prefix, string separator, string suffix, Encoding? encoding = null)
         {
             Check.NotNullOrEmpty(prefix, nameof(prefix)); // V
             Check.NotNullOrEmpty(separator, nameof(separator)); // __
@@ -56,14 +56,13 @@ namespace Evolve.Migration
                         .ForEach(x => migrations.Add(x));
             }
 
-            return migrations.Cast<MigrationBase>() // NET 3.5
-                             .CheckForDuplicateVersion()
+            return migrations.CheckForDuplicateVersion()
                              .OrderBy(x => x.Version)
-                             .Cast<MigrationScript>() // NET 3.5
+                             .Cast<MigrationScript>()
                              .ToList();
         }
 
-        public IEnumerable<MigrationScript> GetRepeatableMigrations(string prefix, string separator, string suffix, Encoding? encoding = null)
+        public virtual IEnumerable<MigrationScript> GetRepeatableMigrations(string prefix, string separator, string suffix, Encoding? encoding = null)
         {
             Check.NotNullOrEmpty(prefix, nameof(prefix)); // R
             Check.NotNullOrEmpty(separator, nameof(separator)); // __
@@ -93,10 +92,9 @@ namespace Evolve.Migration
                         .ForEach(x => migrations.Add(x));
             }
 
-            return migrations.Cast<MigrationBase>() // NET 3.5
-                             .CheckForDuplicateName()
+            return migrations.CheckForDuplicateName()
                              .OrderBy(x => x.Name)
-                             .Cast<MigrationScript>() // NET 3.5
+                             .Cast<MigrationScript>()
                              .ToList();
         }
 

@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Evolve.Migration
 {
-    internal interface IMigrationLoader
+    public interface IMigrationLoader
     {
         /// <summary>
         ///     Returns a list of migration scripts ordered by version.
@@ -24,7 +24,7 @@ namespace Evolve.Migration
         /// <param name="suffix"> File name suffix for sql migrations. </param>
         /// <param name="encoding"> Encoding of the migration script. </param>
         /// <returns> A list of repeatable migration script. </returns>
-        /// <exception cref="EvolveException"> Throws EvolveException when duplicate version found. </exception>
+        /// <exception cref="EvolveException"> Throws EvolveException when duplicate name found. </exception>
         IEnumerable<MigrationScript> GetRepeatableMigrations(string prefix, string separator, string suffix, Encoding encoding);
     }
 }

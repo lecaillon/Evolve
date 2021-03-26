@@ -203,5 +203,10 @@ namespace Evolve.Configuration
         ///     When true, mark all subsequent migrations as applied. (default: false;)
         /// </summary>
         bool SkipNextMigrations { get; set; }
+
+        /// <summary>
+        ///     A custom <see cref="IMigrationLoader"/> that replaces the built-in ones.
+        /// </summary>
+        IMigrationLoader MigrationLoader { get; set; }
     }
 }

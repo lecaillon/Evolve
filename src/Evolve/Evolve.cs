@@ -76,6 +76,19 @@ namespace Evolve
         public TransactionKind TransactionMode { get; set; } = TransactionKind.CommitEach;
         public bool SkipNextMigrations { get; set; } = false;
 
+        private IMigrationLoader? _migrationLoader;
+        public IMigrationLoader MigrationLoader
+        {
+            get
+            {
+                return _migrationLoader ?? (EmbeddedResourceAssemblies.Any()
+                    ? new EmbeddedResourceMigrationLoader(EmbeddedResourceAssemblies, EmbeddedResourceFilters)
+                    : new FileMigrationLoader(Locations));
+
+            }
+            set { _migrationLoader = value; }
+        }
+
         #endregion
 
         #region Properties
@@ -87,11 +100,6 @@ namespace Evolve
         public long TotalTimeElapsedInMs { get; private set; }
         public List<string> AppliedMigrations { get; private set; } = new();
         public DBMS DBMS { get; }
-        internal IMigrationLoader MigrationLoader
-        {
-            get => EmbeddedResourceAssemblies.Any() ? new EmbeddedResourceMigrationLoader(EmbeddedResourceAssemblies, EmbeddedResourceFilters)
-                                                    : new FileMigrationLoader(Locations) as IMigrationLoader;
-        }
 
         #endregion
 

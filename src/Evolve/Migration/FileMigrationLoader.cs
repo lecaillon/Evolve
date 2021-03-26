@@ -8,7 +8,7 @@ using Evolve.Utilities;
 
 namespace Evolve.Migration
 {
-    internal class FileMigrationLoader : IMigrationLoader
+    public class FileMigrationLoader : IMigrationLoader
     {
         private const string InvalidMigrationScriptLocation = "Invalid migration script location: {0}.";
         private readonly IEnumerable<string> _locations;
@@ -22,7 +22,7 @@ namespace Evolve.Migration
             _locations = locations is null ? new List<string>() : Check.HasNoNulls(locations, nameof(locations));
         }
 
-        public IEnumerable<MigrationScript> GetMigrations(string prefix, string separator, string suffix, Encoding? encoding = null)
+        public virtual IEnumerable<MigrationScript> GetMigrations(string prefix, string separator, string suffix, Encoding? encoding = null)
         {
             Check.NotNullOrEmpty(prefix, nameof(prefix)); // V
             Check.NotNullOrEmpty(separator, nameof(separator)); // __
@@ -34,7 +34,10 @@ namespace Evolve.Migration
             foreach (string location in _locations.Distinct(StringComparer.OrdinalIgnoreCase)) // Remove duplicate locations if any
             {
                 DirectoryInfo dirToScan = ResolveDirectory(location);
-                if(!dirToScan.Exists) continue;
+                if (!dirToScan.Exists)
+                {
+                    continue;
+                }
 
                 dirToScan.GetFiles("*", SearchOption.AllDirectories) // Get scripts recursively
                          .Where(f => !migrations.Any(m => m.Path == f.FullName) // Scripts not already loaded
@@ -49,14 +52,13 @@ namespace Evolve.Migration
                          .ForEach(x => migrations.Add(x));
             }
 
-            return migrations.Cast<MigrationBase>() // NET 3.5
-                             .CheckForDuplicateVersion()
+            return migrations.CheckForDuplicateVersion()
                              .OrderBy(x => x.Version)
-                             .Cast<MigrationScript>() // NET 3.5
+                             .Cast<MigrationScript>()
                              .ToList();
         }
 
-        public IEnumerable<MigrationScript> GetRepeatableMigrations(string prefix, string separator, string suffix, Encoding? encoding = null)
+        public virtual IEnumerable<MigrationScript> GetRepeatableMigrations(string prefix, string separator, string suffix, Encoding? encoding = null)
         {
             Check.NotNullOrEmpty(prefix, nameof(prefix)); // R
             Check.NotNullOrEmpty(separator, nameof(separator)); // __
@@ -68,7 +70,10 @@ namespace Evolve.Migration
             foreach (string location in _locations.Distinct(StringComparer.OrdinalIgnoreCase)) // Remove duplicate locations if any
             {
                 DirectoryInfo dirToScan = ResolveDirectory(location);
-                if (!dirToScan.Exists) continue;
+                if (!dirToScan.Exists)
+                {
+                    continue;
+                }
 
                 dirToScan.GetFiles("*", SearchOption.AllDirectories)   // Get scripts recursively
                          .Where(f => !migrations.Any(m => m.Path == f.FullName) // Scripts not already loaded
@@ -83,14 +88,13 @@ namespace Evolve.Migration
                          .ForEach(x => migrations.Add(x));
             }
 
-            return migrations.Cast<MigrationBase>() // NET 3.5
-                             .CheckForDuplicateName()
+            return migrations.CheckForDuplicateName()
                              .OrderBy(x => x.Name)
-                             .Cast<MigrationScript>() // NET 3.5
+                             .Cast<MigrationScript>()
                              .ToList();
         }
 
-        private DirectoryInfo ResolveDirectory(string location)
+        private static DirectoryInfo ResolveDirectory(string location)
         {
             Check.NotNullOrEmpty(location, nameof(location));
 
