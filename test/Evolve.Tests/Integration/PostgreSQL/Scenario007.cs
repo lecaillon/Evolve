@@ -18,11 +18,14 @@ namespace Evolve.Tests.Integration.PostgreSql
         public void Scenario_use_a_custom_migration_loader_only_when_is_set()
         {
             // Assert default configuration
+            Assert.True(Evolve.MigrationLoader is FileMigrationLoader);
             Assert.Single(Evolve.MigrationLoader.GetMigrations("V", "__", ".sql", Encoding.UTF8));
             Assert.Single(Evolve.MigrationLoader.GetRepeatableMigrations("V", "__", ".sql", Encoding.UTF8));
 
             // Assert custom MigrationLoader returns no versioned migration
             Evolve.MigrationLoader = new CustomMigrationLoader(new[] { ScenarioFolder });
+
+            Assert.True(Evolve.MigrationLoader is CustomMigrationLoader);
             Assert.Empty(Evolve.MigrationLoader.GetMigrations("V", "__", ".sql", Encoding.UTF8));
             Assert.Single(Evolve.MigrationLoader.GetRepeatableMigrations("V", "__", ".sql", Encoding.UTF8));
         }
