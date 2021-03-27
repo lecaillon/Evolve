@@ -22,7 +22,8 @@ Every time you build your project, it will automatically ensure that your databa
     <RepositoryUrl>https://github.com/lecaillon/Evolve.git</RepositoryUrl>
     <PackageTags>evolve flyway dotnet tool sql database migration mysql sqlserver cassandra mariadb sqlite postgresql cockroachdb</PackageTags>
     <PackageReleaseNotes>## Features
-- #218 Add new option -- evolve-repeat-always at the beginning of the script to always execute a repeatable migration</PackageReleaseNotes>
+- #218 Add new option -- evolve-repeat-always at the beginning of the script to always execute a repeatable migration
+- #220 Add new option MigrationLoader to help you customize the Evolve migration collect process and enable your own specific logic</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
