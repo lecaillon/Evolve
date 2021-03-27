@@ -13,10 +13,20 @@ namespace Evolve
             const string Ellipsis = "...";
 
             if (Ellipsis.Length > maxLength)
+            {
                 throw new ArgumentOutOfRangeException(nameof(maxLength), maxLength, "Max length must be at least as long as ellipsis.");
+            }
 
-            return (s.Length > maxLength) ? s.Substring(0, maxLength - Ellipsis.Length) + Ellipsis : s;
+            return (s.Length > maxLength)
+                ? s.Substring(0, maxLength - Ellipsis.Length) + Ellipsis
+                : s;
         }
+
+        /// <summary>
+        ///     Normalize string before SQL insert.
+        /// </summary>
+        public static string NormalizeSqlString(this string s, int maxLength)
+            => s.TruncateWithEllipsis(maxLength).Replace("'", "''");
 
         /// <summary>
         ///     Indicates whether a specified string is null, empty, or consists only of white-space characters.
