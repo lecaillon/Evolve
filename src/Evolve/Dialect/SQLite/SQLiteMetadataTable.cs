@@ -56,8 +56,8 @@ namespace Evolve.Dialect.SQLite
              "( " +
                 $"'{(int)metadata.Type}', " +
                 $"{(metadata.Version is null ? "null" : $"'{metadata.Version}'")}, " +
-                $"'{metadata.Description.TruncateWithEllipsis(200)}', " +
-                $"'{metadata.Name.TruncateWithEllipsis(1000)}', " +
+                $"'{metadata.Description.NormalizeSqlString(200)}', " +
+                $"'{metadata.Name.NormalizeSqlString(1000)}', " +
                 $"'{metadata.Checksum}', " +
                 $"{_database.CurrentUser}, " +
                 $"{(metadata.Success ? 1 : 0)}" +
