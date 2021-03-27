@@ -4,7 +4,7 @@ using Evolve.Utilities;
 
 namespace Evolve.Migration
 {
-    internal abstract class MigrationBase : IComparable<MigrationBase>, IComparable
+    public abstract class MigrationBase : IComparable<MigrationBase>, IComparable
     {
         private const string InvalidObjectType = "Object must be of type MigrationBase.";
 
