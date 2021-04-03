@@ -11,13 +11,17 @@ namespace Evolve.Tests.Dialect.SQLServer
         [Category(Test.SQLServer)]
         public void SQLServerStatementBuilder_LoadSqlStatements_SplitsScriptCorrectly()
         {
-            string sql = @"PRINT 'CREATE TYPE'
+            string sql = @"PRINT 'GO'
 
-/* Create a user-defined table type */  
-CREATE TYPE LocationTableType AS TABLE   
+/* Create a user-defined table type. GO */  
+CREATE TYPE LocationTableType AS TABLE   -- GO
     ( LocationName VARCHAR(50)  
-    , CostRate INT );  
-GO 
+    , CostRate INT );
+/*
+GO
+*/
+
+go 
 
 GO
 
@@ -30,12 +34,15 @@ FROM varchar(11) NOT NULL ;
 
 GO";
 
-            string sql1 = @"PRINT 'CREATE TYPE'
+            string sql1 = @"PRINT 'GO'
 
-/* Create a user-defined table type */  
-CREATE TYPE LocationTableType AS TABLE   
+/* Create a user-defined table type. GO */  
+CREATE TYPE LocationTableType AS TABLE   -- GO
     ( LocationName VARCHAR(50)  
-    , CostRate INT );";
+    , CostRate INT );
+/*
+GO
+*/";
 
             string sql2 = @"-- =============================================
 -- SSN

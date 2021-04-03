@@ -16,7 +16,8 @@ Every time you build your project, it will automatically ensure that your databa
     <releaseNotes>## Features
 - #218 Add new option -- evolve-repeat-always at the beginning of the script to always execute a repeatable migration
 - #220 Add new option MigrationLoader to help you customize the Evolve migration collect process and enable your own specific logic
-- #222 Enable quotes in migration name</releaseNotes>
+- #222 Enable quotes in migration name
+- Add SQL Server GO delimiter support in SQL comment</releaseNotes>
     <tags>evolve flyway sql database migration mysql sqlserver cassandra mariadb sqlite postgresql cockroachdb</tags>
     <dependencies>
       <group targetFramework="netstandard2.0" />
