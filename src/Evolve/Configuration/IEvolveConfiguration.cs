@@ -48,6 +48,9 @@ namespace Evolve.Configuration
         ///     <para>
         ///         <see cref="CommandOptions.Info"/> : Prints details about migrations, what has been applied and what is pending.
         ///     </para>
+        ///     <para>
+        ///         <see cref="CommandOptions.Validate"/> : Validate applied migrations, throws an exception if found not valid migration
+        ///     </para>
         /// </summary>
         CommandOptions Command { get; set; }
 

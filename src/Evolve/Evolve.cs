@@ -121,10 +121,62 @@ namespace Evolve
                 case CommandOptions.Info:
                     Info();
                     break;
+                case CommandOptions.Validate:
+                    Validate();
+                    break;
                 default:
                     _log($"Evolve.Command parameter is not set. No migration applied. See: https://evolve-db.netlify.com/configuration/ for more information.");
                     break;
             }
+        }
+        private void Validate()
+		{
+			Command = CommandOptions.Validate;
+
+			using var db = InitiateDatabaseConnection();
+			var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
+			if (!metadata.IsExists())
+			{
+				_log("Metadata not found. No validation necessary.");
+				return;
+			}
+
+			var appliedMigrations = metadata.GetAllAppliedMigration().ToList();
+			if (!appliedMigrations.Any())
+			{
+				_log("Applied migrations not found. No validation necessary.");
+				return;
+			}
+
+			var resolvedMigrations = MigrationLoader
+				.GetMigrations(SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding)
+				.ToList();
+            
+			var lastAppliedMigration = appliedMigrations.Last();
+			var lastResolvedMigrations = resolvedMigrations.Last();
+			if (lastAppliedMigration != lastResolvedMigrations)
+			{
+				throw new EvolveValidationException($"Validation failed: Mismatch last migration [applied={lastAppliedMigration}, resolved={lastResolvedMigrations}] ");
+			}
+			
+			for (int i = 0; i < resolvedMigrations.Count; i++)
+			{
+				var appliedMigration = appliedMigrations[i];
+				var resolvedMigration = resolvedMigrations[i];
+
+				if (appliedMigration != resolvedMigration)
+				{
+					throw new EvolveValidationException($"Validation failed: Mismatch migration [applied={appliedMigration}, resolved={resolvedMigration}]");
+				}
+
+                var resolvedChecksum = resolvedMigration.CalculateChecksum();
+                if (appliedMigration.Checksum != resolvedChecksum)
+				{
+					throw new EvolveValidationException($"Validation failed: Mismatch migration checksum {appliedMigration} [applied={appliedMigration.Checksum}, resolved={resolvedChecksum}]");
+				}
+            }
+			
+            _log($"Successfully validated {resolvedMigrations.Count} migrations");
         }
 
         public IEnumerable<MigrationMetadataUI> Info()

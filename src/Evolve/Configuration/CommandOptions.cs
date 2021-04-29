@@ -31,6 +31,11 @@
         /// <summary>
         ///     Prints details about migrations, what has been applied and what is pending.
         /// </summary>
-        Info
+        Info,
+        
+        /// <summary>
+        ///     Validate applied migrations, throws an exception if found not valid migration
+        /// </summary>
+        Validate
     }
 }

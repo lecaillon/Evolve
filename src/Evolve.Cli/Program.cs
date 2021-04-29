@@ -32,9 +32,9 @@
             }
         }
 
-        [Argument(0, Description = "migrate | erase | repair | info")]
+        [Argument(0, Description = "migrate | erase | repair | info | validate")]
         [Required]
-        [AllowedValues("migrate", "erase", "repair", "info", IgnoreCase = true)]
+        [AllowedValues("migrate", "erase", "repair", "info", "validate", IgnoreCase = true)]
         public CommandOptions Command { get; }
 
         [Argument(1, Description = "postgresql | sqlite | sqlserver | mysql | mariadb | cassandra | cockroachdb")]
