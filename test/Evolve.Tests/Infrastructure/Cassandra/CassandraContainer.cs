@@ -8,7 +8,7 @@ namespace Evolve.Tests.Infrastructure
         public const string ExposedPort = "9042";
         public const string HostPort = "9042";
         public const string ClusterName = "evolve";
-        public const string DataCenter = "dc1";
+        public const string DataCenter = "datacenter1";
         public const string DbUser = "postgres";
 
         private DockerContainer _container;

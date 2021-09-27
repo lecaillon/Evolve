@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using Evolve.Tests.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
-using static Evolve.Dialect.Cassandra.Configuration;
 using static Evolve.Tests.TestContext;
 
 namespace Evolve.Tests.Integration.Cassandra
@@ -64,13 +62,6 @@ namespace Evolve.Tests.Integration.Cassandra
                   .AssertInfoIsSuccessful(cnn);
 
             evolve.AssertEraseIsSuccessful(cnn, e => e.IsEraseDisabled = false);
-
-            //DefaultKeyspaceReplicationStrategy
-            var configurationFileName = ConfigurationFile;
-            File.Copy($"_{configurationFileName}", configurationFileName);
-            var ex = Assert.Throws<EvolveSqlException>(() => evolve.Migrate());
-            Assert.Contains("Not enough replicas available for query at consistency", ex.Message);
-            File.Delete(configurationFileName);
 
             // Call the second part of the Cassandra integration tests
             DialectTest.Run_all_Cassandra_integration_tests_work(_dbContainer);
