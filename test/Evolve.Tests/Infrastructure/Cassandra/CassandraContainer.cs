@@ -16,7 +16,7 @@ namespace Evolve.Tests.Infrastructure
 
         public string Id => _container?.Id;
         public string CnxStr => $"Contact Points=127.0.0.1;Port={HostPort};Cluster Name={ClusterName}";
-        public int TimeOutInSec => 45;
+        public int TimeOutInSec => 60;
 
         public bool Start(bool fromScratch = false)
         {
