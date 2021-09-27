@@ -25,7 +25,8 @@ Every time you build your project, it will automatically ensure that your databa
 - #218 Add new option -- evolve-repeat-always at the beginning of the script to always execute a repeatable migration
 - #220 Add new option MigrationLoader to help you customize the Evolve migration collect process and enable your own specific logic
 - #222 Enable quotes in migration name
-- #224 Add SQL Server GO delimiter support in SQL comment</PackageReleaseNotes>
+- #224 Add SQL Server GO delimiter support in SQL comment
+- #228 Add new command Validate</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
