@@ -63,11 +63,9 @@ namespace Evolve.Dialect.Cassandra
                 when (ex?.InnerException?.GetType().ToString() == "Cassandra.InvalidQueryException")
             {
                 //These error messages are very specific to Cassandra's drivers and could change
-                if (ex.Message.StartsWith($"Keyspace {clusterLockKeyspaceName} does not exist")
-                 || ex.Message.StartsWith($"unconfigured table {clusterLockTableName}"))
-                    return true;
-                else
-                    return true;
+                return ex.Message.StartsWith($"keyspace {clusterLockKeyspaceName} does not exist", StringComparison.OrdinalIgnoreCase)
+                    || ex.Message.StartsWith($"unconfigured table {clusterLockTableName}", StringComparison.OrdinalIgnoreCase)
+                    || ex.Message.StartsWith($"table {clusterLockTableName} does not exist", StringComparison.OrdinalIgnoreCase);
             }
         }
 

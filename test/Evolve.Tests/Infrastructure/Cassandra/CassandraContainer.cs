@@ -8,7 +8,7 @@ namespace Evolve.Tests.Infrastructure
         public const string ExposedPort = "9042";
         public const string HostPort = "9042";
         public const string ClusterName = "evolve";
-        public const string DataCenter = "dc1";
+        public const string DataCenter = "datacenter1";
         public const string DbUser = "postgres";
 
         private DockerContainer _container;
@@ -16,7 +16,7 @@ namespace Evolve.Tests.Infrastructure
 
         public string Id => _container?.Id;
         public string CnxStr => $"Contact Points=127.0.0.1;Port={HostPort};Cluster Name={ClusterName}";
-        public int TimeOutInSec => 45;
+        public int TimeOutInSec => 60;
 
         public bool Start(bool fromScratch = false)
         {

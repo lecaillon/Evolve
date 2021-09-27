@@ -125,7 +125,7 @@ namespace Evolve
         {
             return Execute(wrappedConnection, sql, cmd =>
             {
-                return (T)cmd.ExecuteScalar();
+                return (T?)cmd.ExecuteScalar();
             });
         }
 

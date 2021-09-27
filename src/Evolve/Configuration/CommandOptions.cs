@@ -31,6 +31,11 @@
         /// <summary>
         ///     Prints details about migrations, what has been applied and what is pending.
         /// </summary>
-        Info
+        Info,
+
+        /// <summary>
+        ///     Validate Evolve configuration to detect if schema(s) could be recreated exactly.
+        /// </summary>
+        Validate
     }
 }

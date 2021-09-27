@@ -6,12 +6,12 @@
   "keyspaces": {
     "my_keyspace_1": {
       "class": "NetworkTopologyStrategy",
-      "dc1": "1"
+      "datacenter1": "1"
     },
     "my_second_keyspace": {
       "class": "NetworkTopologyStrategy",
-      "dc1": "2",
-      "dc2": "3"
+      "datacenter1": "2",
+      "datacenter2": "3"
     },
     "_default": {
       "class": "SimpleStrategy",

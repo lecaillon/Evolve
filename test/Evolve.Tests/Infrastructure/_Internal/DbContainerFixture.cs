@@ -16,7 +16,7 @@ namespace Evolve.Tests.Infrastructure
 
     public abstract class DbContainerFixture<T> : IDbContainerFixture where T : IDbContainer, new()
     {
-        protected readonly T _container = new T();
+        protected readonly T _container = new();
 
         public string CnxStr => _container.CnxStr;
 
