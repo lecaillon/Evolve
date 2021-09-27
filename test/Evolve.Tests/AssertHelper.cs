@@ -211,7 +211,7 @@ namespace Evolve.Tests
             return evolve;
         }
 
-        public static Evolve AssertMigrateIsSuccessful(this Evolve evolve, IDbConnection cnn, Action<Evolve> arrange = null)
+        public static Evolve AssertMigrateIsSuccessful(this Evolve evolve, IDbConnection cnn, Action<Evolve> arrange = null, int? repeatAlwaysCount = 0)
         {
             // Arrange
             cnn.TryClose();
@@ -228,8 +228,8 @@ namespace Evolve.Tests
             // Act
             evolve.Migrate();
             // Assert
-            Assert.True(evolve.NbMigration == 0, $"There should be no migration applied after a successful one, not {evolve.NbMigration}.");
-            Assert.True(evolve.AppliedMigrations.Count == 0);
+            Assert.True(evolve.NbMigration == repeatAlwaysCount, $"There should be no migration applied after a successful one, not {evolve.NbMigration}.");
+            Assert.True(evolve.AppliedMigrations.Count == repeatAlwaysCount);
             Assert.True(cnn.State == ConnectionState.Closed);
 
             return evolve;
@@ -284,6 +284,19 @@ namespace Evolve.Tests
             Assert.True(evolve.NbSchemaErased == evolve.Schemas.Count(), $"{evolve.Schemas.Count()} schemas should have been erased, not {evolve.NbSchemaErased}.");
             Assert.True(cnn.State == ConnectionState.Closed);
 
+            return evolve;
+        }
+
+        public static Evolve AsserValidationIsSuccessful(this Evolve evolve)
+        {
+            evolve.Validate();
+            return evolve;
+        }
+
+        public static Evolve AssertValidationThrows<T>(this Evolve evolve, int errorCount) where T : Exception
+        {
+            var ex = Assert.Throws<T>(() => evolve.Validate());
+            Assert.Contains($"{errorCount} error(s)", ex.Message);
             return evolve;
         }
 

@@ -111,20 +111,84 @@ namespace Evolve
             {
                 case CommandOptions.Migrate:
                     Migrate();
+                    _log($"Evolve command 'migrate' successfully executed.");
                     break;
                 case CommandOptions.Repair:
                     Repair();
+                    _log($"Evolve command 'repair' successfully executed.");
                     break;
                 case CommandOptions.Erase:
                     Erase();
+                    _log($"Evolve command 'erase' successfully executed.");
                     break;
                 case CommandOptions.Info:
                     Info();
+                    break;
+                case CommandOptions.Validate:
+                    Validate();
+                    _log($"Evolve command 'validate' successfully executed.");
                     break;
                 default:
                     _log($"Evolve.Command parameter is not set. No migration applied. See: https://evolve-db.netlify.com/configuration/ for more information.");
                     break;
             }
+        }
+
+        public void Validate()
+        {
+            Command = CommandOptions.Validate;
+
+            var errors = new List<string>();
+            using var db = InitiateDatabaseConnection();
+            var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
+            bool isEvolveInitialized = metadata.IsEvolveInitialized();
+            var lastAppliedVersion = isEvolveInitialized ? metadata.FindLastAppliedVersion() : MigrationVersion.MinVersion;
+            var startVersion = isEvolveInitialized ? metadata.FindStartVersion() : MigrationVersion.MinVersion;
+            if (startVersion == MigrationVersion.MinVersion)
+            {
+                startVersion = StartVersion;
+            }
+
+            // Each script of the applied migrations must be found and the checksum must be identical.
+            var scripts = MigrationLoader.GetMigrations(SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding).Union(
+                          MigrationLoader.GetRepeatableMigrations(SqlRepeatableMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding));
+            foreach (var migration in GetAllExecutedMigration(metadata))
+            {
+                var script = scripts.SingleOrDefault(x => x.Name == migration.Name);
+                if (script is null)
+                { // Missing script
+                    errors.Add($"\t- missing migration: {migration.Name}");
+                }
+                else if (migration.Type != MetadataType.RepeatableMigration
+                      && migration.Checksum is not null
+                      && migration.Checksum != script.CalculateChecksum())
+                { // Invalid checksum
+                    errors.Add($"\t- invalid checksum for: {migration.Name}");
+                }
+            }
+
+            // No pending migration must be found
+            foreach (var migration in GetAllPendingMigration(startVersion, lastAppliedVersion))
+            {
+                errors.Add($"\t- pending migration: {migration.Name}");
+            }
+
+            // No pending repeatable migration must be found (excluding RepeatAlways migrations)
+            foreach (var migration in GetAllPendingRepeatableMigration(metadata, excludeRepeatAlways: true))
+            {
+                errors.Add($"\t- pending repeatable migration: {migration.Name}");
+            }
+
+            if (errors.Any())
+            {
+                var uniqueErrors = errors.Distinct().ToList();
+                throw new EvolveValidationException(
+                    $"Evolve validation failed. {uniqueErrors.Count} error(s) found:"
+                    + Environment.NewLine
+                    + string.Join(Environment.NewLine, uniqueErrors));
+            }
+
+            _log($"No validation errors found.");
         }
 
         public IEnumerable<MigrationMetadataUI> Info()
@@ -197,20 +261,7 @@ namespace Evolve
 
             IEnumerable<MigrationMetadataUI> GetAllExecutedMigrationUI(IEvolveMetadata metadata)
             {
-                if (DBMS == DBMS.Cassandra)
-                { // Cassandra has not a monotonic Id. We have to customize the order.
-                    var executedMigrations = metadata.GetAllAppliedMigration().ToList();
-                    executedMigrations.AddRange(metadata.GetAllAppliedRepeatableMigration()
-                                                        .OrderBy(x => x.InstalledOn)
-                                                        .ThenBy(x => x.Name));
-
-                    return executedMigrations.Select(x => new MigrationMetadataUI(x));
-                }
-
-                return metadata.GetAllMetadata()
-                               .Where(x => x.Type == MetadataType.Migration || x.Type == MetadataType.RepeatableMigration)
-                               .OrderBy(x => x.Id)
-                               .Select(x => new MigrationMetadataUI(x));
+                return GetAllExecutedMigration(metadata).Select(x => new MigrationMetadataUI(x));
             }
 
             IEnumerable<MigrationMetadataUI> GetAllOutOfOrderPendingMigrationUI(IEvolveMetadata metadata, MigrationVersion startVersion, MigrationVersion lastAppliedVersion)
@@ -246,11 +297,8 @@ namespace Evolve
 
             IEnumerable<MigrationMetadataUI> GetAllPendingRepeatableMigrationUI(IEvolveMetadata metadata)
             {
-                var pendingMigrations = metadata.IsEvolveInitialized()
-                    ? GetAllPendingRepeatableMigration(metadata)
-                    : MigrationLoader.GetRepeatableMigrations(SqlRepeatableMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding);
-
-                return pendingMigrations.Select(x => new MigrationMetadataUI(x.Version?.Label, x.Description, "Pending"));
+                return GetAllPendingRepeatableMigration(metadata)
+                    .Select(x => new MigrationMetadataUI(x.Version?.Label, x.Description, "Pending"));
             }
 
             IEnumerable<MigrationMetadataUI> GetAllOffTargetMigrationUI()
@@ -259,6 +307,28 @@ namespace Evolve
                                       .SkipWhile(x => x.Version < TargetVersion)
                                       .Select(x => new MigrationMetadataUI(x.Version?.Label, x.Description, "Ignored"));
             }
+        }
+
+        private IEnumerable<MigrationMetadata> GetAllExecutedMigration(IEvolveMetadata metadata)
+        {
+            if (!metadata.IsEvolveInitialized())
+            {
+                return Enumerable.Empty<MigrationMetadata>();
+            }
+
+            if (DBMS == DBMS.Cassandra)
+            { // Cassandra has not a monotonic Id. We have to customize the order.
+                var executedMigrations = metadata.GetAllAppliedMigration().ToList();
+                executedMigrations.AddRange(metadata.GetAllAppliedRepeatableMigration()
+                                                    .OrderBy(x => x.InstalledOn)
+                                                    .ThenBy(x => x.Name));
+
+                return executedMigrations;
+            }
+
+            return metadata.GetAllMetadata()
+                           .Where(x => x.Type == MetadataType.Migration || x.Type == MetadataType.RepeatableMigration)
+                           .OrderBy(x => x.Id);
         }
 
         public void Migrate()
@@ -436,8 +506,13 @@ namespace Evolve
             }
         }
 
-        private IEnumerable<MigrationScript> GetAllPendingRepeatableMigration(IEvolveMetadata metadata)
+        private IEnumerable<MigrationScript> GetAllPendingRepeatableMigration(IEvolveMetadata metadata, bool excludeRepeatAlways = false)
         {
+            if (!metadata.IsEvolveInitialized())
+            {
+                return MigrationLoader.GetRepeatableMigrations(SqlRepeatableMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding);
+            }
+
             var pendingMigrations = new List<MigrationScript>();
             var appliedMigrations = metadata.GetAllAppliedRepeatableMigration();
             var scripts = MigrationLoader.GetRepeatableMigrations(SqlRepeatableMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding);
@@ -446,7 +521,7 @@ namespace Evolve
             {
                 var appliedMigration = appliedMigrations.Where(x => x.Name == script.Name).OrderBy(x => x.InstalledOn).LastOrDefault();
                 if (appliedMigration is null
-                 || script.MustRepeatAlways
+                 || (script.MustRepeatAlways && !excludeRepeatAlways)
                  || appliedMigration.Checksum != script.CalculateChecksum())
                 {
                     pendingMigrations.Add(script);
@@ -684,7 +759,7 @@ namespace Evolve
                 Schemas = new List<string> { currentSchema };
             }
 
-            if (Command != CommandOptions.Info)
+            if (Command is not CommandOptions.Info and not CommandOptions.Validate)
             {
                 _log("Evolve initialized.");
             }
