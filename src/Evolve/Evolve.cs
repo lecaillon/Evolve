@@ -92,13 +92,44 @@ namespace Evolve
 
         #region Properties
 
+        /// <summary>
+        ///     Returns Evolve configfuration.
+        /// </summary>
         public IEvolveConfiguration Options => this;
+
+        /// <summary>
+        ///     Number of migration script applied during the last Evolve execution.
+        /// </summary>
         public int NbMigration { get; private set; }
+
+        /// <summary>
+        ///     Number of migration script repaired during the last Evolve execution.
+        /// </summary>
         public int NbReparation { get; private set; }
+
+        /// <summary>
+        ///     Number of database schema erased during the last Evolve execution.
+        /// </summary>
         public int NbSchemaErased { get; private set; }
+
+        /// <summary>
+        ///     Number of database schema not erased during the last Evolve execution.
+        /// </summary>
         public int NbSchemaToEraseSkipped { get; private set; }
+
+        /// <summary>
+        ///     Total elapsed time in milliseconds taken by the last Evolve execution.
+        /// </summary>
         public long TotalTimeElapsedInMs { get; private set; }
+
+        /// <summary>
+        ///     List of the applied migrations of the last Evolve execution.
+        /// </summary>
         public List<string> AppliedMigrations { get; private set; } = new();
+
+        /// <summary>
+        ///     Name of the database management system Evolve is connected to.
+        /// </summary>
         public DBMS DBMS { get; }
 
         #endregion
@@ -134,6 +165,9 @@ namespace Evolve
             }
         }
 
+        /// <summary>
+        ///     Validate Evolve configuration to detect if schema(s) could be recreated exactly.
+        /// </summary>
         public void Validate()
         {
             Command = CommandOptions.Validate;
@@ -190,6 +224,9 @@ namespace Evolve
             _log($"No validation errors found.");
         }
 
+        /// <summary>
+        ///     Returns details about migrations, what has been applied and what is pending.
+        /// </summary>
         public IEnumerable<MigrationMetadataUI> Info()
         {
             Command = CommandOptions.Info;
@@ -330,6 +367,9 @@ namespace Evolve
                            .OrderBy(x => x.Id);
         }
 
+        /// <summary>
+        ///     Migrates the database.
+        /// </summary>
         public void Migrate()
         {
             Command = CommandOptions.Migrate;
@@ -529,6 +569,9 @@ namespace Evolve
             return pendingMigrations;
         }
 
+        /// <summary>
+        ///     Corrects checksums of the applied migrations in the metadata table, with the ones from migration scripts.
+        /// </summary>
         public void Repair()
         {
             Command = CommandOptions.Repair;
@@ -549,6 +592,10 @@ namespace Evolve
             });
         }
 
+        /// <summary>
+        ///     Erases the database schemas listed in <see cref="Schemas"/>.
+        ///     Only works if Evolve has created the schema at first or found it empty.
+        /// </summary>
         public void Erase()
         {
             Command = CommandOptions.Erase;

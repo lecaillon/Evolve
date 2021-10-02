@@ -333,3 +333,6 @@ ASALocalRun/
 
 # Local History for Visual Studio
 .localhistory/
+
+# XML Evolve documentation
+src/Evolve/Evolve.xml
