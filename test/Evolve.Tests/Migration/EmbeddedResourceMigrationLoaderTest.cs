@@ -12,12 +12,14 @@ namespace Evolve.Tests.Migration
         public void Load_embedded_resource_migrations_with_embedded_file_loader_works()
         {
             // Arrange
-            var loader = new EmbeddedResourceMigrationLoader(
-                assemblies: new[] { typeof(TestContext).Assembly }, 
-                filters: new[] { "Evolve.Tests.Resources.Scripts_1", "Evolve.Tests.Resources.Scripts_2" });
+            var loader = new EmbeddedResourceMigrationLoader(new EvolveConfiguration
+            {
+                EmbeddedResourceAssemblies = new[] { typeof(TestContext).Assembly },
+                EmbeddedResourceFilters = new[] { "Evolve.Tests.Resources.Scripts_1", "Evolve.Tests.Resources.Scripts_2" }
+            });
 
             // Act
-            var scripts = loader.GetMigrations("V", "__", ".sql").ToList();
+            var scripts = loader.GetMigrations().ToList();
 
             // Assert
             Assert.Equal(8, scripts.Count);
@@ -43,8 +45,15 @@ namespace Evolve.Tests.Migration
         [Category(Test.Migration)]
         public void When_duplicate_version_found_with_embedded_file_Throws_EvolveException()
         {
-            var loader = new EmbeddedResourceMigrationLoader(assemblies: new[] { typeof(TestContext).Assembly }, filters: null);
-            Assert.Throws<EvolveConfigurationException>(() => loader.GetMigrations("V", "__", ".sql"));
+            // Arrange
+            var loader = new EmbeddedResourceMigrationLoader(new EvolveConfiguration
+            {
+                EmbeddedResourceAssemblies = new[] { typeof(TestContext).Assembly },
+                EmbeddedResourceFilters = null
+            });
+
+            // Assert
+            Assert.Throws<EvolveConfigurationException>(() => loader.GetMigrations());
         }
 
         [Fact]
@@ -52,12 +61,14 @@ namespace Evolve.Tests.Migration
         public void Load_repeatable_file_migrations_with_embedded_file_works()
         {
             // Arrange
-            var loader = new EmbeddedResourceMigrationLoader(
-                assemblies: new[] { typeof(TestContext).Assembly },
-                filters: new[] { "Evolve.Tests.Resources.Scripts_1", "Evolve.Tests.Resources.Scripts_2" });
+            var loader = new EmbeddedResourceMigrationLoader(new EvolveConfiguration
+            {
+                EmbeddedResourceAssemblies = new[] { typeof(TestContext).Assembly },
+                EmbeddedResourceFilters = new[] { "Evolve.Tests.Resources.Scripts_1", "Evolve.Tests.Resources.Scripts_2" }
+            });
 
             // Act
-            var scripts = loader.GetRepeatableMigrations("R", "__", ".sql").ToList();
+            var scripts = loader.GetRepeatableMigrations().ToList();
 
             // Assert
             Assert.Equal(4, scripts.Count);
@@ -79,9 +90,15 @@ namespace Evolve.Tests.Migration
         [Category(Test.Migration)]
         public void When_duplicate_name_found_with_embedded_file_Throws_EvolveException()
         {
-            var loader = new EmbeddedResourceMigrationLoader(
-                assemblies: new[] { typeof(TestContext).Assembly }, filters: new[] { "Evolve.Tests.Resources" });
-            Assert.Throws<EvolveConfigurationException>(() => loader.GetMigrations("R", "__", ".sql"));
+            // Arrange
+            var loader = new EmbeddedResourceMigrationLoader(new EvolveConfiguration
+            {
+                EmbeddedResourceAssemblies = new[] { typeof(TestContext).Assembly },
+                EmbeddedResourceFilters = new[] { "Evolve.Tests.Resources" }
+            });
+
+            // Assert
+            Assert.Throws<EvolveConfigurationException>(() => loader.GetMigrations());
         }
     }
 }

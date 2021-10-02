@@ -3,35 +3,45 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Evolve.Configuration;
 using Evolve.Metadata;
 using Evolve.Utilities;
 
 namespace Evolve.Migration
 {
+    /// <summary>
+    ///     A migration loader that searchs recursively in <see cref="IEvolveConfiguration.Locations"/> 
+    ///     for migration files with a specific file name structure.
+    /// </summary>
     public class FileMigrationLoader : IMigrationLoader
     {
         private const string InvalidMigrationScriptLocation = "Invalid migration script location: {0}.";
-        private readonly IEnumerable<string> _locations;
+        protected readonly IEvolveConfiguration _options;
 
         /// <summary>
         ///     Initialize a new instance of the <see cref="FileMigrationLoader"/> class.
         /// </summary>
-        /// <param name="locations"> List of paths to scan recursively for migrations. </param>
-        public FileMigrationLoader(IEnumerable<string> locations)
+        /// <param name="options"> Evolve configuration </param>
+        public FileMigrationLoader(in IEvolveConfiguration options)
         {
-            _locations = locations is null ? new List<string>() : Check.HasNoNulls(locations, nameof(locations));
+            _options = Check.NotNull(options, nameof(options));
         }
 
-        public virtual IEnumerable<MigrationScript> GetMigrations(string prefix, string separator, string suffix, Encoding? encoding = null)
+        /// <summary>
+        ///     Returns a list of migration scripts ordered by version.
+        /// </summary>
+        /// <returns> A list of migration script. </returns>
+        /// <exception cref="EvolveException"> Throws EvolveException when duplicate version found. </exception>
+        public virtual IEnumerable<MigrationScript> GetMigrations()
         {
-            Check.NotNullOrEmpty(prefix, nameof(prefix)); // V
-            Check.NotNullOrEmpty(separator, nameof(separator)); // __
-            Check.NotNullOrEmpty(suffix, nameof(suffix)); // .sql
-
             var migrations = new List<FileMigrationScript>();
-            encoding ??= Encoding.UTF8;
+            var encoding = _options.Encoding ?? Encoding.UTF8;
+            string prefix = Check.NotNullOrEmpty(_options.SqlMigrationPrefix, nameof(_options.SqlMigrationPrefix));
+            string suffix = Check.NotNullOrEmpty(_options.SqlMigrationSuffix, nameof(_options.SqlMigrationSuffix));
+            string separator = Check.NotNullOrEmpty(_options.SqlMigrationSeparator, nameof(_options.SqlMigrationSeparator));
+            var locations = _options.Locations is null ? new List<string>() : Check.HasNoNulls(_options.Locations, nameof(_options.Locations));
 
-            foreach (string location in _locations.Distinct(StringComparer.OrdinalIgnoreCase)) // Remove duplicate locations if any
+            foreach (string location in locations.Distinct(StringComparer.OrdinalIgnoreCase)) // Remove duplicate locations if any
             {
                 DirectoryInfo dirToScan = ResolveDirectory(location);
                 if (!dirToScan.Exists)
@@ -58,16 +68,21 @@ namespace Evolve.Migration
                              .ToList();
         }
 
-        public virtual IEnumerable<MigrationScript> GetRepeatableMigrations(string prefix, string separator, string suffix, Encoding? encoding = null)
+        /// <summary>
+        ///     Returns a list of repeatable migration scripts ordered by name.
+        /// </summary>
+        /// <returns> A list of repeatable migration script. </returns>
+        /// <exception cref="EvolveException"> Throws EvolveException when duplicate name found. </exception>
+        public virtual IEnumerable<MigrationScript> GetRepeatableMigrations()
         {
-            Check.NotNullOrEmpty(prefix, nameof(prefix)); // R
-            Check.NotNullOrEmpty(separator, nameof(separator)); // __
-            Check.NotNullOrEmpty(suffix, nameof(suffix)); // .sql
-
             var migrations = new List<FileMigrationScript>();
-            encoding ??= Encoding.UTF8;
+            var encoding = _options.Encoding ?? Encoding.UTF8;
+            string prefix = Check.NotNullOrEmpty(_options.SqlRepeatableMigrationPrefix, nameof(_options.SqlRepeatableMigrationPrefix));
+            string suffix = Check.NotNullOrEmpty(_options.SqlMigrationSuffix, nameof(_options.SqlMigrationSuffix));
+            string separator = Check.NotNullOrEmpty(_options.SqlMigrationSeparator, nameof(_options.SqlMigrationSeparator));
+            var locations = _options.Locations is null ? new List<string>() : Check.HasNoNulls(_options.Locations, nameof(_options.Locations));
 
-            foreach (string location in _locations.Distinct(StringComparer.OrdinalIgnoreCase)) // Remove duplicate locations if any
+            foreach (string location in locations.Distinct(StringComparer.OrdinalIgnoreCase)) // Remove duplicate locations if any
             {
                 DirectoryInfo dirToScan = ResolveDirectory(location);
                 if (!dirToScan.Exists)
