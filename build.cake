@@ -1,4 +1,5 @@
 #tool nuget:?package=ReportGenerator&version=4.8.6
+#tool nuget:?package=NuGet.CommandLine
 
 ///////////////////////////////////////////////////////////////////////////////
 // ARGUMENTS
