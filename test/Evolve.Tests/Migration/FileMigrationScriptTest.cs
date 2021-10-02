@@ -44,10 +44,10 @@ namespace Evolve.Tests.Migration
         public void ValidateChecksum_should_work_with_old_checksum_version()
         {
             // Arrange
-            FileMigrationLoader loader = new FileMigrationLoader(new[] { "Resources/LF_CRLF" });
+            var loader = new FileMigrationLoader(new EvolveConfiguration { Locations = new[] { "Resources/LF_CRLF" } });
 
             // Assert
-            foreach (FileMigrationScript script in loader.GetMigrations("V", "__", ".sql"))
+            foreach (FileMigrationScript script in loader.GetMigrations())
             {
                 script.ValidateChecksum(FallbackCheck(script.Path));
             }
@@ -108,7 +108,7 @@ namespace Evolve.Tests.Migration
         /// <summary>
         ///     Calculate the checksum with the pre v1.8.0 version.
         /// </summary>
-        private string FallbackCheck(string path)
+        private static string FallbackCheck(string path)
         {
             using var md5 = MD5.Create();
             using FileStream stream = File.OpenRead(path);

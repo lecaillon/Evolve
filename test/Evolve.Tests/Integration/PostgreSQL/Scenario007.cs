@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using Evolve.Configuration;
 using Evolve.Migration;
 using Evolve.Tests.Infrastructure;
 using Xunit;
@@ -17,27 +17,28 @@ namespace Evolve.Tests.Integration.PostgreSql
         [Category(Test.PostgreSQL, Test.Sceanario)]
         public void Scenario_use_a_custom_migration_loader_only_when_is_set()
         {
+            // Arrange
+            Evolve.SqlRepeatableMigrationPrefix = "V";
+
             // Assert default configuration
             Assert.True(Evolve.MigrationLoader is FileMigrationLoader);
-            Assert.Single(Evolve.MigrationLoader.GetMigrations("V", "__", ".sql", Encoding.UTF8));
-            Assert.Single(Evolve.MigrationLoader.GetRepeatableMigrations("V", "__", ".sql", Encoding.UTF8));
+            Assert.Single(Evolve.MigrationLoader.GetMigrations());
+            Assert.Single(Evolve.MigrationLoader.GetRepeatableMigrations());
 
             // Assert custom MigrationLoader returns no versioned migration
-            Evolve.MigrationLoader = new CustomMigrationLoader(new[] { ScenarioFolder });
+            Evolve.MigrationLoader = new CustomMigrationLoader(Evolve);
 
             Assert.True(Evolve.MigrationLoader is CustomMigrationLoader);
-            Assert.Empty(Evolve.MigrationLoader.GetMigrations("V", "__", ".sql", Encoding.UTF8));
-            Assert.Single(Evolve.MigrationLoader.GetRepeatableMigrations("V", "__", ".sql", Encoding.UTF8));
+            Assert.Empty(Evolve.MigrationLoader.GetMigrations());
+            Assert.Single(Evolve.MigrationLoader.GetRepeatableMigrations());
         }
     }
 
     internal class CustomMigrationLoader : FileMigrationLoader
     {
-        public CustomMigrationLoader(IEnumerable<string> locations) : base(locations)
-        {
-        }
+        public CustomMigrationLoader(IEvolveConfiguration options) : base(options) { }
 
-        public override IEnumerable<MigrationScript> GetMigrations(string prefix, string separator, string suffix, Encoding encoding = null)
+        public override IEnumerable<MigrationScript> GetMigrations()
         {
             return Enumerable.Empty<MigrationScript>();
         }

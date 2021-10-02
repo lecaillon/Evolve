@@ -41,11 +41,11 @@ namespace Evolve
         /// <summary>
         ///     Returns the value of the given dictionary key or default if not found.
         /// </summary>
-        public static TV? GetValue<TK, TV>(this IDictionary<TK, TV>? dict, TK key, TV defaultValue = default)
+        public static TV? GetValue<TK, TV>(this IDictionary<TK, TV>? dict, TK key, TV? defaultValue = default)
         {
             return dict is null 
                 ? defaultValue 
-                : dict.TryGetValue(key, out TV value) 
+                : dict.TryGetValue(key, out TV? value) 
                     ? value 
                     : defaultValue;
         }

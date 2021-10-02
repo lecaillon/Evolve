@@ -305,8 +305,8 @@ namespace Evolve.Tests
             try
             {
                 return evolve.MigrationLoader
-                    .GetMigrations("V", "__", evolve.SqlMigrationSuffix, Encoding.UTF8)
-                    .Union(evolve.MigrationLoader.GetRepeatableMigrations("R", "__", evolve.SqlMigrationSuffix, Encoding.UTF8))
+                    .GetMigrations()
+                    .Union(evolve.MigrationLoader.GetRepeatableMigrations())
                     .Count()
                     + evolve.FindSchemas().Where(x => x != "system_auth").Count() // Hack for Cassandra
                     + (evolve.StartVersion != MigrationVersion.MinVersion ? 1 : 0);
@@ -324,13 +324,13 @@ namespace Evolve.Tests
                 int migrationCount = evolve.SkipNextMigrations
                     ? 0
                     : evolve.MigrationLoader
-                            .GetMigrations("V", "__", evolve.SqlMigrationSuffix, Encoding.UTF8)
+                            .GetMigrations()
                             .SkipWhile(x => x.Version < evolve.StartVersion)
                             .TakeWhile(x => x.Version <= evolve.TargetVersion)
                             .Count();
 
                 return migrationCount
-                     + evolve.MigrationLoader.GetRepeatableMigrations("R", "__", evolve.SqlMigrationSuffix, Encoding.UTF8).Count();
+                     + evolve.MigrationLoader.GetRepeatableMigrations().Count();
             }
             catch
             {

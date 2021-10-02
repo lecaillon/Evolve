@@ -82,9 +82,8 @@ namespace Evolve
             get
             {
                 return _migrationLoader ?? (EmbeddedResourceAssemblies.Any()
-                    ? new EmbeddedResourceMigrationLoader(EmbeddedResourceAssemblies, EmbeddedResourceFilters)
-                    : new FileMigrationLoader(Locations));
-
+                    ? new EmbeddedResourceMigrationLoader(Options)
+                    : new FileMigrationLoader(Options));
             }
             set { _migrationLoader = value; }
         }
@@ -93,6 +92,7 @@ namespace Evolve
 
         #region Properties
 
+        public IEvolveConfiguration Options => this;
         public int NbMigration { get; private set; }
         public int NbReparation { get; private set; }
         public int NbSchemaErased { get; private set; }
@@ -150,8 +150,7 @@ namespace Evolve
             }
 
             // Each script of the applied migrations must be found and the checksum must be identical.
-            var scripts = MigrationLoader.GetMigrations(SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding).Union(
-                          MigrationLoader.GetRepeatableMigrations(SqlRepeatableMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding));
+            var scripts = MigrationLoader.GetMigrations().Union(MigrationLoader.GetRepeatableMigrations());
             foreach (var migration in GetAllExecutedMigration(metadata))
             {
                 var script = scripts.SingleOrDefault(x => x.Name == migration.Name);
@@ -254,7 +253,7 @@ namespace Evolve
 
             IEnumerable<MigrationMetadataUI> GetAllIgnoredMigrationUI()
             {
-                return MigrationLoader.GetMigrations(SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding)
+                return MigrationLoader.GetMigrations()
                                       .TakeWhile(x => x.Version < StartVersion)
                                       .Select(x => new MigrationMetadataUI(x.Version?.Label, x.Description, "Ignored"));
             }
@@ -273,7 +272,7 @@ namespace Evolve
 
                 var pendingMigrations = new List<MigrationMetadataUI>();
                 var appliedMigrations = metadata.GetAllAppliedMigration();
-                var scripts = MigrationLoader.GetMigrations(SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding)
+                var scripts = MigrationLoader.GetMigrations()
                                              .SkipWhile(x => x.Version < startVersion)
                                              .TakeWhile(x => x.Version <= lastAppliedVersion);
 
@@ -303,7 +302,7 @@ namespace Evolve
 
             IEnumerable<MigrationMetadataUI> GetAllOffTargetMigrationUI()
             {
-                return MigrationLoader.GetMigrations(SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding)
+                return MigrationLoader.GetMigrations()
                                       .SkipWhile(x => x.Version < TargetVersion)
                                       .Select(x => new MigrationMetadataUI(x.Version?.Label, x.Description, "Ignored"));
             }
@@ -363,8 +362,7 @@ namespace Evolve
                 }
             }
 
-            if (MigrationLoader.GetMigrations(SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding).Count() == 0
-             && MigrationLoader.GetRepeatableMigrations(SqlRepeatableMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding).Count() == 0)
+            if (MigrationLoader.GetMigrations().Count() == 0 && MigrationLoader.GetRepeatableMigrations().Count() == 0)
             {
                 _log("No migration script found.");
                 return;
@@ -443,7 +441,7 @@ namespace Evolve
 
         private IEnumerable<MigrationScript> GetAllPendingMigration(MigrationVersion startVersion, MigrationVersion lastAppliedVersion)
         {
-            return MigrationLoader.GetMigrations(SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding)
+            return MigrationLoader.GetMigrations()
                                   .SkipWhile(x => x.Version < startVersion)
                                   .SkipWhile(x => x.Version <= lastAppliedVersion)
                                   .TakeWhile(x => x.Version <= TargetVersion);
@@ -510,12 +508,12 @@ namespace Evolve
         {
             if (!metadata.IsEvolveInitialized())
             {
-                return MigrationLoader.GetRepeatableMigrations(SqlRepeatableMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding);
+                return MigrationLoader.GetRepeatableMigrations();
             }
 
             var pendingMigrations = new List<MigrationScript>();
             var appliedMigrations = metadata.GetAllAppliedRepeatableMigration();
-            var scripts = MigrationLoader.GetRepeatableMigrations(SqlRepeatableMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding);
+            var scripts = MigrationLoader.GetRepeatableMigrations();
             
             foreach (var script in scripts)
             {
@@ -875,7 +873,7 @@ namespace Evolve
 
             var lastAppliedVersion = metadata.FindLastAppliedVersion();
             var startVersion = metadata.FindStartVersion();
-            var scripts = MigrationLoader.GetMigrations(SqlMigrationPrefix, SqlMigrationSeparator, SqlMigrationSuffix, Encoding)
+            var scripts = MigrationLoader.GetMigrations()
                                          .SkipWhile(x => x.Version < startVersion)
                                          .TakeWhile(x => x.Version <= lastAppliedVersion); // Keep scripts between first and last applied migration
 

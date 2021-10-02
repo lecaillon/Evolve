@@ -3,42 +3,47 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Evolve.Configuration;
 using Evolve.Metadata;
 using Evolve.Utilities;
 
 namespace Evolve.Migration
 {
+    /// <summary>
+    ///     A migration loader that searchs migrations embedded in assemblies. 
+    /// </summary>
     public class EmbeddedResourceMigrationLoader : IMigrationLoader
     {
         private const string InvalidEmbeddedResourceFormat = "Embedded resource {0} has an invalid format.";
-
-        private readonly IEnumerable<Assembly> _assemblies;
-        private readonly IEnumerable<string> _filters;
+        protected readonly IEvolveConfiguration _options;
 
         /// <summary>
-        ///     Initialize a new instance of the <see cref="EmbeddedResourceMigrationLoader"/> class.
+        ///     Initialize a new instance of the <see cref="FileMigrationLoader"/> class.
         /// </summary>
-        /// <param name="assemblies"> List of assembly to scan in order to load embedded migration scripts. </param>
-        /// <param name="filters"> Filters used to exclude embedded migration scripts that do not start with one of those. </param>
-        public EmbeddedResourceMigrationLoader(IEnumerable<Assembly> assemblies, IEnumerable<string> filters)
+        /// <param name="options"> Evolve configuration </param>
+        public EmbeddedResourceMigrationLoader(in IEvolveConfiguration options)
         {
-            _assemblies = assemblies is null ? new List<Assembly>() : Check.HasNoNulls(assemblies, nameof(assemblies));
-            _filters = filters is null ? new List<string>() : Check.HasNoNulls(filters, nameof(filters));
+            _options = Check.NotNull(options, nameof(options));
         }
-
-        public virtual IEnumerable<MigrationScript> GetMigrations(string prefix, string separator, string suffix, Encoding? encoding = null)
+        /// <summary>
+        ///     Returns a list of migration scripts ordered by version.
+        /// </summary>
+        /// <returns> A list of migration script. </returns>
+        /// <exception cref="EvolveException"> Throws EvolveException when duplicate version found. </exception>
+        public virtual IEnumerable<MigrationScript> GetMigrations()
         {
-            Check.NotNullOrEmpty(prefix, nameof(prefix)); // V
-            Check.NotNullOrEmpty(separator, nameof(separator)); // __
-            Check.NotNullOrEmpty(suffix, nameof(suffix)); // .sql
-
             var migrations = new List<EmbeddedResourceMigrationScript>();
-            encoding ??= Encoding.UTF8;
+            var encoding = _options.Encoding ?? Encoding.UTF8;
+            string prefix = Check.NotNullOrEmpty(_options.SqlMigrationPrefix, nameof(_options.SqlMigrationPrefix));
+            string suffix = Check.NotNullOrEmpty(_options.SqlMigrationSuffix, nameof(_options.SqlMigrationSuffix));
+            string separator = Check.NotNullOrEmpty(_options.SqlMigrationSeparator, nameof(_options.SqlMigrationSeparator));
+            var assemblies = _options.EmbeddedResourceAssemblies is null ? new List<Assembly>() : Check.HasNoNulls(_options.EmbeddedResourceAssemblies, nameof(_options.EmbeddedResourceAssemblies));
+            var filters = _options.EmbeddedResourceFilters is null ? new List<string>() : Check.HasNoNulls(_options.EmbeddedResourceFilters, nameof(_options.EmbeddedResourceFilters));
 
-            foreach (var assembly in _assemblies)
+            foreach (var assembly in assemblies)
             {
                 assembly.GetManifestResourceNames()
-                        .Where(x => _filters.Any() ? _filters.Any(f => x.StartsWith(f, StringComparison.OrdinalIgnoreCase)) : true)
+                        .Where(x => !filters.Any() || filters.Any(f => x.StartsWith(f, StringComparison.OrdinalIgnoreCase)))
                         .Where(x => x.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
                         .Where(x => GetFileName(x).StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
                         .Select(x =>
@@ -62,19 +67,25 @@ namespace Evolve.Migration
                              .ToList();
         }
 
-        public virtual IEnumerable<MigrationScript> GetRepeatableMigrations(string prefix, string separator, string suffix, Encoding? encoding = null)
+        /// <summary>
+        ///     Returns a list of repeatable migration scripts ordered by name.
+        /// </summary>
+        /// <returns> A list of repeatable migration script. </returns>
+        /// <exception cref="EvolveException"> Throws EvolveException when duplicate name found. </exception>
+        public virtual IEnumerable<MigrationScript> GetRepeatableMigrations()
         {
-            Check.NotNullOrEmpty(prefix, nameof(prefix)); // R
-            Check.NotNullOrEmpty(separator, nameof(separator)); // __
-            Check.NotNullOrEmpty(suffix, nameof(suffix)); // .sql
-
             var migrations = new List<EmbeddedResourceMigrationScript>();
-            encoding ??= Encoding.UTF8;
+            var encoding = _options.Encoding ?? Encoding.UTF8;
+            string prefix = Check.NotNullOrEmpty(_options.SqlRepeatableMigrationPrefix, nameof(_options.SqlRepeatableMigrationPrefix));
+            string suffix = Check.NotNullOrEmpty(_options.SqlMigrationSuffix, nameof(_options.SqlMigrationSuffix));
+            string separator = Check.NotNullOrEmpty(_options.SqlMigrationSeparator, nameof(_options.SqlMigrationSeparator));
+            var assemblies = _options.EmbeddedResourceAssemblies is null ? new List<Assembly>() : Check.HasNoNulls(_options.EmbeddedResourceAssemblies, nameof(_options.EmbeddedResourceAssemblies));
+            var filters = _options.EmbeddedResourceFilters is null ? new List<string>() : Check.HasNoNulls(_options.EmbeddedResourceFilters, nameof(_options.EmbeddedResourceFilters));
 
-            foreach (var assembly in _assemblies)
+            foreach (var assembly in assemblies)
             {
                 assembly.GetManifestResourceNames()
-                        .Where(x => _filters.Any() ? _filters.Any(f => x.StartsWith(f, StringComparison.OrdinalIgnoreCase)) : true)
+                        .Where(x => !filters.Any() || filters.Any(f => x.StartsWith(f, StringComparison.OrdinalIgnoreCase)))
                         .Where(x => x.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
                         .Where(x => GetFileName(x).StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
                         .Select(x =>

@@ -12,16 +12,16 @@ namespace Evolve.Tests.Migration
         public void Load_file_migrations_with_file_loader_works()
         {
             // Arrange
-            var loader = new FileMigrationLoader(new[]
+            var loader = new FileMigrationLoader(new EvolveConfiguration { Locations = new[]
             {
                 TestContext.Scripts1,
                 TestContext.Scripts2,
                 TestContext.Scripts1,
                 TestContext.Scripts2 + "/PSG"
-            });
+            }});
 
             // Act
-            var scripts = loader.GetMigrations("V", "__", ".sql").ToList();
+            var scripts = loader.GetMigrations().ToList();
 
             // Assert
             Assert.Equal(8, scripts.Count);
@@ -47,8 +47,8 @@ namespace Evolve.Tests.Migration
         [Category(Test.Migration)]
         public void When_duplicate_version_found_with_file_loader_Throws_EvolveException()
         {
-            var loader = new FileMigrationLoader(new[] { TestContext.ResourcesFolder });
-            Assert.Throws<EvolveConfigurationException>(() => loader.GetMigrations("V", "__", ".sql"));
+            var loader = new FileMigrationLoader(new EvolveConfiguration { Locations = new[] { TestContext.ResourcesFolder } });
+            Assert.Throws<EvolveConfigurationException>(() => loader.GetMigrations());
         }
 
         [Fact]
@@ -56,16 +56,19 @@ namespace Evolve.Tests.Migration
         public void Load_repeatable_file_migrations_with_file_loader_works()
         {
             // Arrange
-            var loader = new FileMigrationLoader(new[]
+            var loader = new FileMigrationLoader(new EvolveConfiguration
+            {
+                Locations = new[]
 {
                 TestContext.Scripts1,
                 TestContext.Scripts2,
                 TestContext.Scripts1,
                 TestContext.Scripts2 + "/PSG"
+            }
             });
 
             // Act
-            var scripts = loader.GetRepeatableMigrations("R", "__", ".sql").ToList();
+            var scripts = loader.GetRepeatableMigrations().ToList();
 
             // Assert
             Assert.Equal(4, scripts.Count);
@@ -87,8 +90,8 @@ namespace Evolve.Tests.Migration
         [Category(Test.Migration)]
         public void When_duplicate_name_found_with_file_loader_Throws_EvolveException()
         {
-            var loader = new FileMigrationLoader(new[] { TestContext.ResourcesFolder });
-            Assert.Throws<EvolveConfigurationException>(() => loader.GetMigrations("R", "__", ".sql"));
+            var loader = new FileMigrationLoader(new EvolveConfiguration { Locations = new[] { TestContext.ResourcesFolder } });
+            Assert.Throws<EvolveConfigurationException>(() => loader.GetMigrations());
         }
     }
 }
