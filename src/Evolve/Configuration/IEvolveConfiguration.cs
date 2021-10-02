@@ -21,7 +21,7 @@ namespace Evolve.Configuration
     public interface IEvolveConfiguration
     {
         /// <summary>
-        ///     Gets or sets the paths (separated by semicolon) to scan recursively for migrations. (default: Sql_Scripts)
+        ///     Defines the paths (separated by semicolon) to scan recursively for migrations. (default: Sql_Scripts)
         /// </summary>
         IEnumerable<string> Locations { get; }
 
@@ -79,60 +79,60 @@ namespace Evolve.Configuration
         bool MustEraseOnValidationError { get; }
 
         /// <summary>
-        ///     Gets or sets the encoding of Sql migrations. (default: UTF-8)
+        ///     Defines the encoding of Sql migrations. (default: UTF-8)
         /// </summary>
         Encoding Encoding { get; }
 
         /// <summary>
-        ///     Gets or sets the file name prefix for sql migrations. (default: V)
+        ///     Defines the file name prefix for sql migrations. (default: V)
         /// </summary>
         string SqlMigrationPrefix { get; }
 
         /// <summary>
-        ///     Gets or sets the file name prefix for sql repeatable migrations. (default: R)
+        ///     Defines the file name prefix for sql repeatable migrations. (default: R)
         /// </summary>
         string SqlRepeatableMigrationPrefix { get; }
 
         /// <summary>
-        ///     Gets or sets the file name separator for sql migrations. (default: __)
+        ///     Defines the file name separator for sql migrations. (default: __)
         /// </summary>
         string SqlMigrationSeparator { get; }
 
         /// <summary>
-        ///     Gets or sets the file name suffix for sql migrations. (default: .sql)
+        ///     Defines the file name suffix for sql migrations. (default: .sql)
         /// </summary>
         string SqlMigrationSuffix { get; }
 
         /// <summary>
-        ///     Gets or sets the semicolon separated list of schema managed by Evolve. 
+        ///     Defines the semicolon separated list of schema managed by Evolve. 
         ///     (default: If empty, the default schema for the datasource connection.)
         /// </summary>
         IEnumerable<string> Schemas { get; }
 
         /// <summary>
-        ///     Gets or sets the schema containing the metadata table. 
+        ///     Defines the schema containing the metadata table. 
         ///     (default: If empty, the first schema defined in <see cref="Schemas"/> or the one of the datasource connection.)
         /// </summary>
         string MetadataTableSchema { get; }
 
         /// <summary>
-        ///     Gets or sets the metadata table name. (default: changelog)
+        ///     Defines the metadata table name. (default: changelog)
         /// </summary>
         string MetadataTableName { get; }
 
         /// <summary>
-        ///     Gets or sets the prefix of the placeholders. (default: ${)
+        ///     Defines the prefix of the placeholders. (default: ${)
         /// </summary>
         string PlaceholderPrefix { get; }
 
         /// <summary>
-        ///     Gets or sets the suffix of the placeholders. (default: })
+        ///     Defines the suffix of the placeholders. (default: })
         /// </summary>
         string PlaceholderSuffix { get; }
 
         /// <summary>
         ///     <para>
-        ///         Gets or sets the list of supplied placeholders/values defined in the configuration file.
+        ///         List of supplied placeholders/values defined in the configuration file.
         ///     </para>
         ///     <para>
         ///         Placeholders are strings prefixed by: "Evolve.Placeholder." to replace in sql migrations.
@@ -145,12 +145,12 @@ namespace Evolve.Configuration
         Dictionary<string, string> Placeholders { get; }
 
         /// <summary>
-        ///     Gets or sets the target version to reach. If null or empty, it evolves all the way up.
+        ///     Target version to reach. If null or empty, it evolves all the way up.
         /// </summary>
         MigrationVersion TargetVersion { get; }
 
         /// <summary>
-        ///     Gets or sets the version used as a starting point for migrations. If null or empty it returns 0.
+        ///     Version used as a starting point for migrations. If null or empty it returns 0.
         /// </summary>
         MigrationVersion StartVersion { get; }
 
@@ -167,7 +167,7 @@ namespace Evolve.Configuration
         bool OutOfOrder { get; }
 
         /// <summary>
-        ///     Gets or sets the wait time before terminating the attempt to execute 
+        ///    Defines the wait time before terminating the attempt to execute 
         ///     a migration and generating an error. (The default is 30 seconds.)
         /// </summary>
         int? CommandTimeout { get; }
@@ -190,7 +190,7 @@ namespace Evolve.Configuration
 
         /// <summary>
         ///     <para>
-        ///         Gets or sets the Evolve transaction scope. (default: CommitEach)
+        ///         Defines the Evolve transaction scope. (default: CommitEach)
         ///     </para>
         ///     
         ///     <para>
@@ -208,7 +208,8 @@ namespace Evolve.Configuration
         bool SkipNextMigrations { get; }
 
         /// <summary>
-        ///     A custom <see cref="IMigrationLoader"/> that replaces the built-in ones.
+        ///     A custom <see cref="IMigrationLoader"/> used to load all migrations (applied, pending, ignored...) 
+        ///     that replaces the built-in ones (<see cref="FileMigrationLoader"/> <see cref="EmbeddedResourceMigrationLoader"/>)
         /// </summary>
         IMigrationLoader MigrationLoader { get; }
     }
