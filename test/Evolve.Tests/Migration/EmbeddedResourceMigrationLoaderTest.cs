@@ -15,7 +15,7 @@ namespace EvolveDb.Tests.Migration
             var loader = new EmbeddedResourceMigrationLoader(new EvolveConfiguration
             {
                 EmbeddedResourceAssemblies = new[] { typeof(TestContext).Assembly },
-                EmbeddedResourceFilters = new[] { "Evolve.Tests.Resources.Scripts_1", "Evolve.Tests.Resources.Scripts_2" }
+                EmbeddedResourceFilters = new[] { "EvolveDb.Tests.Resources.Scripts_1", "EvolveDb.Tests.Resources.Scripts_2" }
             });
 
             // Act
@@ -64,7 +64,7 @@ namespace EvolveDb.Tests.Migration
             var loader = new EmbeddedResourceMigrationLoader(new EvolveConfiguration
             {
                 EmbeddedResourceAssemblies = new[] { typeof(TestContext).Assembly },
-                EmbeddedResourceFilters = new[] { "Evolve.Tests.Resources.Scripts_1", "Evolve.Tests.Resources.Scripts_2" }
+                EmbeddedResourceFilters = new[] { "EvolveDb.Tests.Resources.Scripts_1", "EvolveDb.Tests.Resources.Scripts_2" }
             });
 
             // Act
