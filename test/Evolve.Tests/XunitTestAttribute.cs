@@ -23,7 +23,7 @@ namespace EvolveDb.Tests
         Sceanario
     }
 
-    [TraitDiscoverer("Evolve.Tests.CategoryDiscover", "Evolve.Tests")]
+    [TraitDiscoverer("EvolveDb.Tests.CategoryDiscover", "Evolve.Tests")]
     [AttributeUsage(AttributeTargets.Method)]
     public sealed class CategoryAttribute : Attribute, ITraitAttribute
     {
