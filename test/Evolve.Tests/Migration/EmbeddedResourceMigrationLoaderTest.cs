@@ -94,7 +94,7 @@ namespace EvolveDb.Tests.Migration
             var loader = new EmbeddedResourceMigrationLoader(new EvolveConfiguration
             {
                 EmbeddedResourceAssemblies = new[] { typeof(TestContext).Assembly },
-                EmbeddedResourceFilters = new[] { "Evolve.Tests.Resources" }
+                EmbeddedResourceFilters = new[] { "EvolveDb.Tests.Resources" }
             });
 
             // Assert
