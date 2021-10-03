@@ -1,7 +1,7 @@
 ﻿using System;
-using Evolve.Metadata;
+using EvolveDb.Metadata;
 
-namespace Evolve.Migration
+namespace EvolveDb.Migration
 {
     internal class MigrationMetadata : MigrationBase
     {

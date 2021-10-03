@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
-using Evolve.Metadata;
-using Evolve.Migration;
+using EvolveDb.Metadata;
+using EvolveDb.Migration;
 using Xunit;
-using static Evolve.Tests.TestContext;
-using static Evolve.Tests.TestUtil;
+using static EvolveDb.Tests.TestContext;
+using static EvolveDb.Tests.TestUtil;
 
-namespace Evolve.Tests.Migration
+namespace EvolveDb.Tests.Migration
 {
     public class MigrationBaseTest
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace Evolve.Tests.Infrastructure
+namespace EvolveDb.Tests.Infrastructure
 {
     public class CockroachDBFixture : DbContainerFixture<CockroachDBContainer>, IDisposable
     {

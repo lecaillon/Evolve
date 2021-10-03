@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Evolve.Metadata;
-using Evolve.Migration;
+using EvolveDb.Metadata;
+using EvolveDb.Migration;
 
-namespace Evolve.Dialect.PostgreSQL
+namespace EvolveDb.Dialect.PostgreSQL
 {
     internal class PostgreSQLMetadataTable : MetadataTable
     {

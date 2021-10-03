@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Evolve.Connection;
+using EvolveDb.Connection;
 
-namespace Evolve.Dialect.SQLite
+namespace EvolveDb.Dialect.SQLite
 {
     internal class SQLiteSchema : Schema
     {

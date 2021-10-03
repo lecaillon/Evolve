@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Linq;
-using Evolve.Connection;
+using EvolveDb.Connection;
 
-namespace Evolve.Dialect.MySQL
+namespace EvolveDb.Dialect.MySQL
 {
     internal class MySQLSchema : Schema
     {

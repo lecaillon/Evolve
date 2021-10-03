@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
-using Evolve.Migration;
+using EvolveDb.Migration;
 
-namespace Evolve.Configuration
+namespace EvolveDb.Configuration
 {
     /// <summary>
     ///     <para>

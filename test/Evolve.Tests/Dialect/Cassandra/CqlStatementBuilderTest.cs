@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Evolve.Dialect.Cassandra;
+using EvolveDb.Dialect.Cassandra;
 using Xunit;
 
-namespace Evolve.Tests.Dialect.Cassandra
+namespace EvolveDb.Tests.Dialect.Cassandra
 {
     public sealed class CqlStatementBuilderTest
     {

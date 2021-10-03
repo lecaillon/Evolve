@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Evolve.Migration
+namespace EvolveDb.Migration
 {
     public class MigrationMetadataUI
     {

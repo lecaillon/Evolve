@@ -1,9 +1,9 @@
 ﻿using System;
-using Evolve.Connection;
-using Evolve.Metadata;
-using Evolve.Utilities;
+using EvolveDb.Connection;
+using EvolveDb.Metadata;
+using EvolveDb.Utilities;
 
-namespace Evolve.Dialect
+namespace EvolveDb.Dialect
 {
     internal abstract class DatabaseHelper : IDisposable
     {

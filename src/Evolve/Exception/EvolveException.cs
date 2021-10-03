@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Evolve
+namespace EvolveDb
 {
     [SuppressMessage("Design", "CA1032: Implement standard exception constructors")]
     [SuppressMessage("Usage", "CA2237: Mark ISerializable types with serializable")]

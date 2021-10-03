@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Evolve
+namespace EvolveDb
 {
     [SuppressMessage("Design", "CA1032: Implement standard exception constructors")]
     public class EvolveConfigurationException : EvolveException

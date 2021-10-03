@@ -1,7 +1,7 @@
-﻿using Evolve.Metadata;
-using Evolve.Migration;
+﻿using EvolveDb.Metadata;
+using EvolveDb.Migration;
 
-namespace Evolve.Tests
+namespace EvolveDb.Tests
 {
     internal class FakeMigrationScript : MigrationScript
     {

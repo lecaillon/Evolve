@@ -1,4 +1,4 @@
-﻿namespace Evolve.Metadata
+﻿namespace EvolveDb.Metadata
 {
     public enum MetadataType
     {

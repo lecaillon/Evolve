@@ -1,8 +1,8 @@
 ﻿using System;
-using Evolve.Metadata;
-using Evolve.Utilities;
+using EvolveDb.Metadata;
+using EvolveDb.Utilities;
 
-namespace Evolve.Migration
+namespace EvolveDb.Migration
 {
     public abstract class MigrationBase : IComparable<MigrationBase>, IComparable
     {

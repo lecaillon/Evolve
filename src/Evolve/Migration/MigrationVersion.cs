@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Evolve.Utilities;
+using EvolveDb.Utilities;
 
-namespace Evolve.Migration
+namespace EvolveDb.Migration
 {
     public sealed class MigrationVersion : IComparable<MigrationVersion>, IComparable
     {

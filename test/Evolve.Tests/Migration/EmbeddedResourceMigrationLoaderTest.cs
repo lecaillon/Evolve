@@ -1,9 +1,9 @@
 ﻿using System.Linq;
-using Evolve.Metadata;
-using Evolve.Migration;
+using EvolveDb.Metadata;
+using EvolveDb.Migration;
 using Xunit;
 
-namespace Evolve.Tests.Migration
+namespace EvolveDb.Tests.Migration
 {
     public class EmbeddedResourceMigrationLoaderTest
     {

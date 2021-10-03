@@ -1,7 +1,7 @@
 ﻿using System.Data.Common;
 using Npgsql;
 
-namespace Evolve.Tests.Infrastructure
+namespace EvolveDb.Tests.Infrastructure
 {
     public class PostgreSqlContainer : IDbContainer
     {

@@ -2,10 +2,10 @@
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
-using Evolve.Metadata;
-using Evolve.Utilities;
+using EvolveDb.Metadata;
+using EvolveDb.Utilities;
 
-namespace Evolve.Migration
+namespace EvolveDb.Migration
 {
     /// <summary>
     ///     Provide a common abstraction for versioned and repeatable migrations.

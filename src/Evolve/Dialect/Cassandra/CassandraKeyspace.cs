@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Evolve.Connection;
+using EvolveDb.Connection;
 using SimpleJSON;
 
-namespace Evolve.Dialect.Cassandra
+namespace EvolveDb.Dialect.Cassandra
 {
     internal sealed class CassandraKeyspace : Schema
     {

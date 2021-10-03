@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Evolve.Metadata;
-using Evolve.Migration;
+using EvolveDb.Metadata;
+using EvolveDb.Migration;
 
-namespace Evolve.Dialect.CockroachDB
+namespace EvolveDb.Dialect.CockroachDB
 {
     internal class CockroachDBMetadataTable : MetadataTable
     {

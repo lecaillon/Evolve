@@ -2,11 +2,11 @@
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
-using Evolve.Tests.Infrastructure;
+using EvolveDb.Tests.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Evolve.Tests.Cli
+namespace EvolveDb.Tests.Cli
 {
     [Collection("Database collection")]
     public class CliTest

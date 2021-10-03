@@ -1,7 +1,7 @@
 ﻿using System.Linq;
-using Evolve.Connection;
+using EvolveDb.Connection;
 
-namespace Evolve.Dialect.CockroachDB
+namespace EvolveDb.Dialect.CockroachDB
 {
     internal class CockroachDBDatabase : Schema
     {

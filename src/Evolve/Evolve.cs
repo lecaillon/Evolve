@@ -9,15 +9,15 @@ using System.Text;
 using System.Threading;
 using System.Transactions;
 using ConsoleTables;
-using Evolve.Configuration;
-using Evolve.Connection;
-using Evolve.Dialect;
-using Evolve.Metadata;
-using Evolve.Migration;
-using Evolve.Utilities;
+using EvolveDb.Configuration;
+using EvolveDb.Connection;
+using EvolveDb.Dialect;
+using EvolveDb.Metadata;
+using EvolveDb.Migration;
+using EvolveDb.Utilities;
 
 [assembly: InternalsVisibleTo("Evolve.Tests")]
-namespace Evolve
+namespace EvolveDb
 {
     public class Evolve : IEvolveConfiguration
     {

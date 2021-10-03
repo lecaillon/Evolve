@@ -2,14 +2,14 @@
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.IO;
-using Evolve.Connection;
-using Evolve.Dialect;
-using Evolve.Metadata;
-using Evolve.Tests.Infrastructure;
+using EvolveDb.Connection;
+using EvolveDb.Dialect;
+using EvolveDb.Metadata;
+using EvolveDb.Tests.Infrastructure;
 using Xunit.Abstractions;
-using static Evolve.Tests.TestContext;
+using static EvolveDb.Tests.TestContext;
 
-namespace Evolve.Tests.Integration
+namespace EvolveDb.Tests.Integration
 {
     public abstract class Scenario<T> where T : IDbContainerFixture
     {

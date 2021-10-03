@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Evolve.Connection;
+using EvolveDb.Connection;
 
-namespace Evolve.Dialect.SQLServer
+namespace EvolveDb.Dialect.SQLServer
 {
     internal class SQLServerSchema : Schema
     {

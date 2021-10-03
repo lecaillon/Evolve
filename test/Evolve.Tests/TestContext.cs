@@ -1,12 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
-using Evolve.Metadata;
-using Evolve.Migration;
-using Evolve.Tests.Infrastructure;
+using EvolveDb.Metadata;
+using EvolveDb.Migration;
+using EvolveDb.Tests.Infrastructure;
 using Xunit;
 
-namespace Evolve.Tests
+namespace EvolveDb.Tests
 {
     internal static class TestContext
     {

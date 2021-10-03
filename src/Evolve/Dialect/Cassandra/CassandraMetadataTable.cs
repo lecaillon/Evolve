@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Evolve.Metadata;
-using Evolve.Migration;
+using EvolveDb.Metadata;
+using EvolveDb.Migration;
 
-namespace Evolve.Dialect.Cassandra
+namespace EvolveDb.Dialect.Cassandra
 {
     internal sealed class CassandraMetadataTable : MetadataTable
     {

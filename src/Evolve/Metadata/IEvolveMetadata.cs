@@ -1,8 +1,8 @@
-﻿using Evolve.Migration;
+﻿using EvolveDb.Migration;
 using System;
 using System.Collections.Generic;
 
-namespace Evolve.Metadata
+namespace EvolveDb.Metadata
 {
     internal interface IEvolveMetadata
     {

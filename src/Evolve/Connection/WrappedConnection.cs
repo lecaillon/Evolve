@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Data;
 using System.Data.Common;
-using Evolve.Utilities;
+using EvolveDb.Utilities;
 
-namespace Evolve.Connection
+namespace EvolveDb.Connection
 {
     /// <summary>
     ///     A wrapper of <see cref="IDbConnection"/> used to managed all the queries and transactions to the database to evolve.

@@ -1,7 +1,7 @@
-﻿using Evolve.Dialect;
+﻿using EvolveDb.Dialect;
 using Xunit;
 
-namespace Evolve.Tests.Integration.Sqlite
+namespace EvolveDb.Tests.Integration.Sqlite
 {
     public class DatabaseTest
     {

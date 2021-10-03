@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Evolve.Tests.Infrastructure
+namespace EvolveDb.Tests.Infrastructure
 {
     internal class DockerContainerBuilderOptions
     {

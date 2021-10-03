@@ -1,12 +1,12 @@
 ﻿using System.Data.SqlClient;
-using Evolve.Connection;
-using Evolve.Dialect;
-using Evolve.Dialect.SQLServer;
-using Evolve.Tests.Infrastructure;
+using EvolveDb.Connection;
+using EvolveDb.Dialect;
+using EvolveDb.Dialect.SQLServer;
+using EvolveDb.Tests.Infrastructure;
 using Xunit;
-using static Evolve.Tests.TestContext;
+using static EvolveDb.Tests.TestContext;
 
-namespace Evolve.Tests.Integration.SQLServer
+namespace EvolveDb.Tests.Integration.SQLServer
 {
     [Collection("SQLServer collection")]
     public class DialectTest

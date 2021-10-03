@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Docker.DotNet;
 using Docker.DotNet.Models;
 
-namespace Evolve.Tests.Infrastructure
+namespace EvolveDb.Tests.Infrastructure
 {
     internal class DockerContainerBuilder : IDisposable
     {
         private readonly DockerClient _client;
         private bool _disposedValue = false;
 
-        [SuppressMessage("Qualité du code", "IDE0067: Supprimer les objets avant la mise hors de portée")]
         public DockerContainerBuilder(DockerContainerBuilderOptions setupOptions)
         {
             FromImage = setupOptions.FromImage;

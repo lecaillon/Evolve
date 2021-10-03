@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using Evolve.Tests.Infrastructure;
+using EvolveDb.Tests.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
-using static Evolve.Tests.TestContext;
+using static EvolveDb.Tests.TestContext;
 
-namespace Evolve.Tests.Integration.Cassandra
+namespace EvolveDb.Tests.Integration.Cassandra
 {
     [Collection("Cassandra collection")]
     public class MigrationTest

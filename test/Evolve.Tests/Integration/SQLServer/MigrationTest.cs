@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Data.SqlClient;
-using Evolve.Migration;
-using Evolve.Tests.Infrastructure;
+using EvolveDb.Migration;
+using EvolveDb.Tests.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
-using static Evolve.Tests.TestContext;
+using static EvolveDb.Tests.TestContext;
 
-namespace Evolve.Tests.Integration.SQLServer
+namespace EvolveDb.Tests.Integration.SQLServer
 {
     [Collection("SQLServer collection")]
     public class MigrationTest

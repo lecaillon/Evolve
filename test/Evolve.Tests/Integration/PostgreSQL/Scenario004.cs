@@ -1,10 +1,10 @@
 ﻿using System.Linq;
-using Evolve.Configuration;
-using Evolve.Tests.Infrastructure;
+using EvolveDb.Configuration;
+using EvolveDb.Tests.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Evolve.Tests.Integration.PostgreSql
+namespace EvolveDb.Tests.Integration.PostgreSql
 {
     [Collection("PostgreSql collection")]
     public class Scenario004 : Scenario<PostgreSqlFixture>

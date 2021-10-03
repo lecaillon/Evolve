@@ -5,15 +5,15 @@ using System.Data.Common;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using Evolve.Connection;
-using Evolve.Dialect;
-using Evolve.Dialect.Cassandra;
-using Evolve.Metadata;
-using Evolve.Migration;
+using EvolveDb.Connection;
+using EvolveDb.Dialect;
+using EvolveDb.Dialect.Cassandra;
+using EvolveDb.Metadata;
+using EvolveDb.Migration;
 using Xunit;
-using static Evolve.Tests.TestContext;
+using static EvolveDb.Tests.TestContext;
 
-namespace Evolve.Tests
+namespace EvolveDb.Tests
 {
     internal static class AssertHelper
     {

@@ -1,10 +1,10 @@
-﻿using Evolve.Connection;
-using Evolve.Dialect;
-using Evolve.Dialect.Cassandra;
-using Evolve.Tests.Infrastructure;
+﻿using EvolveDb.Connection;
+using EvolveDb.Dialect;
+using EvolveDb.Dialect.Cassandra;
+using EvolveDb.Tests.Infrastructure;
 using Xunit;
 
-namespace Evolve.Tests.Integration.Cassandra
+namespace EvolveDb.Tests.Integration.Cassandra
 {
     public static class DialectTest
     {

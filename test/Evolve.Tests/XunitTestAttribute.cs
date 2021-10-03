@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 
-namespace Evolve.Tests
+namespace EvolveDb.Tests
 {
     public enum Test
     {

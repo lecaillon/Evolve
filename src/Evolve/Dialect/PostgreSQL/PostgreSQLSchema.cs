@@ -1,7 +1,7 @@
 ﻿using System.Linq;
-using Evolve.Connection;
+using EvolveDb.Connection;
 
-namespace Evolve.Dialect.PostgreSQL
+namespace EvolveDb.Dialect.PostgreSQL
 {
     internal class PostgreSQLSchema : Schema
     {

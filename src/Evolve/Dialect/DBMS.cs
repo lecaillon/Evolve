@@ -1,4 +1,4 @@
-﻿namespace Evolve.Dialect
+﻿namespace EvolveDb.Dialect
 {
     public enum DBMS
     {

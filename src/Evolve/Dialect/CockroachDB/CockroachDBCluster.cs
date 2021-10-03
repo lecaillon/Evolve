@@ -1,7 +1,7 @@
-using Evolve.Connection;
-using Evolve.Metadata;
+using EvolveDb.Connection;
+using EvolveDb.Metadata;
 
-namespace Evolve.Dialect.CockroachDB
+namespace EvolveDb.Dialect.CockroachDB
 {
     internal class CockroachDBCluster : DatabaseHelper
     {
