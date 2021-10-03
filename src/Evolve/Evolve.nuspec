@@ -21,7 +21,7 @@ Every time you build your project, it will automatically ensure that your databa
 - #228 Add new command Validate
 
 ## Breaking changes
-- #245 Rename namespace Evolve to EvolveDb to avoid name collision when using Evolve class</releaseNotes>
+- #245 Rename the namespace Evolve to `EvolveDb` to avoid name collision when using the class Evolve</releaseNotes>
     <tags>evolve flyway sql database migration mysql sqlserver cassandra mariadb sqlite postgresql cockroachdb</tags>
     <dependencies>
       <group targetFramework="netstandard2.0" />
