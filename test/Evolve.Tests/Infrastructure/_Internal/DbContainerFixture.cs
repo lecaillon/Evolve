@@ -4,7 +4,7 @@ using System.Data.Common;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 
-namespace Evolve.Tests.Infrastructure
+namespace EvolveDb.Tests.Infrastructure
 {
     public interface IDbContainerFixture
     {

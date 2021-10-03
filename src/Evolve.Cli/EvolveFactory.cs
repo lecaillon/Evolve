@@ -1,4 +1,4 @@
-﻿namespace Evolve.Cli
+﻿namespace EvolveDb.Cli
 {
     using System;
     using System.Collections.Generic;

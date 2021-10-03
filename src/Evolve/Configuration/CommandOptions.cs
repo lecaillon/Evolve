@@ -1,4 +1,4 @@
-﻿namespace Evolve.Configuration
+﻿namespace EvolveDb.Configuration
 {
     /// <summary>
     ///     The base commands for Evolve.

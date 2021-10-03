@@ -2,11 +2,11 @@
 using System.Data.SQLite;
 using System.IO;
 using System.Text;
-using Evolve.Connection;
-using Evolve.Metadata;
-using Evolve.Migration;
+using EvolveDb.Connection;
+using EvolveDb.Metadata;
+using EvolveDb.Migration;
 
-namespace Evolve.Tests
+namespace EvolveDb.Tests
 {
     internal static class TestUtil
     {

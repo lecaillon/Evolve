@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Evolve.Migration;
+using EvolveDb.Migration;
 
-namespace Evolve.Utilities
+namespace EvolveDb.Utilities
 {
     internal static class MigrationUtil
     {

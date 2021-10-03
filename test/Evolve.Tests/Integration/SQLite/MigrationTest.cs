@@ -4,9 +4,9 @@ using System.Data.SQLite;
 using System.IO;
 using Xunit;
 using Xunit.Abstractions;
-using static Evolve.Tests.TestContext;
+using static EvolveDb.Tests.TestContext;
 
-namespace Evolve.Tests.Integration.Sqlite
+namespace EvolveDb.Tests.Integration.Sqlite
 {
     public class MigrationTest
     {

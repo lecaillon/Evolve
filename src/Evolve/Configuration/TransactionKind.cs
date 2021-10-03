@@ -1,4 +1,4 @@
-﻿namespace Evolve.Configuration
+﻿namespace EvolveDb.Configuration
 {
     /// <summary>
     ///     Define Evolve transaction mode.

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Evolve.Dialect
+namespace EvolveDb.Dialect
 {
     /// <summary>
     ///     A simple sql statement builder that does nothing and returns only one 

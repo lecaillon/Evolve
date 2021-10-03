@@ -1,7 +1,7 @@
 ﻿using System.Data.Common;
 using Cassandra.Data;
 
-namespace Evolve.Tests.Infrastructure
+namespace EvolveDb.Tests.Infrastructure
 {
     public class CassandraContainer : IDbContainer
     {

@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Evolve.Configuration;
-using Evolve.Metadata;
-using Evolve.Utilities;
+using EvolveDb.Configuration;
+using EvolveDb.Metadata;
+using EvolveDb.Utilities;
 
-namespace Evolve.Migration
+namespace EvolveDb.Migration
 {
     /// <summary>
     ///     A migration loader that searchs recursively in <see cref="IEvolveConfiguration.Locations"/> 

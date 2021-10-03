@@ -1,7 +1,7 @@
-﻿using Evolve.Connection;
-using Evolve.Utilities;
+﻿using EvolveDb.Connection;
+using EvolveDb.Utilities;
 
-namespace Evolve.Dialect
+namespace EvolveDb.Dialect
 {
     internal abstract class Schema
     {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Evolve.Migration
+namespace EvolveDb.Migration
 {
     /// <summary>
     ///     Defines methods used to load all migrations (applied, pending, ignored...)

@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
-using Evolve.Tests.Infrastructure;
+using EvolveDb.Tests.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
-using static Evolve.Tests.TestContext;
+using static EvolveDb.Tests.TestContext;
 
-namespace Evolve.Tests.Integration.PostgregSql
+namespace EvolveDb.Tests.Integration.PostgregSql
 {
     [Collection("PostgreSql collection")]
     public class MigrationTests

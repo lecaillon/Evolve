@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Linq;
-using Evolve.Dialect;
-using Evolve.Metadata;
-using Evolve.Migration;
+using EvolveDb.Dialect;
+using EvolveDb.Metadata;
+using EvolveDb.Migration;
 using Xunit;
-using static Evolve.Tests.TestContext;
+using static EvolveDb.Tests.TestContext;
 
-namespace Evolve.Tests.Integration.Sqlite
+namespace EvolveDb.Tests.Integration.Sqlite
 {
     public class MetadataTableTest
     {

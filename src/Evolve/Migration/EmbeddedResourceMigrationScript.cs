@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using Evolve.Metadata;
+using EvolveDb.Metadata;
 
-namespace Evolve.Migration
+namespace EvolveDb.Migration
 {
     internal class EmbeddedResourceMigrationScript : MigrationScript
     {

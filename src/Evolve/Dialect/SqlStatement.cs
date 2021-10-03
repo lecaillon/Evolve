@@ -1,4 +1,4 @@
-﻿namespace Evolve.Dialect
+﻿namespace EvolveDb.Dialect
 {
     /// <summary>
     ///     A SQL statement from a script that can be executed at once against a database.

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Data;
 using System.Data.SQLite;
-using Evolve.Connection;
-using Evolve.Tests.Infrastructure;
+using EvolveDb.Connection;
+using EvolveDb.Tests.Infrastructure;
 using Xunit;
 
-namespace Evolve.Tests.Connection
+namespace EvolveDb.Tests.Connection
 {
     [Collection("PostgreSql collection")]
     public class WrappedConnectionTest

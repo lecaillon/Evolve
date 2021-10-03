@@ -1,9 +1,9 @@
 ﻿using System.Data;
 using System.Diagnostics.CodeAnalysis;
-using Evolve.Connection;
-using Evolve.Metadata;
+using EvolveDb.Connection;
+using EvolveDb.Metadata;
 
-namespace Evolve.Dialect.SQLServer
+namespace EvolveDb.Dialect.SQLServer
 {
     internal class SQLServerDatabase : DatabaseHelper
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Data.Common;
 
-namespace Evolve.Tests.Infrastructure
+namespace EvolveDb.Tests.Infrastructure
 {
     public interface IDbContainer : IDisposable
     {

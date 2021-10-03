@@ -1,9 +1,9 @@
 ﻿using System.Linq;
-using Evolve.Metadata;
-using Evolve.Migration;
+using EvolveDb.Metadata;
+using EvolveDb.Migration;
 using Xunit;
 
-namespace Evolve.Tests.Migration
+namespace EvolveDb.Tests.Migration
 {
     public class EmbeddedResourceMigrationLoaderTest
     {
@@ -15,7 +15,7 @@ namespace Evolve.Tests.Migration
             var loader = new EmbeddedResourceMigrationLoader(new EvolveConfiguration
             {
                 EmbeddedResourceAssemblies = new[] { typeof(TestContext).Assembly },
-                EmbeddedResourceFilters = new[] { "Evolve.Tests.Resources.Scripts_1", "Evolve.Tests.Resources.Scripts_2" }
+                EmbeddedResourceFilters = new[] { "EvolveDb.Tests.Resources.Scripts_1", "EvolveDb.Tests.Resources.Scripts_2" }
             });
 
             // Act
@@ -64,7 +64,7 @@ namespace Evolve.Tests.Migration
             var loader = new EmbeddedResourceMigrationLoader(new EvolveConfiguration
             {
                 EmbeddedResourceAssemblies = new[] { typeof(TestContext).Assembly },
-                EmbeddedResourceFilters = new[] { "Evolve.Tests.Resources.Scripts_1", "Evolve.Tests.Resources.Scripts_2" }
+                EmbeddedResourceFilters = new[] { "EvolveDb.Tests.Resources.Scripts_1", "EvolveDb.Tests.Resources.Scripts_2" }
             });
 
             // Act
@@ -94,7 +94,7 @@ namespace Evolve.Tests.Migration
             var loader = new EmbeddedResourceMigrationLoader(new EvolveConfiguration
             {
                 EmbeddedResourceAssemblies = new[] { typeof(TestContext).Assembly },
-                EmbeddedResourceFilters = new[] { "Evolve.Tests.Resources" }
+                EmbeddedResourceFilters = new[] { "EvolveDb.Tests.Resources" }
             });
 
             // Assert

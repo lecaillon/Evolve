@@ -1,8 +1,8 @@
 ﻿using System;
-using Evolve.Connection;
-using Evolve.Metadata;
+using EvolveDb.Connection;
+using EvolveDb.Metadata;
 
-namespace Evolve.Dialect.MySQL
+namespace EvolveDb.Dialect.MySQL
 {
     internal class MySQLDatabase : DatabaseHelper
     {

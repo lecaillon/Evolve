@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 
-namespace Evolve.Tests
+namespace EvolveDb.Tests
 {
     public enum Test
     {
@@ -23,7 +23,7 @@ namespace Evolve.Tests
         Sceanario
     }
 
-    [TraitDiscoverer("Evolve.Tests.CategoryDiscover", "Evolve.Tests")]
+    [TraitDiscoverer("EvolveDb.Tests.CategoryDiscover", "Evolve.Tests")]
     [AttributeUsage(AttributeTargets.Method)]
     public sealed class CategoryAttribute : Attribute, ITraitAttribute
     {

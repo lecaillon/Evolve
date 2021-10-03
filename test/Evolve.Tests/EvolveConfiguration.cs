@@ -2,10 +2,10 @@
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using Evolve.Configuration;
-using Evolve.Migration;
+using EvolveDb.Configuration;
+using EvolveDb.Migration;
 
-namespace Evolve.Tests
+namespace EvolveDb.Tests
 {
     internal class EvolveConfiguration : IEvolveConfiguration
     {

@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Evolve.Dialect.SQLServer;
+using EvolveDb.Dialect.SQLServer;
 using Xunit;
 
-namespace Evolve.Tests.Dialect.SQLServer
+namespace EvolveDb.Tests.Dialect.SQLServer
 {
     public class SQLServerStatementBuilderTest
     {

@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Transactions;
-using Evolve.Connection;
-using Evolve.Dialect;
-using Evolve.Utilities;
+using EvolveDb.Connection;
+using EvolveDb.Dialect;
+using EvolveDb.Utilities;
 
-namespace Evolve
+namespace EvolveDb
 {
     internal static class WrappedConnectionEx
     {

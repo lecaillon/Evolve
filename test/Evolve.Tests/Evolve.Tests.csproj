@@ -4,6 +4,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <IsPackable>false</IsPackable>
     <LangVersion>latest</LangVersion>
+    <RootNamespace>EvolveDb.Tests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

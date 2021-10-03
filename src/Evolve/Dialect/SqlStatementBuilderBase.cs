@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using Evolve.Migration;
-using Evolve.Utilities;
+using EvolveDb.Migration;
+using EvolveDb.Utilities;
 
-namespace Evolve.Dialect
+namespace EvolveDb.Dialect
 {
     /// <summary>
     ///     A base class used to parse a SQL script and return a list of sql statements.

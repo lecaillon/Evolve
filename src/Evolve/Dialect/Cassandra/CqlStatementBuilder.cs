@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace Evolve.Dialect.Cassandra
+namespace EvolveDb.Dialect.Cassandra
 {
     //Limitation: a statement must end with a ";" that is the last character on the line
     // this means that a line cannot end with a ";" that is inside a comment or a multi-line literal

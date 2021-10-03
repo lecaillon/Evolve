@@ -1,7 +1,7 @@
 ﻿using System.Linq;
-using Evolve.Metadata;
+using EvolveDb.Metadata;
 
-namespace Evolve
+namespace EvolveDb
 {
     internal static class MetadataEx
     {

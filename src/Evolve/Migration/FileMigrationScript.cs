@@ -2,10 +2,10 @@
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
-using Evolve.Metadata;
-using Evolve.Utilities;
+using EvolveDb.Metadata;
+using EvolveDb.Utilities;
 
-namespace Evolve.Migration
+namespace EvolveDb.Migration
 {
     internal class FileMigrationScript : MigrationScript
     {

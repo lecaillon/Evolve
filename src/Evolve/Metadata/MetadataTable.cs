@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Evolve.Dialect;
-using Evolve.Migration;
-using Evolve.Utilities;
+using EvolveDb.Dialect;
+using EvolveDb.Migration;
+using EvolveDb.Utilities;
 
-namespace Evolve.Metadata
+namespace EvolveDb.Metadata
 {
     internal abstract class MetadataTable : IEvolveMetadata
     {

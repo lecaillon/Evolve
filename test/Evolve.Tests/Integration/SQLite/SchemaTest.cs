@@ -1,8 +1,8 @@
-﻿using Evolve.Connection;
-using Evolve.Dialect.SQLite;
+﻿using EvolveDb.Connection;
+using EvolveDb.Dialect.SQLite;
 using Xunit;
 
-namespace Evolve.Tests.Integration.Sqlite
+namespace EvolveDb.Tests.Integration.Sqlite
 {
     public class SchemaTest
     {

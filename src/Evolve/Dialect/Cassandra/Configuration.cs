@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Text;
 
-namespace Evolve.Dialect.Cassandra
+namespace EvolveDb.Dialect.Cassandra
 {
     internal sealed class Configuration
     {

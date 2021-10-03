@@ -1,6 +1,6 @@
 ﻿using Xunit;
 
-namespace Evolve.Tests
+namespace EvolveDb.Tests
 {
     public sealed class FactSkippedOnAppVeyorAttribute : FactAttribute
     {

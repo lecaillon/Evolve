@@ -1,10 +1,10 @@
 ﻿using System.Linq;
-using Evolve.Configuration;
-using Evolve.Tests.Infrastructure;
+using EvolveDb.Configuration;
+using EvolveDb.Tests.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Evolve.Tests.Integration.SQLServer
+namespace EvolveDb.Tests.Integration.SQLServer
 {
     [Collection("SQLServer collection")]
     public class Scenario101 : Scenario<SQLServerFixture>

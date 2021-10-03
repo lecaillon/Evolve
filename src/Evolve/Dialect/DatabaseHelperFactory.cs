@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using Evolve.Connection;
-using Evolve.Dialect.Cassandra;
-using Evolve.Dialect.CockroachDB;
-using Evolve.Dialect.MySQL;
-using Evolve.Dialect.PostgreSQL;
-using Evolve.Dialect.SQLite;
-using Evolve.Dialect.SQLServer;
-using Evolve.Utilities;
+using EvolveDb.Connection;
+using EvolveDb.Dialect.Cassandra;
+using EvolveDb.Dialect.CockroachDB;
+using EvolveDb.Dialect.MySQL;
+using EvolveDb.Dialect.PostgreSQL;
+using EvolveDb.Dialect.SQLite;
+using EvolveDb.Dialect.SQLServer;
+using EvolveDb.Utilities;
 
-namespace Evolve.Dialect
+namespace EvolveDb.Dialect
 {
     internal static class DatabaseHelperFactory
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Evolve
+namespace EvolveDb
 {
     internal static class MiscEx
     {

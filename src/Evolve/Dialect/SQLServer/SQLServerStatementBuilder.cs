@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Evolve.Dialect.SQLServer
+namespace EvolveDb.Dialect.SQLServer
 {
     /// <summary>
     ///     A SQL Server dedicated builder which handles the statement delimiter GO.

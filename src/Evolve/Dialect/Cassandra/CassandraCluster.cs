@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
-using Evolve.Connection;
-using Evolve.Metadata;
+using EvolveDb.Connection;
+using EvolveDb.Metadata;
 using SimpleJSON;
 
-namespace Evolve.Dialect.Cassandra
+namespace EvolveDb.Dialect.Cassandra
 {
     internal sealed class CassandraCluster : DatabaseHelper
     {

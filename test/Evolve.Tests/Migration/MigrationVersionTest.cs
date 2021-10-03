@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
-using Evolve.Migration;
+using EvolveDb.Migration;
 using Xunit;
 
-namespace Evolve.Tests.Migration
+namespace EvolveDb.Tests.Migration
 {
     public class MigrationVersionTest
     {

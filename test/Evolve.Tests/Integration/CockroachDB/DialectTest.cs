@@ -1,10 +1,10 @@
-﻿using Evolve.Connection;
-using Evolve.Dialect;
-using Evolve.Dialect.CockroachDB;
-using Evolve.Tests.Infrastructure;
+﻿using EvolveDb.Connection;
+using EvolveDb.Dialect;
+using EvolveDb.Dialect.CockroachDB;
+using EvolveDb.Tests.Infrastructure;
 using Xunit;
 
-namespace Evolve.Tests.Integration.CockroachDb
+namespace EvolveDb.Tests.Integration.CockroachDb
 {
     [Collection("CockroachDB collection")]
     public class DialectTest

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Evolve.Utilities
+namespace EvolveDb.Utilities
 {
     /// <summary>
     ///     Static convenience methods to check that a method or a constructor is invoked with proper parameter or not.
