@@ -1,8 +1,8 @@
-﻿using EvolveDb.Connection;
+﻿using System.Data.SqlClient;
+using EvolveDb.Connection;
 using EvolveDb.Dialect;
 using EvolveDb.Dialect.SQLServer;
 using EvolveDb.Tests.Infrastructure;
-using Microsoft.Data.SqlClient;
 using Xunit;
 using static EvolveDb.Tests.TestContext;
 
