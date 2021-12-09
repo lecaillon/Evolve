@@ -1,4 +1,4 @@
-#tool nuget:?package=ReportGenerator&version=4.8.6
+#tool nuget:?package=ReportGenerator&version=5.0.0
 #tool nuget:?package=NuGet.CommandLine
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -9,9 +9,9 @@ var target = Argument("target", "default");
 var configuration = Argument("configuration", "Release");
 var version = XmlPeek(File("./build/common.props"), "/Project/PropertyGroup/Version/text()");
 
-var framework = "net5.0";
+var framework = "net6.0";
 var sln = "./Evolve.sln";
-var reportGeneratorPath = $"./tools/ReportGenerator.4.8.6/tools/{framework}/" + (IsRunningOnUnix() ? "ReportGenerator.dll" : "ReportGenerator.exe");
+var reportGeneratorPath = $"./tools/ReportGenerator.5.0.0/tools/{framework}/" + (IsRunningOnUnix() ? "ReportGenerator.dll" : "ReportGenerator.exe");
 var distDir = "./dist";
 var distDirFullPath = MakeAbsolute(Directory($"{distDir}")).FullPath;
 var publishDir = "./publish";
