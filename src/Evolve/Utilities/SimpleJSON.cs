@@ -1,4 +1,5 @@
-﻿#nullable disable
+﻿#pragma warning disable 1587
+#nullable disable
 /* * * * *
  * A simple JSON Parser / builder
  * ------------------------------

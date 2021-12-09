@@ -66,7 +66,7 @@ namespace EvolveDb.Metadata
         /// <summary>
         ///     Update the checksum of a migration given its Id.
         /// </summary>
-        /// <param name="id"> Id of the migration metadata to update. </param>
+        /// <param name="migrationId"> Id of the migration metadata to update. </param>
         /// <param name="checksum"> The new checksum. </param>
         void UpdateChecksum(int migrationId, string checksum);
 

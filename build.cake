@@ -1,4 +1,4 @@
-#tool nuget:?package=NuGet.CommandLine
+#tool nuget:?package=NuGet.CommandLine&version=5.11.0
 #tool dotnet:?package=dotnet-reportgenerator-globaltool&version=5.0.0
 
 ///////////////////////////////////////////////////////////////////////////////

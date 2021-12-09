@@ -36,9 +36,8 @@ namespace EvolveDb.Dialect.Cassandra
             new CassandraMetadataTable(schema, tableName, this);
 
         /// <summary>
-        ///     Will chekc for a predefined keyspace and table to see if there is a lock.
+        ///     Will check for a predefined keyspace and table to see if there is a lock.
         ///     Otherwise, always returns true, because the lock is granted at table level.
-        ///     <see cref="CassandraMetadataTable.TryLock"/>
         /// </summary>
         public override bool TryAcquireApplicationLock()
         {
@@ -71,7 +70,6 @@ namespace EvolveDb.Dialect.Cassandra
 
         /// <summary>
         ///     Returns always true, because the lock is released at table level.
-        ///     <see cref="CassandraMetadataTable.ReleaseLock"/>
         /// </summary>
         public override bool ReleaseApplicationLock() => true;
 
