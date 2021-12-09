@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="altcover" Version="7.6.812" />
+    <PackageReference Include="altcover" Version="8.2.831" />
     <PackageReference Include="CassandraCSharpDriver" Version="3.16.2" />
     <PackageReference Include="Docker.DotNet" Version="3.125.4" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.3" />

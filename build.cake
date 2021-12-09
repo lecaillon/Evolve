@@ -44,17 +44,7 @@ Task("clean").Does(() =>
     CleanDirectories(string.Format("./**/bin/{0}", configuration));
 });
 
-Task("win-build").WithCriteria(() => IsRunningOnWindows()).Does(() =>
-{
-    MSBuild(sln, new MSBuildSettings
-    {
-        Configuration = configuration,
-        Verbosity = Verbosity.Minimal,
-        Restore = true
-    });
-});
-
-Task("linux-build").WithCriteria(() => IsRunningOnUnix()).Does(() =>
+Task("build").Does(() =>
 {
     DotNetCoreBuild("./test/Evolve.Tests", new DotNetCoreBuildSettings
     {
@@ -67,12 +57,12 @@ Task("test").Does(() =>
 {
     var pathFilter = Environment.GetEnvironmentVariable("APPVEYOR") == "True" ? "\\SCassandra" : "";
 
-    DotNetCoreTest("./test/Evolve.Tests", new DotNetCoreTestSettings
+    DotNetTest("./test/Evolve.Tests", new DotNetTestSettings
     {
         Configuration = configuration,
         ArgumentCustomization = args => args.AppendSwitchQuoted("--filter", "Category!=Cli")
                                             .Append(logger)
-                                            .Append("/p:AltCover=true")
+											.Append("/p:AltCover=true")
                                             .Append("/p:AltCoverForce=true")
                                             .Append("/p:AltCoverCallContext=[Fact]|[Theory]")
                                             .Append("/p:AltCoverAssemblyFilter=Evolve.Tests|xunit.runner|MySqlConnector|xunit.assert|xunit.core|xunit.execution.dotnet")
@@ -94,7 +84,7 @@ Task("report-coverage").Does(() =>
 
 Task("test-cli").Does(() =>
 {
-    DotNetCoreTest("./test/Evolve.Tests", new DotNetCoreTestSettings
+    DotNetTest("./test/Evolve.Tests", new DotNetTestSettings
     {
         Configuration = configuration,
         ArgumentCustomization = args => args.AppendSwitchQuoted("--filter", "Category=Cli")
@@ -166,8 +156,7 @@ Task("pack-evolve-tool").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 
 Task("default")
     .IsDependentOn("clean")
-    .IsDependentOn("win-build")
-    .IsDependentOn("linux-build")
+    .IsDependentOn("build")
     .IsDependentOn("test")
     .IsDependentOn("report-coverage")
     .IsDependentOn("win-publish-cli")
