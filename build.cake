@@ -149,7 +149,6 @@ Task("pack-evolve-tool").WithCriteria(() => IsRunningOnWindows()).Does(() =>
     {
         OutputDirectory = distDir,
 		Configuration = configuration,
-		NoRestore = false,
 		NoBuild = false
     });
 });
