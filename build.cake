@@ -98,7 +98,8 @@ Task("win-publish-cli").WithCriteria(() => IsRunningOnWindows()).Does(() =>
     {
         Configuration = configuration,
         OutputDirectory = publishDir + "/cli/win-x64",
-        Runtime = "win-x64"
+        Runtime = "win-x64",
+        SelfContained = true
     });
 });
 
@@ -108,7 +109,8 @@ Task("linux-publish-cli").WithCriteria(() => IsRunningOnUnix()).Does(() =>
     {
         Configuration = configuration,
         OutputDirectory = publishDir + "/cli/linux-x64",
-        Runtime = "linux-x64"
+        Runtime = "linux-x64",
+        SelfContained = true
     });
 });
 
