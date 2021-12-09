@@ -9,7 +9,6 @@ var target = Argument("target", "default");
 var configuration = Argument("configuration", "Release");
 var version = XmlPeek(File("./build/common.props"), "/Project/PropertyGroup/Version/text()");
 
-var framework = "net6.0";
 var sln = "./Evolve.sln";
 var distDir = "./dist";
 var distDirFullPath = MakeAbsolute(Directory($"{distDir}")).FullPath;
