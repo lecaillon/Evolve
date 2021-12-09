@@ -38,9 +38,11 @@ Task("clean").Does(() =>
     
     CleanDirectories(distDir);
     CleanDirectories(publishDir);
-    CleanDirectories($"./**/obj/{framework}");
-    CleanDirectories(string.Format("./**/obj/{0}", configuration));
-    CleanDirectories(string.Format("./**/bin/{0}", configuration));
+
+    DotNetClean(sln, new DotNetCleanSettings
+    {
+        Verbosity = DotNetVerbosity.Minimal
+    });
 });
 
 Task("build").Does(() =>
