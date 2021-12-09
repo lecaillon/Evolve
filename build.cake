@@ -46,10 +46,10 @@ Task("clean").Does(() =>
 
 Task("build").Does(() =>
 {
-    DotNetCoreBuild("./test/Evolve.Tests", new DotNetCoreBuildSettings
+    DotNetBuild(sln, new DotNetBuildSettings
     {
         Configuration = configuration,
-        Verbosity = DotNetCoreVerbosity.Minimal
+        Verbosity = DotNetVerbosity.Minimal
     });
 });
 
@@ -94,7 +94,7 @@ Task("test-cli").Does(() =>
 
 Task("win-publish-cli").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 {
-    DotNetCorePublish("./src/Evolve.Cli", new DotNetCorePublishSettings
+    DotNetPublish("./src/Evolve.Cli", new DotNetPublishSettings
     {
         Configuration = configuration,
         OutputDirectory = publishDir + "/cli/win-x64",
@@ -104,7 +104,7 @@ Task("win-publish-cli").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 
 Task("linux-publish-cli").WithCriteria(() => IsRunningOnUnix()).Does(() =>
 {
-    DotNetCorePublish("./src/Evolve.Cli", new DotNetCorePublishSettings
+    DotNetPublish("./src/Evolve.Cli", new DotNetPublishSettings
     {
         Configuration = configuration,
         OutputDirectory = publishDir + "/cli/linux-x64",
@@ -145,7 +145,7 @@ Task("pack-evolve").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 
 Task("pack-evolve-tool").WithCriteria(() => IsRunningOnWindows()).Does(() =>
 {
-    DotNetCorePack("./src/Evolve.Tool/", new DotNetCorePackSettings 
+    DotNetPack("./src/Evolve.Tool/", new DotNetPackSettings 
     {
         OutputDirectory = distDir,
 		Configuration = configuration,
