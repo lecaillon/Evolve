@@ -1,5 +1,5 @@
-#tool nuget:?package=ReportGenerator&version=5.0.0
 #tool nuget:?package=NuGet.CommandLine
+#tool dotnet:?package=dotnet-reportgenerator-globaltool&version=5.0.0
 
 ///////////////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -11,7 +11,6 @@ var version = XmlPeek(File("./build/common.props"), "/Project/PropertyGroup/Vers
 
 var framework = "net6.0";
 var sln = "./Evolve.sln";
-var reportGeneratorPath = $"./tools/ReportGenerator.5.0.0/tools/{framework}/" + (IsRunningOnUnix() ? "ReportGenerator.dll" : "ReportGenerator.exe");
 var distDir = "./dist";
 var distDirFullPath = MakeAbsolute(Directory($"{distDir}")).FullPath;
 var publishDir = "./publish";
@@ -77,8 +76,7 @@ Task("report-coverage").Does(() =>
     ReportGenerator(report: $"{publishDir}/coverage.xml", targetDir: $"{publishDir}/coverage", new ReportGeneratorSettings
     {
         ReportTypes = new[] { ReportGeneratorReportType.Badges, ReportGeneratorReportType.Cobertura, ReportGeneratorReportType.HtmlInline_AzurePipelines_Dark },
-        Verbosity = ReportGeneratorVerbosity.Info,
-        ToolPath = reportGeneratorPath
+        Verbosity = ReportGeneratorVerbosity.Info
     });
 });
 
