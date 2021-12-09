@@ -20,7 +20,7 @@ namespace EvolveDb.Dialect
         /// </summary>
         /// <remarks>
         ///     Placeholders are replaced by their values in the migration script.
-        ///     The result is then parsed in sql statements: <see cref="Parse(string)"/>.
+        ///     The result is then parsed in sql statements: <see cref="Parse(string, bool)"/>.
         /// </remarks>
         /// <param name="migrationScript"> The sql script to parse. </param>
         /// <param name="placeholders"> The placeholders to replace. </param>
@@ -39,6 +39,9 @@ namespace EvolveDb.Dialect
             return Parse(sql, migrationScript.IsTransactionEnabled);
         }
 
+        /// <summary>
+        ///     Parse a SQL script into a list of SQL statement to execute.
+        /// </summary>
         protected abstract IEnumerable<SqlStatement> Parse(string sqlScript, bool transactionEnabled);
     }
 }

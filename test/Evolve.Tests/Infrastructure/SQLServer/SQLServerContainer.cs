@@ -15,7 +15,7 @@ namespace EvolveDb.Tests.Infrastructure
         private bool _disposedValue = false;
 
         public string Id => _container?.Id;
-        public string CnxStr => $"Server=127.0.0.1;Database={DbName};User Id={DbUser};Password={DbPwd};";
+        public string CnxStr => $"Server=127.0.0.1;Database={DbName};User Id={DbUser};Password={DbPwd};TrustServerCertificate=True";
         public int TimeOutInSec => 60;
 
         public bool Start(bool fromScratch = false)
