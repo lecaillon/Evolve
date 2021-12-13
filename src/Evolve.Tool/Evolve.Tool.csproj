@@ -27,7 +27,8 @@ Every time you build your project, it will automatically ensure that your databa
 - #220 Add new option MigrationLoader to help you customize the Evolve migration collect process and enable your own specific logic
 - #222 Enable quotes in migration name
 - #224 Add SQL Server GO delimiter support in SQL comment
-- #228 Add new command Validate</PackageReleaseNotes>
+- #228 Add new command Validate
+- #249 Add support of secrets in the connection string</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

@@ -102,9 +102,9 @@ namespace EvolveDb.Tests.Cli
                 string stderr = RunCli(
                     db: "postgresql",
                     command: command,
-                    cnxStr: _pgContainer.CnxStr,
+                    cnxStr: _pgContainer.CnxStr.Replace(PostgreSqlContainer.DbPwd, "${pwd}"), // add secret to the connection string
                     location: TestContext.PostgreSQL.MigrationFolder,
-                    args: "-s public -s unittest --metadata-table-schema unittest --erase-disabled false -p schema1:unittest");
+                    args: $"-s public -s unittest --metadata-table-schema unittest --erase-disabled false -p schema1:unittest -p pwd;{PostgreSqlContainer.DbPwd}");
 
                 Assert.True(string.IsNullOrEmpty(stderr), stderr);
             }
