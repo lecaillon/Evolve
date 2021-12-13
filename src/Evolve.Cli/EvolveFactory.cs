@@ -19,7 +19,7 @@
     {
         public static Evolve Build(Program options, Action<string> logInfoDelegate = null)
         {
-            var cnn = CreateConnection(options.Database, options.ConnectionString);
+            var cnn = CreateConnection(options);
             var evolve = new Evolve(cnn, logInfoDelegate)
             {
                 Command = options.Command,
@@ -66,11 +66,20 @@
             return evolve;
         }
 
-        private static DbConnection CreateConnection(DBMS database, string cnnStr)
+        private static DbConnection CreateConnection(Program options)
         {
             DbConnection cnn = null;
+            string cnnStr = options.ConnectionString;
 
-            switch (database)
+            if (options.Placeholders != null)
+            {
+                foreach (var entry in MapPlaceholders(options.Placeholders, options.PlaceholderPrefix, options.PlaceholderSuffix))
+                {
+                    cnnStr = cnnStr.Replace(entry.Key, entry.Value);
+                }
+            }
+
+            switch (options.Database)
             {
                 case DBMS.MySQL:
                     cnn = new MySqlConnection(cnnStr);
