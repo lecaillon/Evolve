@@ -184,7 +184,7 @@ namespace EvolveDb.Configuration
 
         /// <summary>
         ///     When true, execute repeatedly all repeatable migrations for as long as the number of errors decreases.
-        ///     This option allows repeatable migrations to be executed in any order regarding their dependencies, so that you can named them more easily.
+        ///     This option allows repeatable migrations to be executed in any order regarding their dependencies, so that you can name them more easily.
         /// </summary>
         bool RetryRepeatableMigrationsUntilNoError { get; }
 

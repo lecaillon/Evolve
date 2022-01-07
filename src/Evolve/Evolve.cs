@@ -302,27 +302,8 @@ namespace EvolveDb
 
             IEnumerable<MigrationMetadataUI> GetAllOutOfOrderPendingMigrationUI(IEvolveMetadata metadata, MigrationVersion startVersion, MigrationVersion lastAppliedVersion)
             {
-                if (!OutOfOrder)
-                {
-                    return Enumerable.Empty<MigrationMetadataUI>();
-                }
-
-                var pendingMigrations = new List<MigrationMetadataUI>();
-                var appliedMigrations = metadata.GetAllAppliedMigration();
-                var scripts = MigrationLoader.GetMigrations()
-                                             .SkipWhile(x => x.Version < startVersion)
-                                             .TakeWhile(x => x.Version <= lastAppliedVersion);
-
-                foreach (var script in scripts)
-                {
-                    var appliedMigration = appliedMigrations.SingleOrDefault(x => x.Version == script.Version);
-                    if (appliedMigration is null)
-                    {
-                        pendingMigrations.Add(new MigrationMetadataUI(script.Version?.Label, script.Description, "Pending"));
-                    }
-                }
-
-                return pendingMigrations;
+                return GetAllOutOfOrderPendingMigration(metadata, startVersion, lastAppliedVersion)
+                    .Select(x => new MigrationMetadataUI(x.Version?.Label, x.Description, "Pending"));
             }
 
             IEnumerable<MigrationMetadataUI> GetAllPendingMigrationUI(MigrationVersion startVersion, MigrationVersion lastAppliedVersion)
@@ -447,9 +428,30 @@ namespace EvolveDb
 
             MigrationVersion Migrate()
             {
+                ExecuteAllOutOfOrderMigration(db);
                 var lastAppliedVersion = ExecuteAllMigration(db);
                 ExecuteAllRepeatableMigration(db);
                 return lastAppliedVersion;
+            }
+        }
+
+        /// <summary>
+        ///     Execute OutOfOrder migration when allowed and needed
+        /// </summary>
+        private void ExecuteAllOutOfOrderMigration(DatabaseHelper db)
+        {
+            if (!OutOfOrder)
+            {
+                return;
+            }
+
+            var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
+            var startVersion = metadata.FindStartVersion();
+            var lastAppliedVersion = metadata.FindLastAppliedVersion();
+
+            foreach (var migration in GetAllOutOfOrderPendingMigration(metadata, startVersion, lastAppliedVersion))
+            {
+                ExecuteMigration(migration, db);
             }
         }
 
@@ -485,6 +487,31 @@ namespace EvolveDb
                                   .SkipWhile(x => x.Version < startVersion)
                                   .SkipWhile(x => x.Version <= lastAppliedVersion)
                                   .TakeWhile(x => x.Version <= TargetVersion);
+        }
+
+        IEnumerable<MigrationScript> GetAllOutOfOrderPendingMigration(IEvolveMetadata metadata, MigrationVersion startVersion, MigrationVersion lastAppliedVersion)
+        {
+            if (!OutOfOrder)
+            {
+                return Enumerable.Empty<MigrationScript>();
+            }
+
+            var pendingMigrations = new List<MigrationScript>();
+            var appliedMigrations = metadata.GetAllAppliedMigration();
+            var scripts = MigrationLoader.GetMigrations()
+                                         .SkipWhile(x => x.Version < startVersion)
+                                         .TakeWhile(x => x.Version <= lastAppliedVersion);
+
+            foreach (var script in scripts)
+            {
+                var appliedMigration = appliedMigrations.SingleOrDefault(x => x.Version == script.Version);
+                if (appliedMigration is null)
+                {
+                    pendingMigrations.Add(script);
+                }
+            }
+
+            return pendingMigrations;
         }
 
         /// <summary>
@@ -929,14 +956,13 @@ namespace EvolveDb
                 var appliedMigration = appliedMigrations.SingleOrDefault(x => x.Version == script.Version);
                 if (appliedMigration is null)
                 { // Script not found
-                    if (Command == CommandOptions.Migrate && OutOfOrder)
-                    { // Apply migration
-                        ExecuteMigration(script, db);
+                    if (OutOfOrder)
+                    { // Out of order migration allowed
                         continue;
                     }
                     else
                     { // Validation error
-                        throw new EvolveValidationException($"Validation failed: script {script.Name} not found in the metadata table of applied migrations.");
+                        throw new EvolveValidationException($"Validation failed: Out of order pending migration found: {script.Name}. Use OutOfOrder option if you want to execute it.");
                     }
                 }
 
