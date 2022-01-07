@@ -31,7 +31,10 @@ Every time you build your project, it will automatically ensure that your databa
 - #249 Add support of secrets in the connection string
 
 ## Breaking changes
-- #250 Drop support of .NET Core 3.1, add support of .NET6</PackageReleaseNotes>
+- #250 Drop support of .NET Core 3.1, add support of .NET6
+
+## Bug fix
+- #252 Fix transaction not completely rolled back with option OutOfOrder</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
