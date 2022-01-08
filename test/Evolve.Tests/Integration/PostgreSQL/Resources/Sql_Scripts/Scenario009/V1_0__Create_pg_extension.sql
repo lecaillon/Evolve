@@ -1,7 +1,7 @@
-﻿create extension if not exists citext;
-create domain non_empty_citext as citext check (value ~ '\S');
-create table scenario009.test (
+﻿create extension if not exists citext WITH SCHEMA ${schema};
+create domain ${schema}.non_empty_citext as ${schema}.citext check (value ~ '\S');
+create table ${schema}.test (
      did    integer PRIMARY KEY,
-     name   non_empty_citext
+     name   ${schema}.non_empty_citext
 );
-insert into scenario009.test values (1, 'PSG');
+insert into ${schema}.test values (1, 'PSG');
