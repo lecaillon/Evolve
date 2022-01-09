@@ -70,6 +70,7 @@ namespace EvolveDb.Dialect.PostgreSQL
             DropSequences();
             DropBaseAggregates(); // PostgreSQL < 11
             DropBaseTypes(false);
+            DropExtensions();
 
             return true;
         }
@@ -101,9 +102,12 @@ namespace EvolveDb.Dialect.PostgreSQL
         {
             string sql = "SELECT typname, typcategory " +
                          "FROM pg_catalog.pg_type t " +
+                         "LEFT join pg_depend dep ON dep.objid = t.oid AND dep.deptype = 'e' " +
                          "WHERE (t.typrelid = 0 OR (SELECT c.relkind = 'c' FROM pg_catalog.pg_class c WHERE c.oid = t.typrelid)) " +
                          "AND NOT EXISTS(SELECT 1 FROM pg_catalog.pg_type el WHERE el.oid = t.typelem AND el.typarray = t.oid) " +
-                        $"AND t.typnamespace in (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = '{Name}')";
+                        $"AND t.typnamespace in (SELECT oid FROM pg_catalog.pg_namespace WHERE nspname = '{Name}') " +
+                         "AND dep.objid is null " +
+                         "AND t.typtype != 'd'";
 
             _wrappedConnection.QueryForList(sql, r => new { TypeName = r.GetString(0), TypeCategory = r.GetChar(1) }).ToList().ForEach(x =>
             {
@@ -139,7 +143,6 @@ namespace EvolveDb.Dialect.PostgreSQL
                 _wrappedConnection.ExecuteNonQuery($"DROP AGGREGATE IF EXISTS \"{Name}\".\"{Quote(x.ProName)}\" ({x.Args}) CASCADE");
             });
         }
-
 
         protected void DropRoutines()
         {
@@ -234,6 +237,20 @@ namespace EvolveDb.Dialect.PostgreSQL
             _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(table =>
             {
                 _wrappedConnection.ExecuteNonQuery($"DROP TABLE IF EXISTS \"{Name}\".\"{Quote(table)}\" CASCADE");
+            });
+        }
+
+        protected void DropExtensions()
+        {
+            string sql = "SELECT e.extname " +
+                         "FROM pg_extension e " +
+                         "LEFT JOIN pg_namespace n ON n.oid = e.extnamespace " +
+                         "LEFT JOIN pg_roles r ON r.oid = e.extowner " +
+                        $"WHERE n.nspname = '{Name}' AND r.rolname = current_user";
+
+            _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(ext =>
+            {
+                _wrappedConnection.ExecuteNonQuery($"DROP EXTENSION IF EXISTS \"{Name}\".\"{Quote(ext)}\" CASCADE");
             });
         }
 
