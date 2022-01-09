@@ -25,7 +25,7 @@ Every time you build your project, it will automatically ensure that your databa
 
 ## Bug fixes
 - #252 Fix transaction not completely rolled back with option OutOfOrder
-- #253 Fix erase public postgresql extension</releaseNotes>
+- #253 Fix erase public postgresql extensions</releaseNotes>
     <tags>evolve flyway sql database migration mysql sqlserver cassandra mariadb sqlite postgresql cockroachdb</tags>
     <dependencies>
       <group targetFramework="netstandard2.0" />
