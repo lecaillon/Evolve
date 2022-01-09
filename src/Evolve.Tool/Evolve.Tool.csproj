@@ -33,8 +33,9 @@ Every time you build your project, it will automatically ensure that your databa
 ## Breaking changes
 - #250 Drop support of .NET Core 3.1, add support of .NET6
 
-## Bug fix
-- #252 Fix transaction not completely rolled back with option OutOfOrder</PackageReleaseNotes>
+## Bug fixes
+- #252 Fix transaction not completely rolled back with option OutOfOrder
+- #253 Fix erase public postgresql extension</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
