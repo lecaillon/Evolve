@@ -70,7 +70,6 @@ namespace EvolveDb.Dialect.PostgreSQL
             DropSequences();
             DropBaseAggregates(); // PostgreSQL < 11
             DropBaseTypes(false);
-            DropExtensions();
 
             return true;
         }
@@ -237,20 +236,6 @@ namespace EvolveDb.Dialect.PostgreSQL
             _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(table =>
             {
                 _wrappedConnection.ExecuteNonQuery($"DROP TABLE IF EXISTS \"{Name}\".\"{Quote(table)}\" CASCADE");
-            });
-        }
-
-        protected void DropExtensions()
-        {
-            string sql = "SELECT e.extname " +
-                         "FROM pg_extension e " +
-                         "LEFT JOIN pg_namespace n ON n.oid = e.extnamespace " +
-                         "LEFT JOIN pg_roles r ON r.oid = e.extowner " +
-                        $"WHERE n.nspname = '{Name}' AND r.rolname = current_user";
-
-            _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(ext =>
-            {
-                _wrappedConnection.ExecuteNonQuery($"DROP EXTENSION IF EXISTS {Quote(ext)} CASCADE");
             });
         }
 

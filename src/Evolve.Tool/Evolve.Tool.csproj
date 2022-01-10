@@ -35,7 +35,7 @@ Every time you build your project, it will automatically ensure that your databa
 
 ## Bug fixes
 - #252 Fix transaction not completely rolled back with option OutOfOrder
-- #253 Fix erase public postgresql extensions</PackageReleaseNotes>
+- #253 Fix drop Postgresql types with dependencies</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
