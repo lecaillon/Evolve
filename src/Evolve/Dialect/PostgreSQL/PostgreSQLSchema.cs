@@ -250,7 +250,7 @@ namespace EvolveDb.Dialect.PostgreSQL
 
             _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(ext =>
             {
-                _wrappedConnection.ExecuteNonQuery($"DROP EXTENSION IF EXISTS {Quote(ext)}\" CASCADE");
+                _wrappedConnection.ExecuteNonQuery($"DROP EXTENSION IF EXISTS {Quote(ext)} CASCADE");
             });
         }
 
