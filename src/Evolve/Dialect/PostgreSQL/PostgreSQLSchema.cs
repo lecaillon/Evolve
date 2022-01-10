@@ -70,6 +70,7 @@ namespace EvolveDb.Dialect.PostgreSQL
             DropSequences();
             DropBaseAggregates(); // PostgreSQL < 11
             DropBaseTypes(false);
+            DropExtensions();
 
             return true;
         }
@@ -135,7 +136,8 @@ namespace EvolveDb.Dialect.PostgreSQL
 
             string sql = "SELECT proname, oidvectortypes(proargtypes) AS args " +
                          "FROM pg_proc INNER JOIN pg_namespace ns ON (pg_proc.pronamespace = ns.oid) " +
-                        $"WHERE pg_proc.proisagg = true AND ns.nspname = '{Name}'";
+                         "LEFT join pg_depend dep ON dep.objid = pg_proc.oid AND dep.deptype = 'e' " +
+                        $"WHERE pg_proc.proisagg = true AND ns.nspname = '{Name}' AND dep.objid is null";
 
             _wrappedConnection.QueryForList(sql, r => new { ProName = r.GetString(0), Args = r.GetString(1) }).ToList().ForEach(x =>
             {
@@ -236,6 +238,20 @@ namespace EvolveDb.Dialect.PostgreSQL
             _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(table =>
             {
                 _wrappedConnection.ExecuteNonQuery($"DROP TABLE IF EXISTS \"{Name}\".\"{Quote(table)}\" CASCADE");
+            });
+        }
+
+        protected void DropExtensions()
+        {
+            string sql = "SELECT e.extname " +
+                         "FROM pg_extension e " +
+                         "LEFT JOIN pg_namespace n ON n.oid = e.extnamespace " +
+                         "LEFT JOIN pg_roles r ON r.oid = e.extowner " +
+                        $"WHERE n.nspname = '{Name}' AND r.rolname = current_user";
+
+            _wrappedConnection.QueryForListOfString(sql).ToList().ForEach(ext =>
+            {
+                _wrappedConnection.ExecuteNonQuery($"DROP EXTENSION IF EXISTS {Quote(ext)} CASCADE");
             });
         }
 
