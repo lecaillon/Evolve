@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using EvolveDb.Dialect;
 using EvolveDb.Tests.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
@@ -30,7 +31,7 @@ namespace EvolveDb.Tests.Integration.PostgregSql
             // Arrange
             string[] locations = AppVeyor ? new[] { PostgreSQL.MigrationFolder } : new[] { PostgreSQL.MigrationFolder, PostgreSQL.Migration11Folder }; // Add specific PostgreSQL 11 scripts
             var cnn = _dbContainer.CreateDbConnection();
-            var evolve = new Evolve(cnn, msg => _output.WriteLine(msg))
+            var evolve = new Evolve(cnn, msg => _output.WriteLine(msg), DBMS.PostgreSQL)
             {
                 Schemas = new[] { "public", "unittest" },
                 MetadataTableSchema = "unittest",
