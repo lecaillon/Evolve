@@ -25,6 +25,7 @@ namespace EvolveDb
 
         private readonly DbConnection _userCnn;
         private readonly Action<string> _log;
+        private readonly Func<WrappedConnection, DatabaseHelper>? _customDbHelperCreationDelegate;
 
         #endregion
 
@@ -34,10 +35,12 @@ namespace EvolveDb
         /// <param name="dbConnection"> The database connection used to apply the migrations. </param>
         /// <param name="logDelegate"> An optional logger. </param>
         /// <param name="dbms"> Optional default dbms</param>
-        public Evolve(DbConnection dbConnection, Action<string>? logDelegate = null, DBMS? dbms = null)
+        /// <param name="customDbHelperCreationDelegate"> Optional implementation for Custom Db. </param>
+        public Evolve(DbConnection dbConnection, Action<string>? logDelegate = null, DBMS? dbms = null, Func<WrappedConnection, DatabaseHelper>? customDbHelperCreationDelegate = null)
         {
             _userCnn = Check.NotNull(dbConnection, nameof(dbConnection));
             _log = logDelegate ?? new Action<string>((msg) => { });
+            _customDbHelperCreationDelegate = customDbHelperCreationDelegate;
 
             using var evolveCnn = new WrappedConnection(_userCnn).Validate();
             DBMS = dbms ?? evolveCnn.GetDatabaseServerType();
@@ -818,7 +821,7 @@ namespace EvolveDb
         private DatabaseHelper InitiateDatabaseConnection()
         {
             var evolveCnn = new WrappedConnection(_userCnn).Validate();
-            var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS, evolveCnn);
+            var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS, evolveCnn, _customDbHelperCreationDelegate);
 
             if (Schemas is null || Schemas.Count() == 0)
             { // If no schema declared, get the one associated to the datasource connection

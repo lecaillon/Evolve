@@ -3,7 +3,7 @@ using EvolveDb.Metadata;
 
 namespace EvolveDb.Migration
 {
-    internal class MigrationMetadata : MigrationBase
+    public class MigrationMetadata : MigrationBase
     {
         public MigrationMetadata(string? version, string description, string name, MetadataType type) 
             : base(version, description, name, type)

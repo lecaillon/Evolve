@@ -26,9 +26,12 @@ namespace EvolveDb.Dialect
             [DBMS.CockroachDB]      = wcnn => new CockroachDBCluster(wcnn),
         };
 
-        public static DatabaseHelper GetDatabaseHelper(DBMS dbmsType, WrappedConnection connection)
+        public static DatabaseHelper GetDatabaseHelper(DBMS dbmsType, WrappedConnection connection, Func<WrappedConnection, DatabaseHelper>? customDbHelperCreationDelegate = null)
         {
             Check.NotNull(connection, nameof(connection));
+            
+            if (customDbHelperCreationDelegate != null)
+                return customDbHelperCreationDelegate(connection);
 
             _dbmsMap.TryGetValue(dbmsType, out Func<WrappedConnection, DatabaseHelper>? dbHelperCreationDelegate);
             if(dbHelperCreationDelegate is null)

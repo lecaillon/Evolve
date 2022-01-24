@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace EvolveDb.Metadata
 {
-    internal interface IEvolveMetadata
+    public interface IEvolveMetadata
     {
         /// <summary>
         ///     Try to lock the access to the metadata store to others migration processes.

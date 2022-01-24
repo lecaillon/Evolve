@@ -5,7 +5,7 @@ using EvolveDb.Utilities;
 
 namespace EvolveDb.Dialect
 {
-    internal abstract class DatabaseHelper : IDisposable
+    public abstract class DatabaseHelper : IDisposable
     {
         private bool _disposedValue = false;
 

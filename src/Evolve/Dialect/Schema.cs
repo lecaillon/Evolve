@@ -3,7 +3,7 @@ using EvolveDb.Utilities;
 
 namespace EvolveDb.Dialect
 {
-    internal abstract class Schema
+    public abstract class Schema
     {
         protected readonly WrappedConnection _wrappedConnection;
 

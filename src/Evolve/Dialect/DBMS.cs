@@ -9,6 +9,7 @@
         SQLite,
         SQLServer,
         Cassandra,
-        CockroachDB
+        CockroachDB,
+        Custom
     }
 }

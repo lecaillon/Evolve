@@ -6,7 +6,7 @@ namespace EvolveDb.Dialect
     ///     A simple sql statement builder that does nothing and returns only one 
     ///     sql statement that must be enlists in a transacation.
     /// </summary>
-    internal class SimpleSqlStatementBuilder : SqlStatementBuilderBase
+    public class SimpleSqlStatementBuilder : SqlStatementBuilderBase
     {
         public override string? BatchDelimiter => null;
 

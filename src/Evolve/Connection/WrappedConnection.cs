@@ -8,7 +8,7 @@ namespace EvolveDb.Connection
     /// <summary>
     ///     A wrapper of <see cref="IDbConnection"/> used to managed all the queries and transactions to the database to evolve.
     /// </summary>
-    internal class WrappedConnection : IDisposable
+    public class WrappedConnection : IDisposable
     {
         private const string NoAmbiantTransactionFound = "No ambiant transaction found to enlist in the WrappedConnection.";
         private const string TransactionAlreadyStarted = "The connection is already in a transaction and cannot participate in another transaction.";
