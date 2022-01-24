@@ -33,13 +33,14 @@ namespace EvolveDb
         /// </summary>
         /// <param name="dbConnection"> The database connection used to apply the migrations. </param>
         /// <param name="logDelegate"> An optional logger. </param>
-        public Evolve(DbConnection dbConnection, Action<string>? logDelegate = null)
+        /// <param name="dbms"> Optional default dbms</param>
+        public Evolve(DbConnection dbConnection, Action<string>? logDelegate = null, DBMS? dbms = null)
         {
             _userCnn = Check.NotNull(dbConnection, nameof(dbConnection));
             _log = logDelegate ?? new Action<string>((msg) => { });
 
             using var evolveCnn = new WrappedConnection(_userCnn).Validate();
-            DBMS = evolveCnn.GetDatabaseServerType();
+            DBMS = dbms ?? evolveCnn.GetDatabaseServerType();
         }
 
         #region IEvolveConfiguration
