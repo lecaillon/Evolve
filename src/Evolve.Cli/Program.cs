@@ -125,5 +125,9 @@
 
         [Option("--metadata-table-keyspace", "The keyspace in which the metadata table is/should be (Cassandra only).", CommandOptionType.SingleValue)]
         public string MetadataTableKeyspace { get; }
+
+        // SQL Server
+        [Option("--sql-server-access-token", "An Azure-issued access token to be used when connecting to SQL Server.", CommandOptionType.SingleValue)]
+        public string SqlServerAccessToken { get; }
     }
 }
