@@ -29,6 +29,7 @@ Every time you build your project, it will automatically ensure that your databa
 - #224 Add SQL Server GO delimiter support in SQL comment
 - #228 Add new command Validate
 - #249 Add support of secrets in the connection string
+- #267 Add support for using Azure-issued access tokens with SQL Server connections
 
 ## Breaking changes
 - #250 Drop support of .NET Core 3.1, add support of .NET6
