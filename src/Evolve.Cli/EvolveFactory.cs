@@ -94,7 +94,7 @@
                     cnn = new SQLiteConnection(cnnStr);
                     break;
                 case DBMS.SQLServer:
-                    cnn = new SqlConnection(cnnStr);
+                    cnn = new SqlConnection(cnnStr) { AccessToken = options.SqlServerAccessToken };
                     break;
                 case DBMS.Cassandra:
                     cnn = new CqlConnection(cnnStr);
