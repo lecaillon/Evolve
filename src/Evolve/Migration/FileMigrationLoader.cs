@@ -49,7 +49,7 @@ namespace EvolveDb.Migration
                     continue;
                 }
 
-                dirToScan.GetFiles("*", SearchOption.AllDirectories) // Get scripts recursively
+                GetNotHiddenFilesRecursive(dirToScan, "*")
                          .Where(f => !migrations.Any(m => m.Path == f.FullName) // Scripts not already loaded
                                   && f.Name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) // "V*"
                                   && f.Name.EndsWith(suffix, StringComparison.OrdinalIgnoreCase)) // "*.sql"
@@ -90,7 +90,7 @@ namespace EvolveDb.Migration
                     continue;
                 }
 
-                dirToScan.GetFiles("*", SearchOption.AllDirectories)   // Get scripts recursively
+                GetNotHiddenFilesRecursive(dirToScan, "*")
                          .Where(f => !migrations.Any(m => m.Path == f.FullName) // Scripts not already loaded
                              && f.Name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) // "R*"
                              && f.Name.EndsWith(suffix, StringComparison.OrdinalIgnoreCase)) // "*.sql"
@@ -120,6 +120,31 @@ namespace EvolveDb.Migration
             catch (Exception ex)
             {
                 throw new EvolveConfigurationException(string.Format(InvalidMigrationScriptLocation, location), ex);
+            }
+        }
+
+        private IEnumerable<FileInfo> GetNotHiddenFilesRecursive(DirectoryInfo dir, string pattern)
+        {
+            var files = dir.GetFiles(pattern).Where(f => NotHiddenOrSystem(f.Attributes));
+
+            foreach (var file in files)
+            {
+                yield return file;
+            }
+
+            var nestedDirectories = dir.GetDirectories().Where(d => NotHiddenOrSystem(d.Attributes));
+
+            var nestedFiles = nestedDirectories.SelectMany(d => GetNotHiddenFilesRecursive(d, pattern));
+
+            foreach (var file in nestedFiles)
+            {
+                yield return file;
+            }
+
+            static bool NotHiddenOrSystem(FileAttributes attributes)
+            {
+                return !attributes.HasFlag(FileAttributes.Hidden)
+                && !attributes.HasFlag(FileAttributes.System);
             }
         }
     }

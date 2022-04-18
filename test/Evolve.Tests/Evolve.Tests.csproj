@@ -79,5 +79,5 @@
   <ItemGroup>
     <Folder Include="Integration\PostgreSQL\Resources\Sql_Scripts\Scenario008\Step00\" />
   </ItemGroup>
-  
+
 </Project>
