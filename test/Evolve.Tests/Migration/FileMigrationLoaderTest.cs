@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using EvolveDb.Metadata;
 using EvolveDb.Migration;
 using Xunit;
@@ -92,6 +93,33 @@ namespace EvolveDb.Tests.Migration
         {
             var loader = new FileMigrationLoader(new EvolveConfiguration { Locations = new[] { TestContext.ResourcesFolder } });
             Assert.Throws<EvolveConfigurationException>(() => loader.GetMigrations());
+        }
+
+        [Fact]
+        [Category(Test.Migration)]
+        public void Skip_load_hidden_or_system_files_with_file_loader_works()
+        {
+            // Arrange
+            var systemMigrationFile = new FileInfo(Path.Combine(TestContext.SkippedScripts, ".R__system.sql"));
+            var hiddenMigrationFile = new FileInfo(Path.Combine(TestContext.SkippedScripts, ".hidden", "V1_0_0__Hidden.sql"));
+
+            // Set attribute on Windows explicitly,
+            // on Linux, file/folder treated as hidden if it starts with '.'
+            systemMigrationFile.Attributes = FileAttributes.System;
+            hiddenMigrationFile.Attributes = FileAttributes.Hidden;
+
+            var loader = new FileMigrationLoader(new EvolveConfiguration
+            {
+                Locations = new[] { TestContext.SkippedScripts }
+            });
+
+            // Act
+            var scripts = loader.GetRepeatableMigrations()
+                .Concat(loader.GetMigrations())
+                .ToList();
+
+            // Assert
+            Assert.Empty(scripts);
         }
     }
 }
