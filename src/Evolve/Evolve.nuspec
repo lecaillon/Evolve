@@ -19,6 +19,7 @@ Every time you build your project, it will automatically ensure that your databa
 - #222 Enable quotes in migration name
 - #224 Add SQL Server GO delimiter support in SQL comment
 - #228 Add new command Validate
+- #274 Skip Hidden and System migration files by default
 
 ## Breaking changes
 - #245 Rename the namespace Evolve to `EvolveDb` to avoid name collision when using the class Evolve
