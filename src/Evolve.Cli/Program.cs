@@ -119,6 +119,9 @@
         [Option("--skip-next-migrations", "When set, mark all subsequent migrations as applied. Default: false", CommandOptionType.SingleValue)]
         public bool SkipNextMigrations { get; }
 
+        [Option("--ignore-repeatable-deps", "When set, evolve-repeatable-deps options will be ignored. Default: false", CommandOptionType.SingleValue)]
+        public bool IgnoreRepeatableDeps { get; }
+
         // Cassandra
         [Option("--keyspace", "A list of keyspaces managed by Evolve (Cassandra only).", CommandOptionType.MultipleValue)]
         public string[] Keyspaces { get; }

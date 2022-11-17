@@ -76,6 +76,7 @@ namespace EvolveDb
         public bool RetryRepeatableMigrationsUntilNoError { get; set; }
         public TransactionKind TransactionMode { get; set; } = TransactionKind.CommitEach;
         public bool SkipNextMigrations { get; set; } = false;
+        public bool IgnoreRepeatableDeps { get; set; } = false;
 
         private IMigrationLoader? _migrationLoader;
         public IMigrationLoader MigrationLoader
@@ -582,7 +583,12 @@ namespace EvolveDb
             var pendingMigrations = new List<MigrationScript>();
             var appliedMigrations = metadata.GetAllAppliedRepeatableMigration();
             var scripts = MigrationLoader.GetRepeatableMigrations();
-            
+
+            if (!IgnoreRepeatableDeps)
+            {
+                scripts = scripts.SortWithDependencies();
+            }
+
             foreach (var script in scripts)
             {
                 var appliedMigration = appliedMigrations.Where(x => x.Name == script.Name).OrderBy(x => x.InstalledOn).LastOrDefault();

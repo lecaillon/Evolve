@@ -212,5 +212,10 @@ namespace EvolveDb.Configuration
         ///     that replaces the built-in ones (<see cref="FileMigrationLoader"/> <see cref="EmbeddedResourceMigrationLoader"/>)
         /// </summary>
         IMigrationLoader MigrationLoader { get; }
+
+        /// <summary>
+        ///     Ignore sorting repeatables by dependencies.
+        /// </summary>
+        bool IgnoreRepeatableDeps { get; }
     }
 }
