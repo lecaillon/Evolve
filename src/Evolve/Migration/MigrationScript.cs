@@ -128,7 +128,8 @@ namespace EvolveDb.Migration
             }
             using var file = new StringReader(Content);
             while (file.ReadLine() is string line
-                && !line.IsNullOrWhiteSpace())
+                && !line.IsNullOrWhiteSpace()
+                && line.IndexOf("evolve") >= 0)
             {
                 if (line.IndexOf(OptionTransactionOff, StringComparison.OrdinalIgnoreCase) >= 0)
                 {
@@ -140,8 +141,7 @@ namespace EvolveDb.Migration
                     _isAlwayRepeat = true;
                 }
                 if (Type == MetadataType.RepeatableMigration
-                    && line.IndexOf(OptionRepeatableDependencies) is int index
-                    && index >= 0)
+                    && line.IndexOf(OptionRepeatableDependencies) >= 0)
                 {
                     _repeatableDeps = DependencyHelper
                         .Get(line, OptionRepeatableDependencies)
