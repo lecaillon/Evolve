@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using EvolveDb.Migration;
@@ -16,12 +17,26 @@ namespace EvolveDb.Utilities
         private const string DuplicateRepeatableMigrationScript = "Found multiple sql migration files with the same name: {0}.";
 
         public static void ExtractVersionAndDescription(string script, string prefix, string separator, out string version, out string description)
-            => ExtractVersionAndDescription(script, prefix, separator, out version, out description, throwIfNoVersion: true);
+            => ExtractVersionAndDescription(script, prefix, separator, out version, out description, throwIfNoVersion: true, keepUnderscores: false);
 
         public static void ExtractDescription(string script, string prefix, string separator, out string description)
-            => ExtractVersionAndDescription(script, prefix, separator, out _, out description, throwIfNoVersion: false);
+            => ExtractVersionAndDescription(script, prefix, separator, out _, out description, throwIfNoVersion: false, keepUnderscores: false);
 
-        private static void ExtractVersionAndDescription(string script, string prefix, string separator, out string version, out string description, bool throwIfNoVersion)
+        public static string GetNameForDependencies(string script, string prefix, string separator)
+        {
+            ExtractVersionAndDescription(
+                script,
+                prefix,
+                separator,
+                out _,
+                out string name,
+                throwIfNoVersion: false,
+                keepUnderscores: true
+            );
+            return name;
+        }
+
+        private static void ExtractVersionAndDescription(string script, string prefix, string separator, out string version, out string description, bool throwIfNoVersion, bool keepUnderscores)
         {
             Check.NotNullOrEmpty(script, nameof(script)); // V1_3_1__Migration_description.sql
             Check.NotNullOrEmpty(prefix, nameof(prefix)); // V
@@ -39,8 +54,12 @@ namespace EvolveDb.Utilities
                 throw new EvolveConfigurationException(string.Format(MigrationNameSeparatorNotFound, separator, script));
 
             version = new string(migrationName.Take(indexOfSeparator).ToArray());
-            description = migrationName.Substring(indexOfSeparator + separator.Length)
-                                       .Replace("_", " ");
+            description = migrationName.Substring(indexOfSeparator + separator.Length);
+
+            if (!keepUnderscores)
+            {
+                description = description.Replace("_", " ");
+            }
 
             // Check version
             if (version.IsNullOrWhiteSpace() && throwIfNoVersion)

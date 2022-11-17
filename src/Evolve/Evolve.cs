@@ -586,7 +586,7 @@ namespace EvolveDb
 
             if (!IgnoreRepeatableDeps)
             {
-                scripts = scripts.SortWithDependencies();
+                scripts = scripts.SortWithDependencies(SqlRepeatableMigrationPrefix, SqlMigrationSeparator);
             }
 
             foreach (var script in scripts)

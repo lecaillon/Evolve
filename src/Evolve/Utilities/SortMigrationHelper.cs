@@ -1,6 +1,7 @@
 ﻿using EvolveDb.Migration;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace EvolveDb.Utilities
@@ -8,13 +9,23 @@ namespace EvolveDb.Utilities
 
     internal static class SortMigrationHelper
     {
-        internal static IEnumerable<MigrationScript> SortWithDependencies(this IEnumerable<MigrationScript> source)
+        internal static IEnumerable<MigrationScript> SortWithDependencies(
+            this IEnumerable<MigrationScript> source,
+            string prefix,
+            string separator
+        )
         {
+            var getName = (MigrationScript script) => MigrationUtil.GetNameForDependencies(
+                script.Name,
+                prefix,
+                separator
+            );
+
             List<MigrationScript> sorted = new();
             List<string> stack = new();
             Dictionary<string, bool> visited = new();
             Dictionary<string, MigrationScript> cache = source.ToDictionary(
-                item => item.Description.Replace(" ", "_"),
+                item => getName(item),
                 item => item
             );
             foreach (var item in source)
@@ -24,7 +35,8 @@ namespace EvolveDb.Utilities
                     sorted,
                     stack,
                     visited,
-                    cache
+                    cache,
+                    getName
                 );
             }
             return sorted;
@@ -34,10 +46,11 @@ namespace EvolveDb.Utilities
             List<MigrationScript> sorted,
             List<string> stack,
             Dictionary<string, bool> visited,
-            Dictionary<string, MigrationScript> cache
+            Dictionary<string, MigrationScript> cache,
+            Func<MigrationScript, string> getName
         )
         {
-            var name = item.Description;
+            var name = getName(item);
             try
             {
                 stack.Add(name);
@@ -57,7 +70,8 @@ namespace EvolveDb.Utilities
                         sorted,
                         stack,
                         visited,
-                        cache
+                        cache,
+                        getName
                     );
                 }
                 visited[name] = false;
