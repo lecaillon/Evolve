@@ -40,6 +40,7 @@ namespace EvolveDb.Tests
         public bool RetryRepeatableMigrationsUntilNoError { get; set; }
         public TransactionKind TransactionMode { get; set; } = TransactionKind.CommitEach;
         public bool SkipNextMigrations { get; set; } = false;
+        public bool IgnoreRepeatableDeps { get; set; } = false;
 
         private IMigrationLoader _migrationLoader;
         public IMigrationLoader MigrationLoader

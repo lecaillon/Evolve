@@ -44,6 +44,7 @@
                 RetryRepeatableMigrationsUntilNoError = options.RetryRepeatableMigrationsUntilNoError,
                 TransactionMode = options.TransactionMode,
                 SkipNextMigrations = options.SkipNextMigrations,
+                IgnoreRepeatableDeps = options.IgnoreRepeatableDeps,
             };
 
             if (options.Placeholders != null)

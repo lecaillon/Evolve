@@ -8,16 +8,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="altcover" Version="8.2.837" />
-    <PackageReference Include="CassandraCSharpDriver" Version="3.17.1" />
-    <PackageReference Include="Docker.DotNet" Version="3.125.5" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
-    <PackageReference Include="MySqlConnector" Version="2.1.8" />
-    <PackageReference Include="Npgsql" Version="6.0.4" />
+    <PackageReference Include="altcover" Version="8.4.840" />
+    <PackageReference Include="CassandraCSharpDriver" Version="3.18.0" />
+    <PackageReference Include="Docker.DotNet" Version="3.125.11" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.0" />
+    <PackageReference Include="MySqlConnector" Version="2.1.13" />
+    <PackageReference Include="Npgsql" Version="6.0.7" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.115.5" />
-    <PackageReference Include="xunit" Version="2.4.1" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.116" />
+    <PackageReference Include="xunit" Version="2.4.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>

@@ -32,6 +32,8 @@ namespace EvolveDb.Tests
         public static string LfScriptPath => Path.Combine(ResourcesFolder, "LF_CRLF/V2_3_2__Migration_description_lf.sql");
         public static string Scripts1 => Path.Combine(ResourcesFolder, "Scripts_1");
         public static string Scripts2 => Path.Combine(ResourcesFolder, "Scripts_2");
+        public static string RepeatableWithDeps1 => Path.Combine(ResourcesFolder, "RepeatableWithDeps_1");
+        public static string RepeatableWithDeps2 => Path.Combine(ResourcesFolder, "RepeatableWithDeps_2");
         public static string SkippedScripts => Path.Combine(ResourcesFolder, "SkippedScripts");
         public static string EvolveJsonPath => Path.Combine(ResourcesFolder, "Configuration/evolve.json");
         public static string Evolve2JsonPath => Path.Combine(ResourcesFolder, "Configuration/evolve2.json");
