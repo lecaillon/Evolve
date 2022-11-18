@@ -72,7 +72,7 @@ Task("test").Does(() =>
     });
 });
 
-Task("report-coverage").Does(() =>
+Task("report-coverage").WithCriteria(() => IsRunningOnLinux()).Does(() =>
 {
     ReportGenerator(report: $"{publishDir}/coverage.xml", targetDir: $"{publishDir}/coverage", new ReportGeneratorSettings
     {

@@ -9,12 +9,12 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="CassandraCSharpDriver" Version="3.17.1" />
+    <PackageReference Include="CassandraCSharpDriver" Version="3.18.0" />
     <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="3.1.0" />
-    <PackageReference Include="MySqlConnector" Version="2.1.8" />
-    <PackageReference Include="Npgsql" Version="6.0.4" />
+    <PackageReference Include="MySqlConnector" Version="2.1.13" />
+    <PackageReference Include="Npgsql" Version="6.0.7" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.115.5" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.116" />
   </ItemGroup>
 
   <ItemGroup>
