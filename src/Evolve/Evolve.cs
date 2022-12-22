@@ -398,15 +398,22 @@ namespace EvolveDb
             }
             else
             {
+                var defaultAmbientTransactionTimeout = TransactionManager.DefaultTimeout;
+
                 TransactionScope scope = null;
                 if (this.AmbientTransactionTimeout != null)
                 {
-                    scope = new TransactionScope(TransactionScopeOption.Required, new TimeSpan(0, 0, this.AmbientTransactionTimeout.Value));
+                    var newAmbientTransactionTimeout = new TimeSpan(0, 0, this.AmbientTransactionTimeout.Value);
+                    ConfigureTransactionTimeoutCore(newAmbientTransactionTimeout);
+
+                    scope = new TransactionScope(TransactionScopeOption.Required, newAmbientTransactionTimeout);
+
                 }
                 else
                 {
                     scope = new TransactionScope();
                 }
+
                 db.WrappedConnection.UseAmbientTransaction();
                 lastAppliedVersion = Migrate();
 
@@ -418,7 +425,13 @@ namespace EvolveDb
                 {
                     LogRollbackAppliedMigration();
                 }
+
                 scope.Dispose();
+
+                if (this.AmbientTransactionTimeout != null)
+                {
+                    ConfigureTransactionTimeoutCore(defaultAmbientTransactionTimeout);
+                }
             }
 
             if (NbMigration == 0)
@@ -444,6 +457,17 @@ namespace EvolveDb
                 ExecuteAllRepeatableMigration(db);
                 return lastAppliedVersion;
             }
+        }
+
+        private void ConfigureTransactionTimeoutCore(TimeSpan timeout)
+        {
+            SetTransactionManagerField("s_cachedMaxTimeout", true);
+            SetTransactionManagerField("s_maximumTimeout", timeout);
+
+            void SetTransactionManagerField(string fieldName, object value) =>
+                typeof(TransactionManager)
+                    .GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Static)
+                    .SetValue(null, value);
         }
 
         /// <summary>
