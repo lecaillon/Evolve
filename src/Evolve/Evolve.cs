@@ -71,6 +71,7 @@ namespace EvolveDb
         public bool EnableClusterMode { get; set; } = true;
         public bool OutOfOrder { get; set; } = false;
         public int? CommandTimeout { get; set; }
+        public int? AmbientTransactionTimeout { get; set; }
         public IEnumerable<Assembly> EmbeddedResourceAssemblies { get; set; } = new List<Assembly>();
         public IEnumerable<string> EmbeddedResourceFilters { get; set; } = new List<string>();
         public bool RetryRepeatableMigrationsUntilNoError { get; set; }
@@ -397,7 +398,15 @@ namespace EvolveDb
             }
             else
             {
-                using var scope = new TransactionScope();
+                TransactionScope scope = null;
+                if (this.AmbientTransactionTimeout != null)
+                {
+                    scope = new TransactionScope(TransactionScopeOption.Required, new TimeSpan(0, 0, this.AmbientTransactionTimeout.Value));
+                }
+                else
+                {
+                    scope = new TransactionScope();
+                }
                 db.WrappedConnection.UseAmbientTransaction();
                 lastAppliedVersion = Migrate();
 
@@ -409,6 +418,7 @@ namespace EvolveDb
                 {
                     LogRollbackAppliedMigration();
                 }
+                scope.Dispose();
             }
 
             if (NbMigration == 0)
