@@ -397,7 +397,35 @@ namespace EvolveDb
                 lastAppliedVersion = Migrate();
             }
             else
-            {
+                var defaultAmbientTransactionTimeout = TransactionManager.DefaultTimeout;
+
+               TransactionScope scope = null;
+               if (this.AmbientTransactionTimeout != null) {
+                   var newAmbientTransactionTimeout = new TimeSpan(0, 0, this.AmbientTransactionTimeout.Value);
+                   ConfigureTransactionTimeoutCore(newAmbientTransactionTimeout);
+
+                   scope = new TransactionScope(TransactionScopeOption.Required, newAmbientTransactionTimeout);
+
+               } else {
+                   scope = new TransactionScope();
+               }
+               try {
+                   db.WrappedConnection.UseAmbientTransaction();
+                   lastAppliedVersion = Migrate();
+
+                   if (TransactionMode == TransactionKind.CommitAll) {
+                       scope.Complete();
+                   } else {
+                       LogRollbackAppliedMigration();
+                   }
+               }
+               finally {
+                   scope.Dispose();
+
+                   if (this.AmbientTransactionTimeout != null) {
+                       ConfigureTransactionTimeoutCore(defaultAmbientTransactionTimeout);
+                   }
+               }
                 var defaultAmbientTransactionTimeout = TransactionManager.DefaultTimeout;
 
                 TransactionScope scope = null;
