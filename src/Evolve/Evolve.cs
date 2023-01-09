@@ -397,6 +397,7 @@ namespace EvolveDb
                 lastAppliedVersion = Migrate();
             }
             else
+{
                 var defaultAmbientTransactionTimeout = TransactionManager.DefaultTimeout;
 
                TransactionScope scope = null;
