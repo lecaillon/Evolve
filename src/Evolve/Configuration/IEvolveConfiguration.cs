@@ -173,6 +173,12 @@ namespace EvolveDb.Configuration
         int? CommandTimeout { get; }
 
         /// <summary>
+        ///    Defines the wait time before terminating the attempt to execute 
+        ///    a migration and generating an error in the ambient transaction. (The default is 60 seconds.)
+        /// </summary>
+        int? AmbientTransactionTimeout { get; }
+
+        /// <summary>
         ///     When set, Evolve will scan the given list of assembly to load embedded migration scripts.
         /// </summary>
         IEnumerable<Assembly> EmbeddedResourceAssemblies { get; }

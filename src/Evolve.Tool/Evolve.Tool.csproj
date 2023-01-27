@@ -23,21 +23,7 @@ Every time you build your project, it will automatically ensure that your databa
     <RepositoryUrl>https://github.com/lecaillon/Evolve.git</RepositoryUrl>
     <PackageTags>evolve flyway dotnet tool sql database migration mysql sqlserver cassandra mariadb sqlite postgresql cockroachdb</PackageTags>
     <PackageReleaseNotes>## Features
-- #218 Add new option -- evolve-repeat-always at the beginning of the script to always execute a repeatable migration
-- #220 Add new option MigrationLoader to help you customize the Evolve migration collect process and enable your own specific logic
-- #222 Enable quotes in migration name
-- #224 Add SQL Server GO delimiter support in SQL comment
-- #228 Add new command Validate
-- #249 Add support of secrets in the connection string
-- #267 Add support for using Azure-issued access tokens with SQL Server connections
-- #274 Skip Hidden and System migration files by default
-
-## Breaking changes
-- #250 Drop support of .NET Core 3.1, add support of .NET6
-
-## Bug fixes
-- #252 Fix transaction not completely rolled back with option OutOfOrder
-- #253 Fix drop Postgresql objects with dependencies</PackageReleaseNotes>
+- #293 Add timeout for ambient transactions</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

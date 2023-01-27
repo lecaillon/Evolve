@@ -37,6 +37,7 @@
                 PlaceholderSuffix = options.PlaceholderSuffix,
                 Encoding = ParseEncoding(options.Encoding),
                 CommandTimeout = options.CommandTimeout,
+                AmbientTransactionTimeout = options.AmbientTransactionTimeout,
                 OutOfOrder = options.OutOfOrder,
                 IsEraseDisabled = options.EraseDisabled,
                 MustEraseOnValidationError = options.EraseOnValidationError,
