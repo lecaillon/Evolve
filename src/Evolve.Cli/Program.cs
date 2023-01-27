@@ -15,7 +15,6 @@
 
         static int Main(string[] args) => CommandLineApplication.Execute<Program>(args);
 
-        [SuppressMessage("Design", "CA1031: Do not catch general exception types")]
         [SuppressMessage("Qualité du code", "IDE0051: Supprimer les membres privés non utilisés")]
         private int OnExecute(CommandLineApplication app, IConsole console)
         {
@@ -90,6 +89,9 @@
 
         [Option("--command-timeout", "The wait time in seconds before terminating the attempt to execute a migration and generating an error. Default: 30", CommandOptionType.SingleValue)]
         public int? CommandTimeout { get; } = Default.CommandTimeout;
+
+        [Option("--ambient-tx-timeout", "The wait time in seconds before terminating the attempt to execute a migration and generating an error in the ambient transaction. Default: 60", CommandOptionType.SingleValue)]
+        public int? AmbientTransactionTimeout { get; } = Default.AmbientTransactionTimeout;
 
         [Option("--out-of-order", "Allows migration scripts to be run “out of order”. Default: false", CommandOptionType.SingleValue)]
         public bool OutOfOrder { get; } = Default.OutOfOrder;

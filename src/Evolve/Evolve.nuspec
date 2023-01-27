@@ -14,20 +14,7 @@ Every time you build your project, it will automatically ensure that your databa
     <iconUrl>https://raw.githubusercontent.com/lecaillon/Evolve/master/images/logo128.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <releaseNotes>## Features
-- #218 Add new option -- evolve-repeat-always at the beginning of the script to always execute a repeatable migration
-- #220 Add new option MigrationLoader to help you customize the Evolve migration collect process and enable your own specific logic
-- #222 Enable quotes in migration name
-- #224 Add SQL Server GO delimiter support in SQL comment
-- #228 Add new command Validate
-- #274 Skip Hidden and System migration files by default
-- #262 Allow to set default DBMS in Evolve constructor to skip auto-detection
-
-## Breaking changes
-- #245 Rename the namespace Evolve to `EvolveDb` to avoid name collision when using the class Evolve
-
-## Bug fixes
-- #252 Fix transaction not completely rolled back with option OutOfOrder
-- #253 Fix drop Postgresql objects with dependencies</releaseNotes>
+- #293 Add timeout for ambient transactions</releaseNotes>
     <tags>evolve flyway sql database migration mysql sqlserver cassandra mariadb sqlite postgresql cockroachdb</tags>
     <dependencies>
       <group targetFramework="netstandard2.0" />

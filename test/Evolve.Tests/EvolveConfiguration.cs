@@ -35,6 +35,7 @@ namespace EvolveDb.Tests
         public bool EnableClusterMode { get; set; } = true;
         public bool OutOfOrder { get; set; } = false;
         public int? CommandTimeout { get; set; }
+        public int? AmbientTransactionTimeout { get; set; }
         public IEnumerable<Assembly> EmbeddedResourceAssemblies { get; set; } = new List<Assembly>();
         public IEnumerable<string> EmbeddedResourceFilters { get; set; } = new List<string>();
         public bool RetryRepeatableMigrationsUntilNoError { get; set; }

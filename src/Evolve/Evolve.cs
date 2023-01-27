@@ -71,6 +71,7 @@ namespace EvolveDb
         public bool EnableClusterMode { get; set; } = true;
         public bool OutOfOrder { get; set; } = false;
         public int? CommandTimeout { get; set; }
+        public int? AmbientTransactionTimeout { get; set; }
         public IEnumerable<Assembly> EmbeddedResourceAssemblies { get; set; } = new List<Assembly>();
         public IEnumerable<string> EmbeddedResourceFilters { get; set; } = new List<string>();
         public bool RetryRepeatableMigrationsUntilNoError { get; set; }
@@ -397,17 +398,40 @@ namespace EvolveDb
             }
             else
             {
-                using var scope = new TransactionScope();
-                db.WrappedConnection.UseAmbientTransaction();
-                lastAppliedVersion = Migrate();
-
-                if (TransactionMode == TransactionKind.CommitAll)
+                TransactionScope scope;
+                var defaultAmbientTransactionTimeout = TransactionManager.DefaultTimeout;
+                if (AmbientTransactionTimeout != null)
                 {
-                    scope.Complete();
+                    var newAmbientTransactionTimeout = new TimeSpan(0, 0, AmbientTransactionTimeout.Value);
+                    ConfigureTransactionTimeoutCore(newAmbientTransactionTimeout);
+                    scope = new TransactionScope(TransactionScopeOption.Required, newAmbientTransactionTimeout);
                 }
                 else
                 {
-                    LogRollbackAppliedMigration();
+                    scope = new TransactionScope();
+                }
+
+                try
+                {
+                    db.WrappedConnection.UseAmbientTransaction();
+                    lastAppliedVersion = Migrate();
+
+                    if (TransactionMode == TransactionKind.CommitAll)
+                    {
+                        scope.Complete();
+                    }
+                    else
+                    {
+                        LogRollbackAppliedMigration();
+                    }
+                }
+                finally
+                {
+                    scope.Dispose();
+                    if (AmbientTransactionTimeout != null)
+                    {
+                        ConfigureTransactionTimeoutCore(defaultAmbientTransactionTimeout);
+                    }
                 }
             }
 
@@ -433,6 +457,19 @@ namespace EvolveDb
                 var lastAppliedVersion = ExecuteAllMigration(db);
                 ExecuteAllRepeatableMigration(db);
                 return lastAppliedVersion;
+            }
+        }
+
+        private static void ConfigureTransactionTimeoutCore(TimeSpan timeout)
+        {
+            SetTransactionManagerField("s_cachedMaxTimeout", true);
+            SetTransactionManagerField("s_maximumTimeout", timeout);
+
+            static void SetTransactionManagerField(string fieldName, object value)
+            {
+                typeof(TransactionManager)
+                    .GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Static)!
+                    .SetValue(null, value);
             }
         }
 
