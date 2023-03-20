@@ -7,11 +7,12 @@
     using Configuration;
     using Dialect;
     using McMaster.Extensions.CommandLineUtils;
+    using Microsoft.Data.Sqlite;
 
     [Command(ResponseFileHandling = ResponseFileHandling.ParseArgsAsSpaceSeparated)]
     class Program
     {
-        private static readonly Evolve Default = new Evolve(new System.Data.SQLite.SQLiteConnection("Data Source=:memory:"));
+        private static readonly Evolve Default = new Evolve(new SqliteConnection("Data Source=:memory:"));
 
         static int Main(string[] args) => CommandLineApplication.Execute<Program>(args);
 
