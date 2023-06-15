@@ -114,7 +114,7 @@
         {
             try
             {
-                return placeholders.Select(i => i.Split(':')).ToDictionary(i => prefix + i[0] + suffix, i => i[1]);
+                return placeholders.Select(i => i.Split(':', 2)).ToDictionary(i => prefix + i[0] + suffix, i => i[1]);
             }
             catch
             {
