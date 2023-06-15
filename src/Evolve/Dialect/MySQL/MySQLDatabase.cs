@@ -24,8 +24,8 @@ namespace EvolveDb.Dialect.MySQL
 
         public override Schema GetSchema(string schemaName) => new MySQLSchema(schemaName, WrappedConnection);
 
-        public override bool TryAcquireApplicationLock() => WrappedConnection.QueryForLong($"SELECT GET_LOCK('{LOCK_ID}', 0);") == 1;
+        public override bool TryAcquireApplicationLock(object? lockId = null) => WrappedConnection.QueryForLong($"SELECT GET_LOCK('{lockId?? LOCK_ID}', 0);") == 1;
 
-        public override bool ReleaseApplicationLock() => WrappedConnection.QueryForLong($"SELECT RELEASE_LOCK('{LOCK_ID}');") == 1;
+        public override bool ReleaseApplicationLock(object? lockId = null) => WrappedConnection.QueryForLong($"SELECT RELEASE_LOCK('{lockId ?? LOCK_ID}');") == 1;
     }
 }

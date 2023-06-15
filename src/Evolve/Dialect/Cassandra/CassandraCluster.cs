@@ -39,7 +39,7 @@ namespace EvolveDb.Dialect.Cassandra
         ///     Will check for a predefined keyspace and table to see if there is a lock.
         ///     Otherwise, always returns true, because the lock is granted at table level.
         /// </summary>
-        public override bool TryAcquireApplicationLock()
+        public override bool TryAcquireApplicationLock(object? lockId = null)
         {
             string clusterLockKeyspaceName = "cluster_lock";
             string clusterLockTableName = "lock";
@@ -53,6 +53,9 @@ namespace EvolveDb.Dialect.Cassandra
                 clusterLockKeyspaceName = clusterLock!.GetValue("defaultClusterLockKeyspace", clusterLockKeyspaceName)!;
                 clusterLockTableName = clusterLock!.GetValue("defaultClusterLockTable", clusterLockTableName)!;
             }
+
+            // Input parameter overrides both the above variants
+            clusterLockTableName = lockId?.ToString() ?? clusterLockTableName;
 
             try
             {
@@ -71,7 +74,7 @@ namespace EvolveDb.Dialect.Cassandra
         /// <summary>
         ///     Returns always true, because the lock is released at table level.
         /// </summary>
-        public override bool ReleaseApplicationLock() => true;
+        public override bool ReleaseApplicationLock(object? lockId = null) => true;
 
         public override SqlStatementBuilderBase SqlStatementBuilder { get; } = new CqlStatementBuilder();
     }
