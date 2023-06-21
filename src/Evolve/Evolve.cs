@@ -77,7 +77,7 @@ namespace EvolveDb
         public bool RetryRepeatableMigrationsUntilNoError { get; set; }
         public TransactionKind TransactionMode { get; set; } = TransactionKind.CommitEach;
         public bool SkipNextMigrations { get; set; } = false;
-        public int? ApplicationLockId { get; set; } = null;
+        public object? ApplicationLockId { get; set; } = null;
 
         private IMigrationLoader? _migrationLoader;
         public IMigrationLoader MigrationLoader
