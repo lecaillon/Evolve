@@ -62,7 +62,7 @@ Task("test").Does(() =>
         Configuration = configuration,
         ArgumentCustomization = args => args.AppendSwitchQuoted("--filter", "Category!=Cli")
                                             .Append(logger)
-                                            .Append("/p:AltCover=false")
+                                            .Append("/p:AltCover=true")
                                             .Append("/p:AltCoverForce=true")
                                             .Append("/p:AltCoverCallContext=[Fact]|[Theory]")
                                             .Append("/p:AltCoverAssemblyFilter=Evolve.Tests|xunit.runner|MySqlConnector|xunit.assert|xunit.core|xunit.execution.dotnet|AltCover.Monitor")
