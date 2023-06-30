@@ -6,10 +6,8 @@ using Xunit.Abstractions;
 
 namespace EvolveDb.Tests.Integration.PostgreSql
 {
-    public class Scenario004 : Scenario<PostgreSqlContainer>
+    public record Scenario004(ITestOutputHelper Output) : Scenario<PostgreSqlContainer>(Output)
     {
-        public Scenario004(ITestOutputHelper output) : base(output) {}
-
         [Fact]
         [Category(Test.PostgreSQL, Test.Sceanario)]
         public void Scenario_postresql_tx_rollback_all_either_when_migration_succeeds_or_fails()

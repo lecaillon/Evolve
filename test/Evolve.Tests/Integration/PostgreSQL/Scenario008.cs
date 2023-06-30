@@ -5,10 +5,8 @@ using Xunit.Abstractions;
 
 namespace EvolveDb.Tests.Integration.PostgreSql
 {
-    public class Scenario008 : Scenario<PostgreSqlContainer>
+    public record Scenario008(ITestOutputHelper Output) : Scenario<PostgreSqlContainer>(Output)
     {
-        public Scenario008(ITestOutputHelper output) : base(output) {}
-
         [Fact]
         [Category(Test.PostgreSQL, Test.Sceanario)]
         public void Scenario_check_validation()

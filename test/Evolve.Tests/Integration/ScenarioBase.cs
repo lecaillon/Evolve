@@ -11,15 +11,9 @@ using static EvolveDb.Tests.TestContext;
 
 namespace EvolveDb.Tests.Integration
 {
-    public abstract class Scenario<T> : DbContainerFixture<T> where T : IDbContainer, new()
+    public abstract record Scenario<T>(ITestOutputHelper Output) : DbContainerFixture<T> where T : IDbContainer, new()
     {
         protected readonly T _dbContainer = new();
-        protected readonly ITestOutputHelper _output;
-
-        public Scenario(ITestOutputHelper output)
-        {
-            _output = output;
-        }
 
         public DbConnection Cnn { get; private set; }
         internal WrappedConnection WrappedConnection { get; private set; }
@@ -70,7 +64,7 @@ namespace EvolveDb.Tests.Integration
             }
 
             WrappedConnection = new WrappedConnection(Cnn);
-            Evolve = new Evolve(Cnn, msg => _output.WriteLine(msg), Dbms)
+            Evolve = new Evolve(Cnn, msg => Output.WriteLine(msg), Dbms)
             {
                 Schemas = new[] { SchemaName },
                 MetadataTableSchema = SchemaName,

@@ -5,17 +5,8 @@ using static EvolveDb.Tests.TestContext;
 
 namespace EvolveDb.Tests.Integration.Cassandra
 {
-    public class MigrationTest : DbContainerFixture<CassandraContainer>
+    public record MigrationTest(ITestOutputHelper Output) : DbContainerFixture<CassandraContainer>
     {
-        private readonly ITestOutputHelper _output;
-
-        public MigrationTest(ITestOutputHelper output)
-        {
-            _output = output;
-        }
-
-        public override bool FromScratch => Local;
-
         [FactSkippedOnAppVeyor]
         [Category(Test.Cassandra)]
         public void Run_all_Cassandra_integration_tests_work()
@@ -23,7 +14,7 @@ namespace EvolveDb.Tests.Integration.Cassandra
             // Arrange
             string metadataKeyspaceName = "my_keyspace_1"; // this name must also be declared in _evolve.cassandra.json
             var cnn = CreateDbConnection();
-            var evolve = new Evolve(cnn, msg => _output.WriteLine(msg))
+            var evolve = new Evolve(cnn, msg => Output.WriteLine(msg))
             {
                 CommandTimeout = 25,
                 MetadataTableSchema = metadataKeyspaceName,
@@ -31,6 +22,7 @@ namespace EvolveDb.Tests.Integration.Cassandra
                 Placeholders = new Dictionary<string, string> { ["${keyspace}"] = metadataKeyspaceName },
                 SqlMigrationSuffix = ".cql"
             };
+            evolve.Erase();
 
             // Assert
             evolve.AssertInfoIsSuccessful(cnn)
@@ -53,11 +45,6 @@ namespace EvolveDb.Tests.Integration.Cassandra
             evolve.ChangeLocations(CassandraDb.MigrationFolder)
                   .AssertMigrateIsSuccessful(cnn)
                   .AssertInfoIsSuccessful(cnn);
-
-            evolve.AssertEraseIsSuccessful(cnn, e => e.IsEraseDisabled = false);
-
-            // Call the second part of the Cassandra integration tests
-            new DialectTest().Run_all_Cassandra_integration_tests_work();
         }
     }
 }

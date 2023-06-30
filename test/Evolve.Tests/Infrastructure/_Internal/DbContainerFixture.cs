@@ -7,7 +7,7 @@ using Xunit;
 
 namespace EvolveDb.Tests.Infrastructure
 {
-    public abstract class DbContainerFixture<T> : IAsyncLifetime where T : IDbContainer, new()
+    public abstract record DbContainerFixture<T> : IAsyncLifetime where T : IDbContainer, new()
     {
         private static readonly SemaphoreSlim Semaphore = new(1);
 

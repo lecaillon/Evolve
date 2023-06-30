@@ -3,17 +3,13 @@ using EvolveDb.Dialect;
 using EvolveDb.Dialect.SQLServer;
 using EvolveDb.Tests.Infrastructure;
 using System.Data.SqlClient;
-using System.Xml.Linq;
 using Xunit;
-using static EvolveDb.Tests.TestContext;
 
 namespace EvolveDb.Tests.Integration.SQLServer
 {
-    public class DialectTest : DbContainerFixture<SQLServerContainer>
+    public record DialectTest : DbContainerFixture<SQLServerContainer>
     {
         public const string DbName = "my_database_1";
-
-        public override bool FromScratch => Local;
 
         [Fact]
         [Category(Test.SQLServer)]
@@ -26,6 +22,7 @@ namespace EvolveDb.Tests.Integration.SQLServer
             var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLServer, wcnn);
             string schemaName = "dbo";
             var schema = new SQLServerSchema(schemaName, wcnn);
+            schema.Erase();
 
             // Assert
             db.AssertDefaultSchemaName(schemaName)

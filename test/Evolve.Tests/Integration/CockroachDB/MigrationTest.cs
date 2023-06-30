@@ -4,27 +4,19 @@ using static EvolveDb.Tests.TestContext;
 
 namespace EvolveDb.Tests.Integration.CockroachDb
 {
-    public class MigrationTests : DbContainerFixture<CockroachDBContainer>
+    public record MigrationTests(ITestOutputHelper Output) : DbContainerFixture<CockroachDBContainer>
     {
-        private readonly ITestOutputHelper _output;
-
-        public MigrationTests(ITestOutputHelper output)
-        {
-            _output = output;
-        }
-
-        public override bool FromScratch => Local;
-
         [FactSkippedOnAppVeyor]
         [Category(Test.CockroachDB)]
         public void Run_all_CockroachDB_migrations_work()
         {
             // Arrange
             var cnn = CreateDbConnection();
-            var evolve = new Evolve(cnn, msg => _output.WriteLine(msg))
+            var evolve = new Evolve(cnn, msg => Output.WriteLine(msg))
             {
                 Schemas = new[] { "evolve", "defaultdb" }, // MetadataTableSchema = evolve | migrations = defaultdb
             };
+            evolve.Erase();
 
             // Assert
             evolve.AssertInfoIsSuccessful(cnn)

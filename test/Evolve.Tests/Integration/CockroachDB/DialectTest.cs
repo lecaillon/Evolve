@@ -5,10 +5,8 @@ using EvolveDb.Tests.Infrastructure;
 
 namespace EvolveDb.Tests.Integration.CockroachDb
 {
-    public class DialectTest : DbContainerFixture<CockroachDBContainer>
+    public record DialectTest : DbContainerFixture<CockroachDBContainer>
     {
-        public override bool FromScratch => TestContext.Local;
-
         [FactSkippedOnAppVeyor]
         [Category(Test.CockroachDB)]
         public void Run_all_CockroachDB_integration_tests_work()

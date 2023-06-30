@@ -6,7 +6,7 @@ using Xunit;
 
 namespace EvolveDb.Tests.Integration.MySql
 {
-    public class DialectTest : DbContainerFixture<MySQLContainer>
+    public record DialectTest : DbContainerFixture<MySQLContainer>
     {
         [Fact]
         [Category(Test.MySQL)]
@@ -20,6 +20,7 @@ namespace EvolveDb.Tests.Integration.MySql
             var schema = new MySQLSchema(schemaName, wcnn);
 
             // Assert
+            schema.Drop();
             schema.AssertIsNotExists();
             schema.AssertCreation();
             schema.AssertExists();

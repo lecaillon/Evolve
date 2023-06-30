@@ -6,7 +6,7 @@ using Xunit;
 
 namespace EvolveDb.Tests.Integration.PostgregSql
 {
-    public class DialectTest : DbContainerFixture<PostgreSqlContainer>
+    public record DialectTest : DbContainerFixture<PostgreSqlContainer>
     {
         [Fact]
         [Category(Test.PostgreSQL)]
@@ -18,6 +18,7 @@ namespace EvolveDb.Tests.Integration.PostgregSql
             var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.PostgreSQL, wcnn);
             string schemaName = "My metadata schema";
             var schema = new PostgreSQLSchema(schemaName, wcnn);
+            schema.Drop();
 
             // Assert
             schema.AssertIsNotExists();

@@ -4,10 +4,8 @@ using Xunit.Abstractions;
 
 namespace EvolveDb.Tests.Integration.PostgreSql
 {
-    public class Scenario009 : Scenario<PostgreSqlContainer>
+    public record Scenario009(ITestOutputHelper Output) : Scenario<PostgreSqlContainer>(Output)
     {
-        public Scenario009(ITestOutputHelper output) : base(output) {}
-
         [Fact]
         [Category(Test.PostgreSQL, Test.Sceanario)]
         public void Scenario_drop_extension_should_work()

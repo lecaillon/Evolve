@@ -5,22 +5,15 @@ using static EvolveDb.Tests.TestContext;
 
 namespace EvolveDb.Tests.Integration.MySql
 {
-    public class MigrationTest : DbContainerFixture<MySQLContainer>
+    public record MigrationTest(ITestOutputHelper Output) : DbContainerFixture<MySQLContainer>
     {
-        private readonly ITestOutputHelper _output;
-
-        public MigrationTest(ITestOutputHelper output)
-        {
-            _output = output;
-        }
-
         [Fact]
         [Category(Test.MySQL)]
         public void Run_all_MySQL_migrations_work()
         {
             // Arrange
             var cnn = CreateDbConnection();
-            var evolve = new Evolve(cnn, msg => _output.WriteLine(msg))
+            var evolve = new Evolve(cnn, msg => Output.WriteLine(msg))
             {
                 EmbeddedResourceAssemblies = new[] { typeof(TestContext).Assembly },
                 EmbeddedResourceFilters = new[] { MySQL.MigrationFolderFilter },

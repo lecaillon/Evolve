@@ -7,15 +7,8 @@ using static EvolveDb.Tests.TestContext;
 
 namespace EvolveDb.Tests.Integration.PostgregSql
 {
-    public class MigrationTests : DbContainerFixture<PostgreSqlContainer>
+    public record MigrationTests(ITestOutputHelper Output) : DbContainerFixture<PostgreSqlContainer>
     {
-        private readonly ITestOutputHelper _output;
-
-        public MigrationTests(ITestOutputHelper output)
-        {
-            _output = output;
-        }
-
         [Fact]
         [Category(Test.PostgreSQL)]
         public void Run_all_PostgreSQL_migrations_work()
@@ -23,12 +16,13 @@ namespace EvolveDb.Tests.Integration.PostgregSql
             // Arrange
             string[] locations = AppVeyor ? new[] { PostgreSQL.MigrationFolder } : new[] { PostgreSQL.MigrationFolder, PostgreSQL.Migration11Folder }; // Add specific PostgreSQL 11 scripts
             var cnn = CreateDbConnection();
-            var evolve = new Evolve(cnn, msg => _output.WriteLine(msg), DBMS.PostgreSQL)
+            var evolve = new Evolve(cnn, msg => Output.WriteLine(msg), DBMS.PostgreSQL)
             {
                 Schemas = new[] { "public", "unittest" },
                 MetadataTableSchema = "unittest",
                 Placeholders = new Dictionary<string, string> { ["${schema1}"] = "unittest" }
             };
+            evolve.Erase();
 
             // Assert
             evolve.AssertInfoIsSuccessful(cnn)
@@ -67,8 +61,6 @@ namespace EvolveDb.Tests.Integration.PostgregSql
             evolve.ChangeLocations(PostgreSQL.RepeatableFolder)
                   .AssertRepairIsSuccessful(cnn, expectedNbReparation: 0)
                   .AssertMigrateIsSuccessful(cnn);
-
-            evolve.AssertEraseIsSuccessful(cnn);
         }
     }
 }

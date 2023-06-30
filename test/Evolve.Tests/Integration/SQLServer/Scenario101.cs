@@ -6,7 +6,7 @@ using Xunit.Abstractions;
 
 namespace EvolveDb.Tests.Integration.SQLServer
 {
-    public class Scenario101 : Scenario<SQLServerContainer>
+    public record Scenario101 : Scenario<SQLServerContainer>
     {
         public Scenario101(ITestOutputHelper output) : base(output) { }
 

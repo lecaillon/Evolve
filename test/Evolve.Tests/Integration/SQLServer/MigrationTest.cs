@@ -8,17 +8,9 @@ using static EvolveDb.Tests.TestContext;
 
 namespace EvolveDb.Tests.Integration.SQLServer
 {
-    public class MigrationTest : DbContainerFixture<SQLServerContainer>
+    public record MigrationTest(ITestOutputHelper Output) : DbContainerFixture<SQLServerContainer>
     {
         public const string DbName = "my_database_2";
-        private readonly ITestOutputHelper _output;
-
-        public MigrationTest(ITestOutputHelper output)
-        {
-            _output = output;
-        }
-
-        public override bool FromScratch => Local;
 
         [Fact]
         [Category(Test.SQLServer)]
@@ -27,11 +19,12 @@ namespace EvolveDb.Tests.Integration.SQLServer
             // Arrange
             TestUtil.CreateSqlServerDatabase(DbName, CnxStr);
             var cnn = new SqlConnection(CnxStr.Replace("master", DbName));
-            var evolve = new Evolve(cnn, msg => _output.WriteLine(msg))
+            var evolve = new Evolve(cnn, msg => Output.WriteLine(msg))
             {
                 Placeholders = new Dictionary<string, string> { ["${db}"] = DbName, ["${schema2}"] = "dbo" },
                 TargetVersion = new MigrationVersion("8_9"),
             };
+            evolve.Erase();
 
             // Assert
             evolve.AssertInfoIsSuccessful(cnn)

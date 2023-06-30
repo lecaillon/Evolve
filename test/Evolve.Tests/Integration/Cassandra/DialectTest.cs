@@ -6,7 +6,7 @@ using Xunit;
 
 namespace EvolveDb.Tests.Integration.Cassandra
 {
-    public class DialectTest : DbContainerFixture<CassandraContainer>
+    public record DialectTest : DbContainerFixture<CassandraContainer>
     {
         /// <summary>
         ///     Second part of the integration test.
@@ -16,6 +16,8 @@ namespace EvolveDb.Tests.Integration.Cassandra
         ///     in the same test context, we merge the integration tests to only use one container.
         ///     My guess, a possible Cassandra driver issue.
         /// </remarks>
+        [FactSkippedOnAppVeyor]
+        [Category(Test.Cassandra)]
         public void Run_all_Cassandra_integration_tests_work()
         {
             // Arrange

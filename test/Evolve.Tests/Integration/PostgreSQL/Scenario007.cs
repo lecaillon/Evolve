@@ -8,10 +8,8 @@ using Xunit.Abstractions;
 
 namespace EvolveDb.Tests.Integration.PostgreSql
 {
-    public class Scenario007 : Scenario<PostgreSqlContainer>
+    public record Scenario007(ITestOutputHelper Output) : Scenario<PostgreSqlContainer>(Output)
     {
-        public Scenario007(ITestOutputHelper output) : base(output) {}
-
         [Fact]
         [Category(Test.PostgreSQL, Test.Sceanario)]
         public void Scenario_use_a_custom_migration_loader_only_when_is_set()
