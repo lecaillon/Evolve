@@ -16,8 +16,6 @@ namespace EvolveDb.Tests.Integration.PostgregSql
             _output = output;
         }
 
-        public override bool MustRunContainer => Local;
-
         [Fact]
         [Category(Test.PostgreSQL)]
         public void Run_all_PostgreSQL_migrations_work()

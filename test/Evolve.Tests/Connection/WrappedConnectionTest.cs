@@ -9,8 +9,6 @@ namespace EvolveDb.Tests.Connection
 {
     public class WrappedConnectionTest : DbContainerFixture<PostgreSqlContainer>
     {
-        public override bool MustRunContainer => TestContext.Local || TestContext.AzureDevOps;
-
         [Fact]
         [Category(Test.Connection)]
         public void Inner_dbconnection_can_not_be_null()

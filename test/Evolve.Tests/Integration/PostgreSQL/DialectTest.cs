@@ -8,8 +8,6 @@ namespace EvolveDb.Tests.Integration.PostgregSql
 {
     public class DialectTest : DbContainerFixture<PostgreSqlContainer>
     {
-        public override bool MustRunContainer => TestContext.Local;
-
         [Fact]
         [Category(Test.PostgreSQL)]
         public void Run_all_PostgreSQL_integration_tests_work()

@@ -15,7 +15,7 @@ namespace EvolveDb.Tests.Infrastructure
 
         public string CnxStr => _container.CnxStr;
         public virtual bool FromScratch { get; } = false;
-        public virtual bool MustRunContainer { get; } = true;
+        public virtual bool MustRunContainer { get; } = TestContext.Local;
         public virtual Action Initialize { get; }
 
         public DbConnection CreateDbConnection() => _container.CreateDbConnection();
