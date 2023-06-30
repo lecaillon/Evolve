@@ -26,6 +26,7 @@ namespace EvolveDb.Tests.Infrastructure
 
             if (!MustRunContainer)
             {
+                Initialize?.Invoke();
                 return;
             }
 
