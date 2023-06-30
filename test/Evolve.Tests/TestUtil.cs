@@ -17,7 +17,11 @@ namespace EvolveDb.Tests
 
             using (var cmd = cnn.CreateCommand())
             {
-                cmd.CommandText = $"CREATE DATABASE {dbName};";
+                cmd.CommandText = $"IF NOT EXISTS(SELECT * FROM sys.databases WHERE name = '{dbName}') " +
+                                  $"BEGIN " +
+                                  $"CREATE DATABASE {dbName} " +
+                                  $"END";
+
                 cmd.ExecuteNonQuery();
             }
 

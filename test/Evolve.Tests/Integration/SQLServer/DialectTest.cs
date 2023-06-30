@@ -1,45 +1,32 @@
-﻿using System.Data.SqlClient;
-using EvolveDb.Connection;
+﻿using EvolveDb.Connection;
 using EvolveDb.Dialect;
 using EvolveDb.Dialect.SQLServer;
 using EvolveDb.Tests.Infrastructure;
+using System.Data.SqlClient;
 using Xunit;
-using static EvolveDb.Tests.TestContext;
 
 namespace EvolveDb.Tests.Integration.SQLServer
 {
-    [Collection("SQLServer collection")]
-    public class DialectTest
+    public record DialectTest : DbContainerFixture<SQLServerContainer>
     {
         public const string DbName = "my_database_1";
-        private readonly SQLServerFixture _dbContainer;
-
-        public DialectTest(SQLServerFixture dbContainer)
-        {
-            _dbContainer = dbContainer;
-
-            if (Local)
-            {
-                dbContainer.Run(fromScratch: true);
-            }
-
-            TestUtil.CreateSqlServerDatabase(DbName, _dbContainer.GetCnxStr("master"));
-        }
 
         [Fact]
         [Category(Test.SQLServer)]
         public void Run_all_SQLServer_integration_tests_work()
         {
             // Arrange
-            var cnn = new SqlConnection(_dbContainer.GetCnxStr(DbName));
+            TestUtil.CreateSqlServerDatabase(DbName, CnxStr);
+            var cnn = new SqlConnection(CnxStr.Replace("master", DbName));
             var wcnn = new WrappedConnection(cnn).AssertDatabaseServerType(DBMS.SQLServer);
             var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.SQLServer, wcnn);
             string schemaName = "dbo";
             var schema = new SQLServerSchema(schemaName, wcnn);
+            schema.Erase();
 
             // Assert
             db.AssertDefaultSchemaName(schemaName)
-              .AssertApplicationLock(new SqlConnection(_dbContainer.GetCnxStr(DbName)))
+              .AssertApplicationLock(new SqlConnection(CnxStr.Replace("master", DbName)))
               .AssertMetadataTableCreation(schemaName, "changelog")
               .AssertMetadataTableLock()
               .AssertSchemaIsErasableWhenEmptySchemaFound(schemaName) // id:1

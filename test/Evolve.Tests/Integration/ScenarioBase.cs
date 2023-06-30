@@ -1,61 +1,30 @@
-﻿using System;
-using System.Data.Common;
-using System.Data.SqlClient;
-using System.IO;
-using EvolveDb.Connection;
+﻿using EvolveDb.Connection;
 using EvolveDb.Dialect;
 using EvolveDb.Metadata;
 using EvolveDb.Tests.Infrastructure;
+using System;
+using System.Data.Common;
+using System.Data.SqlClient;
+using System.IO;
 using Xunit.Abstractions;
 using static EvolveDb.Tests.TestContext;
 
 namespace EvolveDb.Tests.Integration
 {
-    public abstract class Scenario<T> where T : IDbContainerFixture
+    public abstract record Scenario<T>(ITestOutputHelper Output) : DbContainerFixture<T> where T : IDbContainer, new()
     {
-        protected readonly T _dbContainer;
-        protected readonly ITestOutputHelper _output;
+        protected readonly T _dbContainer = new();
 
-        public Scenario(T dbContainer, ITestOutputHelper output)
-        {
-            _dbContainer = dbContainer;
-            _output = output;
-
-            if (Local)
-            {
-                dbContainer.Run(fromScratch: true);
-            }
-
-            if (Dbms == DBMS.SQLServer)
-            {
-                TestUtil.CreateSqlServerDatabase(DbName, (_dbContainer as SQLServerFixture).GetCnxStr("master"));
-                Cnn = new SqlConnection((_dbContainer as SQLServerFixture).GetCnxStr(DbName));
-            }
-            else
-            {
-                Cnn = _dbContainer.CreateDbConnection();
-            }
-
-            WrappedConnection = new WrappedConnection(Cnn);
-            Evolve = new Evolve(Cnn, msg => _output.WriteLine(msg))
-            {
-                Schemas = new[] { SchemaName },
-                MetadataTableSchema = SchemaName,
-                Locations = new[] { ScenarioFolder },
-                Placeholders = new() { ["${db}"] = DbName, ["${schema}"] = SchemaName },
-            };
-        }
-
-        public DbConnection Cnn { get; }
-        internal WrappedConnection WrappedConnection { get; }
-        public Evolve Evolve { get; }
+        public DbConnection Cnn { get; private set; }
+        internal WrappedConnection WrappedConnection { get; private set; }
+        public Evolve Evolve { get; private set; }
         public DBMS Dbms => typeof(T).Name switch
         {
-            "CassandraFixture" => DBMS.Cassandra,
-            "CockroachDbFixture" => DBMS.CockroachDB,
-            "MySQLFixture" => DBMS.MySQL,
-            "PostgreSqlFixture" => DBMS.PostgreSQL,
-            "SQLServerFixture" => DBMS.SQLServer,
+            "CassandraContainer" => DBMS.Cassandra,
+            "CockroachDbContainer" => DBMS.CockroachDB,
+            "MySQLContainer" => DBMS.MySQL,
+            "PostgreSqlContainer" => DBMS.PostgreSQL,
+            "SQLServerContainer" => DBMS.SQLServer,
             _ => throw new NotSupportedException($"{typeof(T).Name} not supported.")
         };
         public string DbName => Dbms == DBMS.SQLServer ? GetType().Name : "";
@@ -79,5 +48,31 @@ namespace EvolveDb.Tests.Integration
             DBMS.SQLServer => Path.Combine(SqlServer.SqlScriptsFolder, GetType().Name),
             _ => throw new NotSupportedException($"{typeof(T).Name} not supported.")
         };
+
+        public override Action Initialize => Init;
+
+        private void Init()
+        {
+            if (Dbms == DBMS.SQLServer)
+            {
+                TestUtil.CreateSqlServerDatabase(DbName, CnxStr);
+                Cnn = new SqlConnection(CnxStr.Replace("master", DbName));
+            }
+            else
+            {
+                Cnn = _dbContainer.CreateDbConnection();
+            }
+
+            WrappedConnection = new WrappedConnection(Cnn);
+            Evolve = new Evolve(Cnn, msg => Output.WriteLine(msg), Dbms)
+            {
+                Schemas = new[] { SchemaName },
+                MetadataTableSchema = SchemaName,
+                Locations = new[] { ScenarioFolder },
+                Placeholders = new() { ["${db}"] = DbName, ["${schema}"] = SchemaName },
+            };
+
+            Evolve.Erase();
+        }
     }
 }

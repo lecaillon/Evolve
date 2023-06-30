@@ -1,42 +1,28 @@
-﻿using System.Collections.Generic;
-using EvolveDb.Dialect;
+﻿using EvolveDb.Dialect;
 using EvolveDb.Tests.Infrastructure;
+using System.Collections.Generic;
 using Xunit;
 using Xunit.Abstractions;
 using static EvolveDb.Tests.TestContext;
 
 namespace EvolveDb.Tests.Integration.PostgregSql
 {
-    [Collection("PostgreSql collection")]
-    public class MigrationTests
+    public record MigrationTests(ITestOutputHelper Output) : DbContainerFixture<PostgreSqlContainer>
     {
-        private readonly PostgreSqlFixture _dbContainer;
-        private readonly ITestOutputHelper _output;
-
-        public MigrationTests(PostgreSqlFixture dbContainer, ITestOutputHelper output)
-        {
-            _dbContainer = dbContainer;
-            _output = output;
-
-            if (Local)
-            {
-                dbContainer.Run(fromScratch: true);
-            }
-        }
-
         [Fact]
         [Category(Test.PostgreSQL)]
         public void Run_all_PostgreSQL_migrations_work()
         {
             // Arrange
             string[] locations = AppVeyor ? new[] { PostgreSQL.MigrationFolder } : new[] { PostgreSQL.MigrationFolder, PostgreSQL.Migration11Folder }; // Add specific PostgreSQL 11 scripts
-            var cnn = _dbContainer.CreateDbConnection();
-            var evolve = new Evolve(cnn, msg => _output.WriteLine(msg), DBMS.PostgreSQL)
+            var cnn = CreateDbConnection();
+            var evolve = new Evolve(cnn, msg => Output.WriteLine(msg), DBMS.PostgreSQL)
             {
                 Schemas = new[] { "public", "unittest" },
                 MetadataTableSchema = "unittest",
                 Placeholders = new Dictionary<string, string> { ["${schema1}"] = "unittest" }
             };
+            evolve.Erase();
 
             // Assert
             evolve.AssertInfoIsSuccessful(cnn)

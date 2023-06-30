@@ -6,11 +6,8 @@ using Xunit.Abstractions;
 
 namespace EvolveDb.Tests.Integration.PostgreSql
 {
-    [Collection("PostgreSql collection")]
-    public class Scenario003 : Scenario<PostgreSqlFixture>
+    public record Scenario003(ITestOutputHelper Output) : Scenario<PostgreSqlContainer>(Output)
     {
-        public Scenario003(PostgreSqlFixture dbContainer, ITestOutputHelper output) : base(dbContainer, output) {}
-
         [Fact]
         [Category(Test.PostgreSQL, Test.Sceanario)]
         public void Scenario_postresql_tx_commit_all_only_when_every_scripts_succeed()

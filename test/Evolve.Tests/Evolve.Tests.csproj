@@ -1,17 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <IsPackable>false</IsPackable>
     <LangVersion>latest</LangVersion>
     <RootNamespace>EvolveDb.Tests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="altcover" Version="8.4.840" />
+    <PackageReference Include="altcover" Version="8.6.61" />
     <PackageReference Include="CassandraCSharpDriver" Version="3.18.0" />
-    <PackageReference Include="Docker.DotNet" Version="3.125.11" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.0" />
+    <PackageReference Include="Docker.DotNet" Version="3.125.15" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.3" />
     <PackageReference Include="MySqlConnector" Version="2.1.13" />
     <PackageReference Include="Npgsql" Version="6.0.7" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />

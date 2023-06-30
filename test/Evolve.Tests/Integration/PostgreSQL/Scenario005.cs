@@ -4,11 +4,8 @@ using Xunit.Abstractions;
 
 namespace EvolveDb.Tests.Integration.PostgreSql
 {
-    [Collection("PostgreSql collection")]
-    public class Scenario005 : Scenario<PostgreSqlFixture>
+    public record Scenario005(ITestOutputHelper Output) : Scenario<PostgreSqlContainer>(Output)
     {
-        public Scenario005(PostgreSqlFixture dbContainer, ITestOutputHelper output) : base(dbContainer, output) {}
-
         [Fact]
         [Category(Test.PostgreSQL, Test.Sceanario)]
         public void Scenario_skip_migration_until_target_version_is_reached()

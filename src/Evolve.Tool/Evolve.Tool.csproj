@@ -3,7 +3,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net5.0;net6.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>evolve</ToolCommandName>
     <RootNamespace>EvolveDb.Tool</RootNamespace>
@@ -24,7 +24,8 @@ Every time you build your project, it will automatically ensure that your databa
     <PackageTags>evolve flyway dotnet tool sql database migration mysql sqlserver cassandra mariadb sqlite postgresql cockroachdb</PackageTags>
     <PackageReleaseNotes>## Features
 - #293 Add timeout for ambient transactions
-- #189 Enabled use of Evolve CLI/Tool Placeholders with ':' in their value</PackageReleaseNotes>
+- #189 Enabled use of Evolve CLI/Tool Placeholders with ':' in their value
+- Add .NET 7 support, drop .NET 5 support</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

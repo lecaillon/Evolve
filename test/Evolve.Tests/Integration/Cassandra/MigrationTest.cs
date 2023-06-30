@@ -1,36 +1,20 @@
-﻿using System.Collections.Generic;
-using EvolveDb.Tests.Infrastructure;
-using Xunit;
+﻿using EvolveDb.Tests.Infrastructure;
+using System.Collections.Generic;
 using Xunit.Abstractions;
 using static EvolveDb.Tests.TestContext;
 
 namespace EvolveDb.Tests.Integration.Cassandra
 {
-    [Collection("Cassandra collection")]
-    public class MigrationTest
+    public record MigrationTest(ITestOutputHelper Output) : DbContainerFixture<CassandraContainer>
     {
-        private readonly CassandraFixture _dbContainer;
-        private readonly ITestOutputHelper _output;
-
-        public MigrationTest(CassandraFixture dbContainer, ITestOutputHelper output)
-        {
-            _dbContainer = dbContainer;
-            _output = output;
-
-            if (Local)
-            {
-                dbContainer.Run(fromScratch: true);
-            }
-        }
-
         [FactSkippedOnAppVeyor]
         [Category(Test.Cassandra)]
         public void Run_all_Cassandra_integration_tests_work()
         {
             // Arrange
             string metadataKeyspaceName = "my_keyspace_1"; // this name must also be declared in _evolve.cassandra.json
-            var cnn = _dbContainer.CreateDbConnection();
-            var evolve = new Evolve(cnn, msg => _output.WriteLine(msg))
+            var cnn = CreateDbConnection();
+            var evolve = new Evolve(cnn, msg => Output.WriteLine(msg))
             {
                 CommandTimeout = 25,
                 MetadataTableSchema = metadataKeyspaceName,
@@ -38,6 +22,7 @@ namespace EvolveDb.Tests.Integration.Cassandra
                 Placeholders = new Dictionary<string, string> { ["${keyspace}"] = metadataKeyspaceName },
                 SqlMigrationSuffix = ".cql"
             };
+            evolve.Erase();
 
             // Assert
             evolve.AssertInfoIsSuccessful(cnn)
@@ -60,11 +45,6 @@ namespace EvolveDb.Tests.Integration.Cassandra
             evolve.ChangeLocations(CassandraDb.MigrationFolder)
                   .AssertMigrateIsSuccessful(cnn)
                   .AssertInfoIsSuccessful(cnn);
-
-            evolve.AssertEraseIsSuccessful(cnn, e => e.IsEraseDisabled = false);
-
-            // Call the second part of the Cassandra integration tests
-            DialectTest.Run_all_Cassandra_integration_tests_work(_dbContainer);
         }
     }
 }

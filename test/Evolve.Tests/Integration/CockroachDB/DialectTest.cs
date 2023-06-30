@@ -2,31 +2,17 @@
 using EvolveDb.Dialect;
 using EvolveDb.Dialect.CockroachDB;
 using EvolveDb.Tests.Infrastructure;
-using Xunit;
 
 namespace EvolveDb.Tests.Integration.CockroachDb
 {
-    [Collection("CockroachDB collection")]
-    public class DialectTest
+    public record DialectTest : DbContainerFixture<CockroachDBContainer>
     {
-        private readonly CockroachDBFixture _dbContainer;
-
-        public DialectTest(CockroachDBFixture dbContainer)
-        {
-            _dbContainer = dbContainer;
-
-            if (TestContext.Local)
-            {
-                dbContainer.Run(fromScratch: true);
-            }
-        }
-
         [FactSkippedOnAppVeyor]
         [Category(Test.CockroachDB)]
         public void Run_all_CockroachDB_integration_tests_work()
         {
             // Arrange
-            var cnn = _dbContainer.CreateDbConnection();
+            var cnn = CreateDbConnection();
             var wcnn = new WrappedConnection(cnn).AssertDatabaseServerType(DBMS.CockroachDB);
             var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.CockroachDB, wcnn);
             string schemaName = "MyDatabase";

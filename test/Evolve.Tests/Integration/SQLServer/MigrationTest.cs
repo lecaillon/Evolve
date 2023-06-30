@@ -1,44 +1,30 @@
-﻿using System.Collections.Generic;
-using System.Data.SqlClient;
-using EvolveDb.Migration;
+﻿using EvolveDb.Migration;
 using EvolveDb.Tests.Infrastructure;
+using System.Collections.Generic;
+using System.Data.SqlClient;
 using Xunit;
 using Xunit.Abstractions;
 using static EvolveDb.Tests.TestContext;
 
 namespace EvolveDb.Tests.Integration.SQLServer
 {
-    [Collection("SQLServer collection")]
-    public class MigrationTest
+    public record MigrationTest(ITestOutputHelper Output) : DbContainerFixture<SQLServerContainer>
     {
         public const string DbName = "my_database_2";
-        private readonly SQLServerFixture _dbContainer;
-        private readonly ITestOutputHelper _output;
-
-        public MigrationTest(SQLServerFixture dbContainer, ITestOutputHelper output)
-        {
-            _dbContainer = dbContainer;
-            _output = output;
-
-            if (Local)
-            {
-                dbContainer.Run(fromScratch: true);
-            }
-
-            TestUtil.CreateSqlServerDatabase(DbName, _dbContainer.GetCnxStr("master"));
-        }
 
         [Fact]
         [Category(Test.SQLServer)]
         public void Run_all_SQLServer_migrations_work()
         {
             // Arrange
-            var cnn = new SqlConnection(_dbContainer.GetCnxStr(DbName));
-            var evolve = new Evolve(cnn, msg => _output.WriteLine(msg))
+            TestUtil.CreateSqlServerDatabase(DbName, CnxStr);
+            var cnn = new SqlConnection(CnxStr.Replace("master", DbName));
+            var evolve = new Evolve(cnn, msg => Output.WriteLine(msg))
             {
                 Placeholders = new Dictionary<string, string> { ["${db}"] = DbName, ["${schema2}"] = "dbo" },
                 TargetVersion = new MigrationVersion("8_9"),
             };
+            evolve.Erase();
 
             // Assert
             evolve.AssertInfoIsSuccessful(cnn)

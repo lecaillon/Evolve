@@ -5,35 +5,21 @@ using static EvolveDb.Tests.TestContext;
 
 namespace EvolveDb.Tests.Integration.MySql
 {
-    [Collection("MySQL collection")]
-    public class MigrationTest
+    public record MigrationTest(ITestOutputHelper Output) : DbContainerFixture<MySQLContainer>
     {
-        private readonly MySQLFixture _dbContainer;
-        private readonly ITestOutputHelper _output;
-
-        public MigrationTest(MySQLFixture dbContainer, ITestOutputHelper output)
-        {
-            _dbContainer = dbContainer;
-            _output = output;
-
-            if (Local)
-            {
-                dbContainer.Run(fromScratch: true);
-            }
-        }
-
         [Fact]
         [Category(Test.MySQL)]
         public void Run_all_MySQL_migrations_work()
         {
             // Arrange
-            var cnn = _dbContainer.CreateDbConnection();
-            var evolve = new Evolve(cnn, msg => _output.WriteLine(msg))
+            var cnn = CreateDbConnection();
+            var evolve = new Evolve(cnn, msg => Output.WriteLine(msg))
             {
                 EmbeddedResourceAssemblies = new[] { typeof(TestContext).Assembly },
                 EmbeddedResourceFilters = new[] { MySQL.MigrationFolderFilter },
                 CommandTimeout = 25
             };
+            evolve.Erase();
 
             // Assert
             evolve.ChangeLocations(MySQL.MigrationFolder)
