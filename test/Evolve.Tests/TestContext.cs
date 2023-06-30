@@ -1,10 +1,8 @@
-﻿using System;
+﻿using EvolveDb.Metadata;
+using EvolveDb.Migration;
+using System;
 using System.IO;
 using System.Reflection;
-using EvolveDb.Metadata;
-using EvolveDb.Migration;
-using EvolveDb.Tests.Infrastructure;
-using Xunit;
 
 namespace EvolveDb.Tests
 {
@@ -98,26 +96,4 @@ namespace EvolveDb.Tests
             public static string RepeatableFolder => Path.Combine(SqlScriptsFolder, "Repeatable");
         }
     }
-
-    [CollectionDefinition("Cassandra collection")]
-    public class CassandraCollection : IClassFixture<CassandraFixture> { }
-
-    [CollectionDefinition("CockroachDB collection")]
-    public class CockroachDbCollection : IClassFixture<CockroachDBFixture> { }
-
-    [CollectionDefinition("MySQL collection")]
-    public class MySQLCollection : IClassFixture<MySQLFixture> { }
-
-    [CollectionDefinition("PostgreSql collection")]
-    public class PostgreSqlCollection : IClassFixture<PostgreSqlFixture> { }
-
-    [CollectionDefinition("SQLServer collection")]
-    public class SQLServerCollection : IClassFixture<SQLServerFixture> { }
-
-    [CollectionDefinition("Database collection")]
-    public class DatabaseCollection : IClassFixture<MySQLFixture>,
-                                      IClassFixture<PostgreSqlFixture>,
-                                      IClassFixture<SQLServerFixture>,
-                                      IClassFixture<CassandraFixture>,
-                                      IClassFixture<CockroachDBFixture> { }
 }

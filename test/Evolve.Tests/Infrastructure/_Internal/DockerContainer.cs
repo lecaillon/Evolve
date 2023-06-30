@@ -1,14 +1,13 @@
-﻿using System;
-using Docker.DotNet;
+﻿using Docker.DotNet;
 using Docker.DotNet.Models;
 using EvolveDb.Utilities;
+using System.Threading.Tasks;
 
 namespace EvolveDb.Tests.Infrastructure
 {
-    internal class DockerContainer : IDisposable
+    internal class DockerContainer
     {
         private readonly DockerClient _client;
-        private bool _disposedValue = false;
 
         public DockerContainer(DockerClient client, string id, bool isRunning)
         {
@@ -20,36 +19,22 @@ namespace EvolveDb.Tests.Infrastructure
         public string Id { get; }
         public bool IsRunning { get; private set; }
 
-        public bool Start()
+        /// <summary>
+        ///     Returns false, if it was already running. Otherwise true.
+        /// </summary>
+        public async Task<bool> Start()
         {
-            if (!IsRunning)
+            if (IsRunning)
             {
-                IsRunning = _client.Containers.StartContainerAsync(Id, null).ConfigureAwait(false).GetAwaiter().GetResult();
+                return false;
             }
 
+            IsRunning = await _client.Containers.StartContainerAsync(Id, null);
             return IsRunning;
         }
 
-        public bool Stop() => _client.Containers.StopContainerAsync(Id, new ContainerStopParameters()).ConfigureAwait(false).GetAwaiter().GetResult();
+        public async Task<bool> Stop() => await _client.Containers.StopContainerAsync(Id, new ContainerStopParameters());
 
-        public void Remove() => _client.Containers.RemoveContainerAsync(Id, new ContainerRemoveParameters()).ConfigureAwait(false).GetAwaiter().GetResult();
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!_disposedValue)
-            {
-                if (disposing)
-                {
-                    _client.Dispose();
-                }
-
-                _disposedValue = true;
-            }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-        }
+        public async Task Remove() => await _client.Containers.RemoveContainerAsync(Id, new ContainerRemoveParameters());
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Data.Common;
+using System.Threading.Tasks;
 using Npgsql;
 
 namespace EvolveDb.Tests.Infrastructure
@@ -10,15 +11,14 @@ namespace EvolveDb.Tests.Infrastructure
         public const string DbName = "defaultdb";
 
         private DockerContainer _container;
-        private bool _disposedValue = false;
 
         public string Id => _container?.Id;
         public string CnxStr => $"Host=localhost;Username=root;Port={HostPort};Database={DbName};";
         public int TimeOutInSec => 8;
 
-        public bool Start(bool fromScratch = false)
+        public async Task<bool> Start(bool fromScratch = false)
         {
-            _container = new DockerContainerBuilder(new DockerContainerBuilderOptions
+            _container = await new DockerContainerBuilder(new DockerContainerBuilderOptions
             {
                 FromImage = "cockroachdb/cockroach",
                 Tag = "latest",
@@ -29,27 +29,9 @@ namespace EvolveDb.Tests.Infrastructure
                 Cmd = new[] { "start-single-node", "--insecure" }
             }).Build();
 
-            return _container.Start();
+            return await _container.Start();
         }
 
         public DbConnection CreateDbConnection() => new NpgsqlConnection(CnxStr);
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!_disposedValue)
-            {
-                if (disposing)
-                {
-                    _container?.Dispose();
-                }
-
-                _disposedValue = true;
-            }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-        }
     }
 }

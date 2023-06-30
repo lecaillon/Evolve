@@ -8,10 +8,9 @@ using Xunit.Abstractions;
 
 namespace EvolveDb.Tests.Integration.PostgreSql
 {
-    [Collection("PostgreSql collection")]
-    public class Scenario007 : Scenario<PostgreSqlFixture>
+    public class Scenario007 : Scenario<PostgreSqlContainer>
     {
-        public Scenario007(PostgreSqlFixture dbContainer, ITestOutputHelper output) : base(dbContainer, output) {}
+        public Scenario007(ITestOutputHelper output) : base(output) {}
 
         [Fact]
         [Category(Test.PostgreSQL, Test.Sceanario)]

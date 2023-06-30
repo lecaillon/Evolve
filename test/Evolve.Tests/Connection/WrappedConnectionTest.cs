@@ -7,23 +7,9 @@ using Xunit;
 
 namespace EvolveDb.Tests.Connection
 {
-    [Collection("PostgreSql collection")]
-    public class WrappedConnectionTest
+    public class WrappedConnectionTest : DbContainerFixture<PostgreSqlContainer>
     {
-        private static PostgreSqlFixture _pgContainer;
-
-        public WrappedConnectionTest(PostgreSqlFixture pgContainer)
-        {
-            if (_pgContainer is null)
-            {
-                _pgContainer = pgContainer;
-
-                if (TestContext.Local || TestContext.AzureDevOps)
-                {
-                    pgContainer.Run();
-                }
-            }
-        }
+        public override bool MustRunContainer => TestContext.Local || TestContext.AzureDevOps;
 
         [Fact]
         [Category(Test.Connection)]
@@ -36,7 +22,7 @@ namespace EvolveDb.Tests.Connection
         [Category(Test.Connection)]
         public void When_disposed_inner_dbconnection_is_closed()
         {
-            var cnn = _pgContainer.CreateDbConnection();
+            var cnn = CreateDbConnection();
             using (var wrappedConnection = new WrappedConnection(cnn))
             {
                 wrappedConnection.Open();
@@ -49,7 +35,7 @@ namespace EvolveDb.Tests.Connection
         [Category(Test.Connection)]
         public void Commit_a_null_transaction_throws_InvalidOperationException()
         {
-            var cnn = _pgContainer.CreateDbConnection();
+            var cnn = CreateDbConnection();
             using (var wrappedConnection = new WrappedConnection(cnn))
             {
                 Assert.Throws<InvalidOperationException>(() => wrappedConnection.Commit());
@@ -62,7 +48,7 @@ namespace EvolveDb.Tests.Connection
         [Category(Test.Connection)]
         public void Rollback_a_null_transaction_throws_InvalidOperationException()
         {
-            var cnn = _pgContainer.CreateDbConnection();
+            var cnn = CreateDbConnection();
             using (var wrappedConnection = new WrappedConnection(cnn))
             {
                 Assert.Throws<InvalidOperationException>(() => wrappedConnection.Rollback());
@@ -75,7 +61,7 @@ namespace EvolveDb.Tests.Connection
         [Category(Test.Connection)]
         public void BeginTransaction_opens_a_connection_and_returns_a_transaction()
         {
-            var cnn = _pgContainer.CreateDbConnection();
+            var cnn = CreateDbConnection();
             using (var wrappedConnection = new WrappedConnection(cnn))
             {
                 var tx = wrappedConnection.BeginTransaction();

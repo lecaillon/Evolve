@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Docker.DotNet;
 using Docker.DotNet.Models;
 
 namespace EvolveDb.Tests.Infrastructure
 {
-    internal class DockerContainerBuilder : IDisposable
+    internal class DockerContainerBuilder
     {
         private readonly DockerClient _client;
-        private bool _disposedValue = false;
 
         public DockerContainerBuilder(DockerContainerBuilderOptions setupOptions)
         {
@@ -48,10 +48,10 @@ namespace EvolveDb.Tests.Infrastructure
         public bool RemovePreviousContainer { get; }
         public IList<string> Cmd { get; }
 
-        public DockerContainer Build()
+        public async Task<DockerContainer> Build()
         {
-            var container = _client.Containers.ListContainersAsync(new ContainersListParameters { All = true }).ConfigureAwait(false).GetAwaiter().GetResult()
-                                              .FirstOrDefault(x => x.Names.Any(n => n.Equals("/" + Name, StringComparison.OrdinalIgnoreCase)));
+            var container = (await _client.Containers.ListContainersAsync(new ContainersListParameters { All = true }))
+                .FirstOrDefault(x => x.Names.Any(n => n.Equals("/" + Name, StringComparison.OrdinalIgnoreCase)));
             
             bool isRunning = container?.State == "running";
             if (container != null && !RemovePreviousContainer)
@@ -61,14 +61,14 @@ namespace EvolveDb.Tests.Infrastructure
 
             if (container != null && RemovePreviousContainer)
             {
-                using var oldContainer = new DockerContainer(_client, container.ID, isRunning);
-                oldContainer.Stop();
-                oldContainer.Remove();
+                var oldContainer = new DockerContainer(_client, container.ID, isRunning);
+                await oldContainer.Stop();
+                await oldContainer.Remove();
             }
 
-            _client.Images.CreateImageAsync(new ImagesCreateParameters { FromImage = FromImage, Tag = Tag }, null, new Progress<JSONMessage>()).ConfigureAwait(false).GetAwaiter().GetResult();
+            await _client.Images.CreateImageAsync(new ImagesCreateParameters { FromImage = FromImage, Tag = Tag }, null, new Progress<JSONMessage>());
 
-            var newContainer = _client.Containers.CreateContainerAsync(new CreateContainerParameters
+            var newContainer = await _client.Containers.CreateContainerAsync(new CreateContainerParameters
             {
                 Image = $"{FromImage}:{Tag ?? "latest"}",
                 Name = Name,
@@ -82,27 +82,9 @@ namespace EvolveDb.Tests.Infrastructure
                         { ExposedPort, new List<PortBinding> { new PortBinding { HostIP = "localhost", HostPort = HostPort } } }
                     }
                 }
-            }).ConfigureAwait(false).GetAwaiter().GetResult();
+            });
 
             return new DockerContainer(_client, newContainer.ID, isRunning: false);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!_disposedValue)
-            {
-                if (disposing)
-                {
-                    _client.Dispose();
-                }
-
-                _disposedValue = true;
-            }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
         }
     }
 }

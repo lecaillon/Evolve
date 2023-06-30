@@ -1,27 +1,20 @@
-﻿using System.Collections.Generic;
-using EvolveDb.Tests.Infrastructure;
-using Xunit;
+﻿using EvolveDb.Tests.Infrastructure;
+using System.Collections.Generic;
 using Xunit.Abstractions;
 using static EvolveDb.Tests.TestContext;
 
 namespace EvolveDb.Tests.Integration.Cassandra
 {
-    [Collection("Cassandra collection")]
-    public class MigrationTest
+    public class MigrationTest : DbContainerFixture<CassandraContainer>
     {
-        private readonly CassandraFixture _dbContainer;
         private readonly ITestOutputHelper _output;
 
-        public MigrationTest(CassandraFixture dbContainer, ITestOutputHelper output)
+        public MigrationTest(ITestOutputHelper output)
         {
-            _dbContainer = dbContainer;
             _output = output;
-
-            if (Local)
-            {
-                dbContainer.Run(fromScratch: true);
-            }
         }
+
+        public override bool FromScratch => Local;
 
         [FactSkippedOnAppVeyor]
         [Category(Test.Cassandra)]
@@ -29,7 +22,7 @@ namespace EvolveDb.Tests.Integration.Cassandra
         {
             // Arrange
             string metadataKeyspaceName = "my_keyspace_1"; // this name must also be declared in _evolve.cassandra.json
-            var cnn = _dbContainer.CreateDbConnection();
+            var cnn = CreateDbConnection();
             var evolve = new Evolve(cnn, msg => _output.WriteLine(msg))
             {
                 CommandTimeout = 25,
@@ -64,7 +57,7 @@ namespace EvolveDb.Tests.Integration.Cassandra
             evolve.AssertEraseIsSuccessful(cnn, e => e.IsEraseDisabled = false);
 
             // Call the second part of the Cassandra integration tests
-            DialectTest.Run_all_Cassandra_integration_tests_work(_dbContainer);
+            new DialectTest().Run_all_Cassandra_integration_tests_work();
         }
     }
 }

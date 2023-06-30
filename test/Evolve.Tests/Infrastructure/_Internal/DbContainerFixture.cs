@@ -1,33 +1,38 @@
 ﻿using System;
 using System.Data;
 using System.Data.Common;
-using System.Diagnostics.CodeAnalysis;
 using System.Threading;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace EvolveDb.Tests.Infrastructure
 {
-    public interface IDbContainerFixture
+    public abstract class DbContainerFixture<T> : IAsyncLifetime where T : IDbContainer, new()
     {
-        string CnxStr { get; }
-        void Run(bool fromScratch = false);
-        DbConnection CreateDbConnection();
-        void Dispose();
-    }
+        private static readonly SemaphoreSlim Semaphore = new(1);
 
-    public abstract class DbContainerFixture<T> : IDbContainerFixture where T : IDbContainer, new()
-    {
         protected readonly T _container = new();
 
         public string CnxStr => _container.CnxStr;
+        public virtual bool FromScratch { get; } = false;
+        public virtual bool MustRunContainer { get; } = true;
+        public virtual Action Initialize { get; }
 
-        [SuppressMessage("Design", "CA1031: Do not catch general exception types")]
-        public virtual void Run(bool fromScratch = false)
+        public DbConnection CreateDbConnection() => _container.CreateDbConnection();
+
+        public async Task InitializeAsync()
         {
+            await Semaphore.WaitAsync();
+
+            if (!MustRunContainer)
+            {
+                return;
+            }
+
+            bool wasAlreadyStarted = !await _container.Start(FromScratch);
+
             int retries = 1;
             bool isDbStarted = false;
-
-            _container.Start(fromScratch);
-
             while (!isDbStarted)
             {
                 if (retries > _container.TimeOutInSec)
@@ -35,7 +40,8 @@ namespace EvolveDb.Tests.Infrastructure
                     throw new Exception($"{typeof(T).Name} timed-out after {_container.TimeOutInSec} sec.");
                 }
 
-                Thread.Sleep(TimeSpan.FromSeconds(1));
+                await Task.Delay(TimeSpan.FromSeconds(1));
+
                 try
                 {
                     using var cnn = CreateDbConnection();
@@ -45,10 +51,20 @@ namespace EvolveDb.Tests.Infrastructure
                 catch { }
                 retries++;
             }
+
+            if (!wasAlreadyStarted)
+            {
+                // Extra margin before executing queries
+                await Task.Delay(TimeSpan.FromSeconds(5));
+            }
+
+            Initialize?.Invoke();
         }
 
-        public DbConnection CreateDbConnection() => _container.CreateDbConnection();
-
-        public void Dispose() => _container.Dispose();
+        public Task DisposeAsync()
+        {
+            Semaphore.Release();
+            return Task.CompletedTask;
+        }
     }
 }

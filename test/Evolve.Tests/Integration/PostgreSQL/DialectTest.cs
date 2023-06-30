@@ -6,27 +6,16 @@ using Xunit;
 
 namespace EvolveDb.Tests.Integration.PostgregSql
 {
-    [Collection("PostgreSql collection")]
-    public class DialectTest
+    public class DialectTest : DbContainerFixture<PostgreSqlContainer>
     {
-        private readonly PostgreSqlFixture _dbContainer;
-
-        public DialectTest(PostgreSqlFixture dbContainer)
-        {
-            _dbContainer = dbContainer;
-
-            if (TestContext.Local)
-            {
-                dbContainer.Run(fromScratch: true);
-            }
-        }
+        public override bool MustRunContainer => TestContext.Local;
 
         [Fact]
         [Category(Test.PostgreSQL)]
         public void Run_all_PostgreSQL_integration_tests_work()
         {
             // Arrange
-            var cnn = _dbContainer.CreateDbConnection();
+            var cnn = CreateDbConnection();
             var wcnn = new WrappedConnection(cnn).AssertDatabaseServerType(DBMS.PostgreSQL);
             var db = DatabaseHelperFactory.GetDatabaseHelper(DBMS.PostgreSQL, wcnn);
             string schemaName = "My metadata schema";
@@ -39,7 +28,7 @@ namespace EvolveDb.Tests.Integration.PostgregSql
             schema.AssertIsEmpty();
 
             db.AssertDefaultSchemaName("public")
-              .AssertApplicationLock(_dbContainer.CreateDbConnection())
+              .AssertApplicationLock(CreateDbConnection())
               .AssertMetadataTableCreation(schemaName, "changelog")
               .AssertMetadataTableLock()
               .AssertSchemaIsDroppableWhenNewSchemaFound(schemaName) // id:1

@@ -1,33 +1,26 @@
 ﻿using EvolveDb.Tests.Infrastructure;
-using Xunit;
 using Xunit.Abstractions;
 using static EvolveDb.Tests.TestContext;
 
 namespace EvolveDb.Tests.Integration.CockroachDb
 {
-    [Collection("CockroachDB collection")]
-    public class MigrationTests
+    public class MigrationTests : DbContainerFixture<CockroachDBContainer>
     {
-        private readonly CockroachDBFixture _dbContainer;
         private readonly ITestOutputHelper _output;
 
-        public MigrationTests(CockroachDBFixture dbContainer, ITestOutputHelper output)
+        public MigrationTests(ITestOutputHelper output)
         {
-            _dbContainer = dbContainer;
             _output = output;
-
-            if (Local)
-            {
-                dbContainer.Run(fromScratch: true);
-            }
         }
+
+        public override bool FromScratch => Local;
 
         [FactSkippedOnAppVeyor]
         [Category(Test.CockroachDB)]
         public void Run_all_CockroachDB_migrations_work()
         {
             // Arrange
-            var cnn = _dbContainer.CreateDbConnection();
+            var cnn = CreateDbConnection();
             var evolve = new Evolve(cnn, msg => _output.WriteLine(msg))
             {
                 Schemas = new[] { "evolve", "defaultdb" }, // MetadataTableSchema = evolve | migrations = defaultdb
