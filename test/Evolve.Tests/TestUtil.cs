@@ -1,10 +1,10 @@
-﻿using System.Data.SqlClient;
-using System.Data.SQLite;
-using System.IO;
+﻿using System.IO;
 using System.Text;
 using EvolveDb.Connection;
 using EvolveDb.Metadata;
 using EvolveDb.Migration;
+using Microsoft.Data.SqlClient;
+using Microsoft.Data.Sqlite;
 
 namespace EvolveDb.Tests
 {
@@ -28,7 +28,7 @@ namespace EvolveDb.Tests
             cnn.Close();
         }
 
-        public static WrappedConnection CreateSQLiteWrappedCnx() => new WrappedConnection(new SQLiteConnection("Data Source=:memory:"));
+        public static WrappedConnection CreateSQLiteWrappedCnx() => new WrappedConnection(new SqliteConnection("Data Source=:memory:"));
 
         public static FileMigrationScript BuildFileMigrationScript(string path = null, string version = null, string description = null) =>
             new FileMigrationScript(

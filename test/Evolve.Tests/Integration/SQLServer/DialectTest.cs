@@ -3,6 +3,7 @@ using EvolveDb.Dialect;
 using EvolveDb.Dialect.SQLServer;
 using EvolveDb.Tests.Infrastructure;
 using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using Xunit;
 
 namespace EvolveDb.Tests.Integration.SQLServer
