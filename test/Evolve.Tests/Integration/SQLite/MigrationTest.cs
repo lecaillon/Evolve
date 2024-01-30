@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SQLite;
 using System.IO;
+using Microsoft.Data.Sqlite;
 using Xunit;
 using Xunit.Abstractions;
 using static EvolveDb.Tests.TestContext;
@@ -22,7 +22,7 @@ namespace EvolveDb.Tests.Integration.Sqlite
         public void Run_all_SQLite_migrations_work()
         {
             // Arrange
-            var cnn = new SQLiteConnection($@"Data Source={Path.GetTempPath() + Guid.NewGuid().ToString()}.db;");
+            var cnn = new SqliteConnection($@"Data Source={Path.GetTempPath() + Guid.NewGuid().ToString()}.db;");
             var evolve = new Evolve(cnn, msg => _output.WriteLine(msg))
             {
                 Placeholders = new Dictionary<string, string> { ["${table4}"] = "table_4" },

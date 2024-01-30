@@ -10,7 +10,7 @@ using System.Linq;
 [Command(ResponseFileHandling = ResponseFileHandling.ParseArgsAsSpaceSeparated)]
 class Program
 {
-    private static readonly Evolve Default = new(new System.Data.SQLite.SQLiteConnection("Data Source=:memory:"));
+    private static readonly Evolve Default = new(new Microsoft.Data.Sqlite.SqliteConnection("Data Source=:memory:"));
 
     static int Main(string[] args)
     {

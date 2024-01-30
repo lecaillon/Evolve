@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Data;
-using System.Data.SQLite;
 using EvolveDb.Connection;
 using EvolveDb.Tests.Infrastructure;
+using Microsoft.Data.Sqlite;
 using Xunit;
 
 namespace EvolveDb.Tests.Connection
@@ -105,7 +105,7 @@ namespace EvolveDb.Tests.Connection
         [Category(Test.Connection)]
         public void When_dbconnection_is_not_ok_validation_fails()
         {
-            using var wrappedConnection = new WrappedConnection(new SQLiteConnection("Data Source=:fails"));
+            using var wrappedConnection = new WrappedConnection(new SqliteConnection("Data Source=:fails"));
             Assert.ThrowsAny<Exception>(() => wrappedConnection.Validate());
         }
 
