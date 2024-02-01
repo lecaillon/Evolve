@@ -13,8 +13,7 @@ Every time you build your project, it will automatically ensure that your databa
     <repository type="git" url="https://github.com/lecaillon/Evolve.git" />
     <iconUrl>https://raw.githubusercontent.com/lecaillon/Evolve/master/images/logo128.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <releaseNotes>## Features
-- #293 Add timeout for ambient transactions</releaseNotes>
+    <releaseNotes>## Features</releaseNotes>
     <tags>evolve flyway sql database migration mysql sqlserver cassandra mariadb sqlite postgresql cockroachdb</tags>
     <dependencies>
       <group targetFramework="netstandard2.0" />

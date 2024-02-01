@@ -6,6 +6,7 @@ using McMaster.Extensions.CommandLineUtils;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using AllowedValuesAttribute = McMaster.Extensions.CommandLineUtils.AllowedValuesAttribute;
 
 [Command(ResponseFileHandling = ResponseFileHandling.ParseArgsAsSpaceSeparated)]
 class Program
