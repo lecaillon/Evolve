@@ -55,18 +55,17 @@ Task("build").Does(() =>
 
 Task("test").Does(() =>
 {
-    var pathFilter = Environment.GetEnvironmentVariable("APPVEYOR") == "True" ? "\\SCassandra" : "";
+    var enableCodeCoverage = Environment.GetEnvironmentVariable("TF_BUILD") == "True";
 
     DotNetTest("./test/Evolve.Tests", new DotNetTestSettings
     {
         Configuration = configuration,
         ArgumentCustomization = args => args.AppendSwitchQuoted("--filter", "Category!=Cli")
                                             .Append(logger)
-                                            .Append("/p:AltCover=true")
-                                            .Append("/p:AltCoverForce=true")
+                                            .Append($"/p:AltCover={enableCodeCoverage}")
+                                            .Append($"/p:AltCoverForce={enableCodeCoverage}")
                                             .Append("/p:AltCoverCallContext=[Fact]|[Theory]")
                                             .Append("/p:AltCoverAssemblyFilter=Evolve.Tests|xunit.runner|MySqlConnector|xunit.assert|xunit.core|xunit.execution.dotnet|AltCover.Monitor")
-                                            .Append($"/p:AltCoverPathFilter={pathFilter}")
                                             .Append("/p:AltCoverTypeFilter=Evolve.Utilities.Check|SimpleJSON.JSON|SimpleJSON.JSONArray|SimpleJSON.JSONBool|SimpleJSON.JSONLazyCreator|SimpleJSON.JSONNode|SimpleJSON.JSONNull|SimpleJSON.JSONNumber|SimpleJSON.JSONObject|SimpleJSON.JSONString|ConsoleTables.ConsoleTable|ConsoleTables.ConsoleTableOptions")
                                             .Append($"/p:AltCoverReport={publishDirFullPath}/coverage.xml")
     });
