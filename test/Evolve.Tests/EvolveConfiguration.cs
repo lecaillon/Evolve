@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using EvolveDb.Configuration;
+using EvolveDb.Events;
 using EvolveDb.Migration;
 
 namespace EvolveDb.Tests
@@ -53,5 +55,8 @@ namespace EvolveDb.Tests
             }
             set { _migrationLoader = value; }
         }
+
+        public event EventHandler<MigrationEventArgs> MigrationStarting;
+        public event EventHandler<MigrationEventArgs> MigrationSucceeded;
     }
 }

@@ -217,6 +217,10 @@ namespace EvolveDb.Tests
             cnn.TryClose();
             arrange?.Invoke(evolve);
             int expectedNbMigration = evolve.GetExpectedNbMigration();
+            MigrationScript migrationStarting = null;
+            MigrationScript migrationSucceeded = null;
+            evolve.MigrationStarting += (_, args) => migrationStarting = args.Migration;
+            evolve.MigrationSucceeded += (_, args) => migrationSucceeded = args.Migration;
 
             // Act
             evolve.Migrate();
@@ -224,6 +228,8 @@ namespace EvolveDb.Tests
             Assert.True(evolve.NbMigration == expectedNbMigration, $"{expectedNbMigration} migrations should have been applied, not {evolve.NbMigration}.");
             Assert.True(evolve.AppliedMigrations.Count == expectedNbMigration);
             Assert.True(cnn.State == ConnectionState.Closed);
+            Assert.NotNull(migrationStarting);
+            Assert.NotNull(migrationSucceeded);
 
             // Act
             evolve.Migrate();
