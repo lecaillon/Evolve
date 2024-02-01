@@ -1,7 +1,7 @@
-﻿using System.Data.SqlClient;
-using System.Data.SQLite;
+﻿using System.Data.SQLite;
 using System.IO;
 using System.Text;
+using Microsoft.Data.SqlClient;
 using EvolveDb.Connection;
 using EvolveDb.Metadata;
 using EvolveDb.Migration;
