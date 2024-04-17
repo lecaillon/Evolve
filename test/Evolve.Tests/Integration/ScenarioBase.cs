@@ -4,8 +4,8 @@ using EvolveDb.Metadata;
 using EvolveDb.Tests.Infrastructure;
 using System;
 using System.Data.Common;
-using System.Data.SqlClient;
 using System.IO;
+using Microsoft.Data.SqlClient;
 using Xunit.Abstractions;
 using static EvolveDb.Tests.TestContext;
 
