@@ -110,8 +110,9 @@ namespace EvolveDb.Tests.Migration
         /// </summary>
         private static string FallbackCheck(string path)
         {
-            using var stream = File.OpenRead(path);
-            var checksum = SHA256.HashData(stream);
+            using var sha256 = SHA256.Create();
+            using FileStream stream = File.OpenRead(path);
+            byte[] checksum = sha256.ComputeHash(stream);
             return BitConverter.ToString(checksum).Replace("-", string.Empty);
         }
     }

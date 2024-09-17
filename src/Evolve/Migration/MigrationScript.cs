@@ -57,7 +57,8 @@ namespace EvolveDb.Migration
         /// <returns></returns>
         public virtual string CalculateChecksum()
         {
-            var checksum = SHA256.HashData(Encoding.UTF8.GetBytes(Content));
+            using var sha256 = SHA256.Create();
+            byte[] checksum = sha256.ComputeHash(Encoding.UTF8.GetBytes(NormalizeLineEndings(Content)));
             return BitConverter.ToString(checksum).Replace("-", string.Empty);
         }
 
