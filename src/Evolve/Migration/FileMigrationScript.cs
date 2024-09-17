@@ -56,9 +56,8 @@ namespace EvolveDb.Migration
         /// </summary>
         private string FallbackCheck()
         {
-            using var md5 = MD5.Create();
-            using FileStream stream = File.OpenRead(Path);
-            byte[] checksum = md5.ComputeHash(stream);
+            using var stream = File.OpenRead(Path);
+            var checksum = SHA256.HashData(stream);
             return BitConverter.ToString(checksum).Replace("-", string.Empty);
         }
     }
