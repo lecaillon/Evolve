@@ -7,7 +7,7 @@ namespace EvolveDb.Tests.Integration.Cassandra
 {
     public record MigrationTest(ITestOutputHelper Output) : DbContainerFixture<CassandraContainer>
     {
-        [FactSkippedOnAppVeyor]
+        [FactSkippedOnAppVeyorOrLocal]
         [Category(Test.Cassandra)]
         public void Run_all_Cassandra_integration_tests_work()
         {

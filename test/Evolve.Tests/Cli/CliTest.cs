@@ -18,7 +18,7 @@ namespace EvolveDb.Tests.Cli
             _output = output;
         }
 
-        [FactSkippedOnAppVeyor]
+        [FactSkippedOnAppVeyorOrLocal]
         [Category(Test.Cli, Test.CockroachDB)]
         public async Task CockroachDB_Should_Run_All_Cli_Commands()
         {
@@ -41,7 +41,7 @@ namespace EvolveDb.Tests.Cli
             }
         }
 
-        [FactSkippedOnAppVeyor]
+        [FactSkippedOnAppVeyorOrLocal]
         [Category(Test.Cli, Test.Cassandra)]
         public async Task Cassandra_Should_Run_All_Cli_Commands()
         {

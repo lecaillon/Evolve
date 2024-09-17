@@ -5,6 +5,7 @@
     <IsPackable>false</IsPackable>
     <LangVersion>latest</LangVersion>
     <RootNamespace>EvolveDb.Tests</RootNamespace>
+    <RunSettingsFilePath>..\.runsettings</RunSettingsFilePath>
   </PropertyGroup>
 
   <ItemGroup>

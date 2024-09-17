@@ -29,7 +29,8 @@ namespace EvolveDb.Tests.Infrastructure
                 ExposedPort = $"{ExposedPort}/tcp",
                 HostPort = HostPort,
                 RemovePreviousContainer = fromScratch
-            }).Build();
+            })
+                .Build();
 
             return await _container.Start();
         }

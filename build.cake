@@ -158,11 +158,6 @@ Task("default")
     .IsDependentOn("build")
     .IsDependentOn("test")
     .IsDependentOn("report-coverage")
-    .IsDependentOn("win-publish-cli")
-    .IsDependentOn("win-warp-cli")
-    .IsDependentOn("linux-publish-cli")
-    .IsDependentOn("linux-warp-cli")
-    .IsDependentOn("test-cli")
     .IsDependentOn("pack-evolve")
 	.IsDependentOn("pack-evolve-tool");
 

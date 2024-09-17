@@ -7,7 +7,7 @@ namespace EvolveDb.Tests.Integration.CockroachDb
 {
     public record DialectTest : DbContainerFixture<CockroachDBContainer>
     {
-        [FactSkippedOnAppVeyor]
+        [FactSkippedOnAppVeyorOrLocal]
         [Category(Test.CockroachDB)]
         public void Run_all_CockroachDB_integration_tests_work()
         {

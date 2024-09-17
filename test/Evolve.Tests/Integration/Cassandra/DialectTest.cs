@@ -16,7 +16,7 @@ namespace EvolveDb.Tests.Integration.Cassandra
         ///     in the same test context, we merge the integration tests to only use one container.
         ///     My guess, a possible Cassandra driver issue.
         /// </remarks>
-        [FactSkippedOnAppVeyor]
+        [FactSkippedOnAppVeyorOrLocal]
         [Category(Test.Cassandra)]
         public void Run_all_Cassandra_integration_tests_work()
         {

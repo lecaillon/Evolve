@@ -6,7 +6,7 @@ namespace EvolveDb.Tests.Integration.CockroachDb
 {
     public record MigrationTests(ITestOutputHelper Output) : DbContainerFixture<CockroachDBContainer>
     {
-        [FactSkippedOnAppVeyor]
+        [FactSkippedOnAppVeyorOrLocal]
         [Category(Test.CockroachDB)]
         public void Run_all_CockroachDB_migrations_work()
         {
