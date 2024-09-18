@@ -1,0 +1,20 @@
+{
+    "title": [
+        {
+            "pattern": "^[A-Z]+-\\d+(,[A-Z]+-\\d+)* - ",
+            "message": "Your title must start with jira ticket number e.g. 'SCA-1234 - Add GO support'"
+        },
+        {
+            "pattern": "(\\S+\\s){2}[A-Z][a-z]",
+            "message": "Your title must start with a capital letter, and a real word, e.g. 'Add GO support'"
+        },
+        {
+            "pattern": "^(\\S+\\s){4}\\S+",
+            "message": "Your title must have at least three words"
+        },
+        {
+            "pattern": "^(\\S+\\s){2}(?!\\S+ing\\s)(?!\\S+ed\\s)",
+            "message": "Use imperative mood (e.g. 'Fix' and not 'Fixed' or 'Fixing')"
+        }
+    ]
+}

@@ -25,9 +25,21 @@ bld/
 [Oo]bj/
 [Ll]og/
 dist/
+build/
+[Oo]ut/
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
+
+# VS Code
+.vscode
+
+# JetBrains
+.idea
+
+# OS
+.DS_Store
+
 # Uncomment if you have tasks that create the project's static files in wwwroot
 #wwwroot/
 
