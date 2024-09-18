@@ -9,12 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evolve.Cli", "Evolve.Cli\Ev
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Evolve.Tests", "Evolve.Tests\Evolve.Tests.csproj", "{3A6F17CA-AF46-456B-BF71-5A9C0C87D2EB}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{7183866D-B03D-440A-904D-B92152904C4B}"
-	ProjectSection(SolutionItems) = preProject
-		..\build.cake = ..\build.cake
-		..\build\common.props = ..\build\common.props
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{3940BCD3-1E7B-4F61-88E2-9E05BC71E167}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCoreSample", "samples\AspNetCoreSample_Evolve\AspNetCoreSample.csproj", "{3A25768C-7B4C-463E-8172-75ACFBB5AD42}"

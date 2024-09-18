@@ -5,7 +5,6 @@ USER root
 #RUN dotnet tool install --global JetBrains.ReSharper.GlobalTools --version 2024.1.4
 
 # Restore
-COPY build/common.props /build/
 WORKDIR /src
 COPY /src/Nuget.config /src/*.sln /src/*/*.csproj ./
 RUN for file in $(ls *.csproj); do mkdir -p ${file%.*}/ && mv $file ${file%.*}/; done
