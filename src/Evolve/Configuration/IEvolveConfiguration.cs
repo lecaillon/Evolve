@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using EvolveDb.Migration;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
-using EvolveDb.Migration;
 
 namespace EvolveDb.Configuration
 {
@@ -218,5 +218,15 @@ namespace EvolveDb.Configuration
         ///     that replaces the built-in ones (<see cref="FileMigrationLoader"/> <see cref="EmbeddedResourceMigrationLoader"/>)
         /// </summary>
         IMigrationLoader MigrationLoader { get; }
+
+        /// <summary>
+        ///     When true, enables SQL linting to detect potentially unsafe DDL patterns. (default: false)
+        /// </summary>
+        bool EnableSqlLint { get; }
+
+        /// <summary>
+        ///     Defines how SQL lint failures should be handled. (default: Warning)
+        /// </summary>
+        SqlLintFailureLevel SqlLintFailureLevel { get; }
     }
 }

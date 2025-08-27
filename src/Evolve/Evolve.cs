@@ -1,4 +1,11 @@
-﻿using System;
+﻿using ConsoleTables;
+using EvolveDb.Configuration;
+using EvolveDb.Connection;
+using EvolveDb.Dialect;
+using EvolveDb.Metadata;
+using EvolveDb.Migration;
+using EvolveDb.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Diagnostics;
@@ -8,13 +15,6 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Transactions;
-using ConsoleTables;
-using EvolveDb.Configuration;
-using EvolveDb.Connection;
-using EvolveDb.Dialect;
-using EvolveDb.Metadata;
-using EvolveDb.Migration;
-using EvolveDb.Utilities;
 
 [assembly: InternalsVisibleTo("Evolve.Tests")]
 namespace EvolveDb
@@ -77,6 +77,8 @@ namespace EvolveDb
         public bool RetryRepeatableMigrationsUntilNoError { get; set; }
         public TransactionKind TransactionMode { get; set; } = TransactionKind.CommitEach;
         public bool SkipNextMigrations { get; set; } = false;
+        public bool EnableSqlLint { get; set; } = false;
+        public SqlLintFailureLevel SqlLintFailureLevel { get; set; } = SqlLintFailureLevel.Warning;
 
         private IMigrationLoader? _migrationLoader;
         public IMigrationLoader MigrationLoader
@@ -243,7 +245,7 @@ namespace EvolveDb
             {
                 startVersion = StartVersion;
             }
-                
+
             var rows = new List<MigrationMetadataUI>();
             rows.AddRange(GetAllPendingSchemaUI(db, metadata));
             if (isEvolveInitialized)
@@ -619,7 +621,7 @@ namespace EvolveDb
             var pendingMigrations = new List<MigrationScript>();
             var appliedMigrations = metadata.GetAllAppliedRepeatableMigration();
             var scripts = MigrationLoader.GetRepeatableMigrations();
-            
+
             foreach (var script in scripts)
             {
                 var appliedMigration = appliedMigrations.Where(x => x.Name == script.Name).OrderBy(x => x.InstalledOn).LastOrDefault();
@@ -791,7 +793,7 @@ namespace EvolveDb
             try
             {
                 stopWatch.Start();
-                foreach (var statement in db.SqlStatementBuilder.LoadSqlStatements(migration, Placeholders))
+                foreach (var statement in db.SqlStatementBuilder.LoadSqlStatements(migration, Placeholders, EnableSqlLint, SqlLintFailureLevel, _log))
                 {
                     if (statement.MustExecuteInTransaction)
                     {
@@ -819,7 +821,7 @@ namespace EvolveDb
                 stopWatch.Stop();
                 TotalTimeElapsedInMs += stopWatch.ElapsedMilliseconds;
                 db.WrappedConnection.TryRollback();
-                
+
                 if (TransactionMode == TransactionKind.CommitEach)
                 {
                     metadata.SaveMigration(migration, success: false, stopWatch.Elapsed);
