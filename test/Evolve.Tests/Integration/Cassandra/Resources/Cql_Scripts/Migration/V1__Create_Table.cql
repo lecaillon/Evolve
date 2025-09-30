@@ -7,7 +7,7 @@ create table ${keyspace}.my_table (
 	primary key ((id), timestamp_unixepoch_ticks));
 
 insert into ${keyspace}.my_table (id, timestamp_unixepoch_ticks, content)
-values (uuid(), unixTimestampOf(now()), 'some content');
+values (uuid(), toTimestamp(now()), 'some content');
 
 insert into ${keyspace}.my_table (id, timestamp_unixepoch_ticks, content)
-values (uuid(), unixTimestampOf(now()), 'more content');
+values (uuid(), toTimestamp(now()), 'more content');

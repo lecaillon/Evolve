@@ -3,7 +3,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net7.0;net8.0</TargetFrameworks>
+    <TargetFrameworks>net9.0</TargetFrameworks>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>evolve</ToolCommandName>
     <RootNamespace>EvolveDb.Tool</RootNamespace>
@@ -23,8 +23,8 @@ Every time you build your project, it will automatically ensure that your databa
     <RepositoryUrl>https://github.com/lecaillon/Evolve.git</RepositoryUrl>
     <PackageTags>evolve flyway dotnet tool sql database migration mysql sqlserver cassandra mariadb sqlite postgresql cockroachdb</PackageTags>
     <PackageReleaseNotes>## Features
-- Add .NET 8 support, drop .NET 6 support
-- Replace System.Data.SqlClient by Microsoft.Data.SqlClient</PackageReleaseNotes>
+- Add .NET 9 support, drop .NET 7/8 support
+- Remove support for netstandard2.0</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
@@ -37,7 +37,7 @@ Every time you build your project, it will automatically ensure that your databa
     <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="3.1.0" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.5" />
     <PackageReference Include="MySqlConnector" Version="2.3.5" />
-    <PackageReference Include="Npgsql" Version="8.0.1" />
+    <PackageReference Include="Npgsql" Version="9.0.3" />
     <PackageReference Include="Stub.System.Data.SQLite.Core.NetStandard" Version="1.0.118" />
   </ItemGroup>
 
