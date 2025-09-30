@@ -51,4 +51,3 @@ artifacts:
 - path: '.\dist\evolve.exe'
 - path: '.\publish\coverage\badge_linecoverage.png'
 - path: '.\publish\coverage'
-  type: Zip
