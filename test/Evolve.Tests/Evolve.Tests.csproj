@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <IsPackable>false</IsPackable>
     <LangVersion>latest</LangVersion>
     <RootNamespace>EvolveDb.Tests</RootNamespace>
@@ -74,10 +74,6 @@
     <None Update="_evolve.cassandra.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Integration\PostgreSQL\Resources\Sql_Scripts\Scenario008\Step00\" />
   </ItemGroup>
 
 </Project>

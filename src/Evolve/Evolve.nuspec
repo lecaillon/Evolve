@@ -13,7 +13,9 @@ Every time you build your project, it will automatically ensure that your databa
     <repository type="git" url="https://github.com/lecaillon/Evolve.git" />
     <iconUrl>https://raw.githubusercontent.com/lecaillon/Evolve/master/images/logo128.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <releaseNotes>## Features</releaseNotes>
+    <releaseNotes>## Features
+- Add .NET 9 support, drop .NET 8 support
+- Remove support for netstandard2.0</releaseNotes>
     <tags>evolve flyway sql database migration mysql sqlserver cassandra mariadb sqlite postgresql cockroachdb</tags>
     <dependencies>
       <group targetFramework="netstandard2.0" />
