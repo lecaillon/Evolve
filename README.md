@@ -42,37 +42,37 @@ Evolve is available as a .NET library, a .NET tool and a standalone CLI.
   <tbody>
     <tr>
       <td align="center" valign="middle">
-        <a href="https://evolve-db.netlify.com/requirements/sqlserver" target="_blank">
+        <a href="https://evolve-db.netlify.app/requirements/sqlserver" target="_blank">
           <img src="https://raw.githubusercontent.com/lecaillon/Evolve/master/images/sqlserver.png">
         </a>
       </td>
       <td align="center" valign="middle">
-        <a href="https://evolve-db.netlify.com/requirements/postgresql" target="_blank">
+        <a href="https://evolve-db.netlify.app/requirements/postgresql" target="_blank">
           <img src="https://raw.githubusercontent.com/lecaillon/Evolve/master/images/postgresql.png">
         </a>
       </td>
       <td align="center" valign="middle">
-        <a href="https://evolve-db.netlify.com/requirements/mysql" target="_blank">
+        <a href="https://evolve-db.netlify.app/requirements/mysql" target="_blank">
           <img src="https://raw.githubusercontent.com/lecaillon/Evolve/master/images/mysql.png">
         </a>
       </td>
       <td align="center" valign="middle">
-        <a href="https://evolve-db.netlify.com/requirements/mariadb" target="_blank">
+        <a href="https://evolve-db.netlify.app/requirements/mariadb" target="_blank">
           <img src="https://raw.githubusercontent.com/lecaillon/Evolve/master/images/mariadb.png">
         </a>
       </td>
       <td align="center" valign="middle">
-        <a href="https://evolve-db.netlify.com/requirements/sqlite" target="_blank">
+        <a href="https://evolve-db.netlify.app/requirements/sqlite" target="_blank">
           <img src="https://raw.githubusercontent.com/lecaillon/Evolve/master/images/sqlite.png">
         </a>
       </td>
       <td align="center" valign="middle">
-        <a href="https://evolve-db.netlify.com/requirements/cassandra" target="_blank">
+        <a href="https://evolve-db.netlify.app/requirements/cassandra" target="_blank">
           <img src="https://raw.githubusercontent.com/lecaillon/Evolve/master/images/cassandra.png">
         </a>
       </td>
       <td align="center" valign="middle">
-        <a href="https://evolve-db.netlify.com/requirements/cockroachdb" target="_blank">
+        <a href="https://evolve-db.netlify.app/requirements/cockroachdb" target="_blank">
           <img src="https://raw.githubusercontent.com/lecaillon/Evolve/master/images/cockroachdb.png">
         </a>
       </td>
@@ -81,7 +81,7 @@ Evolve is available as a .NET library, a .NET tool and a standalone CLI.
 </table>
 
 ## Documentation
-You can read the latest documentation at [https://evolve-db.netlify.com](https://evolve-db.netlify.com) and find samples [here](https://github.com/lecaillon/Evolve/tree/master/samples).
+You can read the latest documentation at [https://evolve-db.netlify.app](https://evolve-db.netlify.app) and find samples [here](https://github.com/lecaillon/Evolve/tree/master/samples).
 
 ## Changelog
 Detailed changes for each release are documented in the [release notes](https://github.com/lecaillon/Evolve/releases).
