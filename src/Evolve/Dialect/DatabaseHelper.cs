@@ -28,9 +28,9 @@ namespace EvolveDb.Dialect
 
         public abstract IEvolveMetadata GetMetadataTable(string schema, string tableName);
 
-        public abstract bool TryAcquireApplicationLock();
+        public abstract bool TryAcquireApplicationLock(object? lockId = null);
 
-        public abstract bool ReleaseApplicationLock();
+        public abstract bool ReleaseApplicationLock(object? lockId = null);
 
         public void Dispose()
         {

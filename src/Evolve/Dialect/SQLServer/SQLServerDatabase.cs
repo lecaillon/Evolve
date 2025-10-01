@@ -23,7 +23,7 @@ namespace EvolveDb.Dialect.SQLServer
 
         public override Schema GetSchema(string schemaName) => new SQLServerSchema(schemaName, WrappedConnection);
 
-        public override bool TryAcquireApplicationLock()
+        public override bool TryAcquireApplicationLock(object? lockId = null)
         {
             return WrappedConnection.ExecuteDbCommand("sp_getapplock", cmd =>
             {
@@ -37,7 +37,7 @@ namespace EvolveDb.Dialect.SQLServer
 
                 var inParam1 = cmd.CreateParameter();
                 inParam1.ParameterName = "@Resource";
-                inParam1.Value = LOCK_ID;
+                inParam1.Value = lockId ?? LOCK_ID;
                 inParam1.DbType = DbType.String;
                 inParam1.Direction = ParameterDirection.Input;
                 cmd.Parameters.Add(inParam1);
@@ -70,7 +70,7 @@ namespace EvolveDb.Dialect.SQLServer
             }) >= 0;
         }
 
-        public override bool ReleaseApplicationLock()
+        public override bool ReleaseApplicationLock(object? lockId = null)
         {
             return WrappedConnection.ExecuteDbCommand("sp_releaseapplock", cmd =>
             {
@@ -84,7 +84,7 @@ namespace EvolveDb.Dialect.SQLServer
 
                 var inParam1 = cmd.CreateParameter();
                 inParam1.ParameterName = "@Resource";
-                inParam1.Value = LOCK_ID;
+                inParam1.Value = lockId ?? LOCK_ID;
                 inParam1.DbType = DbType.String;
                 inParam1.Direction = ParameterDirection.Input;
                 cmd.Parameters.Add(inParam1);

@@ -21,8 +21,8 @@ namespace EvolveDb.Dialect.CockroachDB
 
         public override Schema GetSchema(string schemaName) => new CockroachDBDatabase(schemaName, WrappedConnection);
 
-        public override bool TryAcquireApplicationLock() => true;
+        public override bool TryAcquireApplicationLock(object? lockId = null) => true;
 
-        public override bool ReleaseApplicationLock() => true;
+        public override bool ReleaseApplicationLock(object? lockId = null) => true;
     }
 }

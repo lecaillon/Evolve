@@ -77,6 +77,7 @@ namespace EvolveDb
         public bool RetryRepeatableMigrationsUntilNoError { get; set; }
         public TransactionKind TransactionMode { get; set; } = TransactionKind.CommitEach;
         public bool SkipNextMigrations { get; set; } = false;
+        public object? ApplicationLockId { get; set; } = null;
 
         private IMigrationLoader? _migrationLoader;
         public IMigrationLoader MigrationLoader
@@ -772,7 +773,7 @@ namespace EvolveDb
                 if (EnableClusterMode)
                 {
                     var metadata = db.GetMetadataTable(MetadataTableSchema, MetadataTableName);
-                    if (!db.ReleaseApplicationLock() || !metadata.ReleaseLock())
+                    if (!db.ReleaseApplicationLock(ApplicationLockId) || !metadata.ReleaseLock())
                     {
                         _log("Error trying to release Evolve lock.");
                     }
@@ -881,7 +882,7 @@ namespace EvolveDb
         {
             while (true)
             {
-                if (db.TryAcquireApplicationLock())
+                if (db.TryAcquireApplicationLock(ApplicationLockId))
                 {
                     break;
                 }

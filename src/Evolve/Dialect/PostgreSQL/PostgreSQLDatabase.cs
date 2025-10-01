@@ -23,9 +23,9 @@ namespace EvolveDb.Dialect.PostgreSQL
 
         public override Schema GetSchema(string schemaName) => new PostgreSQLSchema(schemaName, WrappedConnection);
 
-        public override bool TryAcquireApplicationLock() => WrappedConnection.QueryForBool($"SELECT pg_try_advisory_lock({LOCK_ID})");
+        public override bool TryAcquireApplicationLock(object? lockId = null) => WrappedConnection.QueryForBool($"SELECT pg_try_advisory_lock({lockId ?? LOCK_ID})");
 
-        public override bool ReleaseApplicationLock() => WrappedConnection.QueryForBool($"SELECT pg_advisory_unlock({LOCK_ID})");
+        public override bool ReleaseApplicationLock(object? lockId = null) => WrappedConnection.QueryForBool($"SELECT pg_advisory_unlock({lockId ?? LOCK_ID})");
 
         private string CleanSchemaName(string schemaName)
         {
