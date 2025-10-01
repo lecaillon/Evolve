@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using EvolveDb.Configuration;
+using EvolveDb.Migration;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using EvolveDb.Configuration;
-using EvolveDb.Migration;
 
 namespace EvolveDb.Tests
 {
@@ -41,6 +41,8 @@ namespace EvolveDb.Tests
         public bool RetryRepeatableMigrationsUntilNoError { get; set; }
         public TransactionKind TransactionMode { get; set; } = TransactionKind.CommitEach;
         public bool SkipNextMigrations { get; set; } = false;
+        public bool EnableSqlLint { get; set; } = false;
+        public SqlLintFailureLevel SqlLintFailureLevel { get; set; } = SqlLintFailureLevel.Warning;
 
         private IMigrationLoader _migrationLoader;
         public IMigrationLoader MigrationLoader
