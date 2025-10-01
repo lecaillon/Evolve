@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
+using EvolveDb.Events;
 using EvolveDb.Migration;
 
 namespace EvolveDb.Configuration
@@ -218,5 +220,15 @@ namespace EvolveDb.Configuration
         ///     that replaces the built-in ones (<see cref="FileMigrationLoader"/> <see cref="EmbeddedResourceMigrationLoader"/>)
         /// </summary>
         IMigrationLoader MigrationLoader { get; }
+        
+        /// <summary>
+        ///  Event raised when Evolve is about to execute a migration script.
+        /// </summary>
+        event EventHandler<MigrationEventArgs> MigrationStarting;
+        
+        /// <summary>
+        /// Event raised when Evolve has successfully executed a migration script.
+        /// </summary>
+        event EventHandler<MigrationEventArgs> MigrationSucceeded;
     }
 }

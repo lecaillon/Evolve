@@ -12,6 +12,7 @@ using ConsoleTables;
 using EvolveDb.Configuration;
 using EvolveDb.Connection;
 using EvolveDb.Dialect;
+using EvolveDb.Events;
 using EvolveDb.Metadata;
 using EvolveDb.Migration;
 using EvolveDb.Utilities;
@@ -89,6 +90,10 @@ namespace EvolveDb
             }
             set { _migrationLoader = value; }
         }
+        
+        public event EventHandler<MigrationEventArgs>? MigrationStarting;
+        
+        public event EventHandler<MigrationEventArgs>? MigrationSucceeded;
 
         #endregion
 
@@ -453,6 +458,7 @@ namespace EvolveDb
 
             MigrationVersion Migrate()
             {
+                
                 ExecuteAllOutOfOrderMigration(db);
                 var lastAppliedVersion = ExecuteAllMigration(db);
                 ExecuteAllRepeatableMigration(db);
@@ -790,6 +796,7 @@ namespace EvolveDb
 
             try
             {
+                MigrationStarting?.Invoke(this, new MigrationEventArgs(migration));
                 stopWatch.Start();
                 foreach (var statement in db.SqlStatementBuilder.LoadSqlStatements(migration, Placeholders))
                 {
@@ -813,6 +820,7 @@ namespace EvolveDb
                 TotalTimeElapsedInMs += stopWatch.ElapsedMilliseconds;
                 NbMigration++;
                 AppliedMigrations.Add(migration.Name);
+                MigrationSucceeded?.Invoke(this, new MigrationEventArgs(migration));
             }
             catch (Exception ex)
             {
